@@ -1,0 +1,14 @@
+{
+  "id": "th10_mof",
+  "number": 10,
+  "title_zh": "东方风神录",
+  "title_en": "Mountain of Faith",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["妖怪之山大瀑布", "风神之湖", "守矢神社境内"],
+    "structures": ["河童工房", "风神湖鸟居", "守矢神社"],
+    "enemies": ["河童斥候", "天狗巡卫", "信仰灵"],
+    "characters": ["秋静叶", "秋穰子", "键山雏", "河城荷取", "东风谷早苗", "八坂神奈子", "洩矢诹访子"]
+  }
+}

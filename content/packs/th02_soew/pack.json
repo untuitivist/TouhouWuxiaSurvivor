@@ -1,0 +1,14 @@
+{
+  "id": "th02_soew",
+  "number": 2,
+  "title_zh": "东方封魔录",
+  "title_en": "Story of Eastern Wonderland",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["妖怪侵占神社", "幻梦界", "灵魔殿境内"],
+    "structures": ["战车残骸", "幻梦界壁", "灵魔殿"],
+    "enemies": ["战车妖怪", "幻梦界魔石", "灵魔殿使魔"],
+    "characters": ["里香", "明罗", "雾雨魔理沙", "魅魔"]
+  }
+}

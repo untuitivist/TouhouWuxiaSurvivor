@@ -1,0 +1,14 @@
+{
+  "id": "th16_hsifs",
+  "number": 16,
+  "title_zh": "东方天空璋",
+  "title_en": "Hidden Star in Four Seasons",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["四季异变林", "后户之国", "隐岐奈秘境"],
+    "structures": ["季节祭坛", "秘神后户", "秘神舞台"],
+    "enemies": ["季节妖精", "后户舞童", "秘神侍从"],
+    "characters": ["爱塔妮缇拉尔瓦", "坂田合欢乃", "高丽野阿吽", "矢田寺成美", "尔子田里乃", "丁礼田舞", "摩多罗隐岐奈"]
+  }
+}

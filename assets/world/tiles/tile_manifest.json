@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "tile_size_pixels": 16,
+  "naming": "lowercase_ascii_snake_case",
+  "tiles": [
+    {
+      "id": "common.grass_base",
+      "category": "common",
+      "path": "common/grass_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "common.grass_dots_01",
+      "category": "common",
+      "path": "common/grass_dots_01.png",
+      "pattern": "DenseSpeckles"
+    },
+    {
+      "id": "common.dirt_base",
+      "category": "common",
+      "path": "common/dirt_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "common.dirt_pebbles_01",
+      "category": "common",
+      "path": "common/dirt_pebbles_01.png",
+      "pattern": "Pebbles"
+    },
+    {
+      "id": "common.stone_base",
+      "category": "common",
+      "path": "common/stone_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "common.stone_cracks_01",
+      "category": "common",
+      "path": "common/stone_cracks_01.png",
+      "pattern": "Cracks"
+    },
+    {
+      "id": "common.water_shallow_base",
+      "category": "common",
+      "path": "common/water_shallow_base.png",
+      "pattern": "Ripples"
+    },
+    {
+      "id": "common.water_shallow_ripples_01",
+      "category": "common",
+      "path": "common/water_shallow_ripples_01.png",
+      "pattern": "Ripples"
+    },
+    {
+      "id": "hakurei_shrine.shrine_grass_base",
+      "category": "hakurei_shrine",
+      "path": "hakurei_shrine/shrine_grass_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "hakurei_shrine.shrine_grass_petals_01",
+      "category": "hakurei_shrine",
+      "path": "hakurei_shrine/shrine_grass_petals_01.png",
+      "pattern": "Petals"
+    },
+    {
+      "id": "hakurei_shrine.shrine_path_base",
+      "category": "hakurei_shrine",
+      "path": "hakurei_shrine/shrine_path_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "hakurei_shrine.shrine_path_pebbles_01",
+      "category": "hakurei_shrine",
+      "path": "hakurei_shrine/shrine_path_pebbles_01.png",
+      "pattern": "Pebbles"
+    },
+    {
+      "id": "hakurei_shrine.boundary_soil_base",
+      "category": "hakurei_shrine",
+      "path": "hakurei_shrine/boundary_soil_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "hakurei_shrine.boundary_soil_sparkles_01",
+      "category": "hakurei_shrine",
+      "path": "hakurei_shrine/boundary_soil_sparkles_01.png",
+      "pattern": "Sparkles"
+    },
+    {
+      "id": "magic_forest.forest_floor_base",
+      "category": "magic_forest",
+      "path": "magic_forest/forest_floor_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "magic_forest.forest_floor_leaves_01",
+      "category": "magic_forest",
+      "path": "magic_forest/forest_floor_leaves_01.png",
+      "pattern": "Leaves"
+    },
+    {
+      "id": "magic_forest.moss_base",
+      "category": "magic_forest",
+      "path": "magic_forest/moss_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "magic_forest.moss_dots_01",
+      "category": "magic_forest",
+      "path": "magic_forest/moss_dots_01.png",
+      "pattern": "DenseSpeckles"
+    },
+    {
+      "id": "magic_forest.magic_soil_base",
+      "category": "magic_forest",
+      "path": "magic_forest/magic_soil_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "magic_forest.magic_soil_sparkles_01",
+      "category": "magic_forest",
+      "path": "magic_forest/magic_soil_sparkles_01.png",
+      "pattern": "Sparkles"
+    },
+    {
+      "id": "misty_lake.lake_water_base",
+      "category": "misty_lake",
+      "path": "misty_lake/lake_water_base.png",
+      "pattern": "Ripples"
+    },
+    {
+      "id": "misty_lake.lake_water_ripples_01",
+      "category": "misty_lake",
+      "path": "misty_lake/lake_water_ripples_01.png",
+      "pattern": "Ripples"
+    },
+    {
+      "id": "misty_lake.lake_shore_base",
+      "category": "misty_lake",
+      "path": "misty_lake/lake_shore_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "misty_lake.lake_shore_pebbles_01",
+      "category": "misty_lake",
+      "path": "misty_lake/lake_shore_pebbles_01.png",
+      "pattern": "Pebbles"
+    },
+    {
+      "id": "misty_lake.wet_grass_base",
+      "category": "misty_lake",
+      "path": "misty_lake/wet_grass_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "misty_lake.wet_grass_droplets_01",
+      "category": "misty_lake",
+      "path": "misty_lake/wet_grass_droplets_01.png",
+      "pattern": "Droplets"
+    },
+    {
+      "id": "bamboo_forest.bamboo_floor_base",
+      "category": "bamboo_forest",
+      "path": "bamboo_forest/bamboo_floor_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "bamboo_forest.bamboo_floor_leaves_01",
+      "category": "bamboo_forest",
+      "path": "bamboo_forest/bamboo_floor_leaves_01.png",
+      "pattern": "Leaves"
+    },
+    {
+      "id": "bamboo_forest.bamboo_moss_base",
+      "category": "bamboo_forest",
+      "path": "bamboo_forest/bamboo_moss_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "bamboo_forest.bamboo_moss_dots_01",
+      "category": "bamboo_forest",
+      "path": "bamboo_forest/bamboo_moss_dots_01.png",
+      "pattern": "DenseSpeckles"
+    },
+    {
+      "id": "bamboo_forest.bamboo_path_base",
+      "category": "bamboo_forest",
+      "path": "bamboo_forest/bamboo_path_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "bamboo_forest.bamboo_path_stripes_01",
+      "category": "bamboo_forest",
+      "path": "bamboo_forest/bamboo_path_stripes_01.png",
+      "pattern": "Stripes"
+    },
+    {
+      "id": "youkai_mountain.mountain_grass_base",
+      "category": "youkai_mountain",
+      "path": "youkai_mountain/mountain_grass_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "youkai_mountain.mountain_grass_flowers_01",
+      "category": "youkai_mountain",
+      "path": "youkai_mountain/mountain_grass_flowers_01.png",
+      "pattern": "Flowers"
+    },
+    {
+      "id": "youkai_mountain.mountain_rock_base",
+      "category": "youkai_mountain",
+      "path": "youkai_mountain/mountain_rock_base.png",
+      "pattern": "Speckles"
+    },
+    {
+      "id": "youkai_mountain.mountain_rock_cracks_01",
+      "category": "youkai_mountain",
+      "path": "youkai_mountain/mountain_rock_cracks_01.png",
+      "pattern": "Cracks"
+    },
+    {
+      "id": "youkai_mountain.stream_stone_base",
+      "category": "youkai_mountain",
+      "path": "youkai_mountain/stream_stone_base.png",
+      "pattern": "Pebbles"
+    },
+    {
+      "id": "youkai_mountain.stream_stone_wet_01",
+      "category": "youkai_mountain",
+      "path": "youkai_mountain/stream_stone_wet_01.png",
+      "pattern": "WetStones"
+    }
+  ]
+}

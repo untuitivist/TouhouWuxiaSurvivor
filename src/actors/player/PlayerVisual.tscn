@@ -1,0 +1,348 @@
+[gd_scene load_steps=45 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/characters/first_player/player_full_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" path="res://assets/characters/first_player/floating_cannon.png" id="2_cannon"]
+
+[sub_resource type="AtlasTexture" id="Right0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Right1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Right2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Right3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Left0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Left1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Left2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Left3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Down0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Down1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Down2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Down3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Up0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Up1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Up2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="Up3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedRight0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 128, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedRight1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 128, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedRight2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 128, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedRight3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 128, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedLeft0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 160, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedLeft1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 160, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedLeft2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 160, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedLeft3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 160, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedDown0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 192, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedDown1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 192, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedDown2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 192, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedDown3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 192, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedUp0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 224, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedUp1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(32, 224, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedUp2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(64, 224, 32, 32)
+
+[sub_resource type="AtlasTexture" id="ArmedUp3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(96, 224, 32, 32)
+
+[sub_resource type="SpriteFrames" id="PlayerFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Down0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Down1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Down2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Down3")
+}],
+"loop": true,
+"name": &"normal_down",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Left0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Left1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Left2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Left3")
+}],
+"loop": true,
+"name": &"normal_left",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Right0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Right1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Right2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Right3")
+}],
+"loop": true,
+"name": &"normal_right",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Up0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Up1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Up2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Up3")
+}],
+"loop": true,
+"name": &"normal_up",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("ArmedDown0")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedDown1")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedDown2")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedDown3")
+}],
+"loop": true,
+"name": &"armed_down",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("ArmedLeft0")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedLeft1")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedLeft2")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedLeft3")
+}],
+"loop": true,
+"name": &"armed_left",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("ArmedRight0")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedRight1")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedRight2")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedRight3")
+}],
+"loop": true,
+"name": &"armed_right",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("ArmedUp0")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedUp1")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedUp2")
+}, {
+"duration": 1.0,
+"texture": SubResource("ArmedUp3")
+}],
+"loop": true,
+"name": &"armed_up",
+"speed": 8.0
+}]
+
+[sub_resource type="AtlasTexture" id="Cannon0"]
+atlas = ExtResource("2_cannon")
+region = Rect2(0, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon1"]
+atlas = ExtResource("2_cannon")
+region = Rect2(48, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon2"]
+atlas = ExtResource("2_cannon")
+region = Rect2(96, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon3"]
+atlas = ExtResource("2_cannon")
+region = Rect2(144, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon4"]
+atlas = ExtResource("2_cannon")
+region = Rect2(192, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon5"]
+atlas = ExtResource("2_cannon")
+region = Rect2(240, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon6"]
+atlas = ExtResource("2_cannon")
+region = Rect2(288, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="Cannon7"]
+atlas = ExtResource("2_cannon")
+region = Rect2(336, 0, 48, 32)
+
+[sub_resource type="SpriteFrames" id="CannonFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("Cannon0")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon1")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon2")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon3")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon4")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon5")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon6")
+}, {
+"duration": 1.0,
+"texture": SubResource("Cannon7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
+
+[node name="Visual" type="AnimatedSprite2D"]
+texture_filter = 1
+sprite_frames = SubResource("PlayerFrames")
+animation = &"normal_right"
+autoplay = "normal_right"
+
+[node name="ArmedEffect" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+sprite_frames = SubResource("CannonFrames")
+animation = &"default"
+autoplay = "default"

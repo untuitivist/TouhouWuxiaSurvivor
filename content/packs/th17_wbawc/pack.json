@@ -1,0 +1,14 @@
+{
+  "id": "th17_wbawc",
+  "number": 17,
+  "title_zh": "东方鬼形兽",
+  "title_en": "Wily Beast and Weakest Creature",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["地狱关口", "畜生界", "灵长园境内"],
+    "structures": ["三途关卡", "兽组织战场", "灵长园"],
+    "enemies": ["兽灵", "鹰灵", "埴轮兵"],
+    "characters": ["戎璎花", "牛崎润美", "庭渡久侘歌", "吉吊八千慧", "杖刀偶磨弓", "埴安神袿姬", "骊驹早鬼"]
+  }
+}

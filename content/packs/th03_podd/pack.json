@@ -1,0 +1,14 @@
+{
+  "id": "th03_podd",
+  "number": 3,
+  "title_zh": "东方梦时空",
+  "title_en": "Phantasmagoria of Dim.Dream",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["概率空间", "维纳遗迹", "梦时空决斗场"],
+    "structures": ["可能性空间移动船", "维纳遗迹核心", "梦时空竞技台"],
+    "enemies": ["时空幻影", "北白河机械灵", "可能性复制体"],
+    "characters": ["爱莲", "小兔姬", "卡娜·安娜贝拉尔", "朝仓理香子", "北白河千百合", "冈崎梦美"]
+  }
+}

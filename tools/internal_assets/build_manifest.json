@@ -1,0 +1,50 @@
+{
+  "scenes": [
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg1bg.png","output":"base/scenes/biome_field.png","baseColor":[22,28,18,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg4bg7.png","output":"base/scenes/biome_shrine.png","baseColor":[30,18,16,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg3bg2.png","output":"base/scenes/biome_village.png","baseColor":[28,24,18,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg3bg.png","output":"base/scenes/biome_forest.png","baseColor":[10,24,18,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg3bg.png","output":"base/scenes/biome_mountain.png","baseColor":[16,24,22,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg4bg7.png","output":"base/scenes/structure_shrine.png","crop":[0,0,256,192],"baseColor":[34,16,12,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg4bg2.png","output":"base/scenes/structure_boundary.png","baseColor":[12,12,24,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg3bg2.png","output":"base/scenes/structure_village.png","crop":[0,0,192,192],"baseColor":[30,24,16,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg6bg2.png","output":"base/scenes/structure_magic_ruins.png","baseColor":[14,10,26,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg3bg3.png","output":"base/scenes/structure_terraces.png","baseColor":[14,22,20,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg6bg.png","output":"base/scenes/structure_crossroads.png","baseColor":[10,12,22,255]},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg2bg.png","output":"th06/scenes/biome_mist_lake.png","baseColor":[16,14,30,255]},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg5bg.png","mask":"TH06 东方红魔乡/ST_DAT/stg5bg_a.png","output":"th06/scenes/biome_mansion_grounds.png","crop":[0,0,160,128],"baseColor":[34,8,10,255]},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg4bg.png","mask":"TH06 东方红魔乡/ST_DAT/stg4bg_a.png","output":"th06/scenes/biome_voile_library.png","crop":[80,0,176,144],"baseColor":[20,8,10,255]},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg2bg.png","output":"th06/scenes/structure_lake_island.png","crop":[24,24,208,208],"baseColor":[12,14,30,255]},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg6bg.png","output":"th06/scenes/structure_scarlet_mansion.png","baseColor":[28,5,9,255]},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg4bg.png","mask":"TH06 东方红魔乡/ST_DAT/stg4bg_a.png","output":"th06/scenes/structure_great_library.png","crop":[96,16,160,112],"baseColor":[18,7,8,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH06 东方红魔乡/CM_DAT/player00.png","mask":"TH06 东方红魔乡/CM_DAT/player00_a.png","output":"base/players/reimu.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":48},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/wild_fairy.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/kedama.png","startX":256,"startY":128,"frameWidth":32,"frameHeight":32},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/enemy5.png","output":"base/actors/youkai_insect.png","startX":0,"startY":64,"frameWidth":32,"frameHeight":32},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/forest_spirit.png","startX":0,"startY":64,"frameWidth":32,"frameHeight":32},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/mountain_spirit.png","startX":0,"startY":96,"frameWidth":32,"frameHeight":32},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/village_outlaw.png","startX":0,"startY":32,"frameWidth":32,"frameHeight":32},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/enemy5.png","output":"base/actors/wandering_youkai.png","startX":0,"startY":96,"frameWidth":32,"frameHeight":32},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/enemy_g.png","output":"base/actors/great_youkai.png","startX":0,"startY":448,"frameWidth":64,"frameHeight":64},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg2enm.png","mask":"TH06 东方红魔乡/ST_DAT/stg2enm_a.png","output":"th06/actors/lake_fairy.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg3enm.png","mask":"TH06 东方红魔乡/ST_DAT/stg3enm_a.png","output":"th06/actors/scarlet_mist_insect.png","startX":0,"startY":160,"frameWidth":32,"frameHeight":32},
+    {"source":"TH06 东方红魔乡/ST_DAT/stg4enm.png","mask":"TH06 东方红魔乡/ST_DAT/stg4enm_a.png","output":"th06/actors/familiar_book_spirit.png","startX":128,"startY":96,"frameWidth":32,"frameHeight":32}
+  ],
+  "staticStrips": [
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/yin_yang_orb.png","crop":[0,192,32,32]}
+  ],
+  "portraits": [
+    {"source":"TH06 东方红魔乡/ST_DAT/face03a.png","mask":"TH06 东方红魔乡/ST_DAT/face03a_a.png","output":"th06/portraits/rumia.png"},
+    {"source":"TH06 东方红魔乡/ST_DAT/face05a.png","mask":"TH06 东方红魔乡/ST_DAT/face05a_a.png","output":"th06/portraits/cirno.png"},
+    {"source":"TH06 东方红魔乡/ST_DAT/face06a.png","mask":"TH06 东方红魔乡/ST_DAT/face06a_a.png","output":"th06/portraits/meiling.png"},
+    {"source":"TH06 东方红魔乡/ST_DAT/face08a.png","mask":"TH06 东方红魔乡/ST_DAT/face08a_a.png","output":"th06/portraits/patchouli.png"},
+    {"source":"TH06 东方红魔乡/ST_DAT/face09a.png","mask":"TH06 东方红魔乡/ST_DAT/face09a_a.png","output":"th06/portraits/sakuya.png"},
+    {"source":"TH06 东方红魔乡/ST_DAT/face10a.png","mask":"TH06 东方红魔乡/ST_DAT/face10a_a.png","output":"th06/portraits/remilia.png","crop":[0,0,256,256]},
+    {"source":"TH06 东方红魔乡/ST_DAT/face12a.png","mask":"TH06 东方红魔乡/ST_DAT/face12a_a.png","output":"th06/portraits/flandre.png","crop":[0,0,256,256]}
+  ],
+  "copies": [
+    {"source":"TH06 东方红魔乡/CM_DAT/etama3.png","mask":"TH06 东方红魔乡/CM_DAT/etama3_a.png","output":"th06/bullet_atlas.png"}
+  ]
+}

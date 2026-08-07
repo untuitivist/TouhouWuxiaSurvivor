@@ -1,0 +1,14 @@
+{
+  "id": "th11_sa",
+  "number": 11,
+  "title_zh": "东方地灵殿",
+  "title_en": "Subterranean Animism",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["地底通道", "旧地狱街道", "地灵殿境内"],
+    "structures": ["嫉妒之桥", "旧都", "地灵殿"],
+    "enemies": ["地底怨灵", "地狱鸦", "火车猫灵"],
+    "characters": ["琪斯美", "黑谷山女", "水桥帕露西", "星熊勇仪", "古明地觉", "火焰猫燐", "灵乌路空", "古明地恋"]
+  }
+}

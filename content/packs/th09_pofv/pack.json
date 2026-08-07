@@ -1,0 +1,14 @@
+{
+  "id": "th09_pofv",
+  "number": 9,
+  "title_zh": "东方花映冢",
+  "title_en": "Phantasmagoria of Flower View",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["无名之丘", "无缘塚", "太阳花田"],
+    "structures": ["铃兰花田", "无缘塚墓园", "太阳花园"],
+    "enemies": ["铃兰毒灵", "魂花", "太阳花妖"],
+    "characters": ["梅蒂欣·梅兰可莉", "小野塚小町", "四季映姬·夜摩仙那度"]
+  }
+}

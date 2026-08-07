@@ -1,0 +1,14 @@
+{
+  "id": "th07_pcb",
+  "number": 7,
+  "title_zh": "东方妖妖梦",
+  "title_en": "Perfect Cherry Blossom",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["冬樱林", "冥界", "白玉楼庭园"],
+    "structures": ["冥界结界", "幽明结界门", "白玉楼"],
+    "enemies": ["冬季妖精", "幽灵", "樱花亡灵"],
+    "characters": ["蕾蒂·霍瓦特洛克", "橙", "普莉兹姆利巴三姐妹", "魂魄妖梦", "西行寺幽幽子", "八云蓝", "八云紫"]
+  }
+}

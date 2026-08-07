@@ -1,0 +1,14 @@
+{
+  "id": "th04_lls",
+  "number": 4,
+  "title_zh": "东方幻想乡",
+  "title_en": "Lotus Land Story",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["梦幻世界", "幻想花田", "梦幻馆庭园"],
+    "structures": ["梦幻世界入口", "花田凉亭", "梦幻馆"],
+    "enemies": ["梦幻花妖", "幻想莲灵", "梦幻馆卫灵"],
+    "characters": ["奥莲姬", "胡桃", "艾丽", "幽香", "梦月", "幻月"]
+  }
+}

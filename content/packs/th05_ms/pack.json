@@ -1,0 +1,14 @@
+{
+  "id": "th05_ms",
+  "number": 5,
+  "title_zh": "东方怪绮谈",
+  "title_en": "Mystic Square",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["魔界边境都市", "魔界都市", "万魔殿境内"],
+    "structures": ["魔界都市门", "魔界中央广场", "万魔殿"],
+    "enemies": ["魔界魔法阵", "魔界居民", "万魔殿使魔"],
+    "characters": ["萨拉", "露易兹", "爱丽丝", "雪", "舞", "梦子", "神绮"]
+  }
+}

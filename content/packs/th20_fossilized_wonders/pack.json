@@ -1,0 +1,14 @@
+{
+  "id": "th20_fossilized_wonders",
+  "number": 20,
+  "title_zh": "东方锦上京",
+  "title_en": "Fossilized Wonders",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["山麓圣域", "佐尔塔克斯迷宫", "浅间净化山"],
+    "structures": ["圣域门", "迷宫核心", "地下金字塔"],
+    "enemies": ["山姥", "异变石灵", "月都净化兵"],
+    "characters": ["尘塚乌羽目", "封兽千迷", "道神驯子", "浅间祐依", "绵月丰姬", "磐永阿梨夜", "渡里妮娜"]
+  }
+}

@@ -1,0 +1,198 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/ui/stats/CharacterStatsOverlay.cs" id="1_stats"]
+[ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="2_theme"]
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.022, 0.033, 0.027, 0.98)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.58, 0.2, 0.16, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="CharacterStatsOverlay" type="CanvasLayer"]
+process_mode = 3
+layer = 30
+script = ExtResource("1_stats")
+
+[node name="Root" type="Control" parent="."]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+
+[node name="Shade" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.006, 0.011, 0.008, 0.78)
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -270.0
+offset_top = -157.0
+offset_right = 270.0
+offset_bottom = 157.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="Padding" type="MarginContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 12
+
+[node name="Layout" type="VBoxContainer" parent="Root/Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="Header" type="HBoxContainer" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Root/Panel/Padding/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.91, 0.79, 1)
+theme_override_font_sizes/font_size = 21
+text = "博丽灵梦 · 属性"
+
+[node name="Close" type="Button" parent="Root/Panel/Padding/Layout/Header"]
+custom_minimum_size = Vector2(72, 30)
+layout_mode = 2
+text = "关闭"
+
+[node name="Status" type="GridContainer" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 4
+columns = 4
+
+[node name="HealthCaption" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+text = "生命"
+[node name="HealthValue" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "5/5"
+[node name="LevelCaption" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+text = "修行"
+[node name="LevelValue" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "境界 1"
+[node name="ExperienceCaption" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+text = "当前灵息"
+[node name="ExperienceValue" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+text = "0/8"
+[node name="TotalExperienceCaption" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+text = "累计灵息"
+[node name="TotalExperienceValue" type="Label" parent="Root/Panel/Padding/Layout/Status"]
+layout_mode = 2
+text = "0"
+
+[node name="Separator" type="HSeparator" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+
+[node name="Combat" type="GridContainer" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 4
+columns = 4
+
+[node name="DamageCaption" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "弹幕伤害"
+[node name="DamageValue" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "1"
+[node name="FireCaption" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "射击间隔"
+[node name="FireValue" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0.180 秒"
+[node name="MoveCaption" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "移动速度"
+[node name="MoveValue" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "120.0"
+[node name="RangeCaption" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "索敌范围"
+[node name="RangeValue" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "460"
+[node name="ProjectileCaption" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "弹速"
+[node name="ProjectileValue" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "360"
+[node name="AttractionCaption" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "灵息吸附"
+[node name="AttractionValue" type="Label" parent="Root/Panel/Padding/Layout/Combat"]
+layout_mode = 2
+text = "72"
+
+[node name="SourceSeparator" type="HSeparator" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+
+[node name="Sources" type="GridContainer" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 5
+columns = 2
+
+[node name="PermanentCaption" type="Label" parent="Root/Panel/Padding/Layout/Sources"]
+layout_mode = 2
+text = "神社整备"
+[node name="PermanentValue" type="Label" parent="Root/Panel/Padding/Layout/Sources"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "尚未整备"
+autowrap_mode = 2
+[node name="BuildCaption" type="Label" parent="Root/Panel/Padding/Layout/Sources"]
+layout_mode = 2
+text = "本局武学"
+[node name="BuildValue" type="Label" parent="Root/Panel/Padding/Layout/Sources"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "尚未修习"
+autowrap_mode = 2
+[node name="SpellCaption" type="Label" parent="Root/Panel/Padding/Layout/Sources"]
+layout_mode = 2
+text = "符卡奥义"
+[node name="SpellValue" type="Label" parent="Root/Panel/Padding/Layout/Sources"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "尚未悟得 · 灵力 0/100"
+autowrap_mode = 2

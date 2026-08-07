@@ -1,0 +1,286 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/ui/death/DeathScreenOverlay.cs" id="1_death"]
+
+[sub_resource type="StyleBoxFlat" id="StyleDeath"]
+bg_color = Color(0.055, 0.047, 0.051, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62, 0.18, 0.2, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="Theme" id="ThemeCompact"]
+default_font_size = 12
+
+[node name="DeathScreenOverlay" type="CanvasLayer"]
+process_mode = 3
+layer = 40
+script = ExtResource("1_death")
+
+[node name="Root" type="Control" parent="."]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.012, 0.008, 0.01, 0.82)
+
+[node name="DeathPopup" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -92.0
+offset_right = 180.0
+offset_bottom = 92.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("ThemeCompact")
+theme_override_styles/panel = SubResource("StyleDeath")
+
+[node name="Padding" type="MarginContainer" parent="Root/DeathPopup"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="Layout" type="VBoxContainer" parent="Root/DeathPopup/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="Title" type="Label" parent="Root/DeathPopup/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.67, 0.66, 1)
+theme_override_font_sizes/font_size = 22
+text = "符力耗尽"
+horizontal_alignment = 1
+
+[node name="Message" type="Label" parent="Root/DeathPopup/Padding/Layout"]
+layout_mode = 2
+text = "这次幻想乡之行已经结束"
+horizontal_alignment = 1
+
+[node name="QuickStats" type="Label" parent="Root/DeathPopup/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.89, 0.91, 0.82, 1)
+text = "生存 00:00    击破 0"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="Root/DeathPopup/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ViewSummary" type="Button" parent="Root/DeathPopup/Padding/Layout/Buttons"]
+custom_minimum_size = Vector2(118, 32)
+layout_mode = 2
+text = "查看本局总结"
+
+[node name="MainMenu" type="Button" parent="Root/DeathPopup/Padding/Layout/Buttons"]
+custom_minimum_size = Vector2(110, 32)
+layout_mode = 2
+text = "返回主菜单"
+
+[node name="SummaryPanel" type="PanelContainer" parent="Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -130.0
+offset_right = 230.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("ThemeCompact")
+theme_override_styles/panel = SubResource("StyleDeath")
+
+[node name="Padding" type="MarginContainer" parent="Root/SummaryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Root/SummaryPanel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Title" type="Label" parent="Root/SummaryPanel/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.68, 1)
+theme_override_font_sizes/font_size = 18
+text = "本局总结"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="Root/SummaryPanel/Padding/Layout"]
+layout_mode = 2
+
+[node name="StatsColumns" type="HBoxContainer" parent="Root/SummaryPanel/Padding/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="LeftStats" type="GridContainer" parent="Root/SummaryPanel/Padding/Layout/StatsColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 3
+columns = 2
+
+[node name="SurvivalCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "生存时间"
+
+[node name="SurvivalValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "00:00"
+horizontal_alignment = 2
+
+[node name="DefeatedCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "击破敌人"
+
+[node name="DefeatedValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="LevelCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "最终境界"
+
+[node name="LevelValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "1"
+horizontal_alignment = 2
+
+[node name="ExperienceCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "累计灵息"
+
+[node name="ExperienceValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="RewardCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+text = "本局收入"
+
+[node name="RewardValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/LeftStats"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.78, 0.42, 1)
+text = "+0"
+horizontal_alignment = 2
+
+[node name="RightStats" type="GridContainer" parent="Root/SummaryPanel/Padding/Layout/StatsColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 3
+columns = 2
+
+[node name="LocationCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+layout_mode = 2
+text = "最终位置"
+
+[node name="LocationValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "幻想乡原野  (0, 0)"
+horizontal_alignment = 2
+autowrap_mode = 2
+max_lines_visible = 2
+clip_text = true
+
+[node name="ContentCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+layout_mode = 2
+text = "启用内容"
+
+[node name="ContentValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "幻想乡本体"
+horizontal_alignment = 2
+autowrap_mode = 2
+max_lines_visible = 2
+clip_text = true
+
+[node name="SeedCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+layout_mode = 2
+text = "世界种子"
+
+[node name="SeedValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="JadeBalanceCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+layout_mode = 2
+text = "持有钱财"
+
+[node name="JadeBalanceValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/StatsColumns/RightStats"]
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="BuildRow" type="HBoxContainer" parent="Root/SummaryPanel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BuildCaption" type="Label" parent="Root/SummaryPanel/Padding/Layout/BuildRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "本局武学"
+
+[node name="BuildValue" type="Label" parent="Root/SummaryPanel/Padding/Layout/BuildRow"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "尚未修习"
+autowrap_mode = 2
+max_lines_visible = 2
+clip_text = true
+
+[node name="Buttons" type="HBoxContainer" parent="Root/SummaryPanel/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="Restart" type="Button" parent="Root/SummaryPanel/Padding/Layout/Buttons"]
+custom_minimum_size = Vector2(104, 30)
+layout_mode = 2
+text = "重新开始"
+
+[node name="MainMenu" type="Button" parent="Root/SummaryPanel/Padding/Layout/Buttons"]
+custom_minimum_size = Vector2(104, 30)
+layout_mode = 2
+text = "返回主菜单"

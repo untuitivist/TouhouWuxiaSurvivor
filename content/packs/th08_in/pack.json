@@ -1,0 +1,14 @@
+{
+  "id": "th08_in",
+  "number": 8,
+  "title_zh": "东方永夜抄",
+  "title_en": "Imperishable Night",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["迷途竹林", "永远亭境内", "伪月空间"],
+    "structures": ["竹林古道", "永远亭", "伪月祭坛"],
+    "enemies": ["竹叶妖", "月兔", "永夜虫"],
+    "characters": ["莉格露·奈特巴格", "米斯蒂娅·萝蕾拉", "上白泽慧音", "因幡帝", "铃仙·优昙华院·因幡", "八意永琳", "蓬莱山辉夜", "藤原妹红"]
+  }
+}

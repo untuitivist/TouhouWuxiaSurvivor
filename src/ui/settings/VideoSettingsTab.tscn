@@ -1,0 +1,67 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/ui/settings/VideoSettingsPanel.cs" id="1_video"]
+
+[node name="视频" type="MarginContainer"]
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Video" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+script = ExtResource("1_video")
+
+[node name="WindowMode" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Video/WindowMode"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "显示模式"
+
+[node name="Option" type="OptionButton" parent="Video/WindowMode"]
+custom_minimum_size = Vector2(170, 28)
+layout_mode = 2
+
+[node name="Resolution" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Video/Resolution"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "窗口分辨率"
+
+[node name="Option" type="OptionButton" parent="Video/Resolution"]
+custom_minimum_size = Vector2(170, 28)
+layout_mode = 2
+
+[node name="Vsync" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Video/Vsync"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "垂直同步"
+
+[node name="Toggle" type="CheckButton" parent="Video/Vsync"]
+custom_minimum_size = Vector2(64, 28)
+layout_mode = 2
+text = "开启"
+
+[node name="FpsLimit" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Video/FpsLimit"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "帧率上限"
+
+[node name="Option" type="OptionButton" parent="Video/FpsLimit"]
+custom_minimum_size = Vector2(170, 28)
+layout_mode = 2

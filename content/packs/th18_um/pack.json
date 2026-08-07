@@ -1,0 +1,14 @@
+{
+  "id": "th18_um",
+  "number": 18,
+  "title_zh": "东方虹龙洞",
+  "title_en": "Unconnected Marketeers",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["妖怪之山集市", "虹龙洞", "月虹悬崖"],
+    "structures": ["能力卡摊位", "虹龙洞矿场", "月虹市场祭坛"],
+    "enemies": ["卡牌妖怪", "矿洞蜈蚣", "天虹灵"],
+    "characters": ["豪德寺三花", "山城高岭", "驹草山如", "玉造魅须丸", "饭纲丸龙", "天弓千亦", "姬虫百百世"]
+  }
+}

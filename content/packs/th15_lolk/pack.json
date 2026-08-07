@@ -1,0 +1,14 @@
+{
+  "id": "th15_lolk",
+  "number": 15,
+  "title_zh": "东方绀珠传",
+  "title_en": "Legacy of Lunatic Kingdom",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["月之虹海", "月之都", "静海"],
+    "structures": ["月面传送门", "月都门", "静海前哨"],
+    "enemies": ["月兔兵", "月都卫兵", "纯化灵"],
+    "characters": ["清兰", "铃瑚", "哆来咪·苏伊特", "稀神探女", "克劳恩皮丝", "纯狐", "赫卡提亚·拉碧斯拉祖利"]
+  }
+}

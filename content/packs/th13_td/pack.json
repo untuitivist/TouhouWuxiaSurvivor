@@ -1,0 +1,14 @@
+{
+  "id": "th13_td",
+  "number": 13,
+  "title_zh": "东方神灵庙",
+  "title_en": "Ten Desires",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["夜樱墓地", "梦殿大祀庙", "神灵庙深处"],
+    "structures": ["命莲寺墓园门", "梦殿石门", "神灵庙"],
+    "enemies": ["僵尸", "欲灵", "道士灵"],
+    "characters": ["幽谷响子", "宫古芳香", "霍青娥", "苏我屠自古", "物部布都", "丰聪耳神子", "二岩猯藏"]
+  }
+}

@@ -1,0 +1,141 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/ui/meta/CultivationPanel.cs" id="1_panel"]
+[ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="2_theme"]
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.025, 0.035, 0.028, 0.98)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.56, 0.19, 0.15, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="CultivationPanel" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_panel")
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.012, 0.009, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 44.0
+offset_right = -24.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="Padding" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Header" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Panel/Padding/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.91, 0.78, 1)
+theme_override_font_sizes/font_size = 22
+text = "博丽神社整备"
+
+[node name="Currency" type="Label" parent="Panel/Padding/Layout/Header"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.77, 0.4, 1)
+theme_override_font_sizes/font_size = 14
+text = "钱  0"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Back" type="Button" parent="Panel/Padding/Layout/Header"]
+custom_minimum_size = Vector2(70, 30)
+layout_mode = 2
+text = "返回"
+
+[node name="History" type="Label" parent="Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.69, 0.59, 1)
+theme_override_font_sizes/font_size = 11
+text = "累计收入 0    出行次数 0"
+
+[node name="Choices" type="VBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="Choice0" type="Button" parent="Panel/Padding/Layout/Choices"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "博丽护身结界"
+alignment = 0
+
+[node name="Choice1" type="Button" parent="Panel/Padding/Layout/Choices"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "空中飘浮"
+alignment = 0
+
+[node name="Choice2" type="Button" parent="Panel/Padding/Layout/Choices"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "阴阳玉共鸣"
+alignment = 0
+
+[node name="Choice3" type="Button" parent="Panel/Padding/Layout/Choices"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "封魔针调律"
+alignment = 0
+
+[node name="Status" type="Label" parent="Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73, 0.79, 0.69, 1)
+theme_override_font_sizes/font_size = 11
+text = "选择一项神社整备。"
+
+[node name="Footer" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+alignment = 2
+
+[node name="Reset" type="Button" parent="Panel/Padding/Layout/Footer"]
+custom_minimum_size = Vector2(140, 30)
+layout_mode = 2
+text = "重置整备"

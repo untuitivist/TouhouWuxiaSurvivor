@@ -1,0 +1,14 @@
+{
+  "id": "th12_ufo",
+  "number": 12,
+  "title_zh": "东方星莲船",
+  "title_en": "Undefined Fantastic Object",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["春云之海", "圣辇船甲板", "法界"],
+    "structures": ["云海宝船遗物", "圣辇船", "法界封印"],
+    "enemies": ["飞天妖怪", "飞仓灵", "法界魔灵"],
+    "characters": ["娜兹玲", "多多良小伞", "云居一轮与云山", "村纱水蜜", "寅丸星", "圣白莲", "封兽鵺"]
+  }
+}

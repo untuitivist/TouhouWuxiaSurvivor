@@ -1,0 +1,115 @@
+[gd_resource type="Theme" load_steps=11 format=3]
+
+[sub_resource type="StyleBoxFlat" id="ButtonNormal"]
+bg_color = Color(0.025, 0.034, 0.029, 0.78)
+border_width_left = 2
+border_color = Color(0.31, 0.39, 0.31, 0.72)
+content_margin_left = 11.0
+content_margin_right = 9.0
+
+[sub_resource type="StyleBoxFlat" id="ButtonHover"]
+bg_color = Color(0.12, 0.045, 0.04, 0.92)
+border_width_left = 4
+border_color = Color(0.72, 0.19, 0.16, 1)
+content_margin_left = 9.0
+content_margin_right = 9.0
+
+[sub_resource type="StyleBoxFlat" id="ButtonPressed"]
+bg_color = Color(0.19, 0.055, 0.045, 0.96)
+border_width_left = 4
+border_color = Color(0.87, 0.3, 0.22, 1)
+content_margin_left = 9.0
+content_margin_right = 9.0
+
+[sub_resource type="StyleBoxFlat" id="ButtonFocus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.79, 0.67, 0.43, 0.82)
+
+[sub_resource type="StyleBoxFlat" id="FieldNormal"]
+bg_color = Color(0.025, 0.034, 0.029, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.38, 0.3, 0.9)
+content_margin_left = 8.0
+content_margin_right = 8.0
+
+[sub_resource type="StyleBoxFlat" id="TabNormal"]
+bg_color = Color(0.02, 0.028, 0.024, 0.72)
+border_width_bottom = 1
+border_color = Color(0.3, 0.38, 0.3, 0.8)
+content_margin_left = 10.0
+content_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="TabSelected"]
+bg_color = Color(0.1, 0.04, 0.035, 0.9)
+border_width_bottom = 3
+border_color = Color(0.72, 0.19, 0.16, 1)
+content_margin_left = 10.0
+content_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="ListPanel"]
+bg_color = Color(0.016, 0.023, 0.019, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.32, 0.26, 0.72)
+
+[sub_resource type="StyleBoxFlat" id="ListSelected"]
+bg_color = Color(0.15, 0.05, 0.042, 0.92)
+border_width_left = 3
+border_color = Color(0.78, 0.22, 0.17, 1)
+
+[sub_resource type="StyleBoxFlat" id="PopupPanel"]
+bg_color = Color(0.025, 0.033, 0.028, 0.99)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.55, 0.4, 0.9)
+
+[resource]
+default_font_size = 12
+Button/colors/font_color = Color(0.91, 0.9, 0.82, 1)
+Button/colors/font_hover_color = Color(1, 0.93, 0.77, 1)
+Button/colors/font_pressed_color = Color(1, 0.88, 0.7, 1)
+Button/colors/font_focus_color = Color(0.96, 0.92, 0.8, 1)
+Button/styles/normal = SubResource("ButtonNormal")
+Button/styles/hover = SubResource("ButtonHover")
+Button/styles/pressed = SubResource("ButtonPressed")
+Button/styles/focus = SubResource("ButtonFocus")
+CheckButton/colors/font_color = Color(0.88, 0.88, 0.79, 1)
+CheckButton/colors/font_hover_color = Color(1, 0.91, 0.72, 1)
+CheckButton/colors/font_pressed_color = Color(1, 0.86, 0.67, 1)
+Label/colors/font_color = Color(0.86, 0.86, 0.78, 1)
+LineEdit/colors/font_color = Color(0.9, 0.89, 0.81, 1)
+LineEdit/colors/caret_color = Color(0.82, 0.25, 0.19, 1)
+LineEdit/styles/normal = SubResource("FieldNormal")
+OptionButton/colors/font_color = Color(0.9, 0.89, 0.81, 1)
+OptionButton/styles/normal = SubResource("FieldNormal")
+OptionButton/styles/hover = SubResource("ButtonHover")
+OptionButton/styles/pressed = SubResource("ButtonPressed")
+OptionButton/styles/focus = SubResource("ButtonFocus")
+PopupMenu/colors/font_color = Color(0.89, 0.88, 0.8, 1)
+PopupMenu/colors/font_hover_color = Color(1, 0.9, 0.7, 1)
+PopupMenu/styles/panel = SubResource("PopupPanel")
+TabBar/colors/font_unselected_color = Color(0.65, 0.69, 0.61, 1)
+TabBar/colors/font_selected_color = Color(1, 0.89, 0.69, 1)
+TabBar/colors/font_hovered_color = Color(0.95, 0.9, 0.75, 1)
+TabBar/styles/tab_unselected = SubResource("TabNormal")
+TabBar/styles/tab_hovered = SubResource("ButtonHover")
+TabBar/styles/tab_selected = SubResource("TabSelected")
+ItemList/colors/font_color = Color(0.84, 0.85, 0.77, 1)
+ItemList/colors/font_selected_color = Color(1, 0.91, 0.74, 1)
+ItemList/styles/panel = SubResource("ListPanel")
+ItemList/styles/selected = SubResource("ListSelected")
+ItemList/styles/selected_focus = SubResource("ListSelected")
+ItemList/styles/focus = SubResource("ButtonFocus")
+RichTextLabel/colors/default_color = Color(0.82, 0.83, 0.76, 1)
+RichTextLabel/styles/normal = SubResource("ListPanel")

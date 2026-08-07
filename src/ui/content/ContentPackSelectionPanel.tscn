@@ -1,0 +1,105 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/ui/content/ContentPackSelectionPanel.cs" id="1_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="2_scroll"]
+
+[sub_resource type="StyleBoxTexture" id="StylePanel"]
+texture = ExtResource("2_scroll")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[node name="ContentPackSelectionPanel" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_panel")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.012, 0.01, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -285.0
+offset_top = -160.0
+offset_right = 285.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="Padding" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.94, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+text = "本局内容"
+horizontal_alignment = 1
+
+[node name="VisibilityFilters" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+alignment = 2
+
+[node name="ShowOldWorks" type="CheckButton" parent="Panel/Padding/Layout/VisibilityFilters"]
+custom_minimum_size = Vector2(112, 24)
+layout_mode = 2
+tooltip_text = "显示 PC-98 时期的 TH01 至 TH05"
+text = "显示旧作"
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PackList" type="VBoxContainer" parent="Panel/Padding/Layout/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Commands" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="Back" type="Button" parent="Panel/Padding/Layout/Commands"]
+custom_minimum_size = Vector2(80, 30)
+layout_mode = 2
+text = "返回"
+
+[node name="Start" type="Button" parent="Panel/Padding/Layout/Commands"]
+custom_minimum_size = Vector2(104, 30)
+layout_mode = 2
+text = "开始游戏"

@@ -1,0 +1,254 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://src/ui/menu/MainMenu.cs" id="1_menu"]
+[ext_resource type="Texture2D" path="res://assets/world/tiles/tile_catalog.png" id="2_world"]
+[ext_resource type="PackedScene" path="res://src/ui/settings/SettingsPanel.tscn" id="4_settings"]
+[ext_resource type="PackedScene" path="res://src/ui/content/ContentPackSelectionPanel.tscn" id="5_content"]
+[ext_resource type="PackedScene" path="res://src/ui/compendium/CompendiumPanel.tscn" id="6_compendium"]
+[ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="7_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/ink_mountains.png" id="8_mountains"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/seal_stamp.png" id="9_seal"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/cloud_divider.png" id="10_divider"]
+[ext_resource type="PackedScene" path="res://src/ui/meta/CultivationPanel.tscn" id="11_cultivation"]
+
+[sub_resource type="StyleBoxFlat" id="StyleMenu"]
+bg_color = Color(0.018, 0.026, 0.021, 0.78)
+border_width_left = 2
+border_color = Color(0.67, 0.18, 0.15, 0.95)
+
+[sub_resource type="StyleBoxFlat" id="StyleTitle"]
+bg_color = Color(0.012, 0.019, 0.015, 0.94)
+border_width_bottom = 1
+border_color = Color(0.54, 0.16, 0.14, 0.95)
+
+[node name="MainMenu" type="Control"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("7_theme")
+script = ExtResource("1_menu")
+
+[node name="WorldTexture" type="TextureRect" parent="."]
+modulate = Color(0.26, 0.31, 0.27, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 1
+texture = ExtResource("2_world")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.014, 0.01, 0.67)
+
+[node name="RightWash" type="ColorRect" parent="."]
+layout_mode = 1
+anchor_left = 0.51
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.025, 0.02, 0.016, 0.34)
+
+[node name="InkMountains" type="TextureRect" parent="."]
+modulate = Color(0.88, 0.94, 0.86, 0.9)
+layout_mode = 1
+anchor_left = 0.38
+anchor_top = 0.16
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 1
+texture = ExtResource("8_mountains")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="TitleBand" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 58.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleTitle")
+
+[node name="Margin" type="MarginContainer" parent="TitleBand"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 6
+
+[node name="Header" type="HBoxContainer" parent="TitleBand/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="BrandMark" type="ColorRect" parent="TitleBand/Margin/Header"]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.72, 0.18, 0.15, 1)
+
+[node name="TitleStack" type="VBoxContainer" parent="TitleBand/Margin/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="TitleBand/Margin/Header/TitleStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.93, 0.82, 1)
+theme_override_font_sizes/font_size = 22
+text = "东方武侠生存录"
+
+[node name="Edition" type="Label" parent="TitleBand/Margin/Header/TitleStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.64, 0.55, 1)
+theme_override_font_sizes/font_size = 9
+text = "幻想乡异闻卷"
+
+[node name="Seal" type="TextureRect" parent="TitleBand/Margin/Header"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_seal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Menu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Menu"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 70.0
+offset_right = 238.0
+offset_bottom = 298.0
+theme_override_styles/panel = SubResource("StyleMenu")
+
+[node name="Padding" type="MarginContainer" parent="Menu/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Menu/Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Subtitle" type="Label" parent="Menu/Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.63, 1)
+theme_override_font_sizes/font_size = 12
+text = "无限幻想乡"
+
+[node name="Start" type="Button" parent="Menu/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "启程"
+alignment = 0
+
+[node name="Compendium" type="Button" parent="Menu/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "幻想乡图鉴"
+alignment = 0
+
+[node name="Cultivation" type="Button" parent="Menu/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "神社整备"
+alignment = 0
+
+[node name="Settings" type="Button" parent="Menu/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "设置"
+alignment = 0
+
+[node name="Quit" type="Button" parent="Menu/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+text = "离开"
+alignment = 0
+
+[node name="RoleBlock" type="MarginContainer" parent="Menu"]
+layout_mode = 1
+anchor_left = 0.57
+anchor_top = 0.36
+anchor_right = 0.94
+anchor_bottom = 0.70
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+mouse_filter = 2
+
+[node name="Layout" type="VBoxContainer" parent="Menu/RoleBlock"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Eyebrow" type="Label" parent="Menu/RoleBlock/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.73, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 11
+text = "首位自机"
+
+[node name="CharacterName" type="Label" parent="Menu/RoleBlock/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.91, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 26
+text = "博丽灵梦"
+
+[node name="Rule" type="TextureRect" parent="Menu/RoleBlock/Layout"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("10_divider")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Role" type="Label" parent="Menu/RoleBlock/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.71, 0.62, 1)
+theme_override_font_sizes/font_size = 11
+text = "博丽巫女  ·  阴阳玉"
+
+[node name="SettingsPanel" parent="." instance=ExtResource("4_settings")]
+visible = false
+
+[node name="ContentPackSelectionPanel" parent="." instance=ExtResource("5_content")]
+visible = false
+
+[node name="CompendiumPanel" parent="." instance=ExtResource("6_compendium")]
+visible = false
+
+[node name="CultivationPanel" parent="." instance=ExtResource("11_cultivation")]
+visible = false

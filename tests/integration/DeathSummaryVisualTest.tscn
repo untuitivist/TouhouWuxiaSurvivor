@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/integration/DeathSummaryVisualTest.cs" id="1_test"]
+
+[node name="DeathSummaryVisualTest" type="Node"]
+process_mode = 3
+script = ExtResource("1_test")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 640.0
+offset_bottom = 360.0
+mouse_filter = 2
+color = Color(0.055, 0.11, 0.075, 1)

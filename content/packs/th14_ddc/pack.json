@@ -1,0 +1,14 @@
+{
+  "id": "th14_ddc",
+  "number": 14,
+  "title_zh": "东方辉针城",
+  "title_en": "Double Dealing Character",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["暴风湖面", "付丧神云海", "逆转天"],
+    "structures": ["遗弃乐器堆", "雷鼓舞台", "辉针城"],
+    "enemies": ["水栖妖怪", "付丧神", "小人卫兵"],
+    "characters": ["若鹭姬", "赤蛮奇", "今泉影狼", "九十九弁弁", "九十九八桥", "鬼人正邪", "少名针妙丸", "堀川雷鼓"]
+  }
+}

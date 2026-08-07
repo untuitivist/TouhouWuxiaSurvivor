@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/actors/enemies/EnemyActor.cs" id="1_enemy"]
+[ext_resource type="Script" path="res://src/actors/enemies/EnemyVisualController.cs" id="2_visual"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enemy"]
+resource_local_to_scene = true
+radius = 6.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_touch"]
+resource_local_to_scene = true
+radius = 8.0
+
+[node name="EnemyActor" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_enemy")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("2_visual")
+
+[node name="Sprite" type="Sprite2D" parent="Visual"]
+texture_filter = 1
+region_enabled = true
+region_rect = Rect2(0, 0, 48, 48)
+
+[node name="FallbackLabel" type="Label" parent="Visual"]
+offset_left = -28.0
+offset_top = -8.0
+offset_right = 28.0
+offset_bottom = 8.0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.035, 0.025, 0.03, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 10
+text = "妖虫"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_enemy")
+
+[node name="TouchDamageArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TouchDamageArea"]
+shape = SubResource("CircleShape2D_touch")

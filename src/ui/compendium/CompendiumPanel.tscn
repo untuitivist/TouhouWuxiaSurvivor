@@ -1,0 +1,191 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/ui/compendium/CompendiumPanel.cs" id="1_panel"]
+[ext_resource type="Script" path="res://src/ui/compendium/CompendiumPreview.cs" id="2_preview"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="3_paper"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/preview_frame.png" id="4_frame"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="6_scroll"]
+
+[sub_resource type="StyleBoxTexture" id="StylePanel"]
+texture = ExtResource("6_scroll")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[node name="CompendiumPanel" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_panel")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.012, 0.01, 0.88)
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchor_left = 0.025
+anchor_top = 0.02
+anchor_right = 0.975
+anchor_bottom = 0.98
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="PaperTexture" type="TextureRect" parent="Panel"]
+modulate = Color(0.72, 0.78, 0.67, 0.18)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_paper")
+stretch_mode = 1
+
+[node name="Padding" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Header" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/Padding/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.96, 0.94, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+text = "幻想乡图鉴"
+
+[node name="Back" type="Button" parent="Panel/Padding/Layout/Header"]
+custom_minimum_size = Vector2(70, 28)
+layout_mode = 2
+text = "返回"
+
+[node name="InternalAssetNotice" type="Label" parent="Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.58, 0.42, 1)
+theme_override_font_sizes/font_size = 9
+text = "内部开发素材：含原作提取占位图，仅供内部验证，公开前将在对应素材目录替换"
+text_overrun_behavior = 3
+
+[node name="Filters" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SourceLabel" type="Label" parent="Panel/Padding/Layout/Filters"]
+layout_mode = 2
+text = "来源"
+vertical_alignment = 1
+
+[node name="SourceFilter" type="OptionButton" parent="Panel/Padding/Layout/Filters"]
+custom_minimum_size = Vector2(220, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Count" type="Label" parent="Panel/Padding/Layout/Filters"]
+custom_minimum_size = Vector2(56, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.69, 0.75, 0.67, 1)
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="CategoryTabs" type="TabBar" parent="Panel/Padding/Layout"]
+layout_mode = 2
+select_with_rmb = true
+
+[node name="Browser" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="EntryList" type="ItemList" parent="Panel/Padding/Layout/Browser"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+allow_reselect = true
+
+[node name="Details" type="MarginContainer" parent="Panel/Padding/Layout/Browser"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 8
+
+[node name="Layout" type="HBoxContainer" parent="Panel/Padding/Layout/Browser/Details"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Identity" type="VBoxContainer" parent="Panel/Padding/Layout/Browser/Details/Layout"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PreviewFrame" type="NinePatchRect" parent="Panel/Padding/Layout/Browser/Details/Layout/Identity"]
+custom_minimum_size = Vector2(120, 84)
+layout_mode = 2
+texture = ExtResource("4_frame")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="Preview" type="Control" parent="Panel/Padding/Layout/Browser/Details/Layout/Identity/PreviewFrame"]
+texture_filter = 1
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_preview")
+
+[node name="Heading" type="VBoxContainer" parent="Panel/Padding/Layout/Browser/Details/Layout/Identity"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="EntryTitle" type="Label" parent="Panel/Padding/Layout/Browser/Details/Layout/Identity/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.9, 0.66, 1)
+theme_override_font_sizes/font_size = 15
+text = "暂无条目"
+autowrap_mode = 0
+
+[node name="EntrySource" type="Label" parent="Panel/Padding/Layout/Browser/Details/Layout/Identity/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.79, 0.67, 1)
+text = "来源"
+autowrap_mode = 2
+
+[node name="Separator" type="VSeparator" parent="Panel/Padding/Layout/Browser/Details/Layout"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="EntryFacts" type="VBoxContainer" parent="Panel/Padding/Layout/Browser/Details/Layout"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 3

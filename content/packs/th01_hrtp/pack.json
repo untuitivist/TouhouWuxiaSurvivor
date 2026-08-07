@@ -1,0 +1,14 @@
+{
+  "id": "th01_hrtp",
+  "number": 1,
+  "title_zh": "东方灵异传",
+  "title_en": "Highly Responsive to Prayers",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["地狱遗迹", "魔界边境", "博丽神社遗迹"],
+    "structures": ["地狱门", "魔界门", "崩坏神社"],
+    "enemies": ["封印恶灵", "魔界邪眼", "阴阳玉怨灵"],
+    "characters": ["神玉", "幽幻魔眼", "伊莉斯", "萨丽爱尔", "魅魔", "菊理", "矜羯罗"]
+  }
+}

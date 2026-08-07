@@ -1,0 +1,14 @@
+{
+  "id": "th06_eosd",
+  "number": 6,
+  "title_zh": "东方红魔乡",
+  "title_en": "Embodiment of Scarlet Devil",
+  "status": "complete",
+  "selectable": true,
+  "additions": {
+    "biomes": ["雾之湖", "红魔馆领地", "巴瓦鲁魔法图书馆"],
+    "structures": ["雾湖小岛", "红魔馆", "大图书馆"],
+    "enemies": ["湖上妖精", "红雾妖虫", "使魔书灵"],
+    "characters": ["露米娅", "琪露诺", "红美铃", "帕秋莉·诺蕾姬", "十六夜咲夜", "蕾米莉亚·斯卡蕾特", "芙兰朵露·斯卡蕾特"]
+  }
+}
