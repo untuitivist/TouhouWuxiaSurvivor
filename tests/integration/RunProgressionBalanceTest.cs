@@ -21,6 +21,7 @@ public partial class RunProgressionBalanceTest : Node
             VerifySpiritValues();
             VerifyUpgradeCatalog();
             VerifyBuildAndModifiers();
+            VerifyEndlessCultivation();
             VerifyOffers();
             GD.Print("Run progression balance test passed.");
             GetTree().Quit();
@@ -73,32 +74,43 @@ public partial class RunProgressionBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认六项基础修炼与两张符卡的 ID、类型、分类和重数契约保持唯一且明确。
+    /// 确认有限、无尽与全作符卡三类升级的 ID、分类和重数契约保持唯一且明确。
     /// </summary>
     private static void VerifyUpgradeCatalog()
     {
-        RunUpgradeDefinition[] cultivation = RunUpgradeCatalog.All
-            .Where(item => item.Category != RunUpgradeCategory.SpellCard).ToArray();
+        RunUpgradeDefinition[] finite = RunUpgradeCatalog.All.Where(item =>
+            item.Category != RunUpgradeCategory.SpellCard && !item.IsRepeatable).ToArray();
+        RunUpgradeDefinition[] endless = RunUpgradeCatalog.All.Where(item =>
+            item.IsRepeatable).ToArray();
         RunUpgradeDefinition[] spellCards = RunUpgradeCatalog.All
             .Where(item => item.Category == RunUpgradeCategory.SpellCard).ToArray();
-        Require(cultivation.Length == 6 && spellCards.Length == 2,
-            "The pool must contain six cultivations and two spell cards.");
-        Require(RunUpgradeCatalog.All.Select(item => item.Id).Distinct().Count() == 8 &&
-            RunUpgradeCatalog.All.Select(item => item.Kind).Distinct().Count() == 8,
-            "Upgrade IDs and kinds must be unique.");
-        Require(cultivation.All(item => item.MaxRank == 5) &&
-            spellCards.All(item => item.MaxRank == 1 && item.Requirement is not null),
-            "Cultivations must use five ranks and spell cards one required rank.");
+        Require(finite.Length == 6 && endless.Length == 3 && spellCards.Length == 42,
+            "The pool does not contain the expected finite, endless, and spell upgrades.");
+        Require(RunUpgradeCatalog.All.Select(item => item.Id).Distinct().Count() ==
+                RunUpgradeCatalog.All.Count &&
+            finite.Concat(endless).Select(item => item.Kind).Distinct().Count() == 9,
+            "Upgrade IDs or cultivation effect kinds are duplicated.");
+        Require(finite.All(item => item.MaxRank == 5) &&
+            endless.All(item => item.MaxRank == int.MaxValue && item.Requirement is not null) &&
+            spellCards.All(item => item.MaxRank == 1 && item.Requirement is not null &&
+                item.RequiredContentPack is not null && item.SpellCardId is not null),
+            "Upgrade rank, requirement, or content ownership contract is incorrect.");
     }
 
     /// <summary>
-    /// 各应用一重升级并核对六项倍率，再确认满重定义拒绝第六次应用。
+    /// 先确认无尽修行受五重前置约束，再应用六项基础升级核对首重倍率和满重上限。
     /// </summary>
     private static void VerifyBuildAndModifiers()
     {
         var build = new RunBuildState();
-        foreach (RunUpgradeDefinition definition in RunUpgradeCatalog.All.Where(
-            item => item.Category != RunUpgradeCategory.SpellCard))
+        RunUpgradeDefinition[] endless = RunUpgradeCatalog.All.Where(
+            item => item.IsRepeatable).ToArray();
+        Require(endless.All(definition =>
+                !build.CanUpgrade(definition) && !build.Apply(definition)),
+            "Endless cultivation ignored its five-rank prerequisite.");
+
+        foreach (RunUpgradeDefinition definition in RunUpgradeCatalog.All.Where(item =>
+            item.Category != RunUpgradeCategory.SpellCard && !item.IsRepeatable))
         {
             Require(build.Apply(definition), $"Upgrade could not be applied: {definition.Id}");
         }
@@ -127,6 +139,34 @@ public partial class RunProgressionBalanceTest : Node
             Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.04f * 1.08f) &&
             Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.16f * 1.25f),
             "Permanent and in-run modifiers did not compose from stable bases.");
+    }
+
+    /// <summary>
+    /// 达到五重前置后反复修行并确认数值持续增长，证明有限武学全满后升级仍有意义。
+    /// </summary>
+    private static void VerifyEndlessCultivation()
+    {
+        var build = new RunBuildState();
+        RunUpgradeDefinition damage = RunUpgradeCatalog.GetRequiredByKind(
+            RunUpgradeKind.NeedleDamage);
+        RunUpgradeDefinition endless = RunUpgradeCatalog.GetRequiredByKind(
+            RunUpgradeKind.EndlessDamage);
+        for (int rank = 0; rank < damage.MaxRank; rank++)
+        {
+            Require(build.Apply(damage), "Could not reach endless damage prerequisite.");
+        }
+
+        var modifiers = new RunModifierState();
+        modifiers.Refresh(build);
+        int previous = modifiers.DamageBonus;
+        for (int rank = 0; rank < 1000; rank++)
+        {
+            Require(build.Apply(endless), "Repeatable cultivation rejected a valid rank.");
+        }
+
+        modifiers.Refresh(build);
+        Require(modifiers.DamageBonus > previous && build.CanUpgrade(endless),
+            "Endless cultivation stopped growing or became unavailable.");
     }
 
     /// <summary>

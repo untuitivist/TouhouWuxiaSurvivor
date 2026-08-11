@@ -16,6 +16,8 @@
     {"sourceId":"th14_ddc","category":"Character","name":"九十九八桥","asset":"th14/portraits/yatsuhashi.png","kind":"Portrait","variant":4},
     {"sourceId":"th14_ddc","category":"Character","name":"鬼人正邪","asset":"th14/portraits/seija.png","kind":"Portrait","variant":5},
     {"sourceId":"th14_ddc","category":"Character","name":"少名针妙丸","asset":"th14/portraits/shinmyoumaru.png","kind":"Portrait","variant":6},
-    {"sourceId":"th14_ddc","category":"Character","name":"堀川雷鼓","asset":"th14/portraits/raiko.png","kind":"Portrait","variant":7}
+    {"sourceId":"th14_ddc","category":"Character","name":"堀川雷鼓","asset":"th14/portraits/raiko.png","kind":"Portrait","variant":7},
+    {"sourceId":"th14_ddc","category":"SpellCard","name":"小槌「你给我变大吧」","asset":"th14/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th14_ddc","category":"SpellCard","name":"「Pristine Beat」","asset":"th14/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

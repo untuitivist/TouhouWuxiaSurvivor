@@ -4,7 +4,7 @@ using TouhouWuxiaSurvivor.Ecs.Core;
 namespace TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 
 /// <summary>
-/// 保存一颗玩家投射物的纯数据；高频更新不依赖 Godot 节点和信号。
+/// 保存一颗带阵营投射物的纯数据；高频更新不依赖 Godot 节点和信号。
 /// </summary>
 public struct ProjectileComponent
 {
@@ -17,7 +17,9 @@ public struct ProjectileComponent
         Vector2 velocity,
         int damage,
         float lifetime,
-        float radius)
+        float radius,
+        ProjectileFaction faction = ProjectileFaction.Player,
+        int visualVariant = 0)
     {
         Entity = entity;
         Position = position;
@@ -25,6 +27,8 @@ public struct ProjectileComponent
         Damage = damage;
         Lifetime = lifetime;
         Radius = radius;
+        Faction = faction;
+        VisualVariant = Math.Max(0, visualVariant);
     }
 
     /// <summary>获取投射物对应的实体句柄。</summary>
@@ -44,4 +48,10 @@ public struct ProjectileComponent
 
     /// <summary>获取用于圆形距离检测的投射物半径。</summary>
     public float Radius;
+
+    /// <summary>获取投射物的伤害阵营，碰撞系统不会允许同阵营误伤。</summary>
+    public ProjectileFaction Faction;
+
+    /// <summary>获取弹幕图集的稳定视觉变体，用于区分玩家弹和多种敌方弹幕。</summary>
+    public int VisualVariant;
 }

@@ -1,5 +1,6 @@
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Official;
 using TouhouWuxiaSurvivor.World.Tiles;
@@ -130,22 +131,32 @@ public static class CompendiumCatalog
     }
 
     /// <summary>
-    /// 将清单角色加入图鉴，并明确区分“已登记角色”和“已有运行时角色实现”。
+    /// 将清单角色加入图鉴，并从共享角色定义展示自机与 Boss 两套真实运行属性。
     /// </summary>
     private static void AddCharacterEntries(List<CompendiumEntry> entries, ContentPackDefinition source)
     {
         string sourceId = source.Number == 0 ? BaseSourceId : source.Id;
         foreach (ContentAddition character in source.Additions.Where(item => item.Category == "角色"))
         {
-            bool playable = source.Number == 0 && character.Name == "博丽灵梦";
-            string state = playable ? "当前可操作自机" : "内容目录角色，尚未制作运行时角色";
+            CharacterDefinition definition = CharacterCatalog.GetRequiredByDisplayName(
+                character.Name);
+            const string state = "可选自机 · 可作为角色 Boss";
             entries.Add(new CompendiumEntry(
                 CompendiumCategory.Character,
                 character.Name,
                 sourceId,
                 SourceLabel(source),
                 state,
-                [new("实现状态", state, true)],
+                [
+                    new("玩法身份", state, true),
+                    new("互斥规则", "选为本局自机时不进入本局 Boss 候选", true),
+                    new("自机生命", definition.PlayableProfile.MaxHealth.ToString("0")),
+                    new("自机身法", $"×{definition.PlayableProfile.MoveSpeedMultiplier:0.00}"),
+                    new("自机攻势", $"×{definition.PlayableProfile.AttackMultiplier:0.00}"),
+                    new("Boss 生命", definition.BossProfile.MaxHealth.ToString("0")),
+                    new("Boss 身法", definition.BossProfile.MoveSpeed.ToString("0")),
+                    new("Boss 触伤", definition.BossProfile.ContactDamage.ToString("0")),
+                ],
                 source.Number == 0
                     ? TileId.ShrineGrassBase
                     : OfficialWorldContentCatalog.GetByPack(source.Id)[0].BaseTile,

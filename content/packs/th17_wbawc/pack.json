@@ -10,5 +10,47 @@
     "structures": ["三途关卡", "兽组织战场", "灵长园"],
     "enemies": ["兽灵", "鹰灵", "埴轮兵"],
     "characters": ["戎璎花", "牛崎润美", "庭渡久侘歌", "吉吊八千慧", "杖刀偶磨弓", "埴安神袿姬", "骊驹早鬼"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th17_keiki_haniwa_creation",
+      "name": "「鬼形造形术」",
+      "short_name": "鬼形造形术",
+      "owner": "埴安神袿姬",
+      "canon": "official",
+      "source_note": "原作符卡：东方鬼形兽。",
+      "wuxia_style": "造形神功 · 鬼形兵阵",
+      "description": "敌群成势时塑出鬼形兵阵，对范围内目标发动齐攻。",
+      "effect": "area_burst",
+      "trigger": "crowd",
+      "power_cost": 85,
+      "cooldown_seconds": 7,
+      "effect_range": 304,
+      "damage": 13,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "spirit_gathering",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th17_saki_black_pegasus_meteor_shot",
+      "name": "劲疾技「Black Pegasus Meteor Shot」",
+      "short_name": "Black Pegasus Meteor Shot",
+      "owner": "骊驹早鬼",
+      "canon": "official",
+      "source_note": "原作符卡：东方鬼形兽。",
+      "wuxia_style": "黑马劲法 · 流星疾射",
+      "description": "锁定强敌后以黑马般的速度连续射出流星弹。",
+      "effect": "focused_volley",
+      "trigger": "single_target",
+      "power_cost": 80,
+      "cooldown_seconds": 5,
+      "effect_range": 640,
+      "damage": 12,
+      "target_count": 6,
+      "defense_seconds": 0,
+      "prerequisite": "wind_riding",
+      "minimum_rank": 3
+    }
+  ]
 }

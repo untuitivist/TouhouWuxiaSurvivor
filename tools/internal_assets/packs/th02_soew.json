@@ -8,7 +8,9 @@
     {"sourceId":"th02_soew","category":"Structure","name":"灵魔殿","asset":"th11/scenes/structure_palace_of_earth_spirits.png","kind":"Scene","variant":5,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH02 原作源；以 TH11 地灵殿结构代用。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th02_soew","category":"Enemy","name":"战车妖怪","asset":"th10/actors/kappa_scout.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th10_mof","reasonZh":"缺少 TH02 原作源；以 TH10 机械系河童轮廓代用。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th02_soew","category":"Enemy","name":"幻梦界魔石","asset":"th15/actors/purified_spirit.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH02 原作源；以 TH15 抽象灵体轮廓代用。","reviewStatus":"proxy-reviewed"},
-    {"sourceId":"th02_soew","category":"Enemy","name":"灵魔殿使魔","asset":"th06/actors/familiar_book_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH02 原作源；以 TH06 使魔型敌人代用。","reviewStatus":"proxy-reviewed"}
+    {"sourceId":"th02_soew","category":"Enemy","name":"灵魔殿使魔","asset":"th06/actors/familiar_book_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH02 原作源；以 TH06 使魔型敌人代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"SpellCard","name":"拟制「Evil Eye Sigma」","asset":"th11/bullet_atlas.png","kind":"BulletAtlas","variant":0,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH02 原作弹幕图集；以 TH11 地灵殿弹幕图集代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"SpellCard","name":"拟制「邪灵复仇炮」","asset":"th11/bullet_atlas.png","kind":"BulletAtlas","variant":1,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH02 原作弹幕图集；以 TH11 地灵殿弹幕图集代用。","reviewStatus":"proxy-reviewed"}
   ],
   "unavailableEntries": [
     {"sourceId":"th02_soew","category":"Character","name":"里香","reasonZh":"未提供 TH02 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},

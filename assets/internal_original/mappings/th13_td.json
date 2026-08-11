@@ -15,6 +15,8 @@
     {"sourceId":"th13_td","category":"Character","name":"苏我屠自古","asset":"th13/portraits/tojiko.png","kind":"Portrait","variant":3},
     {"sourceId":"th13_td","category":"Character","name":"物部布都","asset":"th13/portraits/futo.png","kind":"Portrait","variant":4},
     {"sourceId":"th13_td","category":"Character","name":"丰聪耳神子","asset":"th13/portraits/miko.png","kind":"Portrait","variant":5},
-    {"sourceId":"th13_td","category":"Character","name":"二岩猯藏","asset":"th13/portraits/mamizou.png","kind":"Portrait","variant":6}
+    {"sourceId":"th13_td","category":"Character","name":"二岩猯藏","asset":"th13/portraits/mamizou.png","kind":"Portrait","variant":6},
+    {"sourceId":"th13_td","category":"SpellCard","name":"秘宝「圣德太子的欧帕兹」","asset":"th13/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th13_td","category":"SpellCard","name":"七番胜负「野生的离岛」","asset":"th13/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

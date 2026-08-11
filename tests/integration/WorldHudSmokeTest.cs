@@ -1,5 +1,6 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Player;
+using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Settings;
 using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
@@ -12,13 +13,17 @@ namespace TouhouWuxiaSurvivor.Tests.Integration;
 public partial class WorldHudSmokeTest : Node
 {
     /// <summary>
-    /// 实例化真实游戏页，检查五格血条、受伤无敌、默认可见性、F3 默认键和调试层双向切换。
+    /// 实例化真实游戏页，检查角色血量、受伤无敌、默认可见性、F3 默认键和调试层双向切换。
     /// </summary>
     public override async void _Ready()
     {
+        WorldDemo? demo = null;
+        int exitCode = 0;
         try
         {
-            Node demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn").Instantiate();
+            demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
+                .Instantiate<WorldDemo>();
+            demo.PersistMetaProgression = false;
             AddChild(demo);
             var hud = demo.GetNode<WorldDebugHud>("WorldDebugHud");
             var status = hud.GetNode<Control>("StatusMargin");
@@ -31,11 +36,14 @@ public partial class WorldHudSmokeTest : Node
             var experienceBar = hud.GetNode<ProgressBar>(
                 "StatusMargin/Panel/Padding/Layout/ExperienceBar");
             var health = demo.GetNode<PlayerHealth>("Player/Health");
+            int expectedHealth = (int)MathF.Round(
+                demo.RunContext.CharacterSelection.Current.PlayableProfile.MaxHealth);
             Require(status.Visible && status.Size.Y <= 44.0f,
                 "Default HUD is not a compact visible status bar.");
-            Require(health.CurrentHealth == 5 && health.MaxHealth == 5 &&
-                Mathf.IsEqualApprox((float)healthBar.MaxValue, 5.0f),
-                "Player or compact health bar did not initialize with five health.");
+            Require(health.CurrentHealth == expectedHealth &&
+                health.MaxHealth == expectedHealth &&
+                Mathf.IsEqualApprox((float)healthBar.MaxValue, expectedHealth),
+                "Player or compact health bar did not initialize from the character profile.");
             Require(!hud.IsDebugVisible, "Debug overlay must be hidden by default.");
             Require(!hud.StatusText.Contains('\n'), "Status bar must remain a single line.");
             Require(levelValue.Text == "境界 1" &&
@@ -58,17 +66,27 @@ public partial class WorldHudSmokeTest : Node
             Require(health.ApplyDamage(1), "First player damage was not accepted.");
             Require(!health.ApplyDamage(1), "Invincibility did not reject immediate repeated damage.");
             await ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
-            Require(health.CurrentHealth == 4 && Mathf.IsEqualApprox((float)healthBar.Value, 4.0f) &&
-                healthValue.Text == "4/5", "Compact health bar did not follow player damage.");
+            int damagedHealth = expectedHealth - 1;
+            Require(health.CurrentHealth == damagedHealth &&
+                Mathf.IsEqualApprox((float)healthBar.Value, damagedHealth) &&
+                healthValue.Text == $"{damagedHealth}/{expectedHealth}",
+                "Compact health bar did not follow player damage.");
 
             GD.Print("World HUD smoke test passed.");
-            await WorldDemoTestCleanup.FreeAsync(this, demo);
-            GetTree().Quit();
         }
         catch (Exception exception)
         {
             GD.PushError(exception.ToString());
-            GetTree().Quit(1);
+            exitCode = 1;
+        }
+        finally
+        {
+            if (demo is not null)
+            {
+                await WorldDemoTestCleanup.FreeAsync(this, demo);
+            }
+
+            GetTree().Quit(exitCode);
         }
     }
 

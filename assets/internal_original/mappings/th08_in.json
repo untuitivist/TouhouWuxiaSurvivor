@@ -16,6 +16,8 @@
     {"sourceId":"th08_in","category":"Character","name":"铃仙·优昙华院·因幡","asset":"th08/portraits/reisen.png","kind":"Portrait","variant":4},
     {"sourceId":"th08_in","category":"Character","name":"八意永琳","asset":"th08/portraits/eirin.png","kind":"Portrait","variant":5},
     {"sourceId":"th08_in","category":"Character","name":"蓬莱山辉夜","asset":"th08/portraits/kaguya.png","kind":"Portrait","variant":6},
-    {"sourceId":"th08_in","category":"Character","name":"藤原妹红","asset":"th08/portraits/mokou.png","kind":"Portrait","variant":7}
+    {"sourceId":"th08_in","category":"Character","name":"藤原妹红","asset":"th08/portraits/mokou.png","kind":"Portrait","variant":7},
+    {"sourceId":"th08_in","category":"SpellCard","name":"神宝「蓬莱的玉枝 -梦色之乡-」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th08_in","category":"SpellCard","name":"蓬莱「凯风快晴 -Fujiyama Volcano-」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

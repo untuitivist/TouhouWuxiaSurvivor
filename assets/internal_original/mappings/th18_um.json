@@ -15,6 +15,8 @@
     {"sourceId":"th18_um","category":"Character","name":"玉造魅须丸","asset":"th18/portraits/misumaru.png","kind":"Portrait","variant":3},
     {"sourceId":"th18_um","category":"Character","name":"饭纲丸龙","asset":"th18/portraits/megumu.png","kind":"Portrait","variant":4},
     {"sourceId":"th18_um","category":"Character","name":"天弓千亦","asset":"th18/portraits/chimata.png","kind":"Portrait","variant":5},
-    {"sourceId":"th18_um","category":"Character","name":"姬虫百百世","asset":"th18/portraits/momoyo.png","kind":"Portrait","variant":6}
+    {"sourceId":"th18_um","category":"Character","name":"姬虫百百世","asset":"th18/portraits/momoyo.png","kind":"Portrait","variant":6},
+    {"sourceId":"th18_um","category":"SpellCard","name":"「献给无主的供物」","asset":"th18/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th18_um","category":"SpellCard","name":"蛊毒「Cannibalistic Insect」","asset":"th18/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

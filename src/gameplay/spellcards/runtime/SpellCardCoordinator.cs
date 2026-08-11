@@ -6,6 +6,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Content;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 
@@ -20,6 +21,7 @@ public partial class SpellCardCoordinator : Node
     private float _cooldownRemaining;
     private float _decisionCooldown;
     private bool _runEndBlocked;
+    private ContentPackSelection _content = ContentPackSelection.BaseOnly;
 
     [Export]
     public PackedScene? FantasySealOrbScene { get; set; }
@@ -41,7 +43,8 @@ public partial class SpellCardCoordinator : Node
         Node2D effects,
         SpiritDropSpawner spiritSpawner,
         RunBuildState build,
-        EcsCombatWorld? ecsWorld = null)
+        EcsCombatWorld? ecsWorld = null,
+        ContentPackSelection? content = null)
     {
         if (FantasySealOrbScene is null || SealingCircleScene is null)
         {
@@ -58,6 +61,7 @@ public partial class SpellCardCoordinator : Node
             ecsWorld);
         _spiritSpawner = spiritSpawner;
         _build = build;
+        _content = content ?? ContentPackSelectionService.Current;
         _spiritSpawner.SpiritCollected += GainFromSpirit;
     }
 
@@ -91,7 +95,7 @@ public partial class SpellCardCoordinator : Node
         }
 
         foreach (SpellCardDefinition card in GetUnlockedCards().OrderBy(
-            definition => definition.EffectKind == SpellCardEffectKind.EvilSealingCircle ? 0 : 1))
+            definition => definition.TriggerKind == SpellCardTriggerKind.Danger ? 0 : 1))
         {
             if (Power.CurrentPower < card.Combat.PowerCost ||
                 !_caster.ShouldAutoCast(card) || !_caster.TryCast(card) ||
@@ -126,8 +130,8 @@ public partial class SpellCardCoordinator : Node
             return [];
         }
 
-        return SpellCardCatalog.ReimuLoadout
-            .Where(card => _build.GetRank(card.UnlockKind) > 0)
+        return SpellCardCatalog.GetEnabled(_content)
+            .Where(card => _build.GetRank(card.UnlockUpgradeId) > 0)
             .ToArray();
     }
 

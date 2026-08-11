@@ -8,6 +8,8 @@
     {"sourceId":"th04_lls","category":"Structure","name":"梦幻馆","asset":"th06/scenes/structure_scarlet_mansion.png","kind":"Scene","variant":5,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH04 原作源；以 TH06 洋馆结构代用。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th04_lls","category":"Enemy","name":"梦幻花妖","asset":"th09/actors/sunflower_youkai.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作源；以 TH09 花妖敌人代用。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th04_lls","category":"Enemy","name":"幻想莲灵","asset":"th09/actors/soul_flower.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作源；以 TH09 花形灵体代用。","reviewStatus":"proxy-reviewed"},
-    {"sourceId":"th04_lls","category":"Enemy","name":"梦幻馆卫灵","asset":"th06/actors/familiar_book_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH04 原作源；以 TH06 洋馆使魔代用。","reviewStatus":"proxy-reviewed"}
+    {"sourceId":"th04_lls","category":"Enemy","name":"梦幻馆卫灵","asset":"th06/actors/familiar_book_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH04 原作源；以 TH06 洋馆使魔代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"SpellCard","name":"拟制「幻想乡之花」","asset":"th09/bullet_atlas.png","kind":"BulletAtlas","variant":0,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作弹幕图集；以 TH09 花映塚弹幕图集代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"SpellCard","name":"拟制「双重魔炮」","asset":"th09/bullet_atlas.png","kind":"BulletAtlas","variant":1,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作弹幕图集；以 TH09 花映塚弹幕图集代用。","reviewStatus":"proxy-reviewed"}
   ]
 }

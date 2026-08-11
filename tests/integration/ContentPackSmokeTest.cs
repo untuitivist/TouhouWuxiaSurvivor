@@ -83,7 +83,8 @@ public partial class ContentPackSmokeTest : Node
                 row.DetailsText.Contains("地区：", StringComparison.Ordinal) &&
                 row.DetailsText.Contains("结构：", StringComparison.Ordinal) &&
                 row.DetailsText.Contains("敌人：", StringComparison.Ordinal) &&
-                row.DetailsText.Contains("角色：", StringComparison.Ordinal),
+                row.DetailsText.Contains("角色：", StringComparison.Ordinal) &&
+                row.DetailsText.Contains("符卡：", StringComparison.Ordinal),
                 $"Package summary is incomplete: {definition.Id}");
             Require(row.Visible == (definition.Number >= 6),
                 $"Old-work default visibility is incorrect: {definition.Id}");

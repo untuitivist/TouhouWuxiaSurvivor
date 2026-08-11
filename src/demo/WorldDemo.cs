@@ -3,8 +3,10 @@ using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Session;
+using TouhouWuxiaSurvivor.Gameplay.Encounters;
 using TouhouWuxiaSurvivor.Gameplay.Meta.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Meta.Persistence;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
@@ -53,7 +55,15 @@ public partial class WorldDemo : Node2D
     private CharacterStatsOverlay? _stats;
     private SpellCardCoordinator? _spellCards;
     private RunFailureCoordinator? _runFailure;
+    private BossEncounterDirector? _bossEncounters;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
+    private RunContentContext? _runContext;
+
+    public RunContentContext RunContext => _runContext ?? throw new InvalidOperationException(
+        "Run content context is not ready.");
+
+    public BossEncounterDirector BossEncounters => _bossEncounters ?? throw new InvalidOperationException(
+        "Boss encounter director is not ready.");
 
     [Export]
     public long WorldSeed { get; set; } = 20260728;
@@ -101,6 +111,13 @@ public partial class WorldDemo : Node2D
         Node2D spiritDrops = _combatEntities.GetNode<Node2D>("SpiritDrops");
         Node2D spellEffects = _combatEntities.GetNode<Node2D>("SpellEffects");
         _content = ContentPackSelectionService.Current;
+        _runContext = new RunContentContext(_content, CharacterSelectionService.Current);
+        CharacterDefinition character = _runContext.CharacterSelection.Current;
+        _player.GetNode<PlayerVisualController>("Visual").ConfigureCharacter(character);
+        _player.MoveSpeed *= character.PlayableProfile.MoveSpeedMultiplier;
+        _health.ConfigureCharacterBase((int)MathF.Round(character.PlayableProfile.MaxHealth));
+        _autoShooter.Damage = Math.Max(1, (int)MathF.Round(
+            _autoShooter.Damage * character.PlayableProfile.AttackMultiplier));
         _generator = new WorldGenerator(unchecked((ulong)WorldSeed), _content);
         var renderer = new CompositeChunkRenderer(
             new ChunkTileMapRenderer(GetNode<TileMapLayer>("Ground")),
@@ -127,10 +144,13 @@ public partial class WorldDemo : Node2D
                 _spiritSpawner, _progression, bonuses, _spellCards),
             _map,
             _pauseMenu);
-        _progression.Configure(_levelUp, _map, _pauseMenu, _stats);
+        _progression.Configure(_levelUp, _map, _pauseMenu, _stats, _content);
         _player.ConfigureRunModifiers(_progression.Modifiers);
         _pickupSpawner.Configure(pickups);
         _ecsCombatWorld.Configure(_player, _health, _buffs, _progression.Modifiers);
+        _bossEncounters = new BossEncounterDirector { Name = "BossEncounterDirector" };
+        AddChild(_bossEncounters);
+        _bossEncounters.Configure(_ecsCombatWorld, _runContext, () => _player.Position);
         _enemySpawner.ConfigureEcs(_ecsCombatWorld);
         _pickupSpawner.ConfigureEcs(_ecsCombatWorld);
         _spiritSpawner.ConfigureEcs(_ecsCombatWorld);
@@ -146,7 +166,8 @@ public partial class WorldDemo : Node2D
             spellEffects,
             _spiritSpawner,
             _progression.Build,
-            _ecsCombatWorld);
+            _ecsCombatWorld,
+            _content);
         _audio.Configure(_player, _health, _autoShooter, _enemySpawner, _pickupSpawner);
         _enemySpawner.EnemyDefeated += _pickupSpawner.TrySpawnForEnemy;
         _enemySpawner.EnemyDefeated += _spiritSpawner.SpawnForEnemy;

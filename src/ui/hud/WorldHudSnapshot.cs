@@ -24,8 +24,8 @@ public sealed class WorldHudSnapshot
     public string ActiveBuffs { get; }
     public string ActiveContent { get; }
     public int Level { get; }
-    public int Experience { get; }
-    public int ExperienceToNext { get; }
+    public long Experience { get; }
+    public long ExperienceToNext { get; }
     public SpellCardRuntimeSnapshot SpellCards { get; }
 
     /// <summary>
@@ -47,8 +47,8 @@ public sealed class WorldHudSnapshot
         string activeBuffs,
         string activeContent,
         int level,
-        int experience,
-        int experienceToNext,
+        long experience,
+        long experienceToNext,
         SpellCardRuntimeSnapshot spellCards)
     {
         Seed = seed;

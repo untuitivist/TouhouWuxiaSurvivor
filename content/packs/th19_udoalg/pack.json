@@ -10,5 +10,47 @@
     "structures": ["兽道界碑", "地狱交易摊", "兽王竞技场"],
     "enemies": ["游荡兽灵", "市场怨灵", "组织战士"],
     "characters": ["孙美天", "三头慧之子", "天火人血枪", "豫母都日狭美", "日白残无"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th19_hisami_prisonbreak_stalker",
+      "name": "执行者「越狱跟踪狂」",
+      "short_name": "越狱跟踪狂",
+      "owner": "豫母都日狭美",
+      "canon": "official",
+      "source_note": "原作符卡：东方兽王园。",
+      "wuxia_style": "地狱追缉 · 越狱索命",
+      "description": "自动追缉多个逃逸目标，放出持续锁定的追踪弹。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 75,
+      "cooldown_seconds": 5.5,
+      "effect_range": 600,
+      "damage": 9,
+      "target_count": 9,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th19_zanmu_lost_sheep_kingdom",
+      "name": "「亡羊的王国」",
+      "short_name": "亡羊的王国",
+      "owner": "日白残无",
+      "canon": "official",
+      "source_note": "原作符卡：东方兽王园。",
+      "wuxia_style": "残无禅法 · 亡羊王土",
+      "description": "危急时展开亡羊王土，震伤近敌并短暂隔绝来袭伤害。",
+      "effect": "guard_field",
+      "trigger": "danger",
+      "power_cost": 90,
+      "cooldown_seconds": 9,
+      "effect_range": 240,
+      "damage": 13,
+      "target_count": 0,
+      "defense_seconds": 1.8,
+      "prerequisite": "hakurei_breathing",
+      "minimum_rank": 3
+    }
+  ]
 }

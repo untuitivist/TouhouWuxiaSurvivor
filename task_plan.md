@@ -2,22 +2,38 @@
 
 ## Current Goal - 2026-08-11
 
-Complete the TH01-TH20 DLC visual and runtime pipeline after the formal ECS combat replacement. Every work must use an independent declarative source manifest, shared runtime/compendium mapping, auditable original or explicitly declared proxy source, and inspected normalized output.
+Complete the five runtime content domains for base and TH01-TH20: biome, structure, ordinary enemy, character, and spell card. Every registered character is both playable and Boss-capable; the selected player character is excluded from the current run's Boss candidates by stable character ID. Spell cards remain build-only automatic techniques with no active input.
 
 ## Current Phase
 
-Complete - all-DLC original-asset pipeline and formal ECS regression verified.
+Complete - implementation, visual acceptance, full-suite verification, and the embedded-PCK beta export all passed.
 
 ## DLC Acceptance Criteria
 
-Each work must pass all four checks:
+Each work must pass all checks:
 
-- Content: biome, structure, enemy, character, spell-card/bullet additions are declared with correct ownership.
+- Content: biome, structure, enemy, character, and at least two spell cards are declared with stable ownership.
 - Assets: original source files are normalized and mapped without broken crops, blank frames, or blurred filtering.
-- Runtime: enabled DLC affects the formal game world, combat, compendium, and content-selection description.
+- Runtime: enabled DLC affects the formal game world, combat, character selection, Boss pool, build pool, compendium, and content-selection description.
+- Identity: every registered character can be selected as player and can be a Boss in other runs; the current player ID can never be selected as Boss.
+- Interaction: spell cards unlock through the run build and trigger automatically; no active spell-card action exists.
 - Visual: automated real-UI capture exists and is manually inspected for nonblank, complete, correctly framed output.
 
 ## Active Phases
+
+- [x] Lock the TH01-TH20 character and two-spell-card-per-work content matrix.
+- [x] Refactor content manifests, character definitions, and spell-card definitions into stable-ID catalogs.
+- [x] Add compact character selection and inject the selected definition into the real player runtime.
+- [x] Add a separate character Boss encounter pipeline and exclude the selected player ID before candidate selection.
+- [x] Make upgrades, automatic spell execution, compendium, and bullet visuals content-pack aware.
+- [x] Add all-work spell-card manifests, mappings, and honest proxy provenance for missing source packs.
+- [x] Add ordinary-enemy and character-Boss AI profiles with movement, attack, and phase decisions.
+- [x] Replace finite spawn/experience/upgrade assumptions with monotonic endless difficulty and progression functions.
+- [x] Make player and enemy projectile budgets evolve from sparse opening shots to bounded late-game danmaku.
+- [x] Run build, gameplay, selection, Boss, compendium, provenance, visual, encoding, and line-limit verification.
+- [x] After all acceptance checks pass, update version/changelog to `0.0.0-beta` and export one embedded-PCK Windows executable without deleting the existing alpha artifact.
+
+## Completed Foundation
 
 - [x] Commit ECS refactor baseline (`91ed4a1`).
 - [x] Audit the formal ECS visual regression and every borrowed combat-sheet reference.
@@ -36,6 +52,15 @@ Each work must pass all four checks:
 - [x] Run build, coverage, gameplay, visual, encoding, and line-limit audits.
 
 ## Current Errors
+
+- The first resumed status check targeted the outer workspace container instead of the nested Git project; all subsequent work is fixed to the inner `touhou-wuxia-survivor` directory.
+- A quoted `findstr` memory probe was split by `cmd.exe`; it produced no project evidence and will not be repeated.
+- A combined `findstr` planning-file read was rejected by quoting; direct independent file reads succeeded.
+- The first three-file planning update used an incorrect findings heading and was atomically rejected; no file was partially changed.
+- One `rg` alternation containing pipe characters was parsed by the outer shell; subsequent searches use separate `-e` arguments.
+- The first Godot test command over-escaped a path without spaces and passed a literal leading backslash to `cmd.exe`; the direct executable path succeeded.
+- The first post-refactor build failed only because two legacy spell tests still referenced removed per-card enum members; both tests now use stable catalog IDs and the next build passed.
+- A later parallel build caught `EcsCombatRenderer` while the AI worker was mid-edit and missing an out assignment; ownership was preserved and the worker was notified instead of applying a conflicting patch.
 
 - Initial commit command used a quoted message that the host shell split into pathspecs; retried with the ASCII message `refactor_combat_runtime_to_ecs` and committed successfully.
 - First asset-builder run crashed because the sandbox denied Godot's `user://logs`; approved user-directory access fixed it.

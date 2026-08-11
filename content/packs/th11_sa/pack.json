@@ -10,5 +10,47 @@
     "structures": ["嫉妒之桥", "旧都", "地灵殿"],
     "enemies": ["地底怨灵", "地狱鸦", "火车猫灵"],
     "characters": ["琪斯美", "黑谷山女", "水桥帕露西", "星熊勇仪", "古明地觉", "火焰猫燐", "灵乌路空", "古明地恋"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th11_utsuho_petaflare",
+      "name": "爆符「Petaflare」",
+      "short_name": "Petaflare",
+      "owner": "灵乌路空",
+      "canon": "official",
+      "source_note": "原作符卡：东方地灵殿。",
+      "wuxia_style": "核热神功 · 百万烈焰",
+      "description": "敌群逼近时释放核热爆发，对大范围目标造成高额伤害。",
+      "effect": "area_burst",
+      "trigger": "danger",
+      "power_cost": 100,
+      "cooldown_seconds": 9,
+      "effect_range": 352,
+      "damage": 18,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 3
+    },
+    {
+      "id": "th11_koishi_subterranean_rose",
+      "name": "「Subterranean Rose」",
+      "short_name": "Subterranean Rose",
+      "owner": "古明地恋",
+      "canon": "official",
+      "source_note": "原作符卡：东方地灵殿。",
+      "wuxia_style": "无意识心法 · 地底蔷薇",
+      "description": "无意识地标记多名敌人，蔷薇弹从死角追踪而至。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 80,
+      "cooldown_seconds": 6,
+      "effect_range": 580,
+      "damage": 10,
+      "target_count": 10,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 2
+    }
+  ]
 }

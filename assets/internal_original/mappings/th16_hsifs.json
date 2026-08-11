@@ -15,6 +15,8 @@
     {"sourceId":"th16_hsifs","category":"Character","name":"矢田寺成美","asset":"th16/portraits/narumi.png","kind":"Portrait","variant":3},
     {"sourceId":"th16_hsifs","category":"Character","name":"尔子田里乃","asset":"th16/portraits/satono.png","kind":"Portrait","variant":4},
     {"sourceId":"th16_hsifs","category":"Character","name":"丁礼田舞","asset":"th16/portraits/mai.png","kind":"Portrait","variant":5},
-    {"sourceId":"th16_hsifs","category":"Character","name":"摩多罗隐岐奈","asset":"th16/portraits/okina.png","kind":"Portrait","variant":6}
+    {"sourceId":"th16_hsifs","category":"Character","name":"摩多罗隐岐奈","asset":"th16/portraits/okina.png","kind":"Portrait","variant":6},
+    {"sourceId":"th16_hsifs","category":"SpellCard","name":"后符「秘神的后光」","asset":"th16/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th16_hsifs","category":"SpellCard","name":"里夏「Scorch by Hot Summer」","asset":"th16/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

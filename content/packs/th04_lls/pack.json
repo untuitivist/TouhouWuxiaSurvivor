@@ -10,5 +10,47 @@
     "structures": ["梦幻世界入口", "花田凉亭", "梦幻馆"],
     "enemies": ["梦幻花妖", "幻想莲灵", "梦幻馆卫灵"],
     "characters": ["奥莲姬", "胡桃", "艾丽", "幽香", "梦月", "幻月"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th04_yuuka_gensokyo_flower",
+      "name": "拟制「幻想乡之花」",
+      "short_name": "幻想乡之花",
+      "owner": "幽香",
+      "canon": "adapted_pre_spell_card",
+      "source_note": "原作无符卡规则，本作为武侠化拟制；取材自幽香的花弹与魔炮。",
+      "wuxia_style": "花间绝学 · 幻想盛放",
+      "description": "敌群成势时令花弹遍地绽放，对范围内敌人造成爆发伤害。",
+      "effect": "area_burst",
+      "trigger": "crowd",
+      "power_cost": 80,
+      "cooldown_seconds": 6.5,
+      "effect_range": 288,
+      "damage": 10,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "spirit_gathering",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th04_gengetsu_double_magic_cannon",
+      "name": "拟制「双重魔炮」",
+      "short_name": "双重魔炮",
+      "owner": "幻月",
+      "canon": "adapted_pre_spell_card",
+      "source_note": "原作无符卡规则，本作为武侠化拟制；取材自幻月与梦月联手的终局攻势。",
+      "wuxia_style": "双月合击 · 天魔双炮",
+      "description": "锁定强敌后由幻月主攻、梦月助阵，交错轰出两路集中魔炮。",
+      "effect": "focused_volley",
+      "trigger": "single_target",
+      "power_cost": 90,
+      "cooldown_seconds": 8,
+      "effect_range": 600,
+      "damage": 16,
+      "target_count": 4,
+      "defense_seconds": 0,
+      "prerequisite": "wind_riding",
+      "minimum_rank": 3
+    }
+  ]
 }

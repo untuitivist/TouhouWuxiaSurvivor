@@ -11,9 +11,9 @@ public sealed class CharacterStatsSnapshot
     public int CurrentHealth { get; }
     public int MaxHealth { get; }
     public int Level { get; }
-    public int Experience { get; }
-    public int ExperienceToNext { get; }
-    public int TotalExperience { get; }
+    public long Experience { get; }
+    public long ExperienceToNext { get; }
+    public long TotalExperience { get; }
     public int Damage { get; }
     public float FireInterval { get; }
     public float MoveSpeed { get; }
@@ -32,9 +32,9 @@ public sealed class CharacterStatsSnapshot
         int currentHealth,
         int maxHealth,
         int level,
-        int experience,
-        int experienceToNext,
-        int totalExperience,
+        long experience,
+        long experienceToNext,
+        long totalExperience,
         int damage,
         float fireInterval,
         float moveSpeed,

@@ -5,6 +5,7 @@ using TouhouWuxiaSurvivor.Ui.Compendium;
 using TouhouWuxiaSurvivor.Ui.Content;
 using TouhouWuxiaSurvivor.Ui.Settings;
 using TouhouWuxiaSurvivor.Ui.Meta;
+using TouhouWuxiaSurvivor.Content.Characters;
 
 namespace TouhouWuxiaSurvivor.Ui.Menu;
 
@@ -43,6 +44,7 @@ public partial class MainMenu : Control
         _cultivation.BackRequested += HideCultivation;
         _settings.BackRequested += HideSettings;
         _settings.Hide();
+        RefreshRoleBlock();
     }
 
     /// <summary>
@@ -114,4 +116,24 @@ public partial class MainMenu : Control
     /// 请求 Godot 正常结束游戏进程。
     /// </summary>
     private void Quit() => GetTree().Quit();
+
+    /// <summary>
+    /// 用共享角色选择刷新主菜单题签和基础倍率，长姓名按字符数缩小以保持单行不挤压山水区域。
+    /// </summary>
+    private void RefreshRoleBlock()
+    {
+        CharacterDefinition character = CharacterSelectionService.Current.Current;
+        Label name = GetNode<Label>("Menu/RoleBlock/Layout/CharacterName");
+        name.Text = character.DisplayName;
+        name.AddThemeFontSizeOverride("font_size", character.DisplayName.Length switch
+        {
+            <= 5 => 26,
+            <= 9 => 20,
+            _ => 15,
+        });
+        GetNode<Label>("Menu/RoleBlock/Layout/Role").Text =
+            $"生命 {character.PlayableProfile.MaxHealth:0}  ·  " +
+            $"身法 ×{character.PlayableProfile.MoveSpeedMultiplier:0.00}  ·  " +
+            $"攻势 ×{character.PlayableProfile.AttackMultiplier:0.00}";
+    }
 }

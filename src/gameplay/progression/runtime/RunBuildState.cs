@@ -7,27 +7,33 @@ namespace TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 /// </summary>
 public sealed class RunBuildState
 {
-    private readonly Dictionary<RunUpgradeKind, int> _ranks = [];
+    private readonly Dictionary<string, int> _ranks = new(StringComparer.Ordinal);
     public int TotalRanks => _ranks.Values.Sum();
 
     /// <summary>
     /// 返回指定升级当前重数，尚未获得的项目稳定返回零。
     /// </summary>
-    public int GetRank(RunUpgradeKind kind) => _ranks.GetValueOrDefault(kind);
+    public int GetRank(RunUpgradeKind kind) => GetRank(
+        RunUpgradeCatalog.GetRequiredByKind(kind).Id);
+
+    /// <summary>
+    /// 按稳定升级 ID 返回当前重数，使任意数量符卡不再占用一项编译期枚举值。
+    /// </summary>
+    public int GetRank(string upgradeId) => _ranks.GetValueOrDefault(upgradeId);
 
     /// <summary>
     /// 判断定义是否仍低于自身上限且满足前置修炼，供目录过滤可选项目。
     /// </summary>
     public bool CanUpgrade(RunUpgradeDefinition definition)
     {
-        if (GetRank(definition.Kind) >= definition.MaxRank)
+        if (!definition.IsRepeatable && GetRank(definition.Id) >= definition.MaxRank)
         {
             return false;
         }
 
         RunUpgradeRequirement? requirement = definition.Requirement;
         return requirement is null ||
-            GetRank(requirement.RequiredKind) >= requirement.MinimumRank;
+            GetRank(requirement.RequiredUpgradeId) >= requirement.MinimumRank;
     }
 
     /// <summary>
@@ -40,7 +46,7 @@ public sealed class RunBuildState
             return false;
         }
 
-        _ranks[definition.Kind] = GetRank(definition.Kind) + 1;
+        _ranks[definition.Id] = checked(GetRank(definition.Id) + 1);
         return true;
     }
 
@@ -50,10 +56,10 @@ public sealed class RunBuildState
     public string Describe()
     {
         string[] entries = RunUpgradeCatalog.All
-            .Where(definition => GetRank(definition.Kind) > 0)
+            .Where(definition => GetRank(definition.Id) > 0)
             .Select(definition => definition.Category == RunUpgradeCategory.SpellCard
                 ? definition.DisplayName
-                : $"{definition.DisplayName} {GetRank(definition.Kind)}重")
+                : $"{definition.DisplayName} {GetRank(definition.Id)}重")
             .ToArray();
         return entries.Length == 0 ? "尚未修习" : string.Join("、", entries);
     }

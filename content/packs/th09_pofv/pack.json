@@ -10,5 +10,47 @@
     "structures": ["铃兰花田", "无缘塚墓园", "太阳花园"],
     "enemies": ["铃兰毒灵", "魂花", "太阳花妖"],
     "characters": ["梅蒂欣·梅兰可莉", "小野塚小町", "四季映姬·夜摩仙那度"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th09_yuuka_gensokyo_bloom",
+      "name": "花符「幻想乡的开花」",
+      "short_name": "幻想乡的开花",
+      "owner": "幽香",
+      "canon": "official",
+      "source_note": "原作符卡：东方花映塚；角色身份沿用东方幻想乡登记的幽香。",
+      "wuxia_style": "花间秘法 · 百华齐放",
+      "description": "敌群密集时催开幻想花海，以范围爆发清扫周围目标。",
+      "effect": "area_burst",
+      "trigger": "crowd",
+      "power_cost": 70,
+      "cooldown_seconds": 5.5,
+      "effect_range": 304,
+      "damage": 9,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "spirit_gathering",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th09_eiki_last_judgement",
+      "name": "审判「Last Judgement」",
+      "short_name": "Last Judgement",
+      "owner": "四季映姬·夜摩仙那度",
+      "canon": "official",
+      "source_note": "原作符卡：东方花映塚。",
+      "wuxia_style": "净琉璃法 · 最终裁断",
+      "description": "锁定当前最强敌人，以净罪弹幕执行高伤害裁断。",
+      "effect": "focused_volley",
+      "trigger": "single_target",
+      "power_cost": 95,
+      "cooldown_seconds": 8.5,
+      "effect_range": 620,
+      "damage": 17,
+      "target_count": 4,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 3
+    }
+  ]
 }

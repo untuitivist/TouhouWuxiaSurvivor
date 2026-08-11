@@ -15,6 +15,8 @@
     {"sourceId":"th17_wbawc","category":"Character","name":"吉吊八千慧","asset":"th17/portraits/yachie.png","kind":"Portrait","variant":3},
     {"sourceId":"th17_wbawc","category":"Character","name":"杖刀偶磨弓","asset":"th17/portraits/mayumi.png","kind":"Portrait","variant":4},
     {"sourceId":"th17_wbawc","category":"Character","name":"埴安神袿姬","asset":"th17/portraits/keiki.png","kind":"Portrait","variant":5},
-    {"sourceId":"th17_wbawc","category":"Character","name":"骊驹早鬼","asset":"th17/portraits/saki.png","kind":"Portrait","variant":6}
+    {"sourceId":"th17_wbawc","category":"Character","name":"骊驹早鬼","asset":"th17/portraits/saki.png","kind":"Portrait","variant":6},
+    {"sourceId":"th17_wbawc","category":"SpellCard","name":"「鬼形造形术」","asset":"th17/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th17_wbawc","category":"SpellCard","name":"劲疾技「Black Pegasus Meteor Shot」","asset":"th17/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

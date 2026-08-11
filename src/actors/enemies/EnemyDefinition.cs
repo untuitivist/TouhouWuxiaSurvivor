@@ -18,6 +18,11 @@ public sealed class EnemyDefinition
     public IReadOnlyList<BiomeId> AllowedBiomes { get; }
     public bool ExplodesOnDeath { get; }
     public string? RequiredContentPack { get; }
+    public int ContactDamage { get; }
+    public EnemyAiProfile AiProfile { get; }
+    public EnemyProjectileProfile ProjectileProfile { get; }
+    public bool IsBoss { get; }
+    public string? CharacterId { get; }
 
     /// <summary>
     /// 构造一份经过目录集中管理的敌人定义，避免运行实体自行决定平衡参数。
@@ -33,7 +38,12 @@ public sealed class EnemyDefinition
         float dropChance,
         IReadOnlyList<BiomeId> allowedBiomes,
         bool explodesOnDeath = false,
-        string? requiredContentPack = null)
+        string? requiredContentPack = null,
+        int contactDamage = 1,
+        EnemyAiProfile? aiProfile = null,
+        EnemyProjectileProfile? projectileProfile = null,
+        bool isBoss = false,
+        string? characterId = null)
     {
         Archetype = archetype;
         DisplayName = displayName;
@@ -46,6 +56,11 @@ public sealed class EnemyDefinition
         AllowedBiomes = allowedBiomes;
         ExplodesOnDeath = explodesOnDeath;
         RequiredContentPack = requiredContentPack;
+        ContactDamage = Math.Max(1, contactDamage);
+        AiProfile = aiProfile ?? EnemyAiProfile.Chase;
+        ProjectileProfile = projectileProfile ?? EnemyProjectileProfile.None;
+        IsBoss = isBoss;
+        CharacterId = characterId;
     }
 
     /// <summary>

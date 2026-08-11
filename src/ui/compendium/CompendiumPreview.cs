@@ -226,7 +226,8 @@ public partial class CompendiumPreview : Control
         }
 
         Vector2 center = area.GetCenter();
-        if (_entry.SpellCard.EffectKind == SpellCardEffectKind.FantasySeal)
+        if (_entry.SpellCard.EffectKind is SpellCardEffectKind.HomingVolley or
+            SpellCardEffectKind.FocusedVolley)
         {
             Vector2 target = center + new Vector2(28.0f, 0.0f);
             DrawEntityText("妖", target, 12, new Color(0.92f, 0.78f, 0.72f));

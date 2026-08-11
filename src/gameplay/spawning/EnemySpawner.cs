@@ -3,6 +3,7 @@ using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Gameplay.Difficulty;
 using TouhouWuxiaSurvivor.World.Biomes;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
@@ -13,6 +14,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
 public partial class EnemySpawner : Node
 {
     private readonly RandomNumberGenerator _random = new();
+    private readonly Dictionary<EnemyDefinition, EnemyDefinition> _scaledDefinitions = new();
     private PlayerController? _player;
     private Node2D? _enemyContainer;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
@@ -21,6 +23,7 @@ public partial class EnemySpawner : Node
     private double _elapsedSeconds;
     private double _spawnCooldown;
     private double _cleanupCooldown;
+    private long _difficultyTier = -1L;
 
     [Export]
     public PackedScene? EnemyScene { get; set; }
@@ -54,6 +57,8 @@ public partial class EnemySpawner : Node
         _random.Randomize();
         _elapsedSeconds = 0.0;
         _spawnCooldown = 0.8;
+        _difficultyTier = -1L;
+        _scaledDefinitions.Clear();
         for (int index = 0; index < InitialSpawnCount; index++)
         {
             SpawnOne();
@@ -122,7 +127,9 @@ public partial class EnemySpawner : Node
 
         Vector2 spawnPosition = ChooseSpawnPosition();
         BiomeId biome = _biomeAtPosition?.Invoke(spawnPosition) ?? BiomeId.Common;
-        EnemyDefinition definition = EnemyCatalog.Choose(_random, _elapsedSeconds, biome, _content);
+        EnemyDefinition baseDefinition = EnemyCatalog.Choose(
+            _random, _elapsedSeconds, biome, _content);
+        EnemyDefinition definition = GetScaledDefinition(baseDefinition);
         if (_ecsWorld is not null)
         {
             _ecsWorld.SpawnEnemy(spawnPosition, definition);
@@ -141,6 +148,27 @@ public partial class EnemySpawner : Node
         enemy.Exploded += OnEnemyExploded;
         _enemyContainer.AddChild(enemy);
         enemy.GlobalPosition = spawnPosition;
+    }
+
+    /// <summary>
+    /// 在同一十秒档位复用缩放定义；进入新档位时丢弃旧缓存，使无尽数值持续增长且不累积缓存。
+    /// </summary>
+    private EnemyDefinition GetScaledDefinition(EnemyDefinition definition)
+    {
+        long tier = EnemyDifficultyScaler.GetTier(_elapsedSeconds);
+        if (tier != _difficultyTier)
+        {
+            _difficultyTier = tier;
+            _scaledDefinitions.Clear();
+        }
+
+        if (!_scaledDefinitions.TryGetValue(definition, out EnemyDefinition? scaled))
+        {
+            scaled = EnemyDifficultyScaler.Scale(definition, tier);
+            _scaledDefinitions.Add(definition, scaled);
+        }
+
+        return scaled;
     }
 
     /// <summary>

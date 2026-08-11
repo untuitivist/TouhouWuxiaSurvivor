@@ -10,5 +10,47 @@
     "structures": ["魔界都市门", "魔界中央广场", "万魔殿"],
     "enemies": ["魔界魔法阵", "魔界居民", "万魔殿使魔"],
     "characters": ["萨拉", "露易兹", "爱丽丝", "雪", "舞", "梦子", "神绮"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th05_yumeko_pandemonium_sword_array",
+      "name": "拟制「万魔殿剑阵」",
+      "short_name": "万魔殿剑阵",
+      "owner": "梦子",
+      "canon": "adapted_pre_spell_card",
+      "source_note": "原作无符卡规则，本作为武侠化拟制；取材自梦子的飞剑攻击。",
+      "wuxia_style": "魔界剑诀 · 万刃朝宗",
+      "description": "敌群进入剑围后召来魔界飞剑，分袭多个目标。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 75,
+      "cooldown_seconds": 5,
+      "effect_range": 500,
+      "damage": 8,
+      "target_count": 10,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th05_shinki_makai_creation",
+      "name": "拟制「魔界创世」",
+      "short_name": "魔界创世",
+      "owner": "神绮",
+      "canon": "adapted_pre_spell_card",
+      "source_note": "原作无符卡规则，本作为武侠化拟制；取材自神绮创造魔界的设定与终局弹幕。",
+      "wuxia_style": "创世神功 · 魔界开天",
+      "description": "危急时展开魔界领域，震伤周身敌人并短暂隔绝伤害。",
+      "effect": "guard_field",
+      "trigger": "danger",
+      "power_cost": 100,
+      "cooldown_seconds": 10,
+      "effect_range": 240,
+      "damage": 14,
+      "target_count": 0,
+      "defense_seconds": 2,
+      "prerequisite": "hakurei_breathing",
+      "minimum_rank": 3
+    }
+  ]
 }

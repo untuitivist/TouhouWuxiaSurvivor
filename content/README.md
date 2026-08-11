@@ -8,10 +8,17 @@ Each `packs/thXX_slug` directory is an isolated optional content package with th
 - `assets`: package-owned textures, audio, data, and scenes.
 - `pack.json`: identity, development state, and categorized incremental content.
 
-All integer-numbered packages from TH01 through TH20 are complete for the first runtime-content
-stage and selectable in the new-game list. Every package owns three generated biomes, three labeled
-structures, three regional enemies, and a representative-character catalog. Character catalog entries
-do not imply that those characters already have playable or boss implementations.
+All integer-numbered packages from TH01 through TH20 are complete across five runtime categories:
+biomes, structures, ordinary enemies, characters, and spell cards. Every package is independently
+selectable in the new-game list and owns three generated biomes, three labeled structures, three
+regional enemies, its declared character identities, and structured representative spell-card data.
+
+The shared character catalog normalizes the package declarations into 132 stable identities. Every
+identity uses one definition for both playable-character and character-boss roles; the selected player
+identity is excluded from the current run's boss candidates by stable ID, but remains boss-capable in
+other runs. The spell-card manifests provide 42 automatic build choices with owner, source, trigger,
+prerequisite, combat values, and internal preview mapping. TH01 through TH05 are explicitly marked as
+adaptations of pre-spell-card attack imagery, while later entries preserve their official-card boundary.
 Decimal-numbered official spin-offs are intentionally outside this main-series directory.
 
 The completed `base` manifest contains only setting-wide Gensokyo content. Locations and ecology

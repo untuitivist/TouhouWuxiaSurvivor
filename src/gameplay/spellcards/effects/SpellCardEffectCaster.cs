@@ -45,8 +45,10 @@ public sealed class SpellCardEffectCaster
     /// </summary>
     public bool TryCast(SpellCardDefinition card) => card.EffectKind switch
     {
-        SpellCardEffectKind.FantasySeal => CastFantasySeal(card),
-        SpellCardEffectKind.EvilSealingCircle => CastEvilSealingCircle(card),
+        SpellCardEffectKind.HomingVolley => CastTargetedVolley(card),
+        SpellCardEffectKind.FocusedVolley => CastTargetedVolley(card),
+        SpellCardEffectKind.AreaBurst => CastArea(card, false),
+        SpellCardEffectKind.GuardField => CastArea(card, true),
         _ => false,
     };
 
@@ -55,23 +57,21 @@ public sealed class SpellCardEffectCaster
     /// </summary>
     public bool ShouldAutoCast(SpellCardDefinition card)
     {
-        int nearby = card.EffectKind switch
+        int nearby = SelectInRangePositions(card.Combat.EffectRange).Count;
+        return card.TriggerKind switch
         {
-            SpellCardEffectKind.FantasySeal => SelectNearestPositions(
-                card.Combat.EffectRange, card.Combat.TargetCount).Count,
-            SpellCardEffectKind.EvilSealingCircle => SelectInRangePositions(
-                card.Combat.EffectRange).Count,
-            _ => 0,
+            SpellCardTriggerKind.Crowd => nearby >= 3,
+            SpellCardTriggerKind.Danger => nearby >= 3 ||
+                (nearby > 0 && _health.CurrentHealth * 2 <= _health.MaxHealth),
+            SpellCardTriggerKind.SingleTarget => nearby > 0,
+            _ => false,
         };
-        return nearby >= 3 ||
-            (card.EffectKind == SpellCardEffectKind.EvilSealingCircle &&
-                nearby > 0 && _health.CurrentHealth * 2 <= _health.MaxHealth);
     }
 
     /// <summary>
     /// 为射程内最近的不同目标各生成一枚追踪灵玉，并以环形起点避免视觉重叠。
     /// </summary>
-    private bool CastFantasySeal(SpellCardDefinition card)
+    private bool CastTargetedVolley(SpellCardDefinition card)
     {
         IReadOnlyList<Vector2> targets = SelectNearestPositions(
             card.Combat.EffectRange, card.Combat.TargetCount);
@@ -86,7 +86,8 @@ public sealed class SpellCardEffectCaster
             if (_ecsWorld is not null)
             {
                 var orb = _orbScene.Instantiate<FantasySealOrb>();
-                orb.ConfigureEcs(_ecsWorld, targets[index], card.Combat.Damage, 440.0f, index);
+                orb.ConfigureEcs(_ecsWorld, targets[index], card.Combat.Damage, 440.0f,
+                    index, card.SourcePackId, card.FullName);
                 _effects.AddChild(orb);
                 orb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
                 _ecsWorld.DamageEnemies(targets[index], 16.0f, card.Combat.Damage);
@@ -101,7 +102,8 @@ public sealed class SpellCardEffectCaster
             }
 
             var legacyOrb = _orbScene.Instantiate<FantasySealOrb>();
-            legacyOrb.Configure(target, card.Combat.Damage, 440.0f, index);
+            legacyOrb.Configure(target, card.Combat.Damage, 440.0f, index,
+                card.SourcePackId, card.FullName);
             _effects.AddChild(legacyOrb);
             legacyOrb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
         }
@@ -112,7 +114,7 @@ public sealed class SpellCardEffectCaster
     /// <summary>
     /// 对结界范围内全部存活敌人结算伤害、延长玩家无敌并生成一次结界演出。
     /// </summary>
-    private bool CastEvilSealingCircle(SpellCardDefinition card)
+    private bool CastArea(SpellCardDefinition card, bool grantDefense)
     {
         if (_ecsWorld is not null)
         {
@@ -130,8 +132,13 @@ public sealed class SpellCardEffectCaster
             }
         }
 
-        _health.GrantInvincibility(card.Combat.DefenseSeconds);
+        if (grantDefense && card.Combat.DefenseSeconds > 0.0f)
+        {
+            _health.GrantInvincibility(card.Combat.DefenseSeconds);
+        }
+
         var effect = _circleScene.Instantiate<SealingCircleEffect>();
+        effect.Configure(card.SourcePackId, card.FullName);
         _effects.AddChild(effect);
         effect.GlobalPosition = _player.GlobalPosition;
         return true;

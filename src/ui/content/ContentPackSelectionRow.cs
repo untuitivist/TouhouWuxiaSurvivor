@@ -20,6 +20,7 @@ public partial class ContentPackSelectionRow : VBoxContainer
     public bool DetailsVisible => _details?.Visible == true;
     public string HeaderText => _titleButton?.Text ?? string.Empty;
     public string DetailsText => _details?.Text ?? string.Empty;
+    public event Action? SelectionChanged;
 
     /// <summary>
     /// 根据内容定义构造复选框、可点击作品名和默认隐藏详情；本体保持勾选且不可取消。
@@ -41,6 +42,7 @@ public partial class ContentPackSelectionRow : VBoxContainer
             CustomMinimumSize = new Vector2(22.0f, 24.0f),
             TooltipText = isBase ? "幻想乡本体始终启用" : "勾选后加入本局内容",
         };
+        _selection.Toggled += OnSelectionToggled;
         header.AddChild(_selection);
 
         _titleButton = new Button
@@ -107,6 +109,11 @@ public partial class ContentPackSelectionRow : VBoxContainer
     /// </summary>
     public void ApplyOldWorkVisibility(bool showOldWorks) =>
         Visible = !IsOldWork || showOldWorks;
+
+    /// <summary>
+    /// 把复选框变化转发给父面板，使角色候选立即跟随启用作品刷新而不保存半成品快照。
+    /// </summary>
+    private void OnSelectionToggled(bool selected) => SelectionChanged?.Invoke();
 
     /// <summary>
     /// 生成折叠标题，只包含作品编号与名称，不泄漏状态或增量详情。

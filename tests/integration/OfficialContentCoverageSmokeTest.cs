@@ -1,6 +1,8 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Official;
 using TouhouWuxiaSurvivor.World.Structures;
@@ -8,14 +10,14 @@ using TouhouWuxiaSurvivor.World.Structures;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证 TH01 至 TH20 的清单、地区、结构和敌人都已注册、可生成并保持本体隔离。
+/// 验证 TH01 至 TH20 的地区、结构、敌人、角色和符卡均已注册，并保持运行时生成与本体隔离。
 /// </summary>
 public partial class OfficialContentCoverageSmokeTest : Node
 {
     private const ulong Seed = 20260728;
 
     /// <summary>
-    /// 逐作检查四层内容契约，并确认纯本体采样不会返回任何正作地区。
+    /// 逐作检查五类内容契约，并确认纯本体采样不会返回任何正作地区。
     /// </summary>
     public override void _Ready()
     {
@@ -24,6 +26,8 @@ public partial class OfficialContentCoverageSmokeTest : Node
             Require(ContentPackCatalog.All.Count == 20, "Manifest catalog must contain TH01-TH20.");
             Require(OfficialWorldContentCatalog.All.Count == 60,
                 "World catalog must contain three regions for every game.");
+            Require(SpellCardCatalog.All.Count >= ContentPackCatalog.All.Count * 2,
+                "Spell catalog must contain at least two cards for every official work.");
             foreach (ContentPackDefinition pack in ContentPackCatalog.All)
             {
                 VerifyPackage(pack);
@@ -82,14 +86,19 @@ public partial class OfficialContentCoverageSmokeTest : Node
             $"Package is not complete and selectable: {pack.Id}");
         IReadOnlyList<OfficialWorldContentDefinition> worlds =
             OfficialWorldContentCatalog.GetByPack(pack.Id);
-        Require(worlds.Count >= 3, $"Package has fewer than three regions: {pack.Id}");
+        Require(worlds.Count == 3, $"Package must have exactly three runtime regions: {pack.Id}");
+        Require(pack.Additions.Count(item => item.Category == "地区") == 3 &&
+            pack.Additions.Count(item => item.Category == "结构") == 3 &&
+            pack.Additions.Count(item => item.Category == "敌人") == 3,
+            $"Package must declare exactly three regions, structures and enemies: {pack.Id}");
         Require(worlds.All(world => HasAddition(pack, "地区", world.BiomeName) &&
                 HasAddition(pack, "结构", world.StructureName) &&
-                HasAddition(pack, "敌人", world.EnemyName)) &&
-            pack.Additions.Any(item => item.Category == "角色"),
+                HasAddition(pack, "敌人", world.EnemyName)),
             $"Manifest additions do not match all runtime regions: {pack.Id}");
 
         var selection = new ContentPackSelection([pack.Id]);
+        VerifyCharacters(pack, selection);
+        VerifySpellCards(pack);
         var biomes = new BiomeSelector(Seed, selection);
         var structures = new StructureLocator(Seed, biomes);
         HashSet<StructureId> generatedStructures = structures
@@ -104,6 +113,51 @@ public partial class OfficialContentCoverageSmokeTest : Node
             Require(EnemyCatalog.All.Any(enemy => enemy.RequiredContentPack == pack.Id &&
                 enemy.DisplayName == world.EnemyName && enemy.CanSpawnIn(world.Biome)),
                 $"Enemy did not register for its biome: {pack.Id}/{world.EnemyName}");
+        }
+    }
+
+    /// <summary>
+    /// 逐名回查作品清单角色，确认规范角色定义保留该来源，并同时具备可玩与 Boss 两套身份。
+    /// </summary>
+    private static void VerifyCharacters(
+        ContentPackDefinition pack,
+        ContentPackSelection selection)
+    {
+        ContentAddition[] additions = pack.Additions
+            .Where(item => item.Category == "角色").ToArray();
+        Require(additions.Length > 0, $"Package has no character additions: {pack.Id}");
+        IReadOnlySet<string> availableIds = CharacterCatalog.GetAvailable(selection)
+            .Select(character => character.CharacterId).ToHashSet(StringComparer.Ordinal);
+        foreach (ContentAddition addition in additions)
+        {
+            CharacterDefinition? character = CharacterCatalog.FindByDisplayName(addition.Name);
+            Require(character is not null && character.IsPlayable && character.IsBoss &&
+                character.AvailableSourcePackIds.Contains(pack.Id, StringComparer.Ordinal) &&
+                availableIds.Contains(character.CharacterId),
+                $"Manifest character is not a playable and boss-capable runtime definition: " +
+                $"{pack.Id}/{addition.Name}");
+        }
+    }
+
+    /// <summary>
+    /// 核对每部作品至少两张结构化符卡、选择页名称投影和合法角色归属，防止只做文字清单而无运行定义。
+    /// </summary>
+    private static void VerifySpellCards(ContentPackDefinition pack)
+    {
+        SpellCardDefinition[] cards = SpellCardCatalog.All
+            .Where(card => card.SourcePackId == pack.Id).ToArray();
+        HashSet<string> manifestNames = pack.Additions
+            .Where(item => item.Category == "符卡")
+            .Select(item => item.Name).ToHashSet(StringComparer.Ordinal);
+        Require(cards.Length >= 2 && manifestNames.Count >= 2,
+            $"Package must provide at least two spell cards: {pack.Id}");
+        foreach (SpellCardDefinition card in cards)
+        {
+            CharacterDefinition? owner = CharacterCatalog.FindById(card.OwnerCharacterId);
+            Require(manifestNames.Contains(card.FullName) && owner is not null &&
+                owner.IsPlayable && owner.IsBoss,
+                $"Spell card is missing its manifest projection or character owner: " +
+                $"{pack.Id}/{card.FullName}");
         }
     }
 

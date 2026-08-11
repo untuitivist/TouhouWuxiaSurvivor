@@ -8,6 +8,8 @@
     {"sourceId":"th19_udoalg","category":"Structure","name":"兽王竞技场","asset":"th19/scenes/structure_beast_king_arena.png","kind":"Scene","variant":5,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th19_udoalg","category":"Enemy","name":"游荡兽灵","asset":"th19/actors/wandering_animal_spirit.png","kind":"ActorStrip","variant":0},
     {"sourceId":"th19_udoalg","category":"Enemy","name":"市场怨灵","asset":"th19/actors/market_wraith.png","kind":"ActorStrip","variant":1},
-    {"sourceId":"th19_udoalg","category":"Enemy","name":"组织战士","asset":"th19/actors/organized_warrior.png","kind":"ActorStrip","variant":2}
+    {"sourceId":"th19_udoalg","category":"Enemy","name":"组织战士","asset":"th19/actors/organized_warrior.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th19_udoalg","category":"SpellCard","name":"执行者「越狱跟踪狂」","asset":"th19/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th19_udoalg","category":"SpellCard","name":"「亡羊的王国」","asset":"th19/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

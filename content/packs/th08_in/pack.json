@@ -10,5 +10,47 @@
     "structures": ["竹林古道", "永远亭", "伪月祭坛"],
     "enemies": ["竹叶妖", "月兔", "永夜虫"],
     "characters": ["莉格露·奈特巴格", "米斯蒂娅·萝蕾拉", "上白泽慧音", "因幡帝", "铃仙·优昙华院·因幡", "八意永琳", "蓬莱山辉夜", "藤原妹红"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th08_kaguya_hourai_jeweled_branch",
+      "name": "神宝「蓬莱的玉枝 -梦色之乡-」",
+      "short_name": "蓬莱的玉枝",
+      "owner": "蓬莱山辉夜",
+      "canon": "official",
+      "source_note": "原作符卡：东方永夜抄。",
+      "wuxia_style": "蓬莱宝术 · 梦色玉枝",
+      "description": "灵力充盈时以五色宝光锁定群敌，发射多枚追踪光玉。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 85,
+      "cooldown_seconds": 6,
+      "effect_range": 560,
+      "damage": 10,
+      "target_count": 9,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th08_mokou_fujiyama_volcano",
+      "name": "蓬莱「凯风快晴 -Fujiyama Volcano-」",
+      "short_name": "凯风快晴",
+      "owner": "藤原妹红",
+      "canon": "official",
+      "source_note": "原作符卡：东方永夜抄。",
+      "wuxia_style": "不死火法 · 富士喷薄",
+      "description": "敌群逼近时引爆不死之火，对大范围敌人造成猛烈灼伤。",
+      "effect": "area_burst",
+      "trigger": "danger",
+      "power_cost": 95,
+      "cooldown_seconds": 9,
+      "effect_range": 336,
+      "damage": 15,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 3
+    }
+  ]
 }

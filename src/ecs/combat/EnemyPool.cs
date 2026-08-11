@@ -15,11 +15,30 @@ public sealed class EnemyPool
     /// <summary>获取当前活跃敌人数量。</summary>
     public int Count => _items.Count;
 
-    /// <summary>添加一个由刷怪器选定定义的敌人。</summary>
-    public void Add(Vector2 position, EnemyDefinition definition)
+    /// <summary>获取仍存活的角色 Boss 数量，普通敌人与死亡反馈不会被计入。</summary>
+    public int AliveBossCount
     {
-        _items.Add(new EnemyComponent(
-            new EcsEntity(_nextEntityValue++), position, definition));
+        get
+        {
+            int count = 0;
+            for (int index = 0; index < _items.Count; index++)
+            {
+                if (_items[index].Alive && _items[index].Definition.IsBoss)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+    }
+
+    /// <summary>添加一个由刷怪器选定定义的敌人。</summary>
+    public EcsEntity Add(Vector2 position, EnemyDefinition definition)
+    {
+        var entity = new EcsEntity(_nextEntityValue++);
+        _items.Add(new EnemyComponent(entity, position, definition));
+        return entity;
     }
 
     /// <summary>按连续索引读取敌人数据。</summary>

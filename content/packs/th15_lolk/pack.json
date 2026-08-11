@@ -10,5 +10,47 @@
     "structures": ["月面传送门", "月都门", "静海前哨"],
     "enemies": ["月兔兵", "月都卫兵", "纯化灵"],
     "characters": ["清兰", "铃瑚", "哆来咪·苏伊特", "稀神探女", "克劳恩皮丝", "纯狐", "赫卡提亚·拉碧斯拉祖利"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th15_junko_pure_bullet_hell",
+      "name": "纯符「纯粹的弹幕地狱」",
+      "short_name": "纯粹的弹幕地狱",
+      "owner": "纯狐",
+      "canon": "official",
+      "source_note": "原作符卡：东方绀珠传。",
+      "wuxia_style": "纯化绝学 · 弹幕炼狱",
+      "description": "敌群密集时将弹幕纯化为高威力爆发，清扫大范围目标。",
+      "effect": "area_burst",
+      "trigger": "crowd",
+      "power_cost": 100,
+      "cooldown_seconds": 9,
+      "effect_range": 360,
+      "damage": 18,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 3
+    },
+    {
+      "id": "th15_hecatia_trinitarian_rhapsody",
+      "name": "「Trinitarian Rhapsody」",
+      "short_name": "Trinitarian Rhapsody",
+      "owner": "赫卡提亚·拉碧斯拉祖利",
+      "canon": "official",
+      "source_note": "原作符卡：东方绀珠传。",
+      "wuxia_style": "三界神通 · 狂想轮舞",
+      "description": "灵力充盈时驱动三界追弹，轮流锁定多名敌人。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 90,
+      "cooldown_seconds": 7,
+      "effect_range": 600,
+      "damage": 12,
+      "target_count": 12,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 3
+    }
+  ]
 }

@@ -41,6 +41,8 @@
     {"sourceId":"th06_eosd","category":"Character","name":"蕾米莉亚·斯卡蕾特","asset":"th06/portraits/remilia.png","kind":"Portrait","variant":5},
     {"sourceId":"th06_eosd","category":"Character","name":"芙兰朵露·斯卡蕾特","asset":"th06/portraits/flandre.png","kind":"Portrait","variant":6},
     {"sourceId":"th06_eosd","category":"SpellCard","name":"灵符「梦想封印」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":0},
-    {"sourceId":"th06_eosd","category":"SpellCard","name":"梦符「封魔阵」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":1}
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"梦符「封魔阵」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":1},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"红符「Scarlet Shoot」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":2},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"禁忌「莱瓦汀」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":3}
   ]
 }

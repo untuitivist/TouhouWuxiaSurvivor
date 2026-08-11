@@ -8,16 +8,15 @@ namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 /// </summary>
 public partial class InternalSpellBulletVisual : Sprite2D
 {
-    private const string SourceId = "th06_eosd";
     private readonly InternalVisualCatalog _catalog = new();
 
     /// <summary>
     /// 按符卡中文名和颜色变体配置 16×16 弹幕区域，资源缺失时隐藏自身交由文字节点显示。
     /// </summary>
-    public void Configure(string spellCardName, int variant)
+    public void Configure(string sourceId, string spellCardName, int variant)
     {
         if (!_catalog.TryGet(
-                SourceId, InternalVisualCategory.SpellCard, spellCardName, out var definition) ||
+                sourceId, InternalVisualCategory.SpellCard, spellCardName, out var definition) ||
             definition.Kind != InternalVisualKind.BulletAtlas ||
             !_catalog.TryGetTexture(definition, out Texture2D texture))
         {

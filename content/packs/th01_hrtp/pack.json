@@ -10,5 +10,47 @@
     "structures": ["地狱门", "魔界门", "崩坏神社"],
     "enemies": ["封印恶灵", "魔界邪眼", "阴阳玉怨灵"],
     "characters": ["神玉", "幽幻魔眼", "伊莉斯", "萨丽爱尔", "魅魔", "菊理", "矜羯罗"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th01_shingyoku_yinyang_trinity",
+      "name": "拟制「阴阳三相」",
+      "short_name": "阴阳三相",
+      "owner": "神玉",
+      "canon": "adapted_pre_spell_card",
+      "source_note": "原作无符卡规则，本作为武侠化拟制；取材自神玉的阴阳形态变化。",
+      "wuxia_style": "阴阳秘法 · 三相轮转",
+      "description": "灵力满溢时放出三轮阴阳追弹，依次锁定近处妖怪。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 70,
+      "cooldown_seconds": 5.5,
+      "effect_range": 480,
+      "damage": 7,
+      "target_count": 6,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th01_sariel_fallen_judgement",
+      "name": "拟制「堕天审判」",
+      "short_name": "堕天审判",
+      "owner": "萨丽爱尔",
+      "canon": "adapted_pre_spell_card",
+      "source_note": "原作无符卡规则，本作为武侠化拟制；取材自萨丽爱尔的终局弹幕。",
+      "wuxia_style": "堕天绝学 · 审判天光",
+      "description": "强敌逼近时聚起审判光束，集中贯穿当前最危险的目标。",
+      "effect": "focused_volley",
+      "trigger": "single_target",
+      "power_cost": 90,
+      "cooldown_seconds": 8,
+      "effect_range": 600,
+      "damage": 16,
+      "target_count": 3,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 3
+    }
+  ]
 }

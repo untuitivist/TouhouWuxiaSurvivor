@@ -31,7 +31,7 @@ public partial class VersionPolicyTest : Node
     }
 
     /// <summary>
-    /// 确认版本设置存在、读取器直接反映原始设置，并锁定当前开发版本为 0.0.0-alpha。
+    /// 确认版本设置存在、读取器直接反映原始设置，并锁定当前开发版本为 0.0.0-beta。
     /// </summary>
     private static void VerifyRuntimeSource()
     {
@@ -40,8 +40,8 @@ public partial class VersionPolicyTest : Node
         string configured = ProjectSettings.GetSetting(GameVersion.ProjectSettingPath).AsString();
         Require(GameVersion.Current == configured,
             "GameVersion does not reflect the project version setting.");
-        Require(configured == "0.0.0-alpha",
-            $"Current project version must be 0.0.0-alpha, found {configured}.");
+        Require(configured == "0.0.0-beta",
+            $"Current project version must be 0.0.0-beta, found {configured}.");
     }
 
     /// <summary>

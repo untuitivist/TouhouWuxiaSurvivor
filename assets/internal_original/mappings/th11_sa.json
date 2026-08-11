@@ -16,6 +16,8 @@
     {"sourceId":"th11_sa","category":"Character","name":"古明地觉","asset":"th11/portraits/satori.png","kind":"Portrait","variant":4},
     {"sourceId":"th11_sa","category":"Character","name":"火焰猫燐","asset":"th11/portraits/rin.png","kind":"Portrait","variant":5},
     {"sourceId":"th11_sa","category":"Character","name":"灵乌路空","asset":"th11/portraits/utsuho.png","kind":"Portrait","variant":6},
-    {"sourceId":"th11_sa","category":"Character","name":"古明地恋","asset":"th11/portraits/koishi.png","kind":"Portrait","variant":7}
+    {"sourceId":"th11_sa","category":"Character","name":"古明地恋","asset":"th11/portraits/koishi.png","kind":"Portrait","variant":7},
+    {"sourceId":"th11_sa","category":"SpellCard","name":"爆符「Petaflare」","asset":"th11/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th11_sa","category":"SpellCard","name":"「Subterranean Rose」","asset":"th11/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

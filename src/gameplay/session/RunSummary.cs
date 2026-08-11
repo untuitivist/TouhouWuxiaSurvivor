@@ -14,7 +14,7 @@ public sealed class RunSummary
     public string ActiveContent { get; }
     public ulong WorldSeed { get; }
     public int FinalLevel { get; }
-    public int TotalExperience { get; }
+    public long TotalExperience { get; }
     public string BuildSummary { get; }
     public int RewardEarned { get; }
     public int MoneyBalance { get; }
@@ -32,7 +32,7 @@ public sealed class RunSummary
         string activeContent,
         ulong worldSeed,
         int finalLevel,
-        int totalExperience,
+        long totalExperience,
         string buildSummary,
         int rewardEarned,
         int moneyBalance)

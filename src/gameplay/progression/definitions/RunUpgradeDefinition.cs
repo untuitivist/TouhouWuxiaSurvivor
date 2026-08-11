@@ -12,6 +12,9 @@ public sealed class RunUpgradeDefinition
     public int MaxRank { get; }
     public string EffectText { get; }
     public RunUpgradeRequirement? Requirement { get; }
+    public string? RequiredContentPack { get; }
+    public string? SpellCardId { get; }
+    public bool IsRepeatable { get; }
 
     /// <summary>
     /// 构造不可变升级定义，并限制至少一重，避免目录产生永远不可选择的项目。
@@ -23,7 +26,10 @@ public sealed class RunUpgradeDefinition
         RunUpgradeCategory category,
         int maxRank,
         string effectText,
-        RunUpgradeRequirement? requirement = null)
+        RunUpgradeRequirement? requirement = null,
+        string? requiredContentPack = null,
+        string? spellCardId = null,
+        bool isRepeatable = false)
     {
         Id = id;
         DisplayName = displayName;
@@ -32,6 +38,9 @@ public sealed class RunUpgradeDefinition
         MaxRank = Math.Max(1, maxRank);
         EffectText = effectText;
         Requirement = requirement;
+        RequiredContentPack = requiredContentPack;
+        SpellCardId = spellCardId;
+        IsRepeatable = isRepeatable;
     }
 
     /// <summary>
@@ -52,7 +61,7 @@ public sealed class RunUpgradeDefinition
     {
         string rankText = Category == RunUpgradeCategory.SpellCard
             ? "悟得"
-            : $"{currentRank + 1}/{MaxRank}";
+            : IsRepeatable ? $"第 {currentRank + 1} 重" : $"{currentRank + 1}/{MaxRank}";
         return $"{GetCategoryName()} · {DisplayName}    {rankText}\n{EffectText}";
     }
 }

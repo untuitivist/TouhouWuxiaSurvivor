@@ -10,5 +10,47 @@
     "structures": ["遗弃乐器堆", "雷鼓舞台", "辉针城"],
     "enemies": ["水栖妖怪", "付丧神", "小人卫兵"],
     "characters": ["若鹭姬", "赤蛮奇", "今泉影狼", "九十九弁弁", "九十九八桥", "鬼人正邪", "少名针妙丸", "堀川雷鼓"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th14_shinmyoumaru_grow_bigger",
+      "name": "小槌「你给我变大吧」",
+      "short_name": "你给我变大吧",
+      "owner": "少名针妙丸",
+      "canon": "official",
+      "source_note": "原作符卡：东方辉针城。",
+      "wuxia_style": "小槌秘术 · 万物膨胀",
+      "description": "敌群进入槌域时放大弹幕，以范围冲击碾压周围目标。",
+      "effect": "area_burst",
+      "trigger": "crowd",
+      "power_cost": 80,
+      "cooldown_seconds": 6.5,
+      "effect_range": 300,
+      "damage": 12,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "spirit_gathering",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th14_raiko_pristine_beat",
+      "name": "「Pristine Beat」",
+      "short_name": "Pristine Beat",
+      "owner": "堀川雷鼓",
+      "canon": "official",
+      "source_note": "原作符卡：东方辉针城。",
+      "wuxia_style": "雷鼓心法 · 原始律动",
+      "description": "危急时敲出原始节拍，震退近敌并以音障短暂护身。",
+      "effect": "guard_field",
+      "trigger": "danger",
+      "power_cost": 85,
+      "cooldown_seconds": 8,
+      "effect_range": 232,
+      "damage": 11,
+      "target_count": 0,
+      "defense_seconds": 1.6,
+      "prerequisite": "hakurei_breathing",
+      "minimum_rank": 3
+    }
+  ]
 }

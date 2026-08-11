@@ -38,6 +38,17 @@ public partial class PlayerHealth : Node
     }
 
     /// <summary>
+    /// 在世界组合阶段应用自机基础生命，随后局外加成仍以该角色数值为底而不会退回场景默认值。
+    /// </summary>
+    public void ConfigureCharacterBase(int maximumHealth)
+    {
+        _baseMaxHealth = Math.Clamp(maximumHealth, 1, 100);
+        MaxHealth = _baseMaxHealth;
+        CurrentHealth = MaxHealth;
+        HealthChanged?.Invoke(CurrentHealth, MaxHealth);
+    }
+
+    /// <summary>
     /// 幂等应用局外最大生命加成，并以相同差值补足当前生命，确保开局 HUD 立即一致。
     /// </summary>
     public void ConfigureMaximumHealthBonus(int bonus)

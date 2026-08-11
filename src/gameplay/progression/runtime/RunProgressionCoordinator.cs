@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.Ui.Pause;
@@ -14,6 +15,7 @@ public partial class RunProgressionCoordinator : Node
 {
     private readonly RandomNumberGenerator _random = new();
     private LevelUpOverlay? _overlay;
+    private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private bool _runEndBlocked;
 
     public RunProgressionState State { get; } = new();
@@ -27,12 +29,14 @@ public partial class RunProgressionCoordinator : Node
         LevelUpOverlay overlay,
         WorldMapOverlay map,
         PauseMenuOverlay pauseMenu,
-        CharacterStatsOverlay stats)
+        CharacterStatsOverlay stats,
+        ContentPackSelection? content = null)
     {
         _overlay = overlay;
         _overlay.Configure(map, pauseMenu, stats);
         _overlay.ChoiceSelected += OnChoiceSelected;
         State.Changed += OnProgressChanged;
+        _content = content ?? ContentPackSelectionService.Current;
         _random.Randomize();
     }
 
@@ -66,7 +70,7 @@ public partial class RunProgressionCoordinator : Node
         while (State.PendingChoices > 0)
         {
             IReadOnlyList<RunUpgradeDefinition> choices =
-                RunUpgradeCatalog.CreateOffer(_random, Build, 3);
+                RunUpgradeCatalog.CreateOffer(_random, Build, _content, 3);
             if (choices.Count > 0)
             {
                 _overlay!.Present(choices, Build, State.Level);

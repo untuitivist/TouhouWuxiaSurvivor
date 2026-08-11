@@ -20,9 +20,12 @@ public sealed class EcsCombatRenderer
 
     public int LastMappedEnemyCount { get; private set; }
     public int LastFallbackEnemyCount { get; private set; }
+    public int LastMappedBossCount { get; private set; }
+    public int LastFallbackBossCount { get; private set; }
     public int LastPickupIconCount { get; private set; }
     public int LastSpiritIconCount { get; private set; }
     public int LastProjectileIconCount { get; private set; }
+    public int LastEnemyProjectileIconCount { get; private set; }
 
     /// <summary>
     /// 从共享内部清单加载东方道具、红魔乡弹幕图集和默认字体，不直接持有资源路径。
@@ -53,21 +56,16 @@ public sealed class EcsCombatRenderer
         ProjectilePool projectiles,
         double animationTime)
     {
-        LastMappedEnemyCount = 0;
-        LastFallbackEnemyCount = 0;
-        LastPickupIconCount = 0;
-        LastSpiritIconCount = 0;
-        LastProjectileIconCount = 0;
+        LastMappedEnemyCount = LastFallbackEnemyCount = 0;
+        LastMappedBossCount = LastFallbackBossCount = 0;
+        LastPickupIconCount = LastSpiritIconCount = 0;
+        LastProjectileIconCount = LastEnemyProjectileIconCount = 0;
         foreach (PickupComponent pickup in pickups)
-        {
             DrawPickup(canvas, pickup);
-        }
 
         enemies.ForEach(enemy => DrawEnemy(canvas, enemy, animationTime));
         foreach (SpiritComponent spirit in spirits)
-        {
             DrawSpirit(canvas, spirit);
-        }
 
         projectiles.ForEach(projectile => DrawProjectile(canvas, projectile));
     }
@@ -80,6 +78,12 @@ public sealed class EcsCombatRenderer
         if (!enemy.Alive)
         {
             DrawText(canvas, enemy.Position, "消散", new Color("c5c5bf"));
+            return;
+        }
+
+        if (enemy.Definition.IsBoss)
+        {
+            DrawBoss(canvas, enemy, animationTime);
             return;
         }
 
@@ -108,6 +112,87 @@ public sealed class EcsCombatRenderer
             : Colors.White;
         canvas.DrawTextureRectRegion(texture, destination, source, modulate);
         LastMappedEnemyCount++;
+    }
+
+    /// <summary>
+    /// 使用角色分类映射绘制 Boss；支持四帧 ActorStrip 与完整 Portrait，两者缺失时回退中文名并始终绘制紧凑血条。
+    /// </summary>
+    private void DrawBoss(Node2D canvas, EnemyComponent enemy, double animationTime)
+    {
+        if (!TryResolveBossVisual(enemy.Definition, out InternalVisualDefinition visual) ||
+            !_visuals.TryGetTexture(visual, out Texture2D texture))
+        {
+            DrawText(canvas, enemy.Position, enemy.Definition.DisplayName,
+                new Color("ffd6e6"), 11, 72.0f);
+            LastFallbackBossCount++;
+            DrawBossHealth(canvas, enemy);
+            return;
+        }
+
+        const float drawSize = 48.0f;
+        var destination = new Rect2(
+            (enemy.Position - Vector2.One * drawSize * 0.5f).Round(),
+            Vector2.One * drawSize);
+        Color modulate = enemy.HurtTime > 0.0f
+            ? new Color(1.0f, 0.45f, 0.45f)
+            : Colors.White;
+        if (visual.Kind == InternalVisualKind.ActorStrip)
+        {
+            int frame = (int)(animationTime * 6.0 + visual.Variant) & 3;
+            Vector2 textureSize = texture.GetSize();
+            float frameWidth = textureSize.X / 4.0f;
+            canvas.DrawTextureRectRegion(texture, destination,
+                new Rect2(frame * frameWidth, 0.0f, frameWidth, textureSize.Y), modulate);
+        }
+        else
+        {
+            canvas.DrawTextureRect(texture, GetAspectFitRect(texture, enemy.Position, drawSize),
+                false, modulate);
+        }
+
+        LastMappedBossCount++;
+        DrawBossHealth(canvas, enemy);
+    }
+
+    /// <summary>查询角色 Boss 的共享视觉定义，只接受适合运行时绘制的立绘或四帧角色条。</summary>
+    public bool TryResolveBossVisual(
+        TouhouWuxiaSurvivor.Actors.Enemies.EnemyDefinition definition,
+        out InternalVisualDefinition visual)
+    {
+        visual = null!;
+        string sourceId = definition.RequiredContentPack ?? BaseSourceId;
+        return definition.IsBoss &&
+            _visuals.TryGet(sourceId, InternalVisualCategory.Character,
+                definition.DisplayName, out visual) &&
+            visual.Kind is InternalVisualKind.ActorStrip or InternalVisualKind.Portrait;
+    }
+
+    /// <summary>在 Boss 头顶绘制固定宽度生命条，血量变化不会挤占 HUD 或改变实体版式。</summary>
+    private static void DrawBossHealth(Node2D canvas, EnemyComponent enemy)
+    {
+        const float width = 48.0f;
+        const float height = 4.0f;
+        float ratio = Mathf.Clamp(enemy.Health /
+            (float)Math.Max(1, enemy.Definition.MaxHealth), 0.0f, 1.0f);
+        Vector2 origin = (enemy.Position + new Vector2(-width * 0.5f,
+            -enemy.Definition.CollisionRadius - 12.0f)).Round();
+        canvas.DrawRect(new Rect2(origin, new Vector2(width, height)),
+            new Color("151719"));
+        canvas.DrawRect(new Rect2(origin + Vector2.One,
+            new Vector2((width - 2.0f) * ratio, height - 2.0f)),
+            new Color("d84a57"));
+    }
+
+    /// <summary>把完整立绘按原始宽高比缩入固定方形范围，避免裁掉半身或把角色强行拉伸。</summary>
+    private static Rect2 GetAspectFitRect(
+        Texture2D texture,
+        Vector2 center,
+        float maximumSize)
+    {
+        Vector2 sourceSize = texture.GetSize();
+        float scale = maximumSize / Math.Max(1.0f, Math.Max(sourceSize.X, sourceSize.Y));
+        Vector2 size = (sourceSize * scale).Round();
+        return new Rect2((center - size * 0.5f).Round(), size);
     }
 
     /// <summary>
@@ -160,20 +245,28 @@ public sealed class EcsCombatRenderer
         }
     }
 
-    /// <summary>从红魔乡弹幕图集选择一枚 16 像素灵弹，并缩放到稳定的八像素显示尺寸。</summary>
+    /// <summary>从内部弹幕图集选择阵营与变体对应的灵弹，并缩放到稳定的八像素显示尺寸。</summary>
     private void DrawProjectile(Node2D canvas, ProjectileComponent projectile)
     {
         var destination = new Rect2(
             (projectile.Position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
         if (_bulletAtlas is not null)
         {
+            int column = projectile.Faction == ProjectileFaction.Player
+                ? 1
+                : 3 + projectile.VisualVariant % 4;
             canvas.DrawTextureRectRegion(
-                _bulletAtlas, destination, new Rect2(16.0f, 32.0f, 16.0f, 16.0f));
+                _bulletAtlas, destination, new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f));
             LastProjectileIconCount++;
+            if (projectile.Faction == ProjectileFaction.Enemy)
+                LastEnemyProjectileIconCount++;
         }
         else
         {
-            canvas.DrawRect(destination, new Color("f4df7d"));
+            Color fallback = projectile.Faction == ProjectileFaction.Player
+                ? new Color("f4df7d")
+                : new Color("ef7898");
+            canvas.DrawRect(destination, fallback);
         }
     }
 

@@ -78,8 +78,26 @@ layout_mode = 2
 tooltip_text = "显示 PC-98 时期的 TH01 至 TH05"
 text = "显示旧作"
 
+[node name="CharacterSelection" type="HBoxContainer" parent="Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Caption" type="Label" parent="Panel/Padding/Layout/CharacterSelection"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 11
+text = "自机"
+vertical_alignment = 1
+
+[node name="CharacterChoice" type="OptionButton" parent="Panel/Padding/Layout/CharacterSelection"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "本局使用角色"
+
 [node name="Scroll" type="ScrollContainer" parent="Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 190)
+custom_minimum_size = Vector2(0, 158)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0

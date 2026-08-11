@@ -1,5 +1,6 @@
 using Godot;
 using System.Text.Json;
+using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Ui.Compendium;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
@@ -31,6 +32,7 @@ public partial class InternalAssetProvenanceTest : Node
                 ReadEntries(BuildPath, BuildRoot, "unavailableEntries");
             VerifyProxies(mappings, proxies);
             VerifyUnavailable(mappings, unavailable);
+            VerifyOfficialFiveCategoryCoverage(mappings, unavailable);
             GD.Print($"Internal asset provenance test passed: " +
                 $"{proxies.Count} proxies, {unavailable.Count} unavailable entries.");
             GetTree().Quit();
@@ -94,6 +96,43 @@ public partial class InternalAssetProvenanceTest : Node
                 $"Unavailable declaration has no compendium entry: {identity}.");
             Require(!mappings.ContainsKey(identity),
                 $"Unavailable declaration also has a runtime mapping: {identity}.");
+        }
+    }
+
+    /// <summary>
+    /// 以 TH01 至 TH20 图鉴为权威集合，要求五类内容逐项拥有唯一运行时映射或明确暂缺声明，禁止整包静默漏接。
+    /// </summary>
+    private static void VerifyOfficialFiveCategoryCoverage(
+        IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> mappings,
+        IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> unavailable)
+    {
+        IReadOnlySet<string> packIds = ContentPackCatalog.All
+            .Select(pack => pack.Id).ToHashSet(StringComparer.Ordinal);
+        var categories = new HashSet<CompendiumCategory>
+        {
+            CompendiumCategory.Biome,
+            CompendiumCategory.Structure,
+            CompendiumCategory.Enemy,
+            CompendiumCategory.Character,
+            CompendiumCategory.SpellCard,
+        };
+        CompendiumEntry[] expected = CompendiumCatalog.All
+            .Where(entry => packIds.Contains(entry.SourceId) && categories.Contains(entry.Category))
+            .ToArray();
+        foreach (ContentPackDefinition pack in ContentPackCatalog.All)
+        {
+            CompendiumEntry[] entries = expected.Where(entry => entry.SourceId == pack.Id).ToArray();
+            Require(categories.All(category => entries.Any(entry => entry.Category == category)),
+                $"Official pack is missing a five-category compendium group: {pack.Id}.");
+            foreach (CompendiumEntry entry in entries)
+            {
+                string identity = Identity(entry.SourceId, entry.Category.ToString(), entry.Name);
+                bool mapped = mappings.ContainsKey(identity);
+                bool declaredUnavailable = unavailable.ContainsKey(identity);
+                Require(mapped != declaredUnavailable,
+                    $"Official visual identity must have exactly one mapping or unavailable declaration: " +
+                    identity);
+            }
         }
     }
 

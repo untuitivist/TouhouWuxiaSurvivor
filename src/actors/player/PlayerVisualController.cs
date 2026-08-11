@@ -1,10 +1,11 @@
 using Godot;
+using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Visuals.Internal;
 
 namespace TouhouWuxiaSurvivor.Actors.Player;
 
 /// <summary>
-/// 在实际局内呈现灵梦内部素材，并统一处理移动朝向、强化标记、受伤闪烁与死亡反馈。
+/// 在实际局内呈现当前自机的内部素材或中文名，并统一处理朝向、强化、受伤与死亡反馈。
 /// </summary>
 public partial class PlayerVisualController : Node2D
 {
@@ -15,22 +16,22 @@ public partial class PlayerVisualController : Node2D
     private bool _moving;
     private double _motionTime;
     private int _currentFrame = -1;
+    private CharacterDefinition _character = CharacterCatalog.Default;
+    private bool _portraitMode;
 
     public bool UsesSprite { get; private set; }
     public bool IsArmedVisible => _armedEffect?.Visible ?? false;
-    public string DisplayName => "博丽灵梦";
+    public string DisplayName => _character.DisplayName;
 
     /// <summary>
-    /// 加载灵梦内部角色图；公开包不含内部素材时自动保留中文名作为玩家视觉。
+    /// 获取视觉节点并应用菜单选定角色；缺少内部素材时自动保留完整中文名。
     /// </summary>
     public override void _Ready()
     {
         _sprite = GetNode<Sprite2D>("Sprite");
         _fallbackName = GetNode<Label>("FallbackName");
         _armedEffect = GetNode<Label>("ArmedEffect");
-        UsesSprite = TryLoadReimuTexture();
-        _sprite.Visible = UsesSprite;
-        _fallbackName.Visible = !UsesSprite;
+        ApplyCharacterVisual();
         Modulate = Colors.White;
         SetArmed(false);
         UpdateFrame();
@@ -49,6 +50,18 @@ public partial class PlayerVisualController : Node2D
     }
 
     /// <summary>
+    /// 注入本局选择的共享角色定义，并立即切换原作映射或中文回退，不复制角色身份字段。
+    /// </summary>
+    public void ConfigureCharacter(CharacterDefinition character)
+    {
+        _character = character ?? throw new ArgumentNullException(nameof(character));
+        if (_sprite is not null && _fallbackName is not null)
+        {
+            ApplyCharacterVisual();
+        }
+    }
+
+    /// <summary>
     /// 移动时按固定八帧每秒播放原作四帧行走条，停止时稳定停在第一帧。
     /// </summary>
     public override void _Process(double delta)
@@ -59,6 +72,13 @@ public partial class PlayerVisualController : Node2D
         }
 
         _motionTime = _moving ? _motionTime + delta : 0.0;
+        if (_portraitMode)
+        {
+            _sprite.Position = new Vector2(0.0f,
+                MathF.Sin((float)_motionTime * 7.0f) * (_moving ? 1.5f : 0.0f));
+            return;
+        }
+
         UpdateFrame();
     }
 
@@ -90,13 +110,16 @@ public partial class PlayerVisualController : Node2D
     }
 
     /// <summary>
-    /// 从共享内部清单读取本体灵梦四帧角色条，并固定为最近邻区域采样避免像素模糊。
+    /// 从共享清单读取当前角色动画条或立绘，并固定最近邻采样；缺失映射时返回 false。
     /// </summary>
-    private bool TryLoadReimuTexture()
+    private bool TryLoadCharacterTexture()
     {
         if (!VisualCatalog.TryGet(
-                "base", InternalVisualCategory.Character, "博丽灵梦", out var definition) ||
-            definition.Kind != InternalVisualKind.ActorStrip ||
+                _character.SourcePackId,
+                InternalVisualCategory.Character,
+                _character.DisplayName,
+                out var definition) ||
+            definition.Kind is not (InternalVisualKind.ActorStrip or InternalVisualKind.Portrait) ||
             !VisualCatalog.TryGetTexture(definition, out Texture2D texture))
         {
             return false;
@@ -104,8 +127,30 @@ public partial class PlayerVisualController : Node2D
 
         _sprite!.Texture = texture;
         _sprite.TextureFilter = TextureFilterEnum.Nearest;
-        _sprite.RegionEnabled = true;
+        _portraitMode = definition.Kind == InternalVisualKind.Portrait;
+        _sprite.RegionEnabled = !_portraitMode;
+        _sprite.Scale = Vector2.One * (_portraitMode ? 0.44f : 0.7f);
         return true;
+    }
+
+    /// <summary>
+    /// 将角色姓名、字体和纹理模式原子应用到现有节点，缺图时完整显示中文名而不是空白角色。
+    /// </summary>
+    private void ApplyCharacterVisual()
+    {
+        _portraitMode = false;
+        _currentFrame = -1;
+        _fallbackName!.Text = _character.DisplayName;
+        _fallbackName.AddThemeFontSizeOverride("font_size", _character.DisplayName.Length switch
+        {
+            <= 5 => 12,
+            <= 9 => 9,
+            _ => 7,
+        });
+        UsesSprite = TryLoadCharacterTexture();
+        _sprite!.Visible = UsesSprite;
+        _fallbackName.Visible = !UsesSprite;
+        UpdateFrame();
     }
 
     /// <summary>
@@ -113,7 +158,7 @@ public partial class PlayerVisualController : Node2D
     /// </summary>
     private void UpdateFrame()
     {
-        if (!UsesSprite || _sprite is null)
+        if (!UsesSprite || _sprite is null || _portraitMode)
         {
             return;
         }

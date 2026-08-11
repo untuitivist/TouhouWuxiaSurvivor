@@ -1,5 +1,36 @@
 # Progress Log
 
+## Session: 2026-08-12 - 0.0.0-beta release candidate
+
+- Completed stable character catalogs for 132 identities and verified every manifest character is playable and Boss-capable.
+- Added compact character selection, formal WorldDemo injection, and strict current-player exclusion from the Boss candidate pool.
+- Added three ordinary enemy AI profiles, independent character Boss encounters, three Boss barrage phases, projectile factions, Boss visuals, and compact health bars.
+- Added 42 structured automatic spell cards across TH01-TH20; TH01-TH05 are explicitly marked adaptations because the original rules predate spell cards.
+- Connected shared endless difficulty to spawning, enemy health/contact damage, Boss scaling, enemy bullets, experience requirements, repeatable upgrades, and the player's 1/3/5/7-shot progression.
+- Verified 20 packs dynamically: each has 3 regions, 3 structures, 3 enemies, registered characters, at least 2 spell cards, and an explicit visual mapping or unavailable declaration.
+- Captured and inspected 640x360 character selection plus 1280x720 formal combat; Scarlet sisters are complete, text fits, Boss health and both projectile factions remain readable.
+- Restored the previously requested branding icon only after proving its source hash exactly matches the committed asset; no file was deleted.
+- Updated the unique runtime version, release notes, and export filename to 0.0.0-beta; final full-suite rerun and export remain.
+- Final verification covers 36 integration scenes: the 35 unchanged scenes passed in the full serial run, and the display-only visual scene passed after headless screenshot capture became an explicit skip while retaining all layout/material assertions.
+- Exported `release/TouhouWuxiaSurvivor_0.0.0-beta.exe` with embedded PCK; independent headless launch passed and the existing alpha executable remains untouched.
+- Beta artifact size is 196,391,048 bytes with SHA-256 `25dbf41bf5f52be480409e9ebdb50a2ac3086f84e921c88b6407c19848571272`.
+- Binary scanning confirms internal-original resources are present and legacy `assets/audio`, `item_sheet.png`, `first_player`, and `cowboy_secret.wav` paths are absent.
+
+## Session: 2026-08-11 - Characters, Bosses, and all-work spell cards
+
+- Started the five-domain completion pass without exporting or touching the ignored release executable.
+- Confirmed the real Git project is the nested project directory and recorded the earlier outer-path inspection error.
+- Completed parallel runtime audits: world regions/structures/ordinary enemies are real; character selection, character Bosses, and all-work spell cards are missing.
+- Locked the role rule: every registered character is playable and Boss-capable, while the current player character ID is excluded from that run's Boss pool.
+- Waiting on the exact TH01-TH20 two-card matrix before editing content manifests; runtime architecture work proceeds independently.
+- Added enemy/Boss AI, endless difficulty and upgrade curves, and sparse-to-dense player/enemy danmaku to the same completion milestone.
+- User authorized a final `0.0.0-beta` export only after the complete implementation and verification pass; the current alpha artifact remains untouched.
+- Added 132 canonical character identities from 133 registrations, with one merged cross-work Mima identity and address-derived ASCII IDs.
+- Added compact content-aware character selection and applied the selected profile to the real player name, nearest-neighbor visual, health, movement, damage, stats, and Boss exclusion context.
+- Replaced two hard-coded Reimu spell enums with a 42-card data catalog: TH06 has four cards and every other work has two; TH01-TH05 are explicitly labeled pre-spell-card adaptations.
+- Added 42 runtime spell visuals, including 12 reviewed proxies for missing TH01-TH05/TH20 source atlases, and made upgrades, automatic casting, and compendium read the same definitions.
+- Added three repeatable post-cap cultivations so later levels retain meaningful choices after finite five-rank techniques are complete.
+
 ## Session: 2026-08-11 - Per-work original asset expansion
 
 - Added independent build and runtime mapping discovery for TH07-TH12; runtime enumeration uses Godot `DirAccess` so mappings remain visible inside PCK exports.

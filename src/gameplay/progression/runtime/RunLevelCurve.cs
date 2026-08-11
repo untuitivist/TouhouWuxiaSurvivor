@@ -6,11 +6,16 @@ namespace TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 public static class RunLevelCurve
 {
     /// <summary>
-    /// 采用线性增长并每五级增加一次台阶，使开局快速成形、后期升级逐渐放缓。
+    /// 使用长整型线性项配合平方根和对数细化，使开局仍需八、十点，并保证百万级乃至 int 全域不溢出。
     /// </summary>
     public static int GetRequiredExperience(int currentLevel)
     {
         int level = Math.Max(1, currentLevel);
-        return 6 + level * 2 + (level - 1) / 5 * 5;
+        long offset = (long)level - 1L;
+        long linearGrowth = offset * 19L / 20L;
+        double rootGrowth = Math.Floor(2.0 * Math.Sqrt(offset));
+        double longRunGrowth = Math.Floor(0.5 * Math.Pow(Math.Log2(level), 2.0));
+        long required = 8L + linearGrowth + (long)rootGrowth + (long)longRunGrowth;
+        return (int)required;
     }
 }

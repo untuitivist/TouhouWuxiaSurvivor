@@ -26,12 +26,13 @@ public static class CharacterStatsSnapshotFactory
         SpellCardCoordinator spellCards)
     {
         RunModifierState modifiers = progression.Modifiers;
+        string characterName = player.GetNode<PlayerVisualController>("Visual").DisplayName;
         float fireRate = Math.Max(0.1f,
             buffs.FireRateMultiplier * modifiers.FireRateMultiplier);
         float moveSpeed = player.MoveSpeed * buffs.SpeedMultiplier *
             modifiers.MoveSpeedMultiplier;
         return new CharacterStatsSnapshot(
-            "博丽灵梦",
+            characterName,
             health.CurrentHealth,
             health.MaxHealth,
             progression.State.Level,

@@ -15,6 +15,8 @@
     {"sourceId":"th12_ufo","category":"Character","name":"村纱水蜜","asset":"th12/portraits/minamitsu.png","kind":"Portrait","variant":3},
     {"sourceId":"th12_ufo","category":"Character","name":"寅丸星","asset":"th12/portraits/shou.png","kind":"Portrait","variant":4},
     {"sourceId":"th12_ufo","category":"Character","name":"圣白莲","asset":"th12/portraits/byakuren.png","kind":"Portrait","variant":5},
-    {"sourceId":"th12_ufo","category":"Character","name":"封兽鵺","asset":"th12/portraits/nue.png","kind":"Portrait","variant":6}
+    {"sourceId":"th12_ufo","category":"Character","name":"封兽鵺","asset":"th12/portraits/nue.png","kind":"Portrait","variant":6},
+    {"sourceId":"th12_ufo","category":"SpellCard","name":"大魔法「魔神复诵」","asset":"th12/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th12_ufo","category":"SpellCard","name":"鵺符「弹幕奇美拉」","asset":"th12/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

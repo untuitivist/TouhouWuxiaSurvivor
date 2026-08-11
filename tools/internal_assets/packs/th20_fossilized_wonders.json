@@ -8,15 +8,17 @@
     {"sourceId":"th20_fossilized_wonders","category":"Structure","name":"地下金字塔","asset":"th14/scenes/structure_shining_needle_castle.png","kind":"Scene","variant":5,"proxySourceWork":"th14_ddc","reasonZh":"缺少 TH20 原作源；以 TH14 巨型城体结构代用。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th20_fossilized_wonders","category":"Enemy","name":"山姥","asset":"th14/actors/tsukumogami.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th14_ddc","reasonZh":"缺少 TH20 原作源；以 TH14 人形妖怪轮廓代用。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th20_fossilized_wonders","category":"Enemy","name":"异变石灵","asset":"th15/actors/purified_spirit.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH20 原作源；以 TH15 抽象灵体轮廓代用。","reviewStatus":"proxy-reviewed"},
-    {"sourceId":"th20_fossilized_wonders","category":"Enemy","name":"月都净化兵","asset":"th15/actors/lunar_capital_guard.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH20 原作源；以 TH15 月都卫兵轮廓代用。","reviewStatus":"proxy-reviewed"}
+    {"sourceId":"th20_fossilized_wonders","category":"Enemy","name":"月都净化兵","asset":"th15/actors/lunar_capital_guard.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH20 原作源；以 TH15 月都卫兵轮廓代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th20_fossilized_wonders","category":"SpellCard","name":"「弹幕的化石」","asset":"th18/bullet_atlas.png","kind":"BulletAtlas","variant":0,"proxySourceWork":"th18_um","reasonZh":"缺少 TH20 原作弹幕图集；以 TH18 虹龙洞弹幕图集代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th20_fossilized_wonders","category":"SpellCard","name":"真相「Tartarian Rhapsody」","asset":"th18/bullet_atlas.png","kind":"BulletAtlas","variant":1,"proxySourceWork":"th18_um","reasonZh":"缺少 TH20 原作弹幕图集；以 TH18 虹龙洞弹幕图集代用。","reviewStatus":"proxy-reviewed"}
   ],
   "unavailableEntries": [
-    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"尘塚乌羽目","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
-    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"封兽千迷","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"尘塚姥芽","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"封兽魑魅","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
     {"sourceId":"th20_fossilized_wonders","category":"Character","name":"道神驯子","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
-    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"浅间祐依","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"维缦·浅间","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
     {"sourceId":"th20_fossilized_wonders","category":"Character","name":"绵月丰姬","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
     {"sourceId":"th20_fossilized_wonders","category":"Character","name":"磐永阿梨夜","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
-    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"渡里妮娜","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"}
+    {"sourceId":"th20_fossilized_wonders","category":"Character","name":"渡里贝子","reasonZh":"当前素材根不含 TH20 原作图像；禁止以别作角色立绘冒充，图鉴保留文字回退。"}
   ]
 }

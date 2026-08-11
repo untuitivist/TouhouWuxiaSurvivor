@@ -16,28 +16,47 @@ public partial class FantasySealOrb : Node2D
     private float _speed = 420.0f;
     private double _lifetimeLeft = 2.0;
     private int _visualVariant;
+    private string _sourcePackId = "th06_eosd";
+    private string _spellCardName = "灵符「梦想封印」";
     private InternalSpellBulletVisual? _visual;
     private Label? _fallbackLabel;
 
     /// <summary>
     /// 注入唯一追踪目标、伤害和飞行速度；无效数值会被限制到安全下限。
     /// </summary>
-    public void Configure(EnemyActor target, int damage, float speed, int visualVariant)
+    public void Configure(
+        EnemyActor target,
+        int damage,
+        float speed,
+        int visualVariant,
+        string sourcePackId,
+        string spellCardName)
     {
         _target = target;
         _damage = Math.Max(1, damage);
         _speed = Math.Max(1.0f, speed);
         _visualVariant = visualVariant;
+        _sourcePackId = sourcePackId;
+        _spellCardName = spellCardName;
     }
 
     /// <summary>配置 ECS 目标位置；低数量符卡视觉仍可作为独立节点播放。</summary>
-    public void ConfigureEcs(EcsCombatWorld world, Vector2 targetPosition, int damage, float speed, int visualVariant)
+    public void ConfigureEcs(
+        EcsCombatWorld world,
+        Vector2 targetPosition,
+        int damage,
+        float speed,
+        int visualVariant,
+        string sourcePackId,
+        string spellCardName)
     {
         _ecsWorld = world;
         _ecsTargetPosition = targetPosition;
         _damage = Math.Max(1, damage);
         _speed = Math.Max(1.0f, speed);
         _visualVariant = visualVariant;
+        _sourcePackId = sourcePackId;
+        _spellCardName = spellCardName;
     }
 
     /// <summary>
@@ -47,7 +66,7 @@ public partial class FantasySealOrb : Node2D
     {
         _visual = GetNode<InternalSpellBulletVisual>("Visual");
         _fallbackLabel = GetNode<Label>("FallbackLabel");
-        _visual.Configure("灵符「梦想封印」", _visualVariant);
+        _visual.Configure(_sourcePackId, _spellCardName, _visualVariant);
         _fallbackLabel.Visible = !_visual.Visible;
     }
 

@@ -38,10 +38,16 @@ public sealed class RunModifierState
     /// </summary>
     public void Refresh(RunBuildState build)
     {
-        DamageBonus = _baseDamageBonus + build.GetRank(RunUpgradeKind.NeedleDamage);
-        FireRateMultiplier = 1.0f + build.GetRank(RunUpgradeKind.FireRate) * 0.12f;
+        int endlessDamage = build.GetRank(RunUpgradeKind.EndlessDamage);
+        int endlessFireRate = build.GetRank(RunUpgradeKind.EndlessFireRate);
+        int endlessMoveSpeed = build.GetRank(RunUpgradeKind.EndlessMoveSpeed);
+        DamageBonus = checked(_baseDamageBonus +
+            build.GetRank(RunUpgradeKind.NeedleDamage) + endlessDamage);
+        FireRateMultiplier = (1.0f + build.GetRank(RunUpgradeKind.FireRate) * 0.12f) *
+            (1.0f + MathF.Log2(1.0f + endlessFireRate) * 0.08f);
         MoveSpeedMultiplier = _baseMoveSpeedMultiplier *
-            (1.0f + build.GetRank(RunUpgradeKind.MoveSpeed) * 0.08f);
+            (1.0f + build.GetRank(RunUpgradeKind.MoveSpeed) * 0.08f) *
+            (1.0f + MathF.Log2(1.0f + endlessMoveSpeed) * 0.04f);
         TargetRangeMultiplier = 1.0f + build.GetRank(RunUpgradeKind.TargetRange) * 0.10f;
         ProjectileSpeedMultiplier = 1.0f + build.GetRank(RunUpgradeKind.ProjectileSpeed) * 0.12f;
         SpiritAttractionMultiplier = _baseSpiritAttractionMultiplier *

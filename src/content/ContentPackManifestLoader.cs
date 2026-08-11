@@ -33,6 +33,11 @@ public static class ContentPackManifestLoader
             ReadAdditions(additionValue.AsGodotDictionary(), additions);
         }
 
+        if (manifest.TryGetValue("spellcards", out Variant spellCardValue))
+        {
+            ReadSpellCards(spellCardValue.AsGodotArray(), additions);
+        }
+
         return new ContentPackDefinition(
             ReadString(manifest, "id"),
             ReadInt(manifest, "number"),
@@ -59,6 +64,22 @@ public static class ContentPackManifestLoader
             foreach (Variant value in values)
             {
                 destination.Add(new ContentAddition(categoryName, value.AsString()));
+            }
+        }
+    }
+
+    /// <summary>
+    /// 把根级结构化符卡数组投影为内容选择详情，界面只读取名称而不复制战斗数值解析逻辑。
+    /// </summary>
+    private static void ReadSpellCards(GodotArray source, List<ContentAddition> destination)
+    {
+        foreach (Variant value in source)
+        {
+            GodotDictionary card = value.AsGodotDictionary();
+            string name = ReadString(card, "name");
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                destination.Add(new ContentAddition("符卡", name));
             }
         }
     }

@@ -1,10 +1,12 @@
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 /// <summary>
-/// 标识符卡采用的独立战斗执行方式，使目录元数据不依赖具体场景节点。
+/// 标识可复用的符卡效果原型；新增数据只组合原型与数值，真正的新机制才需要增加执行类。
 /// </summary>
 public enum SpellCardEffectKind
 {
-    FantasySeal,
-    EvilSealingCircle,
+    HomingVolley,
+    FocusedVolley,
+    AreaBurst,
+    GuardField,
 }

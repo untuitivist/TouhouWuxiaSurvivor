@@ -17,4 +17,5 @@ public enum EnemyArchetype
     GreatYoukai,
     OfficialSpirit,
     ScarletMistInsect,
+    CharacterBoss,
 }

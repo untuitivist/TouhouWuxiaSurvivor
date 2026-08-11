@@ -81,27 +81,31 @@ public partial class CompendiumSmokeTest : Node
                 "TH06 character preview did not activate its internal portrait and Chinese caption.");
 
             string details = panel.CurrentDetailsText;
-            Require(details.Contains("尚未制作运行时角色", StringComparison.Ordinal),
-                "Character detail did not distinguish catalog entries from implementations.");
+            Require(details.Contains("可选自机", StringComparison.Ordinal) &&
+                details.Contains("可作为角色 Boss", StringComparison.Ordinal) &&
+                details.Contains("本局 Boss 候选", StringComparison.Ordinal),
+                "Character detail omitted playable, Boss, or self-exclusion state.");
             tabs.CurrentTab = (int)CompendiumCategory.SpellCard;
-            Require(panel.VisibleEntryCount == 2 &&
+            Require(panel.VisibleEntryCount == 4 &&
                 preview.CurrentCategory == CompendiumCategory.SpellCard,
-                "TH06 spell-card page must expose both implemented Reimu cards.");
+                "TH06 spell-card page must expose player and representative Boss cards.");
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             Require(preview.InternalOriginalActive,
                 "TH06 spell-card preview did not activate the internal bullet atlas.");
             details = panel.CurrentDetailsText;
             Require(details.Contains("所属角色：博丽灵梦", StringComparison.Ordinal) &&
-                details.Contains("初出作品：东方红魔乡", StringComparison.Ordinal) &&
+                details.Contains("设定来源：原作正式符卡", StringComparison.Ordinal) &&
                 details.Contains("前置构筑", StringComparison.Ordinal) &&
                 details.Contains("自动触发", StringComparison.Ordinal) &&
                 details.Contains("灵力消耗", StringComparison.Ordinal) &&
                 details.Contains("单次伤害", StringComparison.Ordinal),
                 "Spell-card details omitted canon, build, trigger, or balance fields.");
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-            Require(facts.GetChildCount() == 8 &&
-                facts.GetCombinedMinimumSize().Y <= facts.Size.Y + 1.0f,
-                "Spell-card attributes do not fit the fixed no-scroll detail panel.");
+            Vector2 spellFactMinimum = facts.GetCombinedMinimumSize();
+            Require(facts.GetChildCount() == 9 &&
+                spellFactMinimum.Y <= facts.Size.Y + 1.0f,
+                $"Spell-card attributes do not fit the fixed no-scroll detail panel: " +
+                $"rows {facts.GetChildCount()}, minimum {spellFactMinimum}, actual {facts.Size}.");
             panel.GetNode<Button>("Panel/Padding/Layout/Header/Back")
                 .EmitSignal(BaseButton.SignalName.Pressed);
             Require(!panel.Visible && menu.GetNode<Control>("Menu").Visible,

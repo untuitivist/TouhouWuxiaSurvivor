@@ -15,6 +15,8 @@
     {"sourceId":"th15_lolk","category":"Character","name":"稀神探女","asset":"th15/portraits/sagume.png","kind":"Portrait","variant":3},
     {"sourceId":"th15_lolk","category":"Character","name":"克劳恩皮丝","asset":"th15/portraits/clownpiece.png","kind":"Portrait","variant":4},
     {"sourceId":"th15_lolk","category":"Character","name":"纯狐","asset":"th15/portraits/junko.png","kind":"Portrait","variant":5},
-    {"sourceId":"th15_lolk","category":"Character","name":"赫卡提亚·拉碧斯拉祖利","asset":"th15/portraits/hecatia.png","kind":"Portrait","variant":6}
+    {"sourceId":"th15_lolk","category":"Character","name":"赫卡提亚·拉碧斯拉祖利","asset":"th15/portraits/hecatia.png","kind":"Portrait","variant":6},
+    {"sourceId":"th15_lolk","category":"SpellCard","name":"纯符「纯粹的弹幕地狱」","asset":"th15/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th15_lolk","category":"SpellCard","name":"「Trinitarian Rhapsody」","asset":"th15/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

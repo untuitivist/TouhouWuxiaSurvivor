@@ -17,6 +17,7 @@ public partial class EcsCombatWorld : Node2D
     private readonly List<PickupComponent> _pickups = new();
     private readonly List<SpiritComponent> _spirits = new();
     private readonly EnemyMovementSystem _enemyMovement = new();
+    private readonly EnemyProjectileSystem _enemyProjectiles = new();
     private readonly ProjectileMovementSystem _projectileMovement = new();
     private readonly ProjectileCollisionSystem _projectileCollision = new();
     private readonly PickupSystem _pickupSystem = new();
@@ -38,6 +39,10 @@ public partial class EcsCombatWorld : Node2D
     public event Action? PickupCollected;
     /// <summary>灵息被玩家吸收事件。</summary>
     public event Action<int>? SpiritCollected;
+    /// <summary>角色 Boss 正式写入 ECS 池时发出，参数为生成位置与完整定义。</summary>
+    public event Action<Vector2, EnemyDefinition>? BossSpawned;
+    /// <summary>角色 Boss 生命归零时发出，供遭遇导演、HUD 和结算独立订阅。</summary>
+    public event Action<Vector2, EnemyDefinition>? BossDefeated;
     /// <summary>当前活跃敌人数量。</summary>
     public int EnemyCount => _enemies.Count;
     /// <summary>获取当前仍可被索敌和命中的敌人数量。</summary>
@@ -53,8 +58,16 @@ public partial class EcsCombatWorld : Node2D
     }
     /// <summary>当前活跃投射物数量。</summary>
     public int ProjectileCount => _projectiles.Count;
+    /// <summary>获取当前仍存活的角色 Boss 数量，不包含死亡消散反馈。</summary>
+    public int AliveBossCount => _enemies.AliveBossCount;
+    /// <summary>获取当前敌方阵营投射物数量，供弹幕密度 HUD 与性能测试读取。</summary>
+    public int EnemyProjectileCount => _projectiles.CountFaction(ProjectileFaction.Enemy);
+    /// <summary>获取玩家与敌人共享的投射物硬上限。</summary>
+    public int ProjectileCapacity => ProjectilePool.MaximumActive;
     /// <summary>获取从本局开始累计生成的投射物数量。</summary>
     public int TotalProjectilesSpawned { get; private set; }
+    /// <summary>获取本局累计成功写入池中的敌方弹幕数量。</summary>
+    public int TotalEnemyProjectilesSpawned { get; private set; }
     /// <summary>当前活跃强化掉落物数量。</summary>
     public int PickupCount => _pickups.Count;
     /// <summary>当前活跃灵息数量。</summary>
@@ -71,8 +84,14 @@ public partial class EcsCombatWorld : Node2D
     public int PickupIconVisualCount => _renderer.LastPickupIconCount;
     /// <summary>获取上一绘制帧使用东方道具图集的灵息数。</summary>
     public int SpiritIconVisualCount => _renderer.LastSpiritIconCount;
-    /// <summary>获取上一绘制帧使用原作弹幕图集的玩家弹数。</summary>
+    /// <summary>获取上一绘制帧使用原作弹幕图集的玩家与敌方投射物总数。</summary>
     public int ProjectileIconVisualCount => _renderer.LastProjectileIconCount;
+    /// <summary>获取上一绘制帧使用角色立绘或角色条的 Boss 数量。</summary>
+    public int MappedBossVisualCount => _renderer.LastMappedBossCount;
+    /// <summary>获取上一绘制帧因缺少角色素材而回退中文名的 Boss 数量。</summary>
+    public int FallbackBossVisualCount => _renderer.LastFallbackBossCount;
+    /// <summary>获取上一绘制帧使用内部弹幕图集的敌方投射物数量。</summary>
+    public int EnemyProjectileIconVisualCount => _renderer.LastEnemyProjectileIconCount;
 
     /// <summary>绑定玩家和局内状态，使批量系统不依赖场景查找。</summary>
     public void Configure(PlayerController player, PlayerHealth health, PlayerBuffController buffs,
@@ -87,13 +106,59 @@ public partial class EcsCombatWorld : Node2D
     }
 
     /// <summary>添加一个敌人数据项，不创建 EnemyActor 节点。</summary>
-    public void SpawnEnemy(Vector2 position, EnemyDefinition definition) => _enemies.Add(position, definition);
+    public Core.EcsEntity SpawnEnemy(Vector2 position, EnemyDefinition definition) =>
+        _enemies.Add(position, definition);
+
+    /// <summary>
+    /// 把角色 Boss 定义写入独立语义入口；拒绝普通定义，防止遭遇系统意外绕过 Boss 约束。
+    /// </summary>
+    public Core.EcsEntity SpawnBoss(Vector2 position, EnemyDefinition definition)
+    {
+        if (!definition.IsBoss || string.IsNullOrWhiteSpace(definition.CharacterId))
+        {
+            throw new ArgumentException("Boss definition requires a stable character id.", nameof(definition));
+        }
+
+        Core.EcsEntity entity = _enemies.Add(position, definition);
+        BossSpawned?.Invoke(position, definition);
+        return entity;
+    }
 
     /// <summary>添加一颗玩家投射物到连续数据池。</summary>
     public void SpawnProjectile(Vector2 position, Vector2 direction, float speed, int damage)
     {
-        _projectiles.Add(position, direction, speed, damage);
-        TotalProjectilesSpawned++;
+        if (_projectiles.TryAdd(position, direction, speed, damage,
+                ProjectileFaction.Player, 2.0f, 4.0f, 0, out _))
+        {
+            TotalProjectilesSpawned++;
+        }
+    }
+
+    /// <summary>
+    /// 在敌方四百发软上限内生成敌弹，为玩家后期弹幕预留至少一千六百发容量。
+    /// </summary>
+    public bool SpawnEnemyProjectile(
+        Vector2 position,
+        Vector2 direction,
+        float speed,
+        int damage,
+        int visualVariant = 0)
+    {
+        if (_projectiles.CountFaction(ProjectileFaction.Enemy) >=
+                ProjectilePool.MaximumEnemyActive ||
+            _projectiles.Count >= ProjectilePool.MaximumActive)
+        {
+            return false;
+        }
+
+        bool spawned = _projectiles.TryAdd(position, direction, speed, damage,
+            ProjectileFaction.Enemy, 7.0f, 3.5f, visualVariant, out _);
+        if (spawned)
+        {
+            TotalEnemyProjectilesSpawned++;
+        }
+
+        return spawned;
     }
 
     /// <summary>添加一个强化掉落物到数据池。</summary>
@@ -172,7 +237,9 @@ public partial class EcsCombatWorld : Node2D
         float squared = distance * distance;
         for (int index = _enemies.Count - 1; index >= 0; index--)
         {
-            if (_enemies.Get(index).Position.DistanceSquaredTo(playerPosition) <= squared) continue;
+            EnemyComponent enemy = _enemies.Get(index);
+            if (enemy.Definition.IsBoss ||
+                enemy.Position.DistanceSquaredTo(playerPosition) <= squared) continue;
             _enemies.RemoveSwap(index);
             _enemies.TrimLast();
         }
@@ -183,7 +250,10 @@ public partial class EcsCombatWorld : Node2D
     {
         if (_player is null || _health is null || _buffs is null || _modifiers is null) return;
         _elapsedSeconds += delta;
-        _enemyMovement.Step(_enemies, _player.GlobalPosition, (float)delta, amount => _health.ApplyDamage(amount));
+        _enemyMovement.Step(_enemies, _player.GlobalPosition, (float)delta,
+            _elapsedSeconds, amount => _health.ApplyDamage(amount));
+        _enemyProjectiles.Step(_enemies, _player.GlobalPosition, (float)delta,
+            _elapsedSeconds, SpawnEnemyProjectile);
         _projectileMovement.Step(_projectiles, (float)delta);
         ResolveProjectileHits();
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());
@@ -199,18 +269,14 @@ public partial class EcsCombatWorld : Node2D
     /// <summary>遍历投射物并在首次命中时消费数据。</summary>
     private void ResolveProjectileHits()
     {
-        for (int projectileIndex = _projectiles.Count - 1; projectileIndex >= 0; projectileIndex--)
-        {
-            ProjectileComponent projectile = _projectiles.Get(projectileIndex);
-            for (int enemyIndex = 0; enemyIndex < _enemies.Count; enemyIndex++)
-            {
-                EnemyComponent enemy = _enemies.Get(enemyIndex);
-                float radius = projectile.Radius + enemy.Definition.CollisionRadius;
-                if (!enemy.Alive || projectile.Position.DistanceSquaredTo(enemy.Position) > radius * radius) continue;
-                ApplyDamage(enemyIndex, projectile.Damage, enemy); _projectiles.RemoveSwap(projectileIndex); _projectiles.TrimLast(); break;
-            }
-        }
+        if (_player is null || _health is null) return;
+        _projectileCollision.Resolve(_projectiles, _enemies, _player.GlobalPosition, 7.0f,
+            ApplyDamageByIndex, amount => _health.ApplyDamage(amount));
     }
+
+    /// <summary>按池索引重新读取最新敌人快照，再交给统一伤害入口处理命中和死亡事件。</summary>
+    private void ApplyDamageByIndex(int index, int amount) =>
+        ApplyDamage(index, amount, _enemies.Get(index));
 
     /// <summary>应用伤害并转换为受击、死亡、掉落事件。</summary>
     private void ApplyDamage(int index, int amount, EnemyComponent enemy)
@@ -219,7 +285,9 @@ public partial class EcsCombatWorld : Node2D
         enemy.Health -= amount;
         if (enemy.Health > 0) { enemy.HurtTime = 0.12f; EnemyDamaged?.Invoke(); _enemies.Set(index, enemy); return; }
         enemy.Alive = false; enemy.DeathTime = enemy.Definition.ExplodesOnDeath ? 0.28f : 0.18f; DefeatedCount++;
-        EnemyDefeated?.Invoke(enemy.Position, enemy.Definition); if (enemy.Definition.ExplodesOnDeath) EnemyExploded?.Invoke(); _enemies.Set(index, enemy);
+        EnemyDefeated?.Invoke(enemy.Position, enemy.Definition);
+        if (enemy.Definition.IsBoss) BossDefeated?.Invoke(enemy.Position, enemy.Definition);
+        if (enemy.Definition.ExplodesOnDeath) EnemyExploded?.Invoke(); _enemies.Set(index, enemy);
     }
 
     /// <summary>把新灵息价值并入距离最近的灵息。</summary>

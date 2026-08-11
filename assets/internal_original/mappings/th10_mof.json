@@ -15,6 +15,8 @@
     {"sourceId":"th10_mof","category":"Character","name":"河城荷取","asset":"th10/portraits/nitori.png","kind":"Portrait","variant":3},
     {"sourceId":"th10_mof","category":"Character","name":"东风谷早苗","asset":"th10/portraits/sanae.png","kind":"Portrait","variant":4},
     {"sourceId":"th10_mof","category":"Character","name":"八坂神奈子","asset":"th10/portraits/kanako.png","kind":"Portrait","variant":5},
-    {"sourceId":"th10_mof","category":"Character","name":"洩矢诹访子","asset":"th10/portraits/suwako.png","kind":"Portrait","variant":6}
+    {"sourceId":"th10_mof","category":"Character","name":"洩矢诹访子","asset":"th10/portraits/suwako.png","kind":"Portrait","variant":6},
+    {"sourceId":"th10_mof","category":"SpellCard","name":"神祭「Expanded Onbashira」","asset":"th10/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th10_mof","category":"SpellCard","name":"祟符「御社宫司大人」","asset":"th10/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

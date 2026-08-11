@@ -15,6 +15,8 @@
     {"sourceId":"th07_pcb","category":"Character","name":"魂魄妖梦","asset":"th07/portraits/youmu.png","kind":"Portrait","variant":3},
     {"sourceId":"th07_pcb","category":"Character","name":"西行寺幽幽子","asset":"th07/portraits/yuyuko.png","kind":"Portrait","variant":4},
     {"sourceId":"th07_pcb","category":"Character","name":"八云蓝","asset":"th07/portraits/ran.png","kind":"Portrait","variant":5},
-    {"sourceId":"th07_pcb","category":"Character","name":"八云紫","asset":"th07/portraits/yukari.png","kind":"Portrait","variant":6}
+    {"sourceId":"th07_pcb","category":"Character","name":"八云紫","asset":"th07/portraits/yukari.png","kind":"Portrait","variant":6},
+    {"sourceId":"th07_pcb","category":"SpellCard","name":"樱符「完全墨染的樱花 -亡我-」","asset":"th07/bullet_atlas.png","kind":"BulletAtlas","variant":0},
+    {"sourceId":"th07_pcb","category":"SpellCard","name":"结界「生与死的境界」","asset":"th07/bullet_atlas.png","kind":"BulletAtlas","variant":1}
   ]
 }

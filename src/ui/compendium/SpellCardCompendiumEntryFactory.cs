@@ -11,13 +11,13 @@ namespace TouhouWuxiaSurvivor.Ui.Compendium;
 public static class SpellCardCompendiumEntryFactory
 {
     /// <summary>
-    /// 为灵梦当前实装的全部符卡生成 TH06 来源条目，并保持运行目录中的稳定顺序。
+    /// 为全部内容包符卡生成来源条目，并保持运行目录中的作品与清单顺序。
     /// </summary>
     public static IReadOnlyList<CompendiumEntry> CreateAll()
     {
-        ContentPackDefinition source = ContentPackCatalog.All.Single(pack => pack.Number == 6);
-        return SpellCardCatalog.ReimuLoadout
-            .Select(card => CreateEntry(card, source))
+        return SpellCardCatalog.All
+            .Select(card => CreateEntry(card, ContentPackCatalog.All.Single(
+                pack => pack.Id == card.SourcePackId)))
             .ToArray();
     }
 
@@ -28,12 +28,10 @@ public static class SpellCardCompendiumEntryFactory
         SpellCardDefinition card,
         ContentPackDefinition source)
     {
-        RunUpgradeDefinition unlock = RunUpgradeCatalog.All.Single(
-            upgrade => upgrade.Kind == card.UnlockKind);
+        RunUpgradeDefinition unlock = RunUpgradeCatalog.FindById(card.UnlockUpgradeId) ??
+            throw new InvalidDataException($"Spell unlock is missing: {card.Id}");
         string prerequisite = FormatRequirement(unlock.Requirement);
-        string trigger = card.EffectKind == SpellCardEffectKind.FantasySeal
-            ? "灵力足够且射程内至少有 3 个目标"
-            : "灵力足够且近身至少 3 敌，或半血以下遭近身";
+        string trigger = FormatTrigger(card.TriggerKind);
         string targets = card.Combat.TargetCount > 0
             ? card.Combat.TargetCount.ToString()
             : "范围内全部";
@@ -48,7 +46,9 @@ public static class SpellCardCompendiumEntryFactory
             $"{card.WuxiaStyle} · 消耗 {card.Combat.PowerCost} 灵力",
             [
                 new("所属角色", card.OwnerName),
-                new("初出作品", card.SourceWork.Replace("初出：", string.Empty)),
+                new("设定来源", (card.CanonLevel == SpellCardCanonLevel.Official
+                    ? "原作正式符卡 · " : "旧作攻击意象的武侠化拟制 · ") +
+                    card.SourceNote, true),
                 new("武侠定位", card.WuxiaStyle, true),
                 new("前置构筑", prerequisite, true),
                 new("自动触发", trigger, true),
@@ -76,8 +76,20 @@ public static class SpellCardCompendiumEntryFactory
             return "无";
         }
 
-        RunUpgradeDefinition prerequisite = RunUpgradeCatalog.All.Single(
-            upgrade => upgrade.Kind == requirement.RequiredKind);
+        RunUpgradeDefinition prerequisite = RunUpgradeCatalog.FindById(
+            requirement.RequiredUpgradeId) ?? throw new InvalidDataException(
+                $"Spell prerequisite is missing: {requirement.RequiredUpgradeId}");
         return $"{prerequisite.DisplayName} {requirement.MinimumRank} 重";
     }
+
+    /// <summary>
+    /// 把自动条件枚举转换为图鉴说明，所有分支都明确不需要玩家按键。
+    /// </summary>
+    private static string FormatTrigger(SpellCardTriggerKind trigger) => trigger switch
+    {
+        SpellCardTriggerKind.Crowd => "灵力足够且范围内至少有 3 个目标",
+        SpellCardTriggerKind.Danger => "灵力足够且受围，或半血以下遭近身",
+        SpellCardTriggerKind.SingleTarget => "灵力足够且范围内存在目标",
+        _ => "不满足自动施展条件",
+    };
 }

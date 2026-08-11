@@ -12,9 +12,9 @@ region_enabled = true
 region_rect = Rect2(0, 0, 48, 48)
 
 [node name="FallbackName" type="Label" parent="."]
-offset_left = -28.0
+offset_left = -48.0
 offset_top = -9.0
-offset_right = 28.0
+offset_right = 48.0
 offset_bottom = 9.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.98, 0.94, 0.87, 1)
@@ -36,6 +36,6 @@ theme_override_colors/font_color = Color(1, 0.48, 0.42, 1)
 theme_override_colors/font_outline_color = Color(0.08, 0.025, 0.03, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 10
-text = "阴阳玉"
+text = "强化"
 horizontal_alignment = 1
 vertical_alignment = 1

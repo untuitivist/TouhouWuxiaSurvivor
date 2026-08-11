@@ -6,8 +6,8 @@ namespace TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 public sealed class RunProgressionState
 {
     public int Level { get; private set; } = 1;
-    public int Experience { get; private set; }
-    public int TotalExperience { get; private set; }
+    public long Experience { get; private set; }
+    public long TotalExperience { get; private set; }
     public int PendingChoices { get; private set; }
     public int ExperienceToNext => RunLevelCurve.GetRequiredExperience(Level);
 

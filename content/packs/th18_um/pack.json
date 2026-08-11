@@ -10,5 +10,47 @@
     "structures": ["能力卡摊位", "虹龙洞矿场", "月虹市场祭坛"],
     "enemies": ["卡牌妖怪", "矿洞蜈蚣", "天虹灵"],
     "characters": ["豪德寺三花", "山城高岭", "驹草山如", "玉造魅须丸", "饭纲丸龙", "天弓千亦", "姬虫百百世"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th18_chimata_ownerless_offering",
+      "name": "「献给无主的供物」",
+      "short_name": "献给无主的供物",
+      "owner": "天弓千亦",
+      "canon": "official",
+      "source_note": "原作符卡：东方虹龙洞。",
+      "wuxia_style": "市场神法 · 无主献仪",
+      "description": "敌群聚集时收走无主之力，再以彩光向多个目标返还。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 75,
+      "cooldown_seconds": 6,
+      "effect_range": 560,
+      "damage": 9,
+      "target_count": 11,
+      "defense_seconds": 0,
+      "prerequisite": "spirit_gathering",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th18_momoyo_cannibalistic_insect",
+      "name": "蛊毒「Cannibalistic Insect」",
+      "short_name": "Cannibalistic Insect",
+      "owner": "姬虫百百世",
+      "canon": "official",
+      "source_note": "原作符卡：东方虹龙洞。",
+      "wuxia_style": "蜈蚣蛊法 · 同类相噬",
+      "description": "强敌出现时聚起蛊毒弹，集中侵蚀单一目标。",
+      "effect": "focused_volley",
+      "trigger": "single_target",
+      "power_cost": 90,
+      "cooldown_seconds": 7.5,
+      "effect_range": 580,
+      "damage": 16,
+      "target_count": 5,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 3
+    }
+  ]
 }

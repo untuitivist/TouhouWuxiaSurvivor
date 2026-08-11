@@ -1,47 +1,70 @@
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
-using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
-
 /// <summary>
-/// 描述一张具有原作身份和武侠化战斗定位的符卡，不承载任何场景节点状态。
+/// 描述一张由内容包声明的自动符卡，并把原作身份、角色归属、解锁规则和战斗参数集中为唯一数据源。
 /// </summary>
 public sealed class SpellCardDefinition
 {
     public string Id { get; }
+    public string SourcePackId { get; }
     public string FullName { get; }
     public string ShortName { get; }
+    public string OwnerCharacterId { get; }
     public string OwnerName { get; }
-    public string SourceWork { get; }
+    public SpellCardCanonLevel CanonLevel { get; }
+    public string SourceNote { get; }
     public string WuxiaStyle { get; }
     public string EffectDescription { get; }
     public SpellCardEffectKind EffectKind { get; }
-    public RunUpgradeKind UnlockKind { get; }
+    public SpellCardTriggerKind TriggerKind { get; }
+    public string UnlockUpgradeId { get; }
+    public string PrerequisiteUpgradeId { get; }
+    public int MinimumRank { get; }
     public SpellCardCombatProfile Combat { get; }
 
     /// <summary>
-    /// 组合符卡原作元数据、武侠表达和独立战斗参数，供运行时、图鉴与界面共用。
+    /// 组合清单解析后的稳定身份与平衡字段；构造时拒绝空身份并限制前置至少一重。
     /// </summary>
     public SpellCardDefinition(
         string id,
+        string sourcePackId,
         string fullName,
         string shortName,
+        string ownerCharacterId,
         string ownerName,
-        string sourceWork,
+        SpellCardCanonLevel canonLevel,
+        string sourceNote,
         string wuxiaStyle,
         string effectDescription,
         SpellCardEffectKind effectKind,
-        RunUpgradeKind unlockKind,
+        SpellCardTriggerKind triggerKind,
+        string prerequisiteUpgradeId,
+        int minimumRank,
         SpellCardCombatProfile combat)
     {
-        Id = id;
-        FullName = fullName;
-        ShortName = shortName;
-        OwnerName = ownerName;
-        SourceWork = sourceWork;
-        WuxiaStyle = wuxiaStyle;
-        EffectDescription = effectDescription;
+        Id = Require(id, nameof(id));
+        SourcePackId = Require(sourcePackId, nameof(sourcePackId));
+        FullName = Require(fullName, nameof(fullName));
+        ShortName = Require(shortName, nameof(shortName));
+        OwnerCharacterId = Require(ownerCharacterId, nameof(ownerCharacterId));
+        OwnerName = Require(ownerName, nameof(ownerName));
+        CanonLevel = canonLevel;
+        SourceNote = Require(sourceNote, nameof(sourceNote));
+        WuxiaStyle = Require(wuxiaStyle, nameof(wuxiaStyle));
+        EffectDescription = Require(effectDescription, nameof(effectDescription));
         EffectKind = effectKind;
-        UnlockKind = unlockKind;
-        Combat = combat;
+        TriggerKind = triggerKind;
+        UnlockUpgradeId = $"spell_{Id}";
+        PrerequisiteUpgradeId = Require(prerequisiteUpgradeId, nameof(prerequisiteUpgradeId));
+        MinimumRank = Math.Max(1, minimumRank);
+        Combat = combat ?? throw new ArgumentNullException(nameof(combat));
     }
+
+    /// <summary>
+    /// 校验必需文本并返回原值，使损坏内容在目录加载阶段立即暴露而不是进入战斗后静默回退。
+    /// </summary>
+    private static string Require(string value, string parameterName) =>
+        !string.IsNullOrWhiteSpace(value)
+            ? value
+            : throw new ArgumentException("Spell card text cannot be empty.", parameterName);
 }

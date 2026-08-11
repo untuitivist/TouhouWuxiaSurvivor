@@ -5,15 +5,18 @@ namespace TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 /// </summary>
 public sealed class RunUpgradeRequirement
 {
-    public RunUpgradeKind RequiredKind { get; }
+    public string RequiredUpgradeId { get; }
     public int MinimumRank { get; }
 
     /// <summary>
     /// 建立单项前置修炼要求，并将最低重数限制为至少一重。
     /// </summary>
-    public RunUpgradeRequirement(RunUpgradeKind requiredKind, int minimumRank)
+    public RunUpgradeRequirement(string requiredUpgradeId, int minimumRank)
     {
-        RequiredKind = requiredKind;
+        RequiredUpgradeId = !string.IsNullOrWhiteSpace(requiredUpgradeId)
+            ? requiredUpgradeId
+            : throw new ArgumentException("Required upgrade id cannot be empty.",
+                nameof(requiredUpgradeId));
         MinimumRank = Math.Max(1, minimumRank);
     }
 }

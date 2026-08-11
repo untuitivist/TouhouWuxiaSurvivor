@@ -116,7 +116,7 @@ public sealed class InternalOriginalPreviewRenderer
     }
 
     /// <summary>
-    /// 从原作弹幕图集选择颜色行，让两张符卡分别呈现追踪收束或环形封魔运动。
+    /// 从原作弹幕图集选择颜色行，让不同符卡变体呈现追踪收束、环形封魔等运动。
     /// </summary>
     private static void DrawSpellBullets(
         Control canvas, Texture2D texture, Rect2 area, double time, int variant)

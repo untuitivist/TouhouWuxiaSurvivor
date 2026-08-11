@@ -1,5 +1,6 @@
 using Godot;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
 
 namespace TouhouWuxiaSurvivor.Ui.Content;
 
@@ -13,12 +14,17 @@ public partial class ContentPackSelectionPanel : Control
     private VBoxContainer? _packList;
     private CheckButton? _showOldWorks;
     private ScrollContainer? _scroll;
+    private OptionButton? _characterChoice;
 
     public event Action? StartRequested;
     public event Action? BackRequested;
     public int ListedPackCount => _rows.Count;
     public int VisibleOfficialPackCount => _rows.Values.Count(row => row.Visible);
     public bool ShowOldWorks => _showOldWorks?.ButtonPressed == true;
+    public string SelectedCharacterId => _characterChoice is not null &&
+        _characterChoice.Selected >= 0
+            ? _characterChoice.GetItemMetadata(_characterChoice.Selected).AsString()
+            : CharacterCatalog.Default.CharacterId;
 
     /// <summary>
     /// 获取列表容器、按清单构建所有行，并连接开始和返回命令。
@@ -29,6 +35,8 @@ public partial class ContentPackSelectionPanel : Control
         _scroll = GetNode<ScrollContainer>("Panel/Padding/Layout/Scroll");
         _showOldWorks = GetNode<CheckButton>(
             "Panel/Padding/Layout/VisibilityFilters/ShowOldWorks");
+        _characterChoice = GetNode<OptionButton>(
+            "Panel/Padding/Layout/CharacterSelection/CharacterChoice");
         GetNode<Button>("Panel/Padding/Layout/Commands/Back").Pressed += RequestBack;
         GetNode<Button>("Panel/Padding/Layout/Commands/Start").Pressed += CommitAndStart;
         _showOldWorks.Toggled += OnShowOldWorksToggled;
@@ -63,6 +71,7 @@ public partial class ContentPackSelectionPanel : Control
             row.SetExpanded(false);
         }
 
+        RefreshCharacterChoices(CharacterSelectionService.Current.CharacterId);
         ApplyOldWorkVisibility();
         Show();
         _scroll!.ScrollVertical = 0;
@@ -89,6 +98,7 @@ public partial class ContentPackSelectionPanel : Control
         var row = new ContentPackSelectionRow();
         _packList!.AddChild(row);
         row.Configure(definition, isBase);
+        row.SelectionChanged += OnPackSelectionChanged;
 
         if (!isBase)
         {
@@ -126,15 +136,53 @@ public partial class ContentPackSelectionPanel : Control
     }
 
     /// <summary>
+    /// 作品勾选变化时保留仍然可用的当前角色；若来源全部关闭则安全回到本体灵梦。
+    /// </summary>
+    private void OnPackSelectionChanged() => RefreshCharacterChoices(SelectedCharacterId);
+
+    /// <summary>
+    /// 按面板当前勾选构造角色下拉项，元数据保存稳定 ID，显示文本只承担本地化姓名。
+    /// </summary>
+    private void RefreshCharacterChoices(string preferredCharacterId)
+    {
+        if (_characterChoice is null)
+        {
+            return;
+        }
+
+        ContentPackSelection selection = CreateSelectionSnapshot();
+        IReadOnlyList<CharacterDefinition> available = CharacterCatalog.GetAvailable(selection);
+        _characterChoice.Clear();
+        int selectedIndex = 0;
+        for (int index = 0; index < available.Count; index++)
+        {
+            CharacterDefinition character = available[index];
+            _characterChoice.AddItem(character.DisplayName);
+            _characterChoice.SetItemMetadata(index, character.CharacterId);
+            if (character.CharacterId == preferredCharacterId)
+            {
+                selectedIndex = index;
+            }
+        }
+
+        _characterChoice.Select(selectedIndex);
+    }
+
+    /// <summary>
+    /// 从当前行状态创建一次不可变内容选择，供角色筛选与最终提交复用同一规则。
+    /// </summary>
+    private ContentPackSelection CreateSelectionSnapshot() => new(_rows
+        .Where(pair => pair.Value.IsSelected)
+        .Select(pair => pair.Key));
+
+    /// <summary>
     /// 收集所有已启用且可选择的内容包，保存为下一局快照并请求进入游戏。
     /// </summary>
     private void CommitAndStart()
     {
-        string[] enabled = _rows
-            .Where(pair => pair.Value.IsSelected)
-            .Select(pair => pair.Key)
-            .ToArray();
-        ContentPackSelectionService.Apply(new ContentPackSelection(enabled));
+        ContentPackSelection selection = CreateSelectionSnapshot();
+        ContentPackSelectionService.Apply(selection);
+        CharacterSelectionService.Apply(SelectedCharacterId, selection);
         StartRequested?.Invoke();
     }
 

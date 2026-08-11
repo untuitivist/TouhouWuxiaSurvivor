@@ -11,6 +11,8 @@ public enum RunUpgradeKind
     TargetRange,
     ProjectileSpeed,
     SpiritAttraction,
-    FantasySeal,
-    EvilSealingCircle,
+    EndlessDamage,
+    EndlessFireRate,
+    EndlessMoveSpeed,
+    SpellCard,
 }

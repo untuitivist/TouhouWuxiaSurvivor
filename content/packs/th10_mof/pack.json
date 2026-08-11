@@ -10,5 +10,47 @@
     "structures": ["河童工房", "风神湖鸟居", "守矢神社"],
     "enemies": ["河童斥候", "天狗巡卫", "信仰灵"],
     "characters": ["秋静叶", "秋穰子", "键山雏", "河城荷取", "东风谷早苗", "八坂神奈子", "洩矢诹访子"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th10_kanako_expanded_onbashira",
+      "name": "神祭「Expanded Onbashira」",
+      "short_name": "Expanded Onbashira",
+      "owner": "八坂神奈子",
+      "canon": "official",
+      "source_note": "原作符卡：东方风神录。",
+      "wuxia_style": "御柱神功 · 八方镇压",
+      "description": "敌群成势时降下扩张御柱，镇压范围内所有敌人。",
+      "effect": "area_burst",
+      "trigger": "crowd",
+      "power_cost": 85,
+      "cooldown_seconds": 7,
+      "effect_range": 288,
+      "damage": 13,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "needle_damage",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th10_suwako_mishaguji",
+      "name": "祟符「御社宫司大人」",
+      "short_name": "御社宫司大人",
+      "owner": "洩矢诹访子",
+      "canon": "official",
+      "source_note": "原作符卡：东方风神录。",
+      "wuxia_style": "土著神法 · 御社宫司",
+      "description": "遭受包围时唤起土著神力，冲击近敌并形成短暂守护。",
+      "effect": "guard_field",
+      "trigger": "danger",
+      "power_cost": 80,
+      "cooldown_seconds": 8,
+      "effect_range": 208,
+      "damage": 10,
+      "target_count": 0,
+      "defense_seconds": 1.5,
+      "prerequisite": "hakurei_breathing",
+      "minimum_rank": 3
+    }
+  ]
 }

@@ -3,10 +3,12 @@ using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
@@ -15,7 +17,7 @@ using TouhouWuxiaSurvivor.Ui.Stats;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 在真实世界场景验证两张符卡由构筑解锁并自动施放，同时正确更新战斗、HUD 和属性页。
+/// 从完整符卡目录抽取两张代表卡，在真实世界验证构筑解锁、自动施放、战斗、HUD 和属性页联动。
 /// </summary>
 public partial class SpellCardSmokeTest : Node
 {
@@ -28,6 +30,8 @@ public partial class SpellCardSmokeTest : Node
         int exitCode = 0;
         try
         {
+            ContentPackDefinition th06 = ContentPackCatalog.All.Single(pack => pack.Number == 6);
+            ContentPackSelectionService.Apply(new ContentPackSelection([th06.Id]));
             demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
                 .Instantiate<WorldDemo>();
             demo.PersistMetaProgression = false;
@@ -43,7 +47,11 @@ public partial class SpellCardSmokeTest : Node
                 "RunProgressionCoordinator");
             var spells = demo.GetNode<SpellCardCoordinator>("SpellCardCoordinator");
 
-            Unlock(progression.Build, RunUpgradeKind.NeedleDamage, RunUpgradeKind.FantasySeal);
+            SpellCardDefinition fantasy = SpellCardCatalog.All.Single(
+                card => card.FullName == "灵符「梦想封印」");
+            SpellCardDefinition circle = SpellCardCatalog.All.Single(
+                card => card.FullName == "梦符「封魔阵」");
+            Unlock(progression.Build, fantasy);
             Vector2[] fantasyTargets = SpawnEnemies(ecsWorld, player, 3, 84.0f);
             spells.Power.SetPower(100);
             Require(spells.TryAutoCast() && spells.Power.CurrentPower == 0 &&
@@ -60,9 +68,7 @@ public partial class SpellCardSmokeTest : Node
             VerifyPresentation(demo);
 
             spells._Process(10.0);
-            Unlock(progression.Build,
-                RunUpgradeKind.SpiritAttraction,
-                RunUpgradeKind.EvilSealingCircle);
+            Unlock(progression.Build, circle);
             Vector2[] circleTargets = SpawnEnemies(ecsWorld, player, 3, 64.0f);
             spells.Power.SetPower(70);
             Require(spells.TryAutoCast() && spells.Power.CurrentPower == 0 &&
@@ -78,6 +84,7 @@ public partial class SpellCardSmokeTest : Node
         }
         finally
         {
+            ContentPackSelectionService.Apply(ContentPackSelection.BaseOnly);
             GetTree().Paused = false;
             if (demo is not null && GodotObject.IsInstanceValid(demo))
             {
@@ -91,15 +98,18 @@ public partial class SpellCardSmokeTest : Node
     /// <summary>
     /// 把指定基础修炼提升到二重，再应用其符卡进阶，模拟玩家完成三选一构筑。
     /// </summary>
-    private static void Unlock(
-        RunBuildState build,
-        RunUpgradeKind prerequisiteKind,
-        RunUpgradeKind spellKind)
+    private static void Unlock(RunBuildState build, SpellCardDefinition card)
     {
-        RunUpgradeDefinition prerequisite = FindUpgrade(prerequisiteKind);
-        RunUpgradeDefinition spell = FindUpgrade(spellKind);
-        Require(build.Apply(prerequisite) && build.Apply(prerequisite) && build.Apply(spell),
-            $"Could not unlock spell build kind: {spellKind}");
+        RunUpgradeDefinition prerequisite = RunUpgradeCatalog.FindById(
+            card.PrerequisiteUpgradeId)!;
+        RunUpgradeDefinition spell = RunUpgradeCatalog.FindById(card.UnlockUpgradeId)!;
+        for (int rank = 0; rank < card.MinimumRank; rank++)
+        {
+            Require(build.Apply(prerequisite),
+                $"Could not apply prerequisite for spell: {card.Id}");
+        }
+
+        Require(build.Apply(spell), $"Could not unlock spell: {card.Id}");
     }
 
     /// <summary>
@@ -155,12 +165,6 @@ public partial class SpellCardSmokeTest : Node
                 "Fantasy Seal did not load the internal bullet atlas in gameplay.");
         }
     }
-
-    /// <summary>
-    /// 按稳定效果类型查找升级定义，使场景测试不依赖目录顺序。
-    /// </summary>
-    private static RunUpgradeDefinition FindUpgrade(RunUpgradeKind kind) =>
-        RunUpgradeCatalog.All.Single(definition => definition.Kind == kind);
 
     /// <summary>
     /// 将场景契约失败转换为包含具体原因的测试异常。

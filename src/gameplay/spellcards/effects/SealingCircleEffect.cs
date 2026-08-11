@@ -10,6 +10,17 @@ public partial class SealingCircleEffect : Node2D
     private const double DurationSeconds = 0.55;
     private double _elapsed;
     private Label? _fallbackLabel;
+    private string _sourcePackId = "th06_eosd";
+    private string _spellCardName = "梦符「封魔阵」";
+
+    /// <summary>
+    /// 在节点进入场景树前注入当前符卡视觉键，使所有作品复用结界演出而不复用错误素材身份。
+    /// </summary>
+    public void Configure(string sourcePackId, string spellCardName)
+    {
+        _sourcePackId = sourcePackId;
+        _spellCardName = spellCardName;
+    }
 
     /// <summary>
     /// 逐帧放大并淡出结界文字，在固定持续时间结束后自动回收节点。
@@ -46,7 +57,7 @@ public partial class SealingCircleEffect : Node2D
         {
             var bullet = new InternalSpellBulletVisual();
             AddChild(bullet);
-            bullet.Configure("梦符「封魔阵」", index + 5);
+            bullet.Configure(_sourcePackId, _spellCardName, index + 5);
             bullet.Position = Vector2.FromAngle(Mathf.Tau * index / 8.0f) * 26.0f;
             bullet.Scale = Vector2.One * 0.8f;
             available |= bullet.Visible;

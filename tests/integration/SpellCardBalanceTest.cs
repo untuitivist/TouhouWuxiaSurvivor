@@ -1,4 +1,6 @@
 using Godot;
+using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
@@ -22,6 +24,7 @@ public partial class SpellCardBalanceTest : Node
             VerifyCatalog();
             VerifyPowerState();
             VerifyBuildRequirements();
+            VerifyContentIsolation();
             VerifyNoActiveBindings();
             GD.Print("Spell card balance test passed.");
             GetTree().Quit();
@@ -34,18 +37,32 @@ public partial class SpellCardBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认两张灵梦符卡具有不同 ID、效果和合理的共享灵力消耗。
+    /// 确认二十部作品都有代表符卡，身份、角色归属、来源性质和灵力数值均可解析。
     /// </summary>
     private static void VerifyCatalog()
     {
-        Require(SpellCardCatalog.ReimuLoadout.Count == 2,
-            "Reimu must have two implemented spell cards.");
-        Require(SpellCardCatalog.ReimuLoadout.Select(card => card.Id).Distinct().Count() == 2 &&
-            SpellCardCatalog.ReimuLoadout.Select(card => card.EffectKind).Distinct().Count() == 2,
-            "Spell card IDs and effect kinds must be unique.");
-        Require(SpellCardCatalog.ReimuLoadout.All(card =>
+        Require(SpellCardCatalog.All.Count == 42,
+            "The all-work catalog must contain 42 representative spell cards.");
+        Require(SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 42 &&
+            SpellCardCatalog.All.All(card =>
+                CharacterCatalog.FindById(card.OwnerCharacterId) is not null),
+            "Spell card IDs or stable owner identities are invalid.");
+        Require(SpellCardCatalog.All.All(card =>
                 card.Combat.PowerCost is > 0 and <= SpellPowerState.MaximumPower),
             "Every spell card cost must fit the shared power pool.");
+        foreach (ContentPackDefinition pack in ContentPackCatalog.All)
+        {
+            int expected = pack.Number == 6 ? 4 : 2;
+            SpellCardDefinition[] cards = SpellCardCatalog.All.Where(
+                card => card.SourcePackId == pack.Id).ToArray();
+            Require(cards.Length == expected,
+                $"Unexpected spell count for {pack.Id}: {cards.Length}");
+            Require(cards.All(card => pack.Number <= 5
+                    ? card.CanonLevel == SpellCardCanonLevel.AdaptedPreSpellCard &&
+                        card.SourceNote.Contains("原作无符卡规则", StringComparison.Ordinal)
+                    : card.CanonLevel == SpellCardCanonLevel.Official),
+                $"Spell canon boundary is incorrect for {pack.Id}.");
+        }
     }
 
     /// <summary>
@@ -64,24 +81,37 @@ public partial class SpellCardBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认两张符卡在前置二重前不会出现，满足条件后可且只能悟得一次。
+    /// 确认数据驱动符卡在前置重数前不可选，达到要求后可且只能悟得一次。
     /// </summary>
     private static void VerifyBuildRequirements()
     {
         var build = new RunBuildState();
-        RunUpgradeDefinition needle = FindUpgrade(RunUpgradeKind.NeedleDamage);
-        RunUpgradeDefinition attraction = FindUpgrade(RunUpgradeKind.SpiritAttraction);
-        RunUpgradeDefinition fantasy = FindUpgrade(RunUpgradeKind.FantasySeal);
-        RunUpgradeDefinition circle = FindUpgrade(RunUpgradeKind.EvilSealingCircle);
-        Require(!build.CanUpgrade(fantasy) && !build.CanUpgrade(circle),
-            "Spell cards appeared before prerequisites.");
-        build.Apply(needle);
-        build.Apply(needle);
-        build.Apply(attraction);
-        build.Apply(attraction);
-        Require(build.Apply(fantasy) && build.Apply(circle) &&
-            !build.CanUpgrade(fantasy) && !build.CanUpgrade(circle),
-            "Spell card prerequisite or one-rank cap is incorrect.");
+        SpellCardDefinition card = SpellCardCatalog.All[0];
+        RunUpgradeDefinition spell = RunUpgradeCatalog.FindById(card.UnlockUpgradeId)!;
+        RunUpgradeDefinition prerequisite = RunUpgradeCatalog.FindById(
+            card.PrerequisiteUpgradeId)!;
+        Require(!build.CanUpgrade(spell), "Spell card appeared before its prerequisite.");
+        for (int rank = 0; rank < card.MinimumRank; rank++)
+        {
+            Require(build.Apply(prerequisite), "Could not apply a spell prerequisite.");
+        }
+
+        Require(build.Apply(spell) && !build.CanUpgrade(spell),
+            "Spell card did not obey its one-rank cap.");
+    }
+
+    /// <summary>
+    /// 确认未勾选任何作品时符卡池为空，启用单一作品时只开放该作品的传承。
+    /// </summary>
+    private static void VerifyContentIsolation()
+    {
+        Require(SpellCardCatalog.GetEnabled(ContentPackSelection.BaseOnly).Count == 0,
+            "Base-only runs leaked official spell cards.");
+        ContentPackDefinition th06 = ContentPackCatalog.All.Single(pack => pack.Number == 6);
+        var selection = new ContentPackSelection([th06.Id]);
+        Require(SpellCardCatalog.GetEnabled(selection).Count == 4 &&
+            SpellCardCatalog.GetEnabled(selection).All(card => card.SourcePackId == th06.Id),
+            "Single-pack spell filtering is incorrect.");
     }
 
     /// <summary>
@@ -91,12 +121,6 @@ public partial class SpellCardBalanceTest : Node
         InputActionCatalog.All.All(action =>
             action.Id != "cast_spell_card" && action.Id != "cycle_spell_card"),
         "Spell cards must not add active input actions.");
-
-    /// <summary>
-    /// 按稳定效果类型查找升级定义，使测试不依赖目录下标或中文显示名。
-    /// </summary>
-    private static RunUpgradeDefinition FindUpgrade(RunUpgradeKind kind) =>
-        RunUpgradeCatalog.All.Single(definition => definition.Kind == kind);
 
     /// <summary>
     /// 将策划契约失败转换为包含具体原因的测试异常。

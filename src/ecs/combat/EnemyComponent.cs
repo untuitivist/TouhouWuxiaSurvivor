@@ -14,11 +14,19 @@ public struct EnemyComponent
     {
         Entity = entity;
         Position = position;
+        Velocity = Vector2.Zero;
         Definition = definition;
         Health = definition.MaxHealth;
         DeathTime = 0.0f;
         HurtTime = 0.0f;
         TouchCooldown = 0.0f;
+        AiTimer = definition.AiProfile.ChargeInterval;
+        ChargeTimeLeft = 0.0f;
+        FireCooldown = 0.25f + entity.Value % 7 * 0.08f;
+        OrbitDirection = (entity.Value & 1) == 0 ? 1.0f : -1.0f;
+        BossPhase = BossBulletPhase.AimedFan;
+        PatternAngle = entity.Value % 12 * Mathf.Pi / 6.0f;
+        PatternDirection = (entity.Value & 1) == 0 ? 1.0f : -1.0f;
         Alive = true;
     }
 
@@ -27,6 +35,9 @@ public struct EnemyComponent
 
     /// <summary>获取或设置局部世界位置。</summary>
     public Vector2 Position;
+
+    /// <summary>获取或设置追踪、突进和绕行系统共享的当前速度。</summary>
+    public Vector2 Velocity;
 
     /// <summary>获取敌人平衡定义。</summary>
     public EnemyDefinition Definition;
@@ -42,6 +53,27 @@ public struct EnemyComponent
 
     /// <summary>获取或设置接触伤害冷却。</summary>
     public float TouchCooldown;
+
+    /// <summary>获取或设置移动 AI 的蓄势或状态剩余时间。</summary>
+    public float AiTimer;
+
+    /// <summary>获取或设置突进动作尚需保持锁定方向的时间。</summary>
+    public float ChargeTimeLeft;
+
+    /// <summary>获取或设置下一次普通射击或 Boss 弹幕允许发射前的时间。</summary>
+    public float FireCooldown;
+
+    /// <summary>获取实体稳定分配的顺逆时针方向，避免同类敌人完全重叠。</summary>
+    public float OrbitDirection;
+
+    /// <summary>获取或设置角色 Boss 当前生效的血量弹幕阶段。</summary>
+    public BossBulletPhase BossPhase;
+
+    /// <summary>获取或设置旋转弹幕的累计角度，使低血量阶段跨帧连续。</summary>
+    public float PatternAngle;
+
+    /// <summary>获取或设置交错旋转方向，每次发射后翻转形成正反双螺旋。</summary>
+    public float PatternDirection;
 
     /// <summary>获取是否仍然可以移动、受伤和被索敌。</summary>
     public bool Alive;

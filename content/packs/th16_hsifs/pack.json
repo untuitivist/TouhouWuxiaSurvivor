@@ -10,5 +10,47 @@
     "structures": ["季节祭坛", "秘神后户", "秘神舞台"],
     "enemies": ["季节妖精", "后户舞童", "秘神侍从"],
     "characters": ["爱塔妮缇拉尔瓦", "坂田合欢乃", "高丽野阿吽", "矢田寺成美", "尔子田里乃", "丁礼田舞", "摩多罗隐岐奈"]
-  }
+  },
+  "spellcards": [
+    {
+      "id": "th16_okina_secret_god_backlight",
+      "name": "后符「秘神的后光」",
+      "short_name": "秘神的后光",
+      "owner": "摩多罗隐岐奈",
+      "canon": "official",
+      "source_note": "原作符卡：东方天空璋。",
+      "wuxia_style": "后户神法 · 秘神后光",
+      "description": "敌群聚集时从目标背后开启秘门，放出追踪神光。",
+      "effect": "homing_volley",
+      "trigger": "crowd",
+      "power_cost": 80,
+      "cooldown_seconds": 6,
+      "effect_range": 560,
+      "damage": 10,
+      "target_count": 10,
+      "defense_seconds": 0,
+      "prerequisite": "soul_seeking",
+      "minimum_rank": 2
+    },
+    {
+      "id": "th16_okina_scorch_by_hot_summer",
+      "name": "里夏「Scorch by Hot Summer」",
+      "short_name": "Scorch by Hot Summer",
+      "owner": "摩多罗隐岐奈",
+      "canon": "official",
+      "source_note": "原作符卡：东方天空璋。",
+      "wuxia_style": "里夏秘法 · 盛暑灼界",
+      "description": "敌群逼近时释放盛夏季力，对周围目标造成灼热爆发。",
+      "effect": "area_burst",
+      "trigger": "danger",
+      "power_cost": 90,
+      "cooldown_seconds": 8,
+      "effect_range": 320,
+      "damage": 15,
+      "target_count": 0,
+      "defense_seconds": 0,
+      "prerequisite": "wind_riding",
+      "minimum_rank": 3
+    }
+  ]
 }

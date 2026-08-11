@@ -1,5 +1,28 @@
 # Findings and Decisions
 
+## Release-candidate findings - 2026-08-12
+
+- Entity-count caps alone do not make an endless curve: ordinary health and contact damage now consume the same shared snapshot through ten-second cached definition tiers, while speed and entity counts retain readability/performance caps.
+- A character-aware HUD test must disable persistent meta progression before comparing base health; otherwise the user's real save bonus legitimately changes the expected maximum and contaminates the test.
+- Character Boss visuals use the Character mapping category rather than ordinary Enemy mappings. Portraits are aspect-fitted, ActorStrips animate in four frames, and missing sources retain an explicit Chinese-name fallback.
+- Player and enemy bullets share one 2,000-projectile ECS pool with separate 1,600/400 budgets, preventing either side from starving the other during late-game danmaku.
+- The supplied TH01-TH05 and TH20 source package cannot provide same-work art for every entry. Runtime mappings must therefore retain reviewed proxy provenance or explicit unavailable declarations instead of pretending same-work coverage.
+- The previously removed branding icon is byte-identical to the user's specified start-game source and the committed icon blob, so restoring it preserves rather than substitutes the requested release identity.
+- Two command probes failed because cmd.exe interpreted regex pipe/caret quoting; subsequent Windows searches use separate `-e` patterns and direct file reads.
+
+## Five-domain runtime completion - 2026-08-11
+
+- TH01-TH20 regions, structures, and ordinary enemies already run through the infinite-world and ECS selection pipeline; 60 region/structure/enemy groups are covered.
+- Characters outside the hard-coded Reimu shell are currently compendium strings only. There is no stable character ID, runtime character catalog, character selection, or Boss catalog.
+- The target identity rule is one shared character definition with playable and Boss profiles. A run context stores the selected character ID; Boss candidate filtering removes that ID before random selection and never re-adds it as fallback.
+- Character Bosses must use a separate encounter director, Character visual mappings, persistent offscreen behavior, and a compact Boss health projection. They must not enter ordinary ecology weights.
+- Only two Reimu TH06 spell cards currently exist. The all-work target is at least two automatic spell cards per official work, declared in content manifests and filtered by enabled content.
+- Spell cards remain passive build unlocks and automatic combat decisions. The current enum/switch and fixed Reimu loadout must be replaced with stable IDs and reusable trigger/effect strategies.
+- TH01-TH05 and TH20 have no same-work source assets in the supplied pack. Any spell bullet atlas for those works must be an explicit reviewed proxy; unavailable character images continue to use Chinese text fallback rather than false attribution.
+- Endless combat adds three separate responsibilities: a monotonic difficulty budget, AI decisions that consume that budget, and pooled projectile emitters that translate it into bounded patterns.
+- Early-to-late danmaku must increase pattern density and cadence for both sides without unbounded node creation. ECS pools retain explicit live-entity caps and recycle policies while strength continues through health, damage, speed, pattern complexity, and reward scaling.
+- Upgrade progression must remain available after finite named techniques reach their caps; repeatable post-cap cultivation or an endless reinforcement tier is required so every later level still resolves to a meaningful build choice.
+
 ## DLC source and crop audit - 2026-08-11
 
 - Supplied original material contains complete integer-game trees for TH06-TH18 and only a TH19 trial tree; TH01-TH05 and TH20 have no same-work source directory.

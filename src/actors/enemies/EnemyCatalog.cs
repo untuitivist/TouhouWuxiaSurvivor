@@ -19,21 +19,31 @@ public static class EnemyCatalog
     {
         var definitions = new List<EnemyDefinition>
         {
-            new(EnemyArchetype.Fairy, "野妖精", 2, 52.0f, 5.0f, 38.0f, 0.0f, 0.28f, []),
+            new(EnemyArchetype.Fairy, "野妖精", 2, 52.0f, 5.0f, 38.0f, 0.0f, 0.28f, [],
+                aiProfile: EnemyAiProfile.OrbitShooter,
+                projectileProfile: EnemyProjectileProfile.Aimed),
             new(EnemyArchetype.Kedama, "毛玉", 3, 42.0f, 6.0f, 34.0f, 0.0f, 0.32f,
                 [BiomeId.Common, BiomeId.HakureiShrine, BiomeId.HumanVillage]),
             new(EnemyArchetype.Insect, "妖虫", 3, 46.0f, 6.0f, 30.0f, 15.0f, 0.35f,
-                [BiomeId.MagicForest]),
+                [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
             new(EnemyArchetype.YinYangOrb, "阴阳玉", 5, 68.0f, 7.0f, 18.0f, 45.0f, 0.42f,
-                [BiomeId.Common, BiomeId.YoukaiMountain]),
+                [BiomeId.Common, BiomeId.YoukaiMountain],
+                aiProfile: EnemyAiProfile.OrbitShooter,
+                projectileProfile: EnemyProjectileProfile.Fan),
             new(EnemyArchetype.ForestSpirit, "森林精怪", 7, 34.0f, 9.0f, 18.0f, 60.0f, 0.48f,
-                [BiomeId.MagicForest]),
+                [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
             new(EnemyArchetype.MountainSpirit, "山精", 10, 30.0f, 10.0f, 20.0f, 90.0f, 0.55f,
                 [BiomeId.YoukaiMountain]),
             new(EnemyArchetype.VillageOutlaw, "流窜妖怪", 8, 48.0f, 8.0f, 14.0f, 105.0f, 0.52f,
-                [BiomeId.HumanVillage, BiomeId.Common]),
-            new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 12, 42.0f, 9.0f, 10.0f, 150.0f, 0.62f, []),
-            new(EnemyArchetype.GreatYoukai, "大妖怪", 30, 36.0f, 12.0f, 3.0f, 240.0f, 0.95f, []),
+                [BiomeId.HumanVillage, BiomeId.Common],
+                aiProfile: EnemyAiProfile.OrbitShooter,
+                projectileProfile: EnemyProjectileProfile.Aimed),
+            new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 12, 42.0f, 9.0f, 10.0f, 150.0f, 0.62f, [],
+                aiProfile: EnemyAiProfile.Charger),
+            new(EnemyArchetype.GreatYoukai, "大妖怪", 30, 36.0f, 12.0f, 3.0f, 240.0f, 0.95f, [],
+                contactDamage: 2,
+                aiProfile: EnemyAiProfile.OrbitShooter,
+                projectileProfile: EnemyProjectileProfile.Fan),
         };
 
         foreach (OfficialWorldContentDefinition content in OfficialWorldContentCatalog.All)
@@ -67,8 +77,23 @@ public static class EnemyCatalog
             stats.DropChance,
             [content.Biome],
             content.Number == 6 && content.RegionIndex == 1,
-            content.PackId);
+            content.PackId,
+            contactDamage: content.RegionIndex == 2 ? 2 : 1,
+            aiProfile: GetOfficialAiProfile(content.RegionIndex),
+            projectileProfile: content.RegionIndex == 1
+                ? EnemyProjectileProfile.Aimed
+                : EnemyProjectileProfile.None);
     }
+
+    /// <summary>
+    /// 让每部正作的外围、核心、深层各自采用追击、绕射、突进职责，形成稳定而可预期的生态组合。
+    /// </summary>
+    private static EnemyAiProfile GetOfficialAiProfile(int regionIndex) => regionIndex switch
+    {
+        0 => EnemyAiProfile.Chase,
+        1 => EnemyAiProfile.OrbitShooter,
+        _ => EnemyAiProfile.Charger,
+    };
 
     /// <summary>
     /// 生成三段生存曲线：外围快速低耐久、核心均衡、深层低频高耐久，并加入最多两点扰动。
