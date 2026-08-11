@@ -1,0 +1,21 @@
+{
+  "entries": [
+    {"sourceId":"th14_ddc","category":"Biome","name":"暴风湖面","asset":"th14/scenes/biome_stormy_lake.png","kind":"Scene","variant":0},
+    {"sourceId":"th14_ddc","category":"Biome","name":"付丧神云海","asset":"th14/scenes/biome_tsukumogami_sky.png","kind":"Scene","variant":1},
+    {"sourceId":"th14_ddc","category":"Biome","name":"逆转天","asset":"th14/scenes/biome_shining_needle_realm.png","kind":"Scene","variant":2},
+    {"sourceId":"th14_ddc","category":"Structure","name":"遗弃乐器堆","asset":"th14/scenes/structure_abandoned_instrument_pile.png","kind":"Scene","variant":3},
+    {"sourceId":"th14_ddc","category":"Structure","name":"雷鼓舞台","asset":"th14/scenes/structure_thunder_drum_stage.png","kind":"Scene","variant":4},
+    {"sourceId":"th14_ddc","category":"Structure","name":"辉针城","asset":"th14/scenes/structure_shining_needle_castle.png","kind":"Scene","variant":5},
+    {"sourceId":"th14_ddc","category":"Enemy","name":"水栖妖怪","asset":"th14/actors/aquatic_youkai.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th14_ddc","category":"Enemy","name":"付丧神","asset":"th14/actors/tsukumogami.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th14_ddc","category":"Enemy","name":"小人卫兵","asset":"th14/actors/inchling_guard.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th14_ddc","category":"Character","name":"若鹭姬","asset":"th14/portraits/wakasagihime.png","kind":"Portrait","variant":0},
+    {"sourceId":"th14_ddc","category":"Character","name":"赤蛮奇","asset":"th14/portraits/sekibanki.png","kind":"Portrait","variant":1},
+    {"sourceId":"th14_ddc","category":"Character","name":"今泉影狼","asset":"th14/portraits/kagerou.png","kind":"Portrait","variant":2},
+    {"sourceId":"th14_ddc","category":"Character","name":"九十九弁弁","asset":"th14/portraits/benben.png","kind":"Portrait","variant":3},
+    {"sourceId":"th14_ddc","category":"Character","name":"九十九八桥","asset":"th14/portraits/yatsuhashi.png","kind":"Portrait","variant":4},
+    {"sourceId":"th14_ddc","category":"Character","name":"鬼人正邪","asset":"th14/portraits/seija.png","kind":"Portrait","variant":5},
+    {"sourceId":"th14_ddc","category":"Character","name":"少名针妙丸","asset":"th14/portraits/shinmyoumaru.png","kind":"Portrait","variant":6},
+    {"sourceId":"th14_ddc","category":"Character","name":"堀川雷鼓","asset":"th14/portraits/raiko.png","kind":"Portrait","variant":7}
+  ]
+}

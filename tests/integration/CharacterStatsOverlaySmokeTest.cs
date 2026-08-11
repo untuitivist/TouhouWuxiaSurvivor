@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Settings;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.Ui.Pause;
 using TouhouWuxiaSurvivor.Ui.Stats;
@@ -73,8 +74,7 @@ public partial class CharacterStatsOverlaySmokeTest : Node
             pause.Close();
 
             GD.Print("Character stats overlay smoke test passed.");
-            demo.QueueFree();
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await WorldDemoTestCleanup.FreeAsync(this, demo);
             GetTree().Quit();
         }
         catch (Exception exception)

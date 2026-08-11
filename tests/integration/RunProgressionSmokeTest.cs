@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.Ui.Pause;
@@ -61,8 +62,7 @@ public partial class RunProgressionSmokeTest : Node
                 "Compact HUD did not refresh to the new level.");
 
             GD.Print("Run progression smoke test passed.");
-            demo.QueueFree();
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await WorldDemoTestCleanup.FreeAsync(this, demo);
             GetTree().Quit();
         }
         catch (Exception exception)

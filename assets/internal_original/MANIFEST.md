@@ -19,15 +19,29 @@
 
 - `th06/scenes/` 使用 TH06 各关背景，分别映射雾之湖、红魔馆领地、巴瓦鲁魔法图书馆及其结构。
 - `th06/actors/` 使用 TH06 敌人图集生成四帧移动条。
-- `th06/portraits/` 使用 TH06 角色对话立绘的左侧表情。
+- `th06/portraits/` 按逐图裁切声明处理：双表情图取完整左侧人物，斯卡蕾特姐妹保留整张单人立绘。
 - `th06/bullet_atlas.png` 供两张灵梦符卡按不同运动规则共享。
+
+## TH07 至 TH18 作品视觉
+
+- 每作在 `tools/internal_assets/packs/` 与 `mappings/` 各有独立清单，地区、结构、敌人和角色只按自身内容键接入。
+- 场景先裁透明边，再保持宽高比铺入底色；敌人规范为四个 48x48 帧；角色规范为 80x80 完整轮廓。
+- TH10 上下半身、TH13 至 TH18 身体与表情均由清单声明合成；带白底表情只清除从边缘连通的近白区域。
+- 各作弹幕图集可先规范化保存，但没有正式符卡定义时不会伪造图鉴或玩法映射。
+
+## 缺失来源与跨作代用
+
+- 用户提供的素材树没有 TH01 至 TH05 与 TH20；TH19 只有体验版内容，不能标成正式版完整原作素材。
+- 地区、结构和通用敌人允许使用语义接近的其他原作作为跨作品视觉代用，但映射必须记录 `proxySourceWork` 与中文原因。
+- 缺少对应角色原图时使用 `unavailableEntries` 明确登记原因，并保留中文文字动态图标，不用相似角色冒充。
+- 上述代用只用于内部测试，不代表原著归属；补入同作或原创素材后必须移除相应代用声明。
 
 ## 可复现构建
 
-- `tools/internal_assets/build_manifest.json` 声明所有外部输入、裁切和规范化输出。
+- `tools/internal_assets/build_manifest.json` 声明本体与 TH06 输入；`tools/internal_assets/packs/*.json` 声明后续每作输入、裁切、合成和降级边界。
 - `tools/internal_assets/InternalPreviewAssetBuilder.tscn` 负责生成 128x80 场景、192x48 动画条、80x80 立绘，以及 RGBA8 弹幕和道具图集。
-- `source_files.sha256` 记录本轮 52 个外部源文件的 SHA-256；源文件变化后必须重新生成并执行边界测试。
-- `preview_mappings.json` 保存 39 个图鉴条目和 3 个正式战斗道具的逐项映射；共享图集后共有 39 个唯一输出。
+- `source_files.sha256` 动态记录中央与逐作清单引用的全部外部源文件；源文件变化后必须重新生成并执行边界测试。
+- `preview_mappings.json` 保存本体与 TH06 映射；`mappings/*.json` 保存逐作映射，运行时通过 Godot 资源目录枚举以兼容内嵌 PCK。
 - `base/audio/` 使用 TH17.5 灵梦 BGM/自机音效与 TH18 道具/敌人音效，替换全部参考游戏音频。
 - 灵梦 BGM 构建时仅流复制并移除非标准旧编码注释，不重编码音频数据，避免 Godot 每次加载产生元数据警告。
 - 原作包没有语义可靠的连续脚步声；当前 `footstep.wav` 明确使用 TH17.5 `landing.wav` 作为内部节拍占位，后续需原创替换。

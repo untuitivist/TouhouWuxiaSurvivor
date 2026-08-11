@@ -1,0 +1,22 @@
+{
+  "proxyAssets": [
+    {"sourceId":"th05_ms","category":"Biome","name":"魔界边境都市","asset":"th12/scenes/biome_hokkai.png","kind":"Scene","variant":0,"proxySourceWork":"th12_ufo","reasonZh":"缺少 TH05 原作源；以 TH12 法界边境场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Biome","name":"魔界都市","asset":"th15/scenes/biome_lunar_capital.png","kind":"Scene","variant":1,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH05 原作源；以 TH15 异界都市场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Biome","name":"万魔殿境内","asset":"th11/scenes/biome_palace_grounds.png","kind":"Scene","variant":2,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH05 原作源；以 TH11 宫殿境内场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Structure","name":"魔界都市门","asset":"th15/scenes/structure_lunar_capital_gate.png","kind":"Scene","variant":3,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH05 原作源；以 TH15 异界都市门景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Structure","name":"魔界中央广场","asset":"th14/scenes/structure_thunder_drum_stage.png","kind":"Scene","variant":4,"proxySourceWork":"th14_ddc","reasonZh":"缺少 TH05 原作源；以 TH14 开放舞台结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Structure","name":"万魔殿","asset":"th11/scenes/structure_palace_of_earth_spirits.png","kind":"Scene","variant":5,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH05 原作源；以 TH11 地底宫殿结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Enemy","name":"魔界魔法阵","asset":"th15/actors/purified_spirit.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH05 原作源；以 TH15 抽象灵体轮廓代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Enemy","name":"魔界居民","asset":"th12/actors/hokkai_demon_spirit.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th12_ufo","reasonZh":"缺少 TH05 原作源；以 TH12 法界魔灵代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th05_ms","category":"Enemy","name":"万魔殿使魔","asset":"th12/actors/flying_youkai.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th12_ufo","reasonZh":"缺少 TH05 原作源；以 TH12 飞行妖怪代用。","reviewStatus":"proxy-reviewed"}
+  ],
+  "unavailableEntries": [
+    {"sourceId":"th05_ms","category":"Character","name":"萨拉","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th05_ms","category":"Character","name":"露易兹","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th05_ms","category":"Character","name":"爱丽丝","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th05_ms","category":"Character","name":"雪","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th05_ms","category":"Character","name":"舞","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th05_ms","category":"Character","name":"梦子","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th05_ms","category":"Character","name":"神绮","reasonZh":"未提供 TH05 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th12_ufo","category":"Biome","name":"春云之海","asset":"th12/scenes/biome_spring_cloud_sea.png","kind":"Scene","variant":0},
+    {"sourceId":"th12_ufo","category":"Biome","name":"圣辇船甲板","asset":"th12/scenes/biome_palanquin_ship_deck.png","kind":"Scene","variant":1},
+    {"sourceId":"th12_ufo","category":"Biome","name":"法界","asset":"th12/scenes/biome_hokkai.png","kind":"Scene","variant":2},
+    {"sourceId":"th12_ufo","category":"Structure","name":"云海宝船遗物","asset":"th12/scenes/structure_cloud_sea_ship_relic.png","kind":"Scene","variant":3},
+    {"sourceId":"th12_ufo","category":"Structure","name":"圣辇船","asset":"th12/scenes/structure_palanquin_ship.png","kind":"Scene","variant":4},
+    {"sourceId":"th12_ufo","category":"Structure","name":"法界封印","asset":"th12/scenes/structure_hokkai_seal.png","kind":"Scene","variant":5},
+    {"sourceId":"th12_ufo","category":"Enemy","name":"飞天妖怪","asset":"th12/actors/flying_youkai.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th12_ufo","category":"Enemy","name":"飞仓灵","asset":"th12/actors/flying_storehouse_spirit.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th12_ufo","category":"Enemy","name":"法界魔灵","asset":"th12/actors/hokkai_demon_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th12_ufo","category":"Character","name":"娜兹玲","asset":"th12/portraits/nazrin.png","kind":"Portrait","variant":0},
+    {"sourceId":"th12_ufo","category":"Character","name":"多多良小伞","asset":"th12/portraits/kogasa.png","kind":"Portrait","variant":1},
+    {"sourceId":"th12_ufo","category":"Character","name":"云居一轮与云山","asset":"th12/portraits/ichirin_unzan.png","kind":"Portrait","variant":2},
+    {"sourceId":"th12_ufo","category":"Character","name":"村纱水蜜","asset":"th12/portraits/minamitsu.png","kind":"Portrait","variant":3},
+    {"sourceId":"th12_ufo","category":"Character","name":"寅丸星","asset":"th12/portraits/shou.png","kind":"Portrait","variant":4},
+    {"sourceId":"th12_ufo","category":"Character","name":"圣白莲","asset":"th12/portraits/byakuren.png","kind":"Portrait","variant":5},
+    {"sourceId":"th12_ufo","category":"Character","name":"封兽鵺","asset":"th12/portraits/nue.png","kind":"Portrait","variant":6}
+  ]
+}

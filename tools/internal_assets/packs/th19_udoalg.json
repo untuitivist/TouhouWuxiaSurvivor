@@ -1,0 +1,33 @@
+{
+  "proxyAssets": [
+    {"sourceId":"th19_udoalg","category":"Biome","name":"兽灵争道","asset":"th19/scenes/biome_beast_spirit_crossroads.png","kind":"Scene","variant":0,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th19_udoalg","category":"Biome","name":"地狱市场","asset":"th19/scenes/biome_hell_market.png","kind":"Scene","variant":1,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th19_udoalg","category":"Biome","name":"兽王园","asset":"th19/scenes/biome_beast_king_garden.png","kind":"Scene","variant":2,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th19_udoalg","category":"Structure","name":"兽道界碑","asset":"th19/scenes/structure_beast_road_boundary_marker.png","kind":"Scene","variant":3,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th19_udoalg","category":"Structure","name":"地狱交易摊","asset":"th19/scenes/structure_hell_trading_stall.png","kind":"Scene","variant":4,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th19_udoalg","category":"Structure","name":"兽王竞技场","asset":"th19/scenes/structure_beast_king_arena.png","kind":"Scene","variant":5,"proxySourceWork":"th18_um","reasonZh":"TH19 体验版场景与 TH18 来源文件一致；仅作跨作视觉代用，不能视为 TH19 正式版完整素材。","reviewStatus":"proxy-reviewed"}
+  ],
+  "scenes": [
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/background/world01/st02a.png","output":"th19/scenes/biome_beast_spirit_crossroads.png","canvas":[512,512],"baseColor":[16,20,12,255],"proxySourceWork":"th18_um"},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/background/world01/st02a2.png","output":"th19/scenes/biome_hell_market.png","canvas":[512,512],"baseColor":[8,18,10,255],"proxySourceWork":"th18_um"},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/background/world01/st02a3.png","output":"th19/scenes/biome_beast_king_garden.png","canvas":[512,512],"baseColor":[18,12,24,255],"proxySourceWork":"th18_um"},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/background/world01/st02a.png","output":"th19/scenes/structure_beast_road_boundary_marker.png","canvas":[512,512],"baseColor":[16,20,12,255],"proxySourceWork":"th18_um"},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/background/world01/st02a2.png","output":"th19/scenes/structure_hell_trading_stall.png","canvas":[512,512],"baseColor":[8,18,10,255],"proxySourceWork":"th18_um"},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/background/world01/st02a3.png","output":"th19/scenes/structure_beast_king_arena.png","canvas":[512,512],"baseColor":[18,12,24,255],"proxySourceWork":"th18_um"}
+  ],
+  "gridStrips": [
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/animal_spirits.png","output":"th19/actors/wandering_animal_spirit.png","startX":0,"startY":0,"frameWidth":48,"frameHeight":32},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/animal_spirits.png","output":"th19/actors/market_wraith.png","startX":0,"startY":32,"frameWidth":48,"frameHeight":32},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/animal_spirits.png","output":"th19/actors/organized_warrior.png","startX":0,"startY":64,"frameWidth":48,"frameHeight":32}
+  ],
+  "copies": [
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/bullet/bullet1.png","output":"th19/bullet_atlas.png"}
+  ],
+  "unavailableEntries": [
+    {"sourceId":"th19_udoalg","category":"Character","name":"孙美天","reasonZh":"TH19 东方兽王园体验版不含该正式版新增角色立绘；图鉴保留文字回退。"},
+    {"sourceId":"th19_udoalg","category":"Character","name":"三头慧之子","reasonZh":"TH19 东方兽王园体验版不含该正式版新增角色立绘；图鉴保留文字回退。"},
+    {"sourceId":"th19_udoalg","category":"Character","name":"天火人血枪","reasonZh":"TH19 东方兽王园体验版不含该正式版新增角色立绘；图鉴保留文字回退。"},
+    {"sourceId":"th19_udoalg","category":"Character","name":"豫母都日狭美","reasonZh":"TH19 东方兽王园体验版不含该正式版新增角色立绘；图鉴保留文字回退。"},
+    {"sourceId":"th19_udoalg","category":"Character","name":"日白残无","reasonZh":"TH19 东方兽王园体验版不含该正式版新增角色立绘；图鉴保留文字回退。"}
+  ]
+}

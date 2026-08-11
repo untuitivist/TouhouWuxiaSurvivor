@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th10_mof","category":"Biome","name":"妖怪之山大瀑布","asset":"th10/scenes/biome_great_youkai_waterfall.png","kind":"Scene","variant":0},
+    {"sourceId":"th10_mof","category":"Biome","name":"风神之湖","asset":"th10/scenes/biome_wind_god_lake.png","kind":"Scene","variant":1},
+    {"sourceId":"th10_mof","category":"Biome","name":"守矢神社境内","asset":"th10/scenes/biome_moriya_shrine_grounds.png","kind":"Scene","variant":2},
+    {"sourceId":"th10_mof","category":"Structure","name":"河童工房","asset":"th10/scenes/structure_kappa_workshop.png","kind":"Scene","variant":3},
+    {"sourceId":"th10_mof","category":"Structure","name":"风神湖鸟居","asset":"th10/scenes/structure_wind_god_lake_torii.png","kind":"Scene","variant":4},
+    {"sourceId":"th10_mof","category":"Structure","name":"守矢神社","asset":"th10/scenes/structure_moriya_shrine.png","kind":"Scene","variant":5},
+    {"sourceId":"th10_mof","category":"Enemy","name":"河童斥候","asset":"th10/actors/kappa_scout.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th10_mof","category":"Enemy","name":"天狗巡卫","asset":"th10/actors/tengu_patrol.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th10_mof","category":"Enemy","name":"信仰灵","asset":"th10/actors/faith_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th10_mof","category":"Character","name":"秋静叶","asset":"th10/portraits/shizuha.png","kind":"Portrait","variant":0},
+    {"sourceId":"th10_mof","category":"Character","name":"秋穰子","asset":"th10/portraits/minoriko.png","kind":"Portrait","variant":1},
+    {"sourceId":"th10_mof","category":"Character","name":"键山雏","asset":"th10/portraits/hina.png","kind":"Portrait","variant":2},
+    {"sourceId":"th10_mof","category":"Character","name":"河城荷取","asset":"th10/portraits/nitori.png","kind":"Portrait","variant":3},
+    {"sourceId":"th10_mof","category":"Character","name":"东风谷早苗","asset":"th10/portraits/sanae.png","kind":"Portrait","variant":4},
+    {"sourceId":"th10_mof","category":"Character","name":"八坂神奈子","asset":"th10/portraits/kanako.png","kind":"Portrait","variant":5},
+    {"sourceId":"th10_mof","category":"Character","name":"洩矢诹访子","asset":"th10/portraits/suwako.png","kind":"Portrait","variant":6}
+  ]
+}

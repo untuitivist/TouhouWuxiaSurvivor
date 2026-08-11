@@ -1,0 +1,19 @@
+{
+  "proxyAssets": [
+    {"sourceId":"th02_soew","category":"Biome","name":"妖怪侵占神社","asset":"th10/scenes/biome_moriya_shrine_grounds.png","kind":"Scene","variant":0,"proxySourceWork":"th10_mof","reasonZh":"缺少 TH02 原作源；以 TH10 神社境内场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Biome","name":"幻梦界","asset":"th13/scenes/biome_hall_of_dreams.png","kind":"Scene","variant":1,"proxySourceWork":"th13_td","reasonZh":"缺少 TH02 原作源；以 TH13 梦殿场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Biome","name":"灵魔殿境内","asset":"th11/scenes/biome_palace_grounds.png","kind":"Scene","variant":2,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH02 原作源；以 TH11 宫殿境内场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Structure","name":"战车残骸","asset":"th14/scenes/structure_abandoned_instrument_pile.png","kind":"Scene","variant":3,"proxySourceWork":"th14_ddc","reasonZh":"缺少 TH02 原作源；以 TH14 遗弃器物堆代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Structure","name":"幻梦界壁","asset":"th13/scenes/structure_hall_of_dreams_gate.png","kind":"Scene","variant":4,"proxySourceWork":"th13_td","reasonZh":"缺少 TH02 原作源；以 TH13 梦殿门景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Structure","name":"灵魔殿","asset":"th11/scenes/structure_palace_of_earth_spirits.png","kind":"Scene","variant":5,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH02 原作源；以 TH11 地灵殿结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Enemy","name":"战车妖怪","asset":"th10/actors/kappa_scout.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th10_mof","reasonZh":"缺少 TH02 原作源；以 TH10 机械系河童轮廓代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Enemy","name":"幻梦界魔石","asset":"th15/actors/purified_spirit.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH02 原作源；以 TH15 抽象灵体轮廓代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th02_soew","category":"Enemy","name":"灵魔殿使魔","asset":"th06/actors/familiar_book_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH02 原作源；以 TH06 使魔型敌人代用。","reviewStatus":"proxy-reviewed"}
+  ],
+  "unavailableEntries": [
+    {"sourceId":"th02_soew","category":"Character","name":"里香","reasonZh":"未提供 TH02 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th02_soew","category":"Character","name":"明罗","reasonZh":"未提供 TH02 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th02_soew","category":"Character","name":"雾雨魔理沙","reasonZh":"未提供 TH02 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th02_soew","category":"Character","name":"魅魔","reasonZh":"未提供 TH02 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"}
+  ]
+}

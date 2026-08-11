@@ -1,0 +1,76 @@
+{
+  "scenes": [
+    {"source":"TH15 东方绀珠传/ANM/ANM/background/stage03/stg3bg1.png","output":"th15/scenes/biome_lunar_rainbow_sea.png","canvas":[512,512],"baseColor":[8,18,42,255]},
+    {"source":"TH15 东方绀珠传/ANM/ANM/background/stage04/stage03a.png","output":"th15/scenes/biome_lunar_capital.png","canvas":[512,512],"baseColor":[18,24,38,255]},
+    {"source":"TH15 东方绀珠传/ANM/ANM/background/stage05/stage05a.png","output":"th15/scenes/biome_sea_of_tranquility.png","canvas":[512,512],"baseColor":[22,16,34,255]},
+    {"source":"TH15 东方绀珠传/ANM/ANM/background/stage03/stg3bg2.png","output":"th15/scenes/structure_lunar_transfer_gate.png","canvas":[512,512],"baseColor":[28,6,10,255]},
+    {"source":"TH15 东方绀珠传/ANM/ANM/background/stage04/stage03g.png","output":"th15/scenes/structure_lunar_capital_gate.png","canvas":[256,256],"baseColor":[28,8,8,255]},
+    {"source":"TH15 东方绀珠传/ANM/ANM/background/stage05/stage05c.png","output":"th15/scenes/structure_tranquility_outpost.png","canvas":[512,512],"baseColor":[10,8,20,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH15 东方绀珠传/ANM/ANM/stgenm/stage01/enm1.png","output":"th15/actors/moon_rabbit_soldier.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":96},
+    {"source":"TH15 东方绀珠传/ANM/ANM/stgenm/stage04/enm4.png","output":"th15/actors/lunar_capital_guard.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":96},
+    {"source":"TH15 东方绀珠传/ANM/ANM/enemy/enemy2.png","output":"th15/actors/purified_spirit.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th15/portraits/seiran.png",
+      "canvas":[520,740],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy1/face01bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy1/face01no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th15/portraits/ringo.png",
+      "canvas":[330,620],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy2/face02bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy2/face02no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th15/portraits/doremy.png",
+      "canvas":[500,700],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy3/face03bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy3/face03no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th15/portraits/sagume.png",
+      "canvas":[550,660],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy4/face04bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy4/face04no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th15/portraits/clownpiece.png",
+      "canvas":[610,1000],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy5/face05bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy5/face05no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th15/portraits/junko.png",
+      "canvas":[1000,1040],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy6/face06bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy6/face06no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th15/portraits/hecatia.png",
+      "canvas":[606,800],
+      "layers":[
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy7/face07bs.png","position":[0,0]},
+        {"source":"TH15 东方绀珠传/ANM/ANM/face/enemy7/face07no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH15 东方绀珠传/ANM/ANM/bullet/bullet1.png","output":"th15/bullet_atlas.png"}
+  ]
+}

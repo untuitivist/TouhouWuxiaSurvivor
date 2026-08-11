@@ -130,7 +130,7 @@ public partial class WorldDemo : Node2D
         _progression.Configure(_levelUp, _map, _pauseMenu, _stats);
         _player.ConfigureRunModifiers(_progression.Modifiers);
         _pickupSpawner.Configure(pickups);
-        _ecsCombatWorld.Configure(_player, _health, _buffs, _progression.Modifiers, _progression.State);
+        _ecsCombatWorld.Configure(_player, _health, _buffs, _progression.Modifiers);
         _enemySpawner.ConfigureEcs(_ecsCombatWorld);
         _pickupSpawner.ConfigureEcs(_ecsCombatWorld);
         _spiritSpawner.ConfigureEcs(_ecsCombatWorld);

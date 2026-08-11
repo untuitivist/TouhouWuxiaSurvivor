@@ -9,6 +9,7 @@ namespace TouhouWuxiaSurvivor.Visuals.Internal;
 public sealed class InternalVisualCatalog
 {
     private const string ManifestPath = "res://assets/internal_original/preview_mappings.json";
+    private const string PackManifestRoot = "res://assets/internal_original/mappings";
     private const string AssetRoot = "res://assets/internal_original/";
     private readonly Dictionary<string, InternalVisualDefinition> _definitions;
     private readonly Dictionary<string, Texture2D?> _textures = new(StringComparer.Ordinal);
@@ -65,12 +66,34 @@ public sealed class InternalVisualCatalog
     private static Dictionary<string, InternalVisualDefinition> LoadDefinitions()
     {
         var result = new Dictionary<string, InternalVisualDefinition>(StringComparer.Ordinal);
-        if (!Godot.FileAccess.FileExists(ManifestPath))
+        if (Godot.FileAccess.FileExists(ManifestPath))
         {
-            return result;
+            AddDefinitions(result, Godot.FileAccess.GetFileAsString(ManifestPath));
         }
 
-        using JsonDocument document = JsonDocument.Parse(Godot.FileAccess.GetFileAsString(ManifestPath));
+        using DirAccess? directory = DirAccess.Open(PackManifestRoot);
+        if (directory is not null)
+        {
+            foreach (string fileName in directory.GetFiles()
+                         .Where(name => name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                         .Order(StringComparer.Ordinal))
+            {
+                AddDefinitions(result,
+                    Godot.FileAccess.GetFileAsString($"{PackManifestRoot}/{fileName}"));
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 把一份映射文档严格加入共享字典；空字段、未知枚举或跨文件重复键都会立即终止加载。
+    /// </summary>
+    private static void AddDefinitions(
+        Dictionary<string, InternalVisualDefinition> result,
+        string json)
+    {
+        using JsonDocument document = JsonDocument.Parse(json);
         foreach (JsonElement item in document.RootElement.GetProperty("entries").EnumerateArray())
         {
             string sourceId = RequiredString(item, "sourceId");
@@ -80,12 +103,14 @@ public sealed class InternalVisualCatalog
             InternalVisualKind kind = Enum.Parse<InternalVisualKind>(
                 RequiredString(item, "kind"), false);
             int variant = item.TryGetProperty("variant", out JsonElement value) ? value.GetInt32() : 0;
+            string? proxySourceWork = item.TryGetProperty("proxySourceWork", out JsonElement proxy)
+                ? RequiredString(item, "proxySourceWork")
+                : null;
             var definition = new InternalVisualDefinition(
-                sourceId, category, name, AssetRoot + RequiredString(item, "asset"), kind, variant);
+                sourceId, category, name, AssetRoot + RequiredString(item, "asset"), kind,
+                variant, proxySourceWork);
             result.Add(BuildKey(sourceId, category, name), definition);
         }
-
-        return result;
     }
 
     /// <summary>

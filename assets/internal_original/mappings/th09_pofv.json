@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {"sourceId":"th09_pofv","category":"Biome","name":"无名之丘","asset":"th09/scenes/biome_nameless_hill.png","kind":"Scene","variant":0},
+    {"sourceId":"th09_pofv","category":"Biome","name":"无缘塚","asset":"th09/scenes/biome_muen_no_tsuka.png","kind":"Scene","variant":1},
+    {"sourceId":"th09_pofv","category":"Biome","name":"太阳花田","asset":"th09/scenes/biome_sunflower_field.png","kind":"Scene","variant":2},
+    {"sourceId":"th09_pofv","category":"Structure","name":"铃兰花田","asset":"th09/scenes/structure_lily_field.png","kind":"Scene","variant":3},
+    {"sourceId":"th09_pofv","category":"Structure","name":"无缘塚墓园","asset":"th09/scenes/structure_muen_cemetery.png","kind":"Scene","variant":4},
+    {"sourceId":"th09_pofv","category":"Structure","name":"太阳花园","asset":"th09/scenes/structure_sunflower_garden.png","kind":"Scene","variant":5},
+    {"sourceId":"th09_pofv","category":"Enemy","name":"铃兰毒灵","asset":"th09/actors/lily_poison_spirit.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th09_pofv","category":"Enemy","name":"魂花","asset":"th09/actors/soul_flower.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th09_pofv","category":"Enemy","name":"太阳花妖","asset":"th09/actors/sunflower_youkai.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th09_pofv","category":"Character","name":"梅蒂欣·梅兰可莉","asset":"th09/portraits/medicine.png","kind":"Portrait","variant":0},
+    {"sourceId":"th09_pofv","category":"Character","name":"小野塚小町","asset":"th09/portraits/komachi.png","kind":"Portrait","variant":1},
+    {"sourceId":"th09_pofv","category":"Character","name":"四季映姬·夜摩仙那度","asset":"th09/portraits/eiki.png","kind":"Portrait","variant":2}
+  ]
+}

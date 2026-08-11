@@ -114,16 +114,19 @@ public partial class WorldAudioController : Node
     }
 
     /// <summary>
-    /// 停止控制器拥有的全部活动播放，确保返回菜单和程序退出时及时释放音频服务器句柄。
+    /// 停止控制器拥有的全部播放并清空实例流，确保复音句柄在返回菜单或退出时真正释放。
     /// </summary>
     private void StopAllPlayers()
     {
         foreach (Node child in GetChildren())
         {
-            if (child is AudioStreamPlayer player && player.Playing)
+            if (child is not AudioStreamPlayer player)
             {
-                player.Stop();
+                continue;
             }
+
+            player.Stop();
+            player.Stream = null;
         }
     }
 

@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Gameplay.Session;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Death;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Ui.Stats;
@@ -54,8 +55,7 @@ public partial class DeathFlowSmokeTest : Node
             Require(reward == "+0", "Immediate death should not award money.");
 
             GetTree().Paused = false;
-            demo.QueueFree();
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await WorldDemoTestCleanup.FreeAsync(this, demo);
             await VerifyNavigationCommands();
             GD.Print("Death flow smoke test passed.");
             GetTree().Quit();

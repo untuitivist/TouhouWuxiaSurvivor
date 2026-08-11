@@ -9,6 +9,7 @@ namespace TouhouWuxiaSurvivor.Ui.Compendium;
 public partial class CompendiumPanel : Control
 {
     private readonly List<string> _sourceIds = [];
+    private readonly InternalPreviewCatalog _internalPreviews = new();
     private CompendiumEntry[] _visibleEntries = [];
     private OptionButton? _sourceFilter;
     private TabBar? _tabs;
@@ -171,10 +172,26 @@ public partial class CompendiumPanel : Control
 
         CompendiumEntry entry = _visibleEntries[index];
         FitEntryTitle(entry.Name);
-        _entrySource!.Text = entry.SourceName;
+        _entrySource!.Text = BuildVisualSourceLabel(entry);
         CurrentDetailsText = entry.Details;
         CompendiumFactView.Rebuild(_entryFacts!, entry.Facts);
         _preview!.SetEntry(entry);
+    }
+
+    /// <summary>
+    /// 在现有来源行内标明跨作视觉代用；内部目录存在但条目无图时明确显示中文图标回退。
+    /// </summary>
+    private string BuildVisualSourceLabel(CompendiumEntry entry)
+    {
+        if (_internalPreviews.TryGet(entry, out InternalPreviewDefinition definition) &&
+            !string.IsNullOrWhiteSpace(definition.ProxySourceWork))
+        {
+            return $"{entry.SourceName} · 视觉代用 {definition.ProxySourceWork}";
+        }
+
+        return _internalPreviews.Count > 0 && !_internalPreviews.Contains(entry)
+            ? $"{entry.SourceName} · 中文图标回退"
+            : entry.SourceName;
     }
 
     /// <summary>

@@ -8,6 +8,7 @@ using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Stats;
 
@@ -23,9 +24,11 @@ public partial class SpellCardSmokeTest : Node
     /// </summary>
     public override async void _Ready()
     {
+        WorldDemo? demo = null;
+        int exitCode = 0;
         try
         {
-            var demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
+            demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
                 .Instantiate<WorldDemo>();
             demo.PersistMetaProgression = false;
             demo.GetNode<EnemySpawner>("EnemySpawner").InitialSpawnCount = 0;
@@ -67,15 +70,21 @@ public partial class SpellCardSmokeTest : Node
                 "Evil-Sealing Circle did not auto-cast, protect Reimu, and damage nearby enemies.");
 
             GD.Print("Spell card smoke test passed.");
-            demo.QueueFree();
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-            GetTree().Quit();
         }
         catch (Exception exception)
         {
-            GetTree().Paused = false;
+            exitCode = 1;
             GD.PushError(exception.ToString());
-            GetTree().Quit(1);
+        }
+        finally
+        {
+            GetTree().Paused = false;
+            if (demo is not null && GodotObject.IsInstanceValid(demo))
+            {
+                await WorldDemoTestCleanup.FreeAsync(this, demo);
+            }
+
+            GetTree().Quit(exitCode);
         }
     }
 

@@ -45,11 +45,29 @@ public partial class SpiritDropSpawner : Node
         _progression = progression;
     }
 
-    /// <summary>绑定 ECS 世界并接收经验交付事件。</summary>
+    /// <summary>
+    /// 绑定唯一 ECS 世界并接收经验交付事件；重复配置先退订旧世界，避免一次灵息被累计多次。
+    /// </summary>
     public void ConfigureEcs(EcsCombatWorld world)
     {
+        if (_ecsWorld is not null)
+        {
+            _ecsWorld.SpiritCollected -= OnSpiritCollected;
+        }
+
         _ecsWorld = world;
         world.SpiritCollected += OnSpiritCollected;
+    }
+
+    /// <summary>
+    /// 生成器离开场景树时解除 ECS 事件订阅，防止重进游戏后旧局状态继续接收经验。
+    /// </summary>
+    public override void _ExitTree()
+    {
+        if (_ecsWorld is not null)
+        {
+            _ecsWorld.SpiritCollected -= OnSpiritCollected;
+        }
     }
 
     /// <summary>

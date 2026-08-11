@@ -1,0 +1,23 @@
+{
+  "scenes": [
+    {"source":"TH09 东方花映冢/ANM/ANM/world/world11/world11c.png","output":"th09/scenes/biome_nameless_hill.png","baseColor":[22,14,20,255]},
+    {"source":"TH09 东方花映冢/ANM/ANM/world/world12/world12b.png","output":"th09/scenes/biome_muen_no_tsuka.png","baseColor":[16,18,22,255]},
+    {"source":"TH09 东方花映冢/ANM/ANM/world/world09/world09b.png","output":"th09/scenes/biome_sunflower_field.png","baseColor":[30,24,8,255]},
+    {"source":"TH09 东方花映冢/ANM/ANM/world/world11/world11c.png","output":"th09/scenes/structure_lily_field.png","baseColor":[22,14,20,255]},
+    {"source":"TH09 东方花映冢/ANM/ANM/world/world13/world13b.png","output":"th09/scenes/structure_muen_cemetery.png","baseColor":[14,16,20,255]},
+    {"source":"TH09 东方花映冢/ANM/ANM/world/world09/world09b.png","output":"th09/scenes/structure_sunflower_garden.png","baseColor":[30,22,8,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH09 东方花映冢/ANM/ANM/stgenm/enemy.png","output":"th09/actors/lily_poison_spirit.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH09 东方花映冢/ANM/ANM/stgenm/enemy.png","output":"th09/actors/soul_flower.png","startX":0,"startY":96,"frameWidth":48,"frameHeight":32},
+    {"source":"TH09 东方花映冢/ANM/ANM/stgenm/enemy.png","output":"th09/actors/sunflower_youkai.png","frameRects":[[256,0,64,64],[320,0,64,64],[384,0,64,64],[320,0,64,64]]}
+  ],
+  "portraits": [
+    {"source":"TH09 东方花映冢/ANM/ANM/pl/pl09/pl09_fc_no.png","output":"th09/portraits/medicine.png"},
+    {"source":"TH09 东方花映冢/ANM/ANM/pl/pl12/pl12_fc_no.png","output":"th09/portraits/komachi.png"},
+    {"source":"TH09 东方花映冢/ANM/ANM/pl/pl13/pl13_fc_no.png","output":"th09/portraits/eiki.png"}
+  ],
+  "copies": [
+    {"source":"TH09 东方花映冢/ANM/ANM/etama/etama.png","output":"th09/bullet_atlas.png"}
+  ]
+}

@@ -3,6 +3,7 @@ using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
+using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 
@@ -20,7 +21,9 @@ public partial class WorldAudioSmokeTest : Node
     {
         try
         {
-            Node demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn").Instantiate();
+            WorldDemo demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
+                .Instantiate<WorldDemo>();
+            demo.PersistMetaProgression = false;
             AddChild(demo);
             var audio = demo.GetNode<WorldAudioController>("WorldAudio");
             var player = demo.GetNode<PlayerController>("Player");
@@ -39,7 +42,7 @@ public partial class WorldAudioSmokeTest : Node
             Require(!audio.GetNode<AudioStreamPlayer>("Footstep").Playing,
                 "Stopping movement did not stop footstep audio.");
 
-            await ToSignal(GetTree().CreateTimer(1.2), SceneTreeTimer.SignalName.Timeout);
+            await WaitForCombatAudio(audio);
             Require(audio.ShotSoundCount > 0, "Automatic firing did not trigger shot audio.");
             Require(audio.EnemyHitSoundCount > 0, "Non-lethal enemy damage did not trigger hit audio.");
             Require(audio.EnemyDeathSoundCount > 0, "Enemy defeat did not trigger death audio.");
@@ -81,6 +84,25 @@ public partial class WorldAudioSmokeTest : Node
     {
         await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
         await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+    }
+
+    /// <summary>
+    /// 在三秒上限内等待自动战斗产生射击、受击和击破事件，避免依赖单次固定帧时序。
+    /// </summary>
+    private async Task WaitForCombatAudio(WorldAudioController audio)
+    {
+        const int maximumAttempts = 60;
+        for (int attempt = 0; attempt < maximumAttempts; attempt++)
+        {
+            if (audio.ShotSoundCount > 0 &&
+                audio.EnemyHitSoundCount > 0 &&
+                audio.EnemyDeathSoundCount > 0)
+            {
+                return;
+            }
+
+            await ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
+        }
     }
 
     /// <summary>

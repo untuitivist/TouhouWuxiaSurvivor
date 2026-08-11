@@ -1,0 +1,71 @@
+{
+  "scenes": [
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg3bg.png","output":"th10/scenes/biome_great_youkai_waterfall.png","baseColor":[12,24,24,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg6bg.png","output":"th10/scenes/biome_wind_god_lake.png","baseColor":[10,16,28,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg5bg.png","output":"th10/scenes/biome_moriya_shrine_grounds.png","baseColor":[24,18,14,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg3bg3.png","output":"th10/scenes/structure_kappa_workshop.png","baseColor":[12,22,20,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg6bg.png","output":"th10/scenes/structure_wind_god_lake_torii.png","baseColor":[10,16,28,255]},
+    {"source":"TH10 东方风神录/ANM/ANM/background/stg7bg.png","output":"th10/scenes/structure_moriya_shrine.png","baseColor":[26,16,12,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"th10/actors/kappa_scout.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"th10/actors/tengu_patrol.png","startX":0,"startY":64,"frameWidth":32,"frameHeight":32},
+    {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"th10/actors/faith_spirit.png","startX":256,"startY":128,"frameWidth":32,"frameHeight":32}
+  ],
+  "portraits": [
+    {"source":"TH10 东方风神录/ANM/ANM/face/enemy1m/face01mct.png","output":"th10/portraits/shizuha.png"}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th10/portraits/minoriko.png",
+      "canvas":[256,320],
+      "layers":[
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy2/face02no_u.png","position":[0,0]},
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy2/face02no_d.png","position":[0,256]}
+      ]
+    },
+    {
+      "output":"th10/portraits/hina.png",
+      "canvas":[256,320],
+      "layers":[
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy3/face03no_u.png","position":[0,0]},
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy3/face03no_d.png","position":[0,256]}
+      ]
+    },
+    {
+      "output":"th10/portraits/nitori.png",
+      "canvas":[256,320],
+      "layers":[
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy4/face04no_u.png","position":[0,0]},
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy4/face04no_d.png","position":[0,256]}
+      ]
+    },
+    {
+      "output":"th10/portraits/sanae.png",
+      "canvas":[256,320],
+      "layers":[
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy5/face05no_u.png","position":[0,0]},
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy5/face05no_d.png","position":[0,256]}
+      ]
+    },
+    {
+      "output":"th10/portraits/kanako.png",
+      "canvas":[512,384],
+      "layers":[
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy6/face06no_u.png","position":[0,0]},
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy6/face06no_d.png","position":[0,256]}
+      ]
+    },
+    {
+      "output":"th10/portraits/suwako.png",
+      "canvas":[256,320],
+      "layers":[
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy7/face07no_u.png","position":[0,0]},
+        {"source":"TH10 东方风神录/ANM/ANM/face/enemy7/face07no_d.png","position":[0,256]}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH10 东方风神录/ANM/ANM/bullet/etama.png","output":"th10/bullet_atlas.png"}
+  ]
+}

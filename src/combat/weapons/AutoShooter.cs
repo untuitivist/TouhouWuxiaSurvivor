@@ -74,7 +74,8 @@ public partial class AutoShooter : Node2D
     public override void _Process(double delta)
     {
         if (_targetFinder is null || _health?.IsDead == true ||
-            (_ecsProjectiles is null && (_projectileContainer is null || ProjectileScene is null)))
+            (_ecsWorld is null && _ecsProjectiles is null &&
+                (_projectileContainer is null || ProjectileScene is null)))
         {
             return;
         }

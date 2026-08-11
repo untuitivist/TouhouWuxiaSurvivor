@@ -1,0 +1,76 @@
+{
+  "scenes": [
+    {"source":"TH16 东方天空璋/ANM/ANM/background/stage01/st01a.png","output":"th16/scenes/biome_four_seasons_forest.png","canvas":[512,512],"baseColor":[18,30,22,255]},
+    {"source":"TH16 东方天空璋/ANM/ANM/background/stage05/stage05a.png","output":"th16/scenes/biome_land_of_backdoors.png","canvas":[256,256],"baseColor":[24,14,30,255]},
+    {"source":"TH16 东方天空璋/ANM/ANM/background/stage06/stg6bg8.png","output":"th16/scenes/biome_hidden_star_sanctum.png","canvas":[256,256],"baseColor":[18,12,28,255]},
+    {"source":"TH16 东方天空璋/ANM/ANM/background/stage05/stage05b1.png","output":"th16/scenes/structure_season_altar.png","canvas":[256,256],"baseColor":[22,16,28,255]},
+    {"source":"TH16 东方天空璋/ANM/ANM/background/stage05/stage05b2.png","output":"th16/scenes/structure_back_door.png","canvas":[256,256],"baseColor":[22,14,28,255]},
+    {"source":"TH16 东方天空璋/ANM/ANM/background/stage05/stage05b3.png","output":"th16/scenes/structure_hidden_god_stage.png","canvas":[256,256],"baseColor":[18,12,26,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH16 东方天空璋/ANM/ANM/enemy/enemy.png","output":"th16/actors/seasonal_fairy.png","startX":0,"startY":0,"frameWidth":48,"frameHeight":32},
+    {"source":"TH16 东方天空璋/ANM/ANM/stgenm/stage05/enm5.png","output":"th16/actors/backdoor_dancer.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":96},
+    {"source":"TH16 东方天空璋/ANM/ANM/stgenm/stage05/enm5b.png","output":"th16/actors/hidden_god_attendant.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":96}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th16/portraits/eternity_larva.png",
+      "canvas":[700,680],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy1/face01bs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy1/face01no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th16/portraits/nemuno.png",
+      "canvas":[510,700],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy2/face02bs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy2/face02no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th16/portraits/aunn.png",
+      "canvas":[340,720],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy3/face03bs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy3/face03no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th16/portraits/narumi.png",
+      "canvas":[400,660],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy4/face04bs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy4/face04no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th16/portraits/satono.png",
+      "canvas":[580,880],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy5/face05bs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy5/face05no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th16/portraits/mai.png",
+      "canvas":[480,700],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy5/face05bbs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy5/face05bno.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th16/portraits/okina.png",
+      "canvas":[900,950],
+      "layers":[
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy6/face06bs.png","position":[0,0]},
+        {"source":"TH16 东方天空璋/ANM/ANM/face/enemy6/face06no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH16 东方天空璋/ANM/ANM/bullet/bullet1.png","output":"th16/bullet_atlas.png"}
+  ]
+}

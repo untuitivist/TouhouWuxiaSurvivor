@@ -1,5 +1,15 @@
 # Progress Log
 
+## Session: 2026-08-11 - Per-work original asset expansion
+
+- Added independent build and runtime mapping discovery for TH07-TH12; runtime enumeration uses Godot `DirAccess` so mappings remain visible inside PCK exports.
+- Added full-image portrait defaults plus declared crop, layered composition, edge-connected near-white cleanup, and centered scene canvases.
+- Generated/imported TH07-TH12 from 142 audited source files; the dynamic boundary test passes without hard-coded mapping or hash counts.
+- Replaced the one-shape structure fallback with sixteen semantic top-down patterns selected across all 66 registered structure IDs.
+- Manual inspection rejected initially valid-but-wrong enemy crops in TH07, TH09, TH11, and TH12; corrected manifests are pending regeneration with TH13-TH15.
+- TH13-TH15 source audit is complete and their independent manifests are in progress. TH16-TH19 audit continues.
+- No game export or release was created.
+
 ## Session: 2026-07-31 - Complete Base and TH06 Internal Replacement
 
 ### Phase 1: Complete Coverage Audit
@@ -196,6 +206,17 @@
 - 已移除正式世界对参考游戏 BGM/音效的全部引用：TH17.5 灵梦 BGM/自机音效、TH18 道具/敌人音效接入完成，循环起点 32.4946 秒通过测试。
 - 原作 OGG 的旧编码注释已通过 FFmpeg 流复制清除，没有重新编码；音频测试、52 来源边界测试均无警告通过。
 - 当前子任务全部相关文件有效代码均低于 250 行；最高为边界测试 194 行，WorldAudioController 177 行，EcsCombatWorld 181 行。
+- TH07 至 TH19 的逐作构建清单、正式映射和规范化素材已生成；TH13 至 TH18 分层立绘按身体与表情合成，未再出现半人或无脸。
+- TH01 至 TH05、TH20 因用户素材包缺少同作来源，地区、结构和敌人明确登记跨作代用；对应角色保留中文动态图标回退，不拿相似角色冒充。
+- 21 个来源的联系表测试通过；已逐作检查场景、敌人四帧与角色完整轮廓，并修正 TH09、TH13、TH14、TH18 等错误帧界。
+- 正式 WorldDemo 已移除四个旧节点实体场景依赖；69 个正式敌人全部在 ECS 绘制中命中原作动画纹理，未知身份才使用文字回退。
+- 新版本规则落地为 `x.y.z-stage`，当前 `0.0.0-alpha`；CHANGELOG、运行时设置、导出文件名与 Windows 数字版本纳入一致性测试。
+- 最终素材登记包含 294 个原始来源文件、60 条明确跨作代用和 42 条明确暂缺；TH19 体验版复用 TH18 场景也已按代用来源登记。
+- 修复 ECS 灵息经验被事件链重复结算的问题，`SpiritDropSpawner` 现为经验写入的唯一入口；成长测试精确验证 8 点经验升至 2 级。
+- 修复测试退出时音频混音线程仍持有 OGG/WAV 的竞态，并让死亡音频测试使用内存档案，不再写真实用户存档。
+- 31 个集成测试场景全部通过；702 个文本文件通过 UTF-8 无 BOM 检查，253 个 C# 文件通过 250 有效行上限检查，最终构建为 0 警告、0 错误。
+- 最终只读审查发现被 Git 忽略的 `release` 目录只剩 2026-08-11 22:06 生成的 `TouhouWuxiaSurvivor_0.0.0-alpha.exe`；其内仍含旧 `item_sheet.png` 导入路径，早于最终修复，不能作为当前验证包。旧 beta 文件已不在原位置且 Git 无法恢复，本轮不再触碰任何发行物。
+- 旧参考资源已从导出规则隔离，物理文件与诊断残留 `stdout` 仍等待用户确认删除。
 
 # 2026-07-30 符卡武侠化系统
 

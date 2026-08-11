@@ -1,0 +1,27 @@
+{
+  "scenes": [
+    {"source":"TH12 东方星莲船/ANM/ANM/background/stage02/stage02b.png","output":"th12/scenes/biome_spring_cloud_sea.png","baseColor":[18,24,34,255]},
+    {"source":"TH12 东方星莲船/ANM/ANM/background/stage03/stage03a.png","output":"th12/scenes/biome_palanquin_ship_deck.png","baseColor":[24,18,14,255]},
+    {"source":"TH12 东方星莲船/ANM/ANM/background/stage06/stage06e.png","output":"th12/scenes/biome_hokkai.png","baseColor":[20,16,32,255]},
+    {"source":"TH12 东方星莲船/ANM/ANM/background/stage03/stage03a.png","output":"th12/scenes/structure_cloud_sea_ship_relic.png","baseColor":[18,22,30,255]},
+    {"source":"TH12 东方星莲船/ANM/ANM/background/stage04/stage04a.png","output":"th12/scenes/structure_palanquin_ship.png","baseColor":[24,16,12,255]},
+    {"source":"TH12 东方星莲船/ANM/ANM/background/stage06/stage06b.png","output":"th12/scenes/structure_hokkai_seal.png","baseColor":[18,14,30,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH12 东方星莲船/ANM/ANM/enemy/enemy.png","output":"th12/actors/flying_youkai.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":64},
+    {"source":"TH12 东方星莲船/ANM/ANM/enemy/ufo_anim.png","output":"th12/actors/flying_storehouse_spirit.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":64},
+    {"source":"TH12 东方星莲船/ANM/ANM/enemy/enemy5.png","output":"th12/actors/hokkai_demon_spirit.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32}
+  ],
+  "portraits": [
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy1/face01no.png","output":"th12/portraits/nazrin.png"},
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy2/face02no.png","output":"th12/portraits/kogasa.png"},
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy3/face03no.png","output":"th12/portraits/ichirin_unzan.png"},
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy4/face04no.png","output":"th12/portraits/minamitsu.png"},
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy5/face05no.png","output":"th12/portraits/shou.png"},
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy6/face06no.png","output":"th12/portraits/byakuren.png"},
+    {"source":"TH12 东方星莲船/ANM/ANM/face/enemy7/face07no.png","output":"th12/portraits/nue.png"}
+  ],
+  "copies": [
+    {"source":"TH12 东方星莲船/ANM/ANM/bullet/etama.png","output":"th12/bullet_atlas.png"}
+  ]
+}

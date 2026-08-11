@@ -1,0 +1,78 @@
+{
+  "scenes": [
+    {"source":"TH18 东方虹龙洞/ANM/ANM/background/stage02/st02a.png","output":"th18/scenes/biome_mountain_market.png","canvas":[512,512],"baseColor":[18,28,24,255]},
+    {"source":"TH18 东方虹龙洞/ANM/ANM/background/stage03/stg3bg1.png","output":"th18/scenes/biome_rainbow_dragon_cave.png","canvas":[512,512],"baseColor":[12,18,24,255]},
+    {"source":"TH18 东方虹龙洞/ANM/ANM/background/stage05/stage05a.png","output":"th18/scenes/biome_lunar_rainbow_cliff.png","canvas":[512,512],"baseColor":[24,18,30,255]},
+    {"source":"TH18 东方虹龙洞/ANM/ANM/background/stage03/stg3bg2.png","output":"th18/scenes/structure_card_market.png","canvas":[256,256],"baseColor":[18,22,24,255]},
+    {"source":"TH18 东方虹龙洞/ANM/ANM/background/stage04/stg4bg1.png","output":"th18/scenes/structure_rainbow_dragon_mine.png","canvas":[512,512],"baseColor":[14,18,22,255]},
+    {"source":"TH18 东方虹龙洞/ANM/ANM/background/stage06/st06b.png","output":"th18/scenes/structure_rainbow_market_altar.png","canvas":[256,256],"baseColor":[24,18,28,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH18 东方虹龙洞/ANM/ANM/enemy/enemy.png","output":"th18/actors/card_youkai.png","startX":0,"startY":0,"frameWidth":48,"frameHeight":32},
+    {"source":"TH18 东方虹龙洞/ANM/ANM/enemy/enemy_g.png","output":"th18/actors/cave_centipede.png","startX":0,"startY":0,"frameWidth":48,"frameHeight":32}
+  ],
+  "staticStrips": [
+    {"source":"TH18 东方虹龙洞/ANM/ANM/stgenm/stage07/enm7.png","output":"th18/actors/sky_rainbow_spirit.png","crop":[0,0,96,128]}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th18/portraits/mike.png",
+      "canvas":[397,720],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy1/face01bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy1/face01no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th18/portraits/takane.png",
+      "canvas":[416,700],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy2/face02bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy2/face02no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th18/portraits/sannyo.png",
+      "canvas":[756,700],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy3/face03bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy3/face03no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th18/portraits/misumaru.png",
+      "canvas":[448,750],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy4/face04bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy4/face04no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th18/portraits/megumu.png",
+      "canvas":[505,740],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy5/face05bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy5/face05no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th18/portraits/chimata.png",
+      "canvas":[859,900],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy6/face06bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy6/face06no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th18/portraits/momoyo.png",
+      "canvas":[657,960],
+      "layers":[
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy7/face07bs.png","position":[0,0]},
+        {"source":"TH18 东方虹龙洞/ANM/ANM/face/enemy7/face07no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH18 东方虹龙洞/ANM/ANM/bullet/bullet1.png","output":"th18/bullet_atlas.png"}
+  ]
+}

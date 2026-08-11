@@ -1,0 +1,76 @@
+{
+  "scenes": [
+    {"source":"TH17 东方鬼形兽/ANM/ANM/background/stage03/stg3bg1.png","output":"th17/scenes/biome_hell_checkpoint.png","canvas":[512,512],"baseColor":[26,14,12,255]},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/background/stage05/stage05a.png","output":"th17/scenes/biome_animal_realm.png","canvas":[512,512],"baseColor":[22,14,26,255]},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/background/stage06/st06c.png","output":"th17/scenes/biome_primate_spirit_garden_grounds.png","canvas":[256,256],"baseColor":[22,18,24,255]},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/background/stage03/world13b.png","output":"th17/scenes/structure_sanzu_checkpoint.png","canvas":[256,256],"baseColor":[22,14,14,255]},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/background/stage06/stage05c00.png","output":"th17/scenes/structure_beast_clan_battlefield.png","canvas":[512,512],"baseColor":[18,14,24,255]},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/background/stage06/st06a.png","output":"th17/scenes/structure_primate_spirit_garden.png","canvas":[512,512],"baseColor":[22,18,22,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH17 东方鬼形兽/ANM/ANM/enemy/enemy_b.png","output":"th17/actors/beast_spirit.png","startX":0,"startY":0,"frameWidth":48,"frameHeight":32},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/enemy/enemy_g.png","output":"th17/actors/eagle_spirit.png","startX":0,"startY":0,"frameWidth":48,"frameHeight":32},
+    {"source":"TH17 东方鬼形兽/ANM/ANM/stgenm/stage05/enm5.png","output":"th17/actors/haniwa_soldier.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":96}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th17/portraits/eika.png",
+      "canvas":[420,700],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy1/face01bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy1/face01no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th17/portraits/urumi.png",
+      "canvas":[500,750],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy2/face02bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy2/face02no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th17/portraits/kutaka.png",
+      "canvas":[640,750],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy3/face03bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy3/face03no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th17/portraits/yachie.png",
+      "canvas":[500,870],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy4/face04bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy4/face04no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th17/portraits/mayumi.png",
+      "canvas":[350,850],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy5/face05bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy5/face05no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th17/portraits/keiki.png",
+      "canvas":[900,900],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy6/face06bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy6/face06no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th17/portraits/saki.png",
+      "canvas":[900,760],
+      "layers":[
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy7/face07bs.png","position":[0,0]},
+        {"source":"TH17 东方鬼形兽/ANM/ANM/face/enemy7/face07no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH17 东方鬼形兽/ANM/ANM/bullet/bullet1.png","output":"th17/bullet_atlas.png"}
+  ]
+}

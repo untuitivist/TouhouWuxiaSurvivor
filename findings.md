@@ -1,5 +1,25 @@
 # Findings and Decisions
 
+## DLC source and crop audit - 2026-08-11
+
+- Supplied original material contains complete integer-game trees for TH06-TH18 and only a TH19 trial tree; TH01-TH05 and TH20 have no same-work source directory.
+- Missing-source works must use an explicit cross-work proxy declaration or remain text fallback; a proxy cannot be described as same-work original art.
+- TH07 stage atlases share the same generic first row, so three separate files at `[0,0,32,32]` still produced three identical enemies. Ghost rows at y=448/480 are distinct and semantically closer.
+- TH09's source at x=256 contains 64-pixel frames; the previous 32-pixel declaration cut alternating halves. Frame dimensions must be audited, not inferred from a general enemy atlas convention.
+- TH11 `enemy2.png` contains elemental orbs, not ravens. The stage-6 Utsuho strip and stage-5 Orin strip are more honest visual proxies for the registered hell-raven and kasha-cat enemies.
+- TH12's first enemy row is 64x64. Reading it as 32x32 alternated complete fragments and empty halves despite passing simple nonblank tests.
+- TH13+ portraits are layered. TH13 uses transparent expression layers; TH14-TH15 require clearing only edge-connected near-white pixels before overlay so white costume and eye pixels survive.
+
+## Final all-DLC verification - 2026-08-11
+
+- The generated catalog records 294 source files. Runtime provenance contains 60 explicit cross-work proxies and 42 explicit unavailable entries rather than silently presenting substitutes as same-work art.
+- All 21 source groups pass texture existence, dimensions, nonblank alpha, actor-frame variation, and contact-sheet layout checks; the inspected outputs retain nearest-neighbor filtering and complete character silhouettes.
+- The formal WorldDemo no longer loads the legacy EnemyActor, PickupActor, SpiritDropActor, or PlayerProjectile scenes. All 69 registered enemies resolve through the ECS renderer; only a synthetic unknown identity exercises the text fallback.
+- ECS spirit collection previously wrote progression directly and then emitted an event whose subscriber wrote it again. SpiritSystem now emits collection only, leaving SpiritDropSpawner as the single progression writer.
+- Test-world teardown must allow the audio mixing thread to release active OGG/WAV playback before clearing streams and freeing the world; immediate QueueFree produces nondeterministic ObjectDB and resource leaks.
+- The current version is `0.0.0-alpha`. Final inspection found one ignored local export at `release/TouhouWuxiaSurvivor_0.0.0-alpha.exe` (196,463,928 bytes, SHA-256 `8b687f65ff34d4106b2a7ff92600644cd9482bc7c25aa9d47206955525425478`). Its embedded paths still contain the excluded legacy `item_sheet.png`, proving it predates the final source state and cannot serve as the verification build. Previous beta executables are absent and were never tracked by Git, so their recovery requires an external copy.
+- Legacy reference files remain physically present only because deletion requires explicit user confirmation; export policy excludes every legacy namespace. No release file will be removed or overwritten without separate user direction.
+
 ## All-DLC Completion - 2026-08-11
 
 - ECS refactor is committed at `91ed4a1`; all DLC work begins from a clean rollback point.

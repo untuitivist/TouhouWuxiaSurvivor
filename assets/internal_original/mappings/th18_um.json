@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th18_um","category":"Biome","name":"妖怪之山集市","asset":"th18/scenes/biome_mountain_market.png","kind":"Scene","variant":0},
+    {"sourceId":"th18_um","category":"Biome","name":"虹龙洞","asset":"th18/scenes/biome_rainbow_dragon_cave.png","kind":"Scene","variant":1},
+    {"sourceId":"th18_um","category":"Biome","name":"月虹悬崖","asset":"th18/scenes/biome_lunar_rainbow_cliff.png","kind":"Scene","variant":2},
+    {"sourceId":"th18_um","category":"Structure","name":"能力卡摊位","asset":"th18/scenes/structure_card_market.png","kind":"Scene","variant":3},
+    {"sourceId":"th18_um","category":"Structure","name":"虹龙洞矿场","asset":"th18/scenes/structure_rainbow_dragon_mine.png","kind":"Scene","variant":4},
+    {"sourceId":"th18_um","category":"Structure","name":"月虹市场祭坛","asset":"th18/scenes/structure_rainbow_market_altar.png","kind":"Scene","variant":5},
+    {"sourceId":"th18_um","category":"Enemy","name":"卡牌妖怪","asset":"th18/actors/card_youkai.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th18_um","category":"Enemy","name":"矿洞蜈蚣","asset":"th18/actors/cave_centipede.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th18_um","category":"Enemy","name":"天虹灵","asset":"th18/actors/sky_rainbow_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th18_um","category":"Character","name":"豪德寺三花","asset":"th18/portraits/mike.png","kind":"Portrait","variant":0},
+    {"sourceId":"th18_um","category":"Character","name":"山城高岭","asset":"th18/portraits/takane.png","kind":"Portrait","variant":1},
+    {"sourceId":"th18_um","category":"Character","name":"驹草山如","asset":"th18/portraits/sannyo.png","kind":"Portrait","variant":2},
+    {"sourceId":"th18_um","category":"Character","name":"玉造魅须丸","asset":"th18/portraits/misumaru.png","kind":"Portrait","variant":3},
+    {"sourceId":"th18_um","category":"Character","name":"饭纲丸龙","asset":"th18/portraits/megumu.png","kind":"Portrait","variant":4},
+    {"sourceId":"th18_um","category":"Character","name":"天弓千亦","asset":"th18/portraits/chimata.png","kind":"Portrait","variant":5},
+    {"sourceId":"th18_um","category":"Character","name":"姬虫百百世","asset":"th18/portraits/momoyo.png","kind":"Portrait","variant":6}
+  ]
+}

@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Ui.Map.Input;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Coordinates;
 using TouhouWuxiaSurvivor.World.Map;
@@ -64,45 +65,17 @@ public partial class WorldMapOverlay : Control
             return;
         }
 
-        if (inputEvent.IsActionPressed("toggle_map"))
+        WorldMapInputCommand command = WorldMapInputResolver.Resolve(inputEvent, Visible);
+        switch (command)
         {
-            SetOpen(!Visible);
-            GetViewport().SetInputAsHandled();
-            return;
-        }
-
-        if (!Visible)
-        {
-            return;
-        }
-
-        if (inputEvent.IsActionPressed("pause_menu"))
-        {
-            SetOpen(false);
-        }
-        else if (inputEvent.IsActionPressed("map_recenter"))
-        {
-            Recenter();
-        }
-        else if (inputEvent.IsActionPressed("ui_left"))
-        {
-            PanTiles(-16, 0);
-        }
-        else if (inputEvent.IsActionPressed("ui_right"))
-        {
-            PanTiles(16, 0);
-        }
-        else if (inputEvent.IsActionPressed("ui_up"))
-        {
-            PanTiles(0, -16);
-        }
-        else if (inputEvent.IsActionPressed("ui_down"))
-        {
-            PanTiles(0, 16);
-        }
-        else
-        {
-            return;
+            case WorldMapInputCommand.Toggle: SetOpen(!Visible); break;
+            case WorldMapInputCommand.Close: SetOpen(false); break;
+            case WorldMapInputCommand.Recenter: Recenter(); break;
+            case WorldMapInputCommand.PanLeft: PanTiles(-16, 0); break;
+            case WorldMapInputCommand.PanRight: PanTiles(16, 0); break;
+            case WorldMapInputCommand.PanUp: PanTiles(0, -16); break;
+            case WorldMapInputCommand.PanDown: PanTiles(0, 16); break;
+            default: return;
         }
 
         GetViewport().SetInputAsHandled();

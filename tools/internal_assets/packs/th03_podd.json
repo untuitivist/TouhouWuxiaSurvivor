@@ -1,0 +1,21 @@
+{
+  "proxyAssets": [
+    {"sourceId":"th03_podd","category":"Biome","name":"概率空间","asset":"th15/scenes/biome_lunar_rainbow_sea.png","kind":"Scene","variant":0,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH03 原作源；以 TH15 异空间场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Biome","name":"维纳遗迹","asset":"th13/scenes/biome_divine_spirit_mausoleum.png","kind":"Scene","variant":1,"proxySourceWork":"th13_td","reasonZh":"缺少 TH03 原作源；以 TH13 陵庙遗迹场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Biome","name":"梦时空决斗场","asset":"th14/scenes/biome_shining_needle_realm.png","kind":"Scene","variant":2,"proxySourceWork":"th14_ddc","reasonZh":"缺少 TH03 原作源；以 TH14 逆转空间场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Structure","name":"可能性空间移动船","asset":"th12/scenes/structure_palanquin_ship.png","kind":"Scene","variant":3,"proxySourceWork":"th12_ufo","reasonZh":"缺少 TH03 原作源；以 TH12 飞行船结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Structure","name":"维纳遗迹核心","asset":"th13/scenes/structure_divine_spirit_temple.png","kind":"Scene","variant":4,"proxySourceWork":"th13_td","reasonZh":"缺少 TH03 原作源；以 TH13 遗迹殿堂结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Structure","name":"梦时空竞技台","asset":"th14/scenes/structure_thunder_drum_stage.png","kind":"Scene","variant":5,"proxySourceWork":"th14_ddc","reasonZh":"缺少 TH03 原作源；以 TH14 舞台结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Enemy","name":"时空幻影","asset":"th11/actors/underground_wraith.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th11_sa","reasonZh":"缺少 TH03 原作源；以 TH11 幽灵轮廓代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Enemy","name":"北白河机械灵","asset":"th10/actors/kappa_scout.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th10_mof","reasonZh":"缺少 TH03 原作源；以 TH10 机械系河童轮廓代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th03_podd","category":"Enemy","name":"可能性复制体","asset":"th15/actors/purified_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th15_lolk","reasonZh":"缺少 TH03 原作源；以 TH15 抽象灵体轮廓代用。","reviewStatus":"proxy-reviewed"}
+  ],
+  "unavailableEntries": [
+    {"sourceId":"th03_podd","category":"Character","name":"爱莲","reasonZh":"未提供 TH03 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th03_podd","category":"Character","name":"小兔姬","reasonZh":"未提供 TH03 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th03_podd","category":"Character","name":"卡娜·安娜贝拉尔","reasonZh":"未提供 TH03 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th03_podd","category":"Character","name":"朝仓理香子","reasonZh":"未提供 TH03 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th03_podd","category":"Character","name":"北白河千百合","reasonZh":"未提供 TH03 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"},
+    {"sourceId":"th03_podd","category":"Character","name":"冈崎梦美","reasonZh":"未提供 TH03 原作图像源；禁止以别作角色立绘冒充，图鉴保留文字回退。"}
+  ]
+}

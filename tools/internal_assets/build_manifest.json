@@ -36,11 +36,11 @@
     {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/yin_yang_orb.png","crop":[0,192,32,32]}
   ],
   "portraits": [
-    {"source":"TH06 东方红魔乡/ST_DAT/face03a.png","mask":"TH06 东方红魔乡/ST_DAT/face03a_a.png","output":"th06/portraits/rumia.png"},
-    {"source":"TH06 东方红魔乡/ST_DAT/face05a.png","mask":"TH06 东方红魔乡/ST_DAT/face05a_a.png","output":"th06/portraits/cirno.png"},
-    {"source":"TH06 东方红魔乡/ST_DAT/face06a.png","mask":"TH06 东方红魔乡/ST_DAT/face06a_a.png","output":"th06/portraits/meiling.png"},
-    {"source":"TH06 东方红魔乡/ST_DAT/face08a.png","mask":"TH06 东方红魔乡/ST_DAT/face08a_a.png","output":"th06/portraits/patchouli.png"},
-    {"source":"TH06 东方红魔乡/ST_DAT/face09a.png","mask":"TH06 东方红魔乡/ST_DAT/face09a_a.png","output":"th06/portraits/sakuya.png"},
+    {"source":"TH06 东方红魔乡/ST_DAT/face03a.png","mask":"TH06 东方红魔乡/ST_DAT/face03a_a.png","output":"th06/portraits/rumia.png","crop":[0,0,128,256]},
+    {"source":"TH06 东方红魔乡/ST_DAT/face05a.png","mask":"TH06 东方红魔乡/ST_DAT/face05a_a.png","output":"th06/portraits/cirno.png","crop":[0,0,128,256]},
+    {"source":"TH06 东方红魔乡/ST_DAT/face06a.png","mask":"TH06 东方红魔乡/ST_DAT/face06a_a.png","output":"th06/portraits/meiling.png","crop":[0,0,128,256]},
+    {"source":"TH06 东方红魔乡/ST_DAT/face08a.png","mask":"TH06 东方红魔乡/ST_DAT/face08a_a.png","output":"th06/portraits/patchouli.png","crop":[0,0,128,256]},
+    {"source":"TH06 东方红魔乡/ST_DAT/face09a.png","mask":"TH06 东方红魔乡/ST_DAT/face09a_a.png","output":"th06/portraits/sakuya.png","crop":[0,0,128,256]},
     {"source":"TH06 东方红魔乡/ST_DAT/face10a.png","mask":"TH06 东方红魔乡/ST_DAT/face10a_a.png","output":"th06/portraits/remilia.png","crop":[0,0,256,256]},
     {"source":"TH06 东方红魔乡/ST_DAT/face12a.png","mask":"TH06 东方红魔乡/ST_DAT/face12a_a.png","output":"th06/portraits/flandre.png","crop":[0,0,256,256]}
   ],

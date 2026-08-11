@@ -1,5 +1,4 @@
 using Godot;
-using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 
 namespace TouhouWuxiaSurvivor.Ecs.Combat;
 
@@ -11,7 +10,6 @@ public sealed class SpiritSystem
         List<SpiritComponent> items,
         Vector2 playerPosition,
         float attractionRange,
-        RunProgressionState progression,
         float delta,
         Action<int> collected)
     {
@@ -22,7 +20,6 @@ public sealed class SpiritSystem
             float distance = spirit.Position.DistanceTo(playerPosition);
             if (distance <= 11.0f)
             {
-                progression.AddExperience(spirit.Value);
                 collected(spirit.Value);
                 items.RemoveAt(index);
                 continue;

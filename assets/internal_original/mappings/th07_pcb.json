@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th07_pcb","category":"Biome","name":"冬樱林","asset":"th07/scenes/biome_winter_cherry_forest.png","kind":"Scene","variant":0},
+    {"sourceId":"th07_pcb","category":"Biome","name":"冥界","asset":"th07/scenes/biome_netherworld.png","kind":"Scene","variant":1},
+    {"sourceId":"th07_pcb","category":"Biome","name":"白玉楼庭园","asset":"th07/scenes/biome_hakugyokurou_garden.png","kind":"Scene","variant":2},
+    {"sourceId":"th07_pcb","category":"Structure","name":"冥界结界","asset":"th07/scenes/structure_netherworld_barrier.png","kind":"Scene","variant":3},
+    {"sourceId":"th07_pcb","category":"Structure","name":"幽明结界门","asset":"th07/scenes/structure_boundary_gate.png","kind":"Scene","variant":4},
+    {"sourceId":"th07_pcb","category":"Structure","name":"白玉楼","asset":"th07/scenes/structure_hakugyokurou.png","kind":"Scene","variant":5},
+    {"sourceId":"th07_pcb","category":"Enemy","name":"冬季妖精","asset":"th07/actors/winter_fairy.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th07_pcb","category":"Enemy","name":"幽灵","asset":"th07/actors/ghost.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th07_pcb","category":"Enemy","name":"樱花亡灵","asset":"th07/actors/cherry_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th07_pcb","category":"Character","name":"蕾蒂·霍瓦特洛克","asset":"th07/portraits/letty.png","kind":"Portrait","variant":0},
+    {"sourceId":"th07_pcb","category":"Character","name":"橙","asset":"th07/portraits/chen.png","kind":"Portrait","variant":1},
+    {"sourceId":"th07_pcb","category":"Character","name":"普莉兹姆利巴三姐妹","asset":"th07/portraits/prismriver_sisters.png","kind":"Portrait","variant":2},
+    {"sourceId":"th07_pcb","category":"Character","name":"魂魄妖梦","asset":"th07/portraits/youmu.png","kind":"Portrait","variant":3},
+    {"sourceId":"th07_pcb","category":"Character","name":"西行寺幽幽子","asset":"th07/portraits/yuyuko.png","kind":"Portrait","variant":4},
+    {"sourceId":"th07_pcb","category":"Character","name":"八云蓝","asset":"th07/portraits/ran.png","kind":"Portrait","variant":5},
+    {"sourceId":"th07_pcb","category":"Character","name":"八云紫","asset":"th07/portraits/yukari.png","kind":"Portrait","variant":6}
+  ]
+}

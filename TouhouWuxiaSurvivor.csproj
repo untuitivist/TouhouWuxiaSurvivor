@@ -11,9 +11,14 @@
   <ItemGroup>
     <Compile Remove=".godot/**/*.cs" />
     <Compile Remove="tools/**/*.cs" />
+    <Compile Include="tools/internal_assets/InternalActorStripAssetBuilder.cs" />
+    <Compile Include="tools/internal_assets/InternalAssetBuildContext.cs" />
+    <Compile Include="tools/internal_assets/InternalAssetManifestCompiler.cs" />
     <Compile Include="tools/internal_assets/InternalPreviewAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalImageTransformer.cs" />
     <Compile Include="tools/internal_assets/InternalBinaryAssetBuilder.cs" />
+    <Compile Include="tools/internal_assets/InternalPortraitAssetBuilder.cs" />
+    <Compile Include="tools/internal_assets/InternalSceneAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalSourceHashWriter.cs" />
   </ItemGroup>
 </Project>

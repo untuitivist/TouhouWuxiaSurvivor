@@ -3,6 +3,7 @@ using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Tests.Support;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -43,6 +44,7 @@ public partial class GameplayEnemyVisualTest : Node
                 "Formal ECS original item/bullet visuals were not all active.");
             SaveScreenshot();
             GD.Print("Gameplay enemy visual test passed.");
+            await WorldDemoTestCleanup.FreeAsync(this, world);
             GetTree().Quit();
         }
         catch (Exception exception)

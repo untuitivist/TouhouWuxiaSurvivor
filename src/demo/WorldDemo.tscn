@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3]
+[gd_scene load_steps=38 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -10,9 +10,6 @@
 [ext_resource type="Script" path="res://src/gameplay/spawning/EnemySpawner.cs" id="8_enemy_spawner"]
 [ext_resource type="Script" path="res://src/gameplay/spawning/PickupSpawner.cs" id="9_pickup_spawner"]
 [ext_resource type="Script" path="res://src/combat/weapons/AutoShooter.cs" id="10_auto_shooter"]
-[ext_resource type="PackedScene" path="res://src/combat/projectiles/PlayerProjectile.tscn" id="11_projectile"]
-[ext_resource type="PackedScene" path="res://src/actors/enemies/EnemyActor.tscn" id="12_enemy"]
-[ext_resource type="PackedScene" path="res://src/actors/pickups/PickupActor.tscn" id="13_pickup"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerBuffController.cs" id="14_buffs"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerHealth.cs" id="15_health"]
 [ext_resource type="Script" path="res://src/audio/world/WorldAudioController.cs" id="16_audio"]
@@ -26,7 +23,6 @@
 [ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/player_death.wav" id="24_player_death"]
 [ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/player_hurt.wav" id="34_player_hurt"]
 [ext_resource type="PackedScene" path="res://src/ui/death/DeathScreenOverlay.tscn" id="25_death_screen"]
-[ext_resource type="PackedScene" path="res://src/actors/spirit/SpiritDropActor.tscn" id="26_spirit"]
 [ext_resource type="Script" path="res://src/gameplay/spawning/SpiritDropSpawner.cs" id="27_spirit_spawner"]
 [ext_resource type="Script" path="res://src/gameplay/progression/runtime/RunProgressionCoordinator.cs" id="28_progression"]
 [ext_resource type="PackedScene" path="res://src/ui/progression/LevelUpOverlay.tscn" id="29_level_up"]
@@ -122,7 +118,6 @@ script = ExtResource("15_health")
 
 [node name="AutoShooter" type="Node2D" parent="Player"]
 script = ExtResource("10_auto_shooter")
-ProjectileScene = ExtResource("11_projectile")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position_smoothing_enabled = false
@@ -145,15 +140,12 @@ script = ExtResource("35_combat_world")
 
 [node name="EnemySpawner" type="Node" parent="."]
 script = ExtResource("8_enemy_spawner")
-EnemyScene = ExtResource("12_enemy")
 
 [node name="PickupSpawner" type="Node" parent="."]
 script = ExtResource("9_pickup_spawner")
-PickupScene = ExtResource("13_pickup")
 
 [node name="SpiritDropSpawner" type="Node" parent="."]
 script = ExtResource("27_spirit_spawner")
-SpiritScene = ExtResource("26_spirit")
 
 [node name="RunProgressionCoordinator" type="Node" parent="."]
 script = ExtResource("28_progression")

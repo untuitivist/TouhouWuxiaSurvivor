@@ -1,6 +1,7 @@
 using Godot;
 using System.Security.Cryptography;
 using System.Text.Json;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Compendium;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
@@ -128,45 +129,70 @@ public partial class InternalOriginalAssetBoundaryTest : Node
     }
 
     /// <summary>
-    /// 确认本体与红魔乡的 39 个图鉴条目都存在唯一映射，且没有清单孤儿项。
+    /// 确认每个已接入来源的全部图鉴条目都有唯一映射，且映射中不存在内容目录孤儿项。
     /// </summary>
     private static void VerifyMappingCoverage()
     {
         var catalog = new InternalPreviewCatalog();
-        CompendiumEntry[] expected = CompendiumCatalog.All.Where(entry =>
-            entry.SourceId is CompendiumCatalog.BaseSourceId or "th06_eosd").ToArray();
-        Require(expected.Length == 39, $"Expected 39 base/TH06 entries, found {expected.Length}.");
-        Require(catalog.Count == expected.Length,
-            $"Internal mapping count {catalog.Count} does not match {expected.Length} entries.");
-        CompendiumEntry? missing = expected.FirstOrDefault(entry => !catalog.Contains(entry));
-        Require(missing is null,
-            $"Internal mapping is missing {missing?.SourceId}/{missing?.Category}/{missing?.Name}.");
+        var mappings = InternalAssetManifestProbe.ReadMappings();
+        IReadOnlySet<string> unavailable = InternalAssetManifestProbe.ReadUnavailableIdentities();
+        HashSet<string> mappedSources = mappings
+            .Where(item => item.Category != "Pickup")
+            .Select(item => item.SourceId)
+            .ToHashSet(StringComparer.Ordinal);
+        mappedSources.UnionWith(unavailable.Select(identity => identity.Split('\u001f')[0]));
+        CompendiumEntry[] expected = CompendiumCatalog.All
+            .Where(entry => mappedSources.Contains(entry.SourceId)).ToArray();
+        int expectedMappedCount = expected.Count(entry => !unavailable.Contains(Identity(entry)));
+        Require(catalog.Count == expectedMappedCount,
+            $"Internal mapping count {catalog.Count} does not match " +
+            $"{expectedMappedCount} available entries.");
+        foreach (CompendiumEntry entry in expected)
+        {
+            bool isUnavailable = unavailable.Contains(Identity(entry));
+            Require(catalog.Contains(entry) != isUnavailable,
+                isUnavailable
+                    ? $"Unavailable entry also has a visual mapping: {Identity(entry)}."
+                    : $"Internal mapping is missing {Identity(entry)}.");
+        }
+
+        foreach (var mapping in mappings.Where(item => item.Category != "Pickup"))
+        {
+            Require(expected.Any(entry => entry.SourceId == mapping.SourceId &&
+                    entry.Category.ToString() == mapping.Category && entry.Name == mapping.Name),
+                $"Internal mapping has no compendium entry: " +
+                $"{mapping.SourceId}/{mapping.Category}/{mapping.Name}.");
+        }
     }
 
     /// <summary>
-    /// 按渲染类型检查 39 个唯一输出的尺寸和 RGBA8 格式，允许符卡和强化分别共享图集。
+    /// 使用与视觉目录一致的记录分隔符构造图鉴身份，供可用映射与缺失声明做互斥校验。
+    /// </summary>
+    private static string Identity(CompendiumEntry entry) =>
+        $"{entry.SourceId}\u001f{entry.Category}\u001f{entry.Name}";
+
+    /// <summary>
+    /// 按渲染类型检查所有唯一输出的尺寸和 RGBA8 格式，允许符卡、强化与多条目共享图集。
     /// </summary>
     private static void VerifyMappedAssets()
     {
-        using JsonDocument document = JsonDocument.Parse(Godot.FileAccess.GetFileAsString(MappingPath));
         var visited = new HashSet<string>(StringComparer.Ordinal);
-        foreach (JsonElement item in document.RootElement.GetProperty("entries").EnumerateArray())
+        foreach (var item in InternalAssetManifestProbe.ReadMappings())
         {
-            string relative = item.GetProperty("asset").GetString()!;
+            string relative = item.Asset;
             if (!visited.Add(relative))
             {
                 continue;
             }
 
-            string kind = item.GetProperty("kind").GetString()!;
-            Vector2I expectedSize = kind switch
+            Vector2I expectedSize = item.Kind switch
             {
                 "Scene" => new Vector2I(128, 80),
                 "ActorStrip" => new Vector2I(192, 48),
                 "Portrait" => new Vector2I(80, 80),
                 "BulletAtlas" => new Vector2I(256, 256),
                 "ItemAtlas" => new Vector2I(256, 64),
-                _ => throw new InvalidDataException($"Unknown internal preview kind: {kind}."),
+                _ => throw new InvalidDataException($"Unknown internal preview kind: {item.Kind}."),
             };
             Image image = Image.LoadFromFile(ProjectSettings.GlobalizePath(AssetRoot + relative));
             Require(!image.IsEmpty() && image.GetSize() == expectedSize,
@@ -175,18 +201,22 @@ public partial class InternalOriginalAssetBoundaryTest : Node
                 $"Internal asset is not RGBA8: {relative}.");
         }
 
-        Require(visited.Count == 39,
-            $"Expected 39 unique mapped assets, found {visited.Count}.");
+        Require(visited.Count > 0, "Internal mappings did not reference any generated assets.");
     }
 
     /// <summary>
-    /// 确认生成器记录全部 52 个外部输入的 SHA-256，便于素材更新后判断是否需要重新生成。
+    /// 确认生成器逐条记录所有清单外部输入的 SHA-256，且没有遗漏、陈旧或孤立来源。
     /// </summary>
     private static void VerifySourceHashes()
     {
-        string hashes = Godot.FileAccess.GetFileAsString(AssetRoot + "source_files.sha256");
-        int count = hashes.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length;
-        Require(count == 52, $"Expected 52 source hashes, found {count}.");
+        IReadOnlySet<string> expected = InternalAssetManifestProbe.ReadBuildSources();
+        string[] lines = Godot.FileAccess.GetFileAsString(AssetRoot + "source_files.sha256")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        HashSet<string> actual = lines.Select(line =>
+            line.Length > 66 ? line[66..] : throw new InvalidDataException(
+                $"Malformed source hash line: {line}.")).ToHashSet(StringComparer.Ordinal);
+        Require(actual.SetEquals(expected),
+            $"Source hash coverage differs: expected {expected.Count}, actual {actual.Count}.");
     }
 
     /// <summary>

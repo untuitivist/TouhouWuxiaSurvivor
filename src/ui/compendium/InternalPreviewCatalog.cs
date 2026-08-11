@@ -42,14 +42,13 @@ public sealed class InternalPreviewCatalog
             shared.Name,
             shared.AssetPath,
             Enum.Parse<InternalPreviewKind>(shared.Kind.ToString(), false),
-            shared.Variant);
+            shared.Variant,
+            shared.ProxySourceWork);
         return true;
     }
 
     /// <summary>
-    /// 检查指定条目是否被内部映射完整覆盖，供集成测试验证本体与红魔乡清单。
+    /// 检查指定条目是否被内部映射完整覆盖，供集成测试验证所有已接入作品清单。
     /// </summary>
     public bool Contains(CompendiumEntry entry) => TryGet(entry, out _);
-
-    /// <summary>
 }

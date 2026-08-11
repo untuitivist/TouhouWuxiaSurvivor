@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {"sourceId":"th04_lls","category":"Biome","name":"梦幻世界","asset":"th13/scenes/biome_hall_of_dreams.png","kind":"Scene","variant":0,"proxySourceWork":"th13_td","reasonZh":"缺少 TH04 原作源；以 TH13 梦殿场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Biome","name":"幻想花田","asset":"th09/scenes/biome_sunflower_field.png","kind":"Scene","variant":1,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作源；以 TH09 向日葵花田代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Biome","name":"梦幻馆庭园","asset":"th06/scenes/biome_mansion_grounds.png","kind":"Scene","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH04 原作源；以 TH06 洋馆庭园场景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Structure","name":"梦幻世界入口","asset":"th13/scenes/structure_hall_of_dreams_gate.png","kind":"Scene","variant":3,"proxySourceWork":"th13_td","reasonZh":"缺少 TH04 原作源；以 TH13 梦殿门景代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Structure","name":"花田凉亭","asset":"th09/scenes/structure_sunflower_garden.png","kind":"Scene","variant":4,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作源；以 TH09 花园结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Structure","name":"梦幻馆","asset":"th06/scenes/structure_scarlet_mansion.png","kind":"Scene","variant":5,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH04 原作源；以 TH06 洋馆结构代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Enemy","name":"梦幻花妖","asset":"th09/actors/sunflower_youkai.png","kind":"ActorStrip","variant":0,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作源；以 TH09 花妖敌人代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Enemy","name":"幻想莲灵","asset":"th09/actors/soul_flower.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th09_pofv","reasonZh":"缺少 TH04 原作源；以 TH09 花形灵体代用。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"th04_lls","category":"Enemy","name":"梦幻馆卫灵","asset":"th06/actors/familiar_book_spirit.png","kind":"ActorStrip","variant":2,"proxySourceWork":"th06_eosd","reasonZh":"缺少 TH04 原作源；以 TH06 洋馆使魔代用。","reviewStatus":"proxy-reviewed"}
+  ]
+}

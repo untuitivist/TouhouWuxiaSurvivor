@@ -1,0 +1,21 @@
+{
+  "entries": [
+    {"sourceId":"th11_sa","category":"Biome","name":"地底通道","asset":"th11/scenes/biome_underground_passage.png","kind":"Scene","variant":0},
+    {"sourceId":"th11_sa","category":"Biome","name":"旧地狱街道","asset":"th11/scenes/biome_old_hell_streets.png","kind":"Scene","variant":1},
+    {"sourceId":"th11_sa","category":"Biome","name":"地灵殿境内","asset":"th11/scenes/biome_palace_grounds.png","kind":"Scene","variant":2},
+    {"sourceId":"th11_sa","category":"Structure","name":"嫉妒之桥","asset":"th11/scenes/structure_jealousy_bridge.png","kind":"Scene","variant":3},
+    {"sourceId":"th11_sa","category":"Structure","name":"旧都","asset":"th11/scenes/structure_old_capital.png","kind":"Scene","variant":4},
+    {"sourceId":"th11_sa","category":"Structure","name":"地灵殿","asset":"th11/scenes/structure_palace_of_earth_spirits.png","kind":"Scene","variant":5},
+    {"sourceId":"th11_sa","category":"Enemy","name":"地底怨灵","asset":"th11/actors/underground_wraith.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th11_sa","category":"Enemy","name":"地狱鸦","asset":"th11/actors/hell_raven.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th11_sa","category":"Enemy","name":"火车猫灵","asset":"th11/actors/kasha_cat_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th11_sa","category":"Character","name":"琪斯美","asset":"th11/portraits/kisume.png","kind":"Portrait","variant":0},
+    {"sourceId":"th11_sa","category":"Character","name":"黑谷山女","asset":"th11/portraits/yamame.png","kind":"Portrait","variant":1},
+    {"sourceId":"th11_sa","category":"Character","name":"水桥帕露西","asset":"th11/portraits/parsee.png","kind":"Portrait","variant":2},
+    {"sourceId":"th11_sa","category":"Character","name":"星熊勇仪","asset":"th11/portraits/yuugi.png","kind":"Portrait","variant":3},
+    {"sourceId":"th11_sa","category":"Character","name":"古明地觉","asset":"th11/portraits/satori.png","kind":"Portrait","variant":4},
+    {"sourceId":"th11_sa","category":"Character","name":"火焰猫燐","asset":"th11/portraits/rin.png","kind":"Portrait","variant":5},
+    {"sourceId":"th11_sa","category":"Character","name":"灵乌路空","asset":"th11/portraits/utsuho.png","kind":"Portrait","variant":6},
+    {"sourceId":"th11_sa","category":"Character","name":"古明地恋","asset":"th11/portraits/koishi.png","kind":"Portrait","variant":7}
+  ]
+}

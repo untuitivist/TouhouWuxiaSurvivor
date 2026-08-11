@@ -1,0 +1,28 @@
+{
+  "scenes": [
+    {"source":"TH11 东方地灵殿/ANM/ANM/background/stage02/stage02a.png","output":"th11/scenes/biome_underground_passage.png","baseColor":[18,14,20,255]},
+    {"source":"TH11 东方地灵殿/ANM/ANM/background/stage03/stage03a.png","output":"th11/scenes/biome_old_hell_streets.png","baseColor":[28,12,8,255]},
+    {"source":"TH11 东方地灵殿/ANM/ANM/background/stage04/stage04a.png","output":"th11/scenes/biome_palace_grounds.png","baseColor":[22,10,14,255]},
+    {"source":"TH11 东方地灵殿/ANM/ANM/background/stage02/stage02b.png","output":"th11/scenes/structure_jealousy_bridge.png","baseColor":[18,12,20,255]},
+    {"source":"TH11 东方地灵殿/ANM/ANM/background/stage03/stage03c.png","output":"th11/scenes/structure_old_capital.png","baseColor":[28,14,8,255]},
+    {"source":"TH11 东方地灵殿/ANM/ANM/background/stage04/stage04c.png","output":"th11/scenes/structure_palace_of_earth_spirits.png","baseColor":[20,8,12,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH11 东方地灵殿/ANM/ANM/enemy/enemy.png","output":"th11/actors/underground_wraith.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH11 东方地灵殿/ANM/ANM/stgenm/stg6enm.png","output":"th11/actors/hell_raven.png","startX":0,"startY":0,"frameWidth":128,"frameHeight":128},
+    {"source":"TH11 东方地灵殿/ANM/ANM/stgenm/stg5enm.png","output":"th11/actors/kasha_cat_spirit.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":64}
+  ],
+  "portraits": [
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy1m/face01mct.png","output":"th11/portraits/kisume.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy1/face01no.png","output":"th11/portraits/yamame.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy2/face02no.png","output":"th11/portraits/parsee.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy3/face03no.png","output":"th11/portraits/yuugi.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy4/face04no.png","output":"th11/portraits/satori.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy5/face05no.png","output":"th11/portraits/rin.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy6/face06no.png","output":"th11/portraits/utsuho.png"},
+    {"source":"TH11 东方地灵殿/ANM/ANM/face/enemy7/face07no.png","output":"th11/portraits/koishi.png"}
+  ],
+  "copies": [
+    {"source":"TH11 东方地灵殿/ANM/ANM/bullet/etama.png","output":"th11/bullet_atlas.png"}
+  ]
+}

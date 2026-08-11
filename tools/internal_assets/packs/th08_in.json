@@ -1,0 +1,28 @@
+{
+  "scenes": [
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg4bg.png","output":"th08/scenes/biome_bamboo_forest.png","crop":[0,0,256,256],"baseColor":[10,26,18,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg5bg.png","output":"th08/scenes/biome_eientei_grounds.png","crop":[0,0,256,256],"baseColor":[26,14,12,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg6bg2.png","output":"th08/scenes/biome_false_moon_space.png","baseColor":[12,10,28,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg4bg2.png","output":"th08/scenes/structure_bamboo_path.png","baseColor":[10,24,16,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg6bg3.png","output":"th08/scenes/structure_eientei.png","baseColor":[24,12,14,255]},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgbg/stg6bg4.png","output":"th08/scenes/structure_false_moon_altar.png","baseColor":[14,10,30,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgenm/enemy.png","output":"th08/actors/bamboo_leaf_youkai.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgenm/enemy.png","output":"th08/actors/moon_rabbit.png","startX":0,"startY":64,"frameWidth":32,"frameHeight":32},
+    {"source":"TH08 东方永夜抄/ANM/ANM/stgenm/enemy.png","output":"th08/actors/eternal_night_insect.png","startX":0,"startY":96,"frameWidth":32,"frameHeight":32}
+  ],
+  "portraits": [
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st01/face_st01no.png","output":"th08/portraits/wriggle.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st02/face_st02no.png","output":"th08/portraits/mystia.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st03/face_st03no.png","output":"th08/portraits/keine.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st05m/face_st05ma.png","output":"th08/portraits/tewi.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st05/face_st05no.png","output":"th08/portraits/reisen.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st06/face_st06no.png","output":"th08/portraits/eirin.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st07/face_st07no.png","output":"th08/portraits/kaguya.png"},
+    {"source":"TH08 东方永夜抄/ANM/ANM/face/st08/face_st08no.png","output":"th08/portraits/mokou.png"}
+  ],
+  "copies": [
+    {"source":"TH08 东方永夜抄/ANM/ANM/etama/etama.png","output":"th08/bullet_atlas.png"}
+  ]
+}

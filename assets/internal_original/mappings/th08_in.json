@@ -1,0 +1,21 @@
+{
+  "entries": [
+    {"sourceId":"th08_in","category":"Biome","name":"迷途竹林","asset":"th08/scenes/biome_bamboo_forest.png","kind":"Scene","variant":0},
+    {"sourceId":"th08_in","category":"Biome","name":"永远亭境内","asset":"th08/scenes/biome_eientei_grounds.png","kind":"Scene","variant":1},
+    {"sourceId":"th08_in","category":"Biome","name":"伪月空间","asset":"th08/scenes/biome_false_moon_space.png","kind":"Scene","variant":2},
+    {"sourceId":"th08_in","category":"Structure","name":"竹林古道","asset":"th08/scenes/structure_bamboo_path.png","kind":"Scene","variant":3},
+    {"sourceId":"th08_in","category":"Structure","name":"永远亭","asset":"th08/scenes/structure_eientei.png","kind":"Scene","variant":4},
+    {"sourceId":"th08_in","category":"Structure","name":"伪月祭坛","asset":"th08/scenes/structure_false_moon_altar.png","kind":"Scene","variant":5},
+    {"sourceId":"th08_in","category":"Enemy","name":"竹叶妖","asset":"th08/actors/bamboo_leaf_youkai.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th08_in","category":"Enemy","name":"月兔","asset":"th08/actors/moon_rabbit.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th08_in","category":"Enemy","name":"永夜虫","asset":"th08/actors/eternal_night_insect.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th08_in","category":"Character","name":"莉格露·奈特巴格","asset":"th08/portraits/wriggle.png","kind":"Portrait","variant":0},
+    {"sourceId":"th08_in","category":"Character","name":"米斯蒂娅·萝蕾拉","asset":"th08/portraits/mystia.png","kind":"Portrait","variant":1},
+    {"sourceId":"th08_in","category":"Character","name":"上白泽慧音","asset":"th08/portraits/keine.png","kind":"Portrait","variant":2},
+    {"sourceId":"th08_in","category":"Character","name":"因幡帝","asset":"th08/portraits/tewi.png","kind":"Portrait","variant":3},
+    {"sourceId":"th08_in","category":"Character","name":"铃仙·优昙华院·因幡","asset":"th08/portraits/reisen.png","kind":"Portrait","variant":4},
+    {"sourceId":"th08_in","category":"Character","name":"八意永琳","asset":"th08/portraits/eirin.png","kind":"Portrait","variant":5},
+    {"sourceId":"th08_in","category":"Character","name":"蓬莱山辉夜","asset":"th08/portraits/kaguya.png","kind":"Portrait","variant":6},
+    {"sourceId":"th08_in","category":"Character","name":"藤原妹红","asset":"th08/portraits/mokou.png","kind":"Portrait","variant":7}
+  ]
+}

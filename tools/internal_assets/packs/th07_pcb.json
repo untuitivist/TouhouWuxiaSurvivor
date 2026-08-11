@@ -1,0 +1,37 @@
+{
+  "scenes": [
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgbg/stg1bg.png","output":"th07/scenes/biome_winter_cherry_forest.png","crop":[0,0,256,256],"baseColor":[18,24,34,255]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgbg/stg5bg.png","output":"th07/scenes/biome_netherworld.png","crop":[0,256,256,256],"baseColor":[18,12,30,255]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgbg/stg6bg.png","output":"th07/scenes/biome_hakugyokurou_garden.png","crop":[0,0,256,256],"baseColor":[28,14,26,255]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgbg/stg4bg.png","output":"th07/scenes/structure_netherworld_barrier.png","crop":[0,0,256,256],"baseColor":[16,12,28,255]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgbg/stg6bg.png","output":"th07/scenes/structure_boundary_gate.png","crop":[256,256,256,256],"baseColor":[24,12,24,255]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgbg/stg6bg2.png","output":"th07/scenes/structure_hakugyokurou.png","baseColor":[30,18,24,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgenm/stg1enm.png","output":"th07/actors/winter_fairy.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgenm/stg5enm.png","output":"th07/actors/ghost.png","startX":0,"startY":384,"frameWidth":32,"frameHeight":32},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/stgenm/stg6enm.png","output":"th07/actors/cherry_spirit.png","startX":0,"startY":416,"frameWidth":32,"frameHeight":32}
+  ],
+  "portraits": [
+    {"source":"TH07 东方妖妖梦/ANM/ANM/face/st01/face_01_00.png","output":"th07/portraits/letty.png","crop":[0,0,128,512]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/face/st02/face_02_00.png","output":"th07/portraits/chen.png","crop":[0,0,128,512]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/face/st05/face_05_00.png","output":"th07/portraits/youmu.png","crop":[0,0,256,512]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/face/st06/face_06_00.png","output":"th07/portraits/yuyuko.png","crop":[0,0,256,512]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/face/st07/face_07_01.png","output":"th07/portraits/ran.png","crop":[0,0,256,512]},
+    {"source":"TH07 东方妖妖梦/ANM/ANM/face/st08/face_08_00.png","output":"th07/portraits/yukari.png"}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th07/portraits/prismriver_sisters.png",
+      "canvas":[384,512],
+      "layers":[
+        {"source":"TH07 东方妖妖梦/ANM/ANM/face/st04/face_04_00.png","crop":[0,0,128,512],"position":[0,0]},
+        {"source":"TH07 东方妖妖梦/ANM/ANM/face/st04/face_04_01.png","crop":[0,0,128,512],"position":[128,0]},
+        {"source":"TH07 东方妖妖梦/ANM/ANM/face/st04/face_04_02.png","crop":[0,0,128,512],"position":[256,0]}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH07 东方妖妖梦/ANM/ANM/etama/etama.png","output":"th07/bullet_atlas.png"}
+  ]
+}

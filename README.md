@@ -1,6 +1,9 @@
 # Touhou Wuxia Survivor
 
-当前版本是无限幻想乡生存者玩法 Demo。首个角色为博丽灵梦，当前以中文名称文字临时显示，
+当前版本：`0.0.0-alpha`。运行时版本的唯一来源是 `project.godot` 中的
+`application/config/version`；版本规则与变更记录见 [CHANGELOG.md](CHANGELOG.md)。
+
+当前阶段是无限幻想乡生存者玩法 Demo。首个角色为博丽灵梦，当前以中文名称文字临时显示，
 控制、世界生成、区块流送、自动战斗和渲染均为当前项目内的 C# 实现。
 
 ## 运行

@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th13_td","category":"Biome","name":"夜樱墓地","asset":"th13/scenes/biome_night_cemetery.png","kind":"Scene","variant":0},
+    {"sourceId":"th13_td","category":"Biome","name":"梦殿大祀庙","asset":"th13/scenes/biome_hall_of_dreams.png","kind":"Scene","variant":1},
+    {"sourceId":"th13_td","category":"Biome","name":"神灵庙深处","asset":"th13/scenes/biome_divine_spirit_mausoleum.png","kind":"Scene","variant":2},
+    {"sourceId":"th13_td","category":"Structure","name":"命莲寺墓园门","asset":"th13/scenes/structure_cemetery_gate.png","kind":"Scene","variant":3},
+    {"sourceId":"th13_td","category":"Structure","name":"梦殿石门","asset":"th13/scenes/structure_hall_of_dreams_gate.png","kind":"Scene","variant":4},
+    {"sourceId":"th13_td","category":"Structure","name":"神灵庙","asset":"th13/scenes/structure_divine_spirit_temple.png","kind":"Scene","variant":5},
+    {"sourceId":"th13_td","category":"Enemy","name":"僵尸","asset":"th13/actors/zombie.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th13_td","category":"Enemy","name":"欲灵","asset":"th13/actors/desire_spirit.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th13_td","category":"Enemy","name":"道士灵","asset":"th13/actors/taoist_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th13_td","category":"Character","name":"幽谷响子","asset":"th13/portraits/kyouko.png","kind":"Portrait","variant":0},
+    {"sourceId":"th13_td","category":"Character","name":"宫古芳香","asset":"th13/portraits/yoshika.png","kind":"Portrait","variant":1},
+    {"sourceId":"th13_td","category":"Character","name":"霍青娥","asset":"th13/portraits/seiga.png","kind":"Portrait","variant":2},
+    {"sourceId":"th13_td","category":"Character","name":"苏我屠自古","asset":"th13/portraits/tojiko.png","kind":"Portrait","variant":3},
+    {"sourceId":"th13_td","category":"Character","name":"物部布都","asset":"th13/portraits/futo.png","kind":"Portrait","variant":4},
+    {"sourceId":"th13_td","category":"Character","name":"丰聪耳神子","asset":"th13/portraits/miko.png","kind":"Portrait","variant":5},
+    {"sourceId":"th13_td","category":"Character","name":"二岩猯藏","asset":"th13/portraits/mamizou.png","kind":"Portrait","variant":6}
+  ]
+}

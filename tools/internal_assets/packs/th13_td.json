@@ -1,0 +1,78 @@
+{
+  "scenes": [
+    {"source":"TH13 东方神灵庙/ANM/ANM/background/stage01/stg1bg.png","output":"th13/scenes/biome_night_cemetery.png","canvas":[512,512],"baseColor":[18,10,28,255]},
+    {"source":"TH13 东方神灵庙/ANM/ANM/background/stage05/stage5a00.png","output":"th13/scenes/biome_hall_of_dreams.png","canvas":[256,256],"baseColor":[22,14,26,255]},
+    {"source":"TH13 东方神灵庙/ANM/ANM/background/stage06/stage6a01.png","output":"th13/scenes/biome_divine_spirit_mausoleum.png","canvas":[512,512],"baseColor":[16,16,30,255]},
+    {"source":"TH13 东方神灵庙/ANM/ANM/background/stage04/gate01.png","output":"th13/scenes/structure_cemetery_gate.png","canvas":[512,512],"baseColor":[8,18,18,255]},
+    {"source":"TH13 东方神灵庙/ANM/ANM/background/stage05/stage5c00.png","output":"th13/scenes/structure_hall_of_dreams_gate.png","canvas":[256,256],"baseColor":[18,14,24,255]},
+    {"source":"TH13 东方神灵庙/ANM/ANM/background/stage06/stage6b01.png","output":"th13/scenes/structure_divine_spirit_temple.png","canvas":[256,256],"baseColor":[16,14,24,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH13 东方神灵庙/ANM/ANM/enemy/littlegods.png","output":"th13/actors/desire_spirit.png","startX":32,"startY":0,"frameWidth":32,"frameHeight":32},
+    {"source":"TH13 东方神灵庙/ANM/ANM/enemy/enemy2.png","output":"th13/actors/taoist_spirit.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32}
+  ],
+  "staticStrips": [
+    {"source":"TH13 东方神灵庙/ANM/ANM/stgenm/stage02/enm2.png","output":"th13/actors/zombie.png","crop":[0,0,64,64]}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th13/portraits/kyouko.png",
+      "canvas":[231,360],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy1/face01bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy1/face01no.png","position":[0,0]}
+      ]
+    },
+    {
+      "output":"th13/portraits/yoshika.png",
+      "canvas":[180,330],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy2/face02bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy2/face02no.png","position":[0,0]}
+      ]
+    },
+    {
+      "output":"th13/portraits/seiga.png",
+      "canvas":[200,330],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy3/face03bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy3/face03no.png","position":[0,0]}
+      ]
+    },
+    {
+      "output":"th13/portraits/tojiko.png",
+      "canvas":[380,360],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy4/face04bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy4/face04no.png","position":[0,0]}
+      ]
+    },
+    {
+      "output":"th13/portraits/futo.png",
+      "canvas":[400,340],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy5/face05bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy5/face05no.png","position":[0,0]}
+      ]
+    },
+    {
+      "output":"th13/portraits/miko.png",
+      "canvas":[256,370],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy6/face06bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy6/face06no.png","position":[0,0]}
+      ]
+    },
+    {
+      "output":"th13/portraits/mamizou.png",
+      "canvas":[192,340],
+      "layers":[
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy7/face07bs.png","position":[0,0]},
+        {"source":"TH13 东方神灵庙/ANM/ANM/face/enemy7/face07no.png","position":[0,0]}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH13 东方神灵庙/ANM/ANM/bullet/bullet1.png","output":"th13/bullet_atlas.png"}
+  ]
+}

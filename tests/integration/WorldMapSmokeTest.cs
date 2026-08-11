@@ -1,5 +1,7 @@
 using Godot;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Map;
+using TouhouWuxiaSurvivor.Ui.Map.Input;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -19,6 +21,7 @@ public partial class WorldMapSmokeTest : Node
 
         var map = demo.GetNode<WorldMapOverlay>("MapLayer/WorldMapOverlay");
         Require(InputMap.HasAction("toggle_map"), "Map input action is missing.");
+        VerifyCommandRouting();
         using var mapKey = new InputEventKey
         {
             PhysicalKeycode = Key.M,
@@ -48,10 +51,34 @@ public partial class WorldMapSmokeTest : Node
         Require(!GetTree().Paused, "Closing the map did not restore pause state.");
 
         GD.Print("World map smoke test passed.");
-        demo.QueueFree();
-        await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-        await ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
+        await WorldDemoTestCleanup.FreeAsync(this, demo);
         GetTree().Quit();
+    }
+
+    /// <summary>
+    /// 覆盖地图关闭态屏蔽与打开态全部键盘命令，保证抽离后的动作解析没有改变既有控制语义。
+    /// </summary>
+    private static void VerifyCommandRouting()
+    {
+        using var pauseWhenClosed = new InputEventAction { Action = "pause_menu", Pressed = true };
+        Require(WorldMapInputResolver.Resolve(pauseWhenClosed, false) == WorldMapInputCommand.None,
+            "Closed map accepted a command other than toggle.");
+        (string action, WorldMapInputCommand command)[] expected =
+        [
+            ("toggle_map", WorldMapInputCommand.Toggle),
+            ("pause_menu", WorldMapInputCommand.Close),
+            ("map_recenter", WorldMapInputCommand.Recenter),
+            ("ui_left", WorldMapInputCommand.PanLeft),
+            ("ui_right", WorldMapInputCommand.PanRight),
+            ("ui_up", WorldMapInputCommand.PanUp),
+            ("ui_down", WorldMapInputCommand.PanDown),
+        ];
+        foreach ((string action, WorldMapInputCommand command) in expected)
+        {
+            using var input = new InputEventAction { Action = action, Pressed = true };
+            Require(WorldMapInputResolver.Resolve(input, true) == command,
+                $"Map action {action} did not resolve to {command}.");
+        }
     }
 
     /// <summary>

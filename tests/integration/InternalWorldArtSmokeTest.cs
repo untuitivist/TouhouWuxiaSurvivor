@@ -2,6 +2,11 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Tests.Support;
+using TouhouWuxiaSurvivor.Visuals.Internal;
+using TouhouWuxiaSurvivor.World.Biomes;
+using TouhouWuxiaSurvivor.World.Rendering;
+using TouhouWuxiaSurvivor.World.Structures;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -17,6 +22,7 @@ public partial class InternalWorldArtSmokeTest : Node
     {
         try
         {
+            VerifyEveryBiomeAndStructure();
             var world = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
                 .Instantiate<WorldDemo>();
             world.PersistMetaProgression = false;
@@ -43,8 +49,7 @@ public partial class InternalWorldArtSmokeTest : Node
                 "Gameplay retained the preview panel or omitted the plain internal-use notice.");
 
             GD.Print("Internal world art smoke test passed.");
-            world.QueueFree();
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await WorldDemoTestCleanup.FreeAsync(this, world);
             GetTree().Quit();
         }
         catch (Exception exception)
@@ -53,6 +58,53 @@ public partial class InternalWorldArtSmokeTest : Node
             GD.PushError(exception.ToString());
             GetTree().Quit(1);
         }
+    }
+
+    /// <summary>
+    /// 逐项走正式世界的来源解析与纹理派生入口，确认所有作品群系和结构均能生成非空像素资源。
+    /// </summary>
+    private static void VerifyEveryBiomeAndStructure()
+    {
+        var catalog = new InternalVisualCatalog();
+        foreach (BiomeId biome in Enum.GetValues<BiomeId>())
+        {
+            string sourceId = InternalContentSourceResolver.GetSourceId(biome);
+            string name = BiomeNames.GetChinese(biome);
+            Texture2D texture = RequireSceneTexture(
+                catalog, sourceId, InternalVisualCategory.Biome, name);
+            Image atlas = InternalBiomeTextureFactory.CreateAtlas(texture).GetImage();
+            Require(atlas.GetSize() == new Vector2I(32, 32) && atlas.GetUsedRect().HasArea(),
+                $"Biome atlas is empty or malformed: {sourceId}/{name}.");
+        }
+
+        foreach (StructureId structure in Enum.GetValues<StructureId>())
+        {
+            string sourceId = InternalContentSourceResolver.GetSourceId(structure);
+            string name = StructureNames.GetChinese(structure);
+            Texture2D texture = RequireSceneTexture(
+                catalog, sourceId, InternalVisualCategory.Structure, name);
+            Image marker = InternalStructureTextureFactory.CreateMarker(texture, structure).GetImage();
+            Require(marker.GetSize() == new Vector2I(128, 128) && marker.GetUsedRect().HasArea(),
+                $"Structure marker is empty or malformed: {sourceId}/{name}.");
+        }
+    }
+
+    /// <summary>
+    /// 按正式复合键读取场景纹理，并在映射缺失、类型错误或纹理无法加载时立即给出具体身份。
+    /// </summary>
+    private static Texture2D RequireSceneTexture(
+        InternalVisualCatalog catalog,
+        string sourceId,
+        InternalVisualCategory category,
+        string name)
+    {
+        Require(catalog.TryGet(sourceId, category, name, out InternalVisualDefinition definition),
+            $"World art mapping is missing: {sourceId}/{category}/{name}.");
+        Require(definition.Kind == InternalVisualKind.Scene,
+            $"World art mapping is not a scene: {sourceId}/{category}/{name}.");
+        Require(catalog.TryGetTexture(definition, out Texture2D texture),
+            $"World art texture cannot be loaded: {sourceId}/{category}/{name}.");
+        return texture;
     }
 
     /// <summary>

@@ -2,11 +2,11 @@
 
 ## Current Goal - 2026-08-11
 
-Before resuming all-DLC completion, replace every formal combat reference to borrowed demo-game visuals with supplied Touhou original-game assets. Enemies must share the completed compendium mappings; pickups and player bullets must use auditable original atlases while keeping survivor-style build effects.
+Complete the TH01-TH20 DLC visual and runtime pipeline after the formal ECS combat replacement. Every work must use an independent declarative source manifest, shared runtime/compendium mapping, auditable original or explicitly declared proxy source, and inspected normalized output.
 
 ## Current Phase
 
-Phase A - all-DLC source manifest and normalized asset expansion.
+Complete - all-DLC original-asset pipeline and formal ECS regression verified.
 
 ## DLC Acceptance Criteria
 
@@ -23,12 +23,17 @@ Each work must pass all four checks:
 - [x] Audit the formal ECS visual regression and every borrowed combat-sheet reference.
 - [x] Add original pickup/bullet/audio mappings and wire ECS plus compatibility scenes to them.
 - [x] Replace the obsolete enemy visual smoke test with formal ECS coverage and inspect captures.
-- [ ] Audit TH01-TH20 manifests, original sources, runtime mappings, and gaps.
-- [ ] Implement a unified all-DLC content and internal-asset manifest.
-- [ ] Generate/import every required original asset and validate dimensions/crops.
-- [ ] Wire every DLC into world, combat, compendium, and selection UI.
-- [ ] Capture and inspect every DLC in Godot; repair all invalid mappings.
-- [ ] Run build, coverage, gameplay, visual, encoding, and line-limit audits.
+- [x] Audit TH01-TH20 manifests, original sources, runtime mappings, and gaps.
+- [x] Implement per-work build/mapping discovery that remains functional inside an exported PCK.
+- [x] Add full-image, layered portrait, white-edge cleanup, and centered-scene normalization.
+- [x] Generate and boundary-test TH07-TH12 mappings and repair invalid frame selections.
+- [x] Generate and verify TH13-TH19 assets from available original sources.
+- [x] Declare honest proxy boundaries for missing TH01-TH05 and TH20 sources.
+- [x] Implement a unified all-DLC content and internal-asset manifest.
+- [x] Generate/import every required original asset and validate dimensions/crops.
+- [x] Wire every DLC into world, combat, compendium, and selection UI.
+- [x] Capture and inspect every DLC in Godot; repair all invalid mappings.
+- [x] Run build, coverage, gameplay, visual, encoding, and line-limit audits.
 
 ## Current Errors
 
@@ -36,6 +41,7 @@ Each work must pass all four checks:
 - First asset-builder run crashed because the sandbox denied Godot's `user://logs`; approved user-directory access fixed it.
 - The first formal pickup visual test ran before Godot imported the generated PNG; a complete headless editor scan generated the required import metadata.
 - Original TH17.5 OGG comments used invalid legacy metadata; FFmpeg stream-copy metadata stripping now removes the warning without audio re-encoding.
+- Final review found that ignored `release/` contains only a local `0.0.0-alpha` executable created at 22:06; previous beta executables are absent and cannot be recovered from Git, so no release file may be removed or overwritten without user direction.
 
 ---
 

@@ -27,7 +27,6 @@ public partial class EcsCombatWorld : Node2D
     private PlayerHealth? _health;
     private PlayerBuffController? _buffs;
     private RunModifierState? _modifiers;
-    private RunProgressionState? _progression;
 
     /// <summary>敌人击破事件，参数为位置和定义。</summary>
     public event Action<Vector2, EnemyDefinition>? EnemyDefeated;
@@ -77,13 +76,12 @@ public partial class EcsCombatWorld : Node2D
 
     /// <summary>绑定玩家和局内状态，使批量系统不依赖场景查找。</summary>
     public void Configure(PlayerController player, PlayerHealth health, PlayerBuffController buffs,
-        RunModifierState modifiers, RunProgressionState progression)
+        RunModifierState modifiers)
     {
         _player = player;
         _health = health;
         _buffs = buffs;
         _modifiers = modifiers;
-        _progression = progression;
         _renderer.Configure();
         TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
     }
@@ -183,14 +181,14 @@ public partial class EcsCombatWorld : Node2D
     /// <summary>按固定系统顺序推进敌人、投射物、掉落物和灵息。</summary>
     public override void _PhysicsProcess(double delta)
     {
-        if (_player is null || _health is null || _buffs is null || _modifiers is null || _progression is null) return;
+        if (_player is null || _health is null || _buffs is null || _modifiers is null) return;
         _elapsedSeconds += delta;
         _enemyMovement.Step(_enemies, _player.GlobalPosition, (float)delta, amount => _health.ApplyDamage(amount));
         _projectileMovement.Step(_projectiles, (float)delta);
         ResolveProjectileHits();
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());
         _spiritSystem.Step(_spirits, _player.GlobalPosition, 72.0f * _modifiers.SpiritAttractionMultiplier,
-            _progression, (float)delta, value => SpiritCollected?.Invoke(value));
+            (float)delta, value => SpiritCollected?.Invoke(value));
         QueueRedraw();
     }
 

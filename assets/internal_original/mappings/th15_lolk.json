@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th15_lolk","category":"Biome","name":"月之虹海","asset":"th15/scenes/biome_lunar_rainbow_sea.png","kind":"Scene","variant":0},
+    {"sourceId":"th15_lolk","category":"Biome","name":"月之都","asset":"th15/scenes/biome_lunar_capital.png","kind":"Scene","variant":1},
+    {"sourceId":"th15_lolk","category":"Biome","name":"静海","asset":"th15/scenes/biome_sea_of_tranquility.png","kind":"Scene","variant":2},
+    {"sourceId":"th15_lolk","category":"Structure","name":"月面传送门","asset":"th15/scenes/structure_lunar_transfer_gate.png","kind":"Scene","variant":3},
+    {"sourceId":"th15_lolk","category":"Structure","name":"月都门","asset":"th15/scenes/structure_lunar_capital_gate.png","kind":"Scene","variant":4},
+    {"sourceId":"th15_lolk","category":"Structure","name":"静海前哨","asset":"th15/scenes/structure_tranquility_outpost.png","kind":"Scene","variant":5},
+    {"sourceId":"th15_lolk","category":"Enemy","name":"月兔兵","asset":"th15/actors/moon_rabbit_soldier.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th15_lolk","category":"Enemy","name":"月都卫兵","asset":"th15/actors/lunar_capital_guard.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th15_lolk","category":"Enemy","name":"纯化灵","asset":"th15/actors/purified_spirit.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th15_lolk","category":"Character","name":"清兰","asset":"th15/portraits/seiran.png","kind":"Portrait","variant":0},
+    {"sourceId":"th15_lolk","category":"Character","name":"铃瑚","asset":"th15/portraits/ringo.png","kind":"Portrait","variant":1},
+    {"sourceId":"th15_lolk","category":"Character","name":"哆来咪·苏伊特","asset":"th15/portraits/doremy.png","kind":"Portrait","variant":2},
+    {"sourceId":"th15_lolk","category":"Character","name":"稀神探女","asset":"th15/portraits/sagume.png","kind":"Portrait","variant":3},
+    {"sourceId":"th15_lolk","category":"Character","name":"克劳恩皮丝","asset":"th15/portraits/clownpiece.png","kind":"Portrait","variant":4},
+    {"sourceId":"th15_lolk","category":"Character","name":"纯狐","asset":"th15/portraits/junko.png","kind":"Portrait","variant":5},
+    {"sourceId":"th15_lolk","category":"Character","name":"赫卡提亚·拉碧斯拉祖利","asset":"th15/portraits/hecatia.png","kind":"Portrait","variant":6}
+  ]
+}

@@ -11,6 +11,7 @@ public sealed class InternalVisualDefinition
     public string AssetPath { get; }
     public InternalVisualKind Kind { get; }
     public int Variant { get; }
+    public string? ProxySourceWork { get; }
 
     /// <summary>
     /// 构造一条已由清单解析和校验的共享视觉定义。
@@ -21,7 +22,8 @@ public sealed class InternalVisualDefinition
         string name,
         string assetPath,
         InternalVisualKind kind,
-        int variant)
+        int variant,
+        string? proxySourceWork = null)
     {
         SourceId = sourceId;
         Category = category;
@@ -29,5 +31,6 @@ public sealed class InternalVisualDefinition
         AssetPath = assetPath;
         Kind = kind;
         Variant = variant;
+        ProxySourceWork = proxySourceWork;
     }
 }

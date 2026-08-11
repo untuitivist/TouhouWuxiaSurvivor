@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th17_wbawc","category":"Biome","name":"地狱关口","asset":"th17/scenes/biome_hell_checkpoint.png","kind":"Scene","variant":0},
+    {"sourceId":"th17_wbawc","category":"Biome","name":"畜生界","asset":"th17/scenes/biome_animal_realm.png","kind":"Scene","variant":1},
+    {"sourceId":"th17_wbawc","category":"Biome","name":"灵长园境内","asset":"th17/scenes/biome_primate_spirit_garden_grounds.png","kind":"Scene","variant":2},
+    {"sourceId":"th17_wbawc","category":"Structure","name":"三途关卡","asset":"th17/scenes/structure_sanzu_checkpoint.png","kind":"Scene","variant":3},
+    {"sourceId":"th17_wbawc","category":"Structure","name":"兽组织战场","asset":"th17/scenes/structure_beast_clan_battlefield.png","kind":"Scene","variant":4},
+    {"sourceId":"th17_wbawc","category":"Structure","name":"灵长园","asset":"th17/scenes/structure_primate_spirit_garden.png","kind":"Scene","variant":5},
+    {"sourceId":"th17_wbawc","category":"Enemy","name":"兽灵","asset":"th17/actors/beast_spirit.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th17_wbawc","category":"Enemy","name":"鹰灵","asset":"th17/actors/eagle_spirit.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th17_wbawc","category":"Enemy","name":"埴轮兵","asset":"th17/actors/haniwa_soldier.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th17_wbawc","category":"Character","name":"戎璎花","asset":"th17/portraits/eika.png","kind":"Portrait","variant":0},
+    {"sourceId":"th17_wbawc","category":"Character","name":"牛崎润美","asset":"th17/portraits/urumi.png","kind":"Portrait","variant":1},
+    {"sourceId":"th17_wbawc","category":"Character","name":"庭渡久侘歌","asset":"th17/portraits/kutaka.png","kind":"Portrait","variant":2},
+    {"sourceId":"th17_wbawc","category":"Character","name":"吉吊八千慧","asset":"th17/portraits/yachie.png","kind":"Portrait","variant":3},
+    {"sourceId":"th17_wbawc","category":"Character","name":"杖刀偶磨弓","asset":"th17/portraits/mayumi.png","kind":"Portrait","variant":4},
+    {"sourceId":"th17_wbawc","category":"Character","name":"埴安神袿姬","asset":"th17/portraits/keiki.png","kind":"Portrait","variant":5},
+    {"sourceId":"th17_wbawc","category":"Character","name":"骊驹早鬼","asset":"th17/portraits/saki.png","kind":"Portrait","variant":6}
+  ]
+}

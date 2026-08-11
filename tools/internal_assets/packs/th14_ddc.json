@@ -1,0 +1,84 @@
+{
+  "scenes": [
+    {"source":"TH14 东方辉针城/ANM/ANM/background/stage01/world02.png","output":"th14/scenes/biome_stormy_lake.png","canvas":[256,256],"baseColor":[8,28,46,255]},
+    {"source":"TH14 东方辉针城/ANM/ANM/background/stage04/stg4bg1.png","output":"th14/scenes/biome_tsukumogami_sky.png","canvas":[256,256],"baseColor":[18,14,38,255]},
+    {"source":"TH14 东方辉针城/ANM/ANM/background/stage06/stage06i.png","output":"th14/scenes/biome_shining_needle_realm.png","canvas":[512,512],"baseColor":[18,10,26,255]},
+    {"source":"TH14 东方辉针城/ANM/ANM/background/stage04/stg4bg3.png","output":"th14/scenes/structure_abandoned_instrument_pile.png","canvas":[512,512],"baseColor":[18,14,38,255]},
+    {"source":"TH14 东方辉针城/ANM/ANM/background/stage07/stg7bg2.png","output":"th14/scenes/structure_thunder_drum_stage.png","canvas":[256,256],"baseColor":[20,16,34,255]},
+    {"source":"TH14 东方辉针城/ANM/ANM/background/stage06/stage06f.png","output":"th14/scenes/structure_shining_needle_castle.png","canvas":[512,512],"baseColor":[8,16,20,255]}
+  ],
+  "gridStrips": [
+    {"source":"TH14 东方辉针城/ANM/ANM/stgenm/stage01/enm1.png","output":"th14/actors/aquatic_youkai.png","startX":0,"startY":0,"frameWidth":80,"frameHeight":96},
+    {"source":"TH14 东方辉针城/ANM/ANM/stgenm/stage04/enm4.png","output":"th14/actors/tsukumogami.png","startX":0,"startY":0,"frameWidth":64,"frameHeight":96},
+    {"source":"TH14 东方辉针城/ANM/ANM/stgenm/stage06/enm6.png","output":"th14/actors/inchling_guard.png","startX":0,"startY":0,"frameWidth":96,"frameHeight":96}
+  ],
+  "compositePortraits": [
+    {
+      "output":"th14/portraits/wakasagihime.png",
+      "canvas":[700,660],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy1/face01bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy1/face01no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/sekibanki.png",
+      "canvas":[440,690],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy2/face02bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy2/face02no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/kagerou.png",
+      "canvas":[580,720],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy3/face03bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy3/face03no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/benben.png",
+      "canvas":[561,700],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy4/face04bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy4/face04no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/yatsuhashi.png",
+      "canvas":[616,650],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy4b/face04bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy4b/face04no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/seija.png",
+      "canvas":[431,690],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy5/face05bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy5/face05no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/shinmyoumaru.png",
+      "canvas":[750,740],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy6/face06bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy6/face06no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    },
+    {
+      "output":"th14/portraits/raiko.png",
+      "canvas":[788,800],
+      "layers":[
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy7/face07bs.png","position":[0,0]},
+        {"source":"TH14 东方辉针城/ANM/ANM/face/enemy7/face07no.png","position":[0,0],"clearEdgeWhite":true}
+      ]
+    }
+  ],
+  "copies": [
+    {"source":"TH14 东方辉针城/ANM/ANM/bullet/bullet1.png","output":"th14/bullet_atlas.png"}
+  ]
+}

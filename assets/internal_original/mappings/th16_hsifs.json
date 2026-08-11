@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"sourceId":"th16_hsifs","category":"Biome","name":"四季异变林","asset":"th16/scenes/biome_four_seasons_forest.png","kind":"Scene","variant":0},
+    {"sourceId":"th16_hsifs","category":"Biome","name":"后户之国","asset":"th16/scenes/biome_land_of_backdoors.png","kind":"Scene","variant":1},
+    {"sourceId":"th16_hsifs","category":"Biome","name":"隐岐奈秘境","asset":"th16/scenes/biome_hidden_star_sanctum.png","kind":"Scene","variant":2},
+    {"sourceId":"th16_hsifs","category":"Structure","name":"季节祭坛","asset":"th16/scenes/structure_season_altar.png","kind":"Scene","variant":3},
+    {"sourceId":"th16_hsifs","category":"Structure","name":"秘神后户","asset":"th16/scenes/structure_back_door.png","kind":"Scene","variant":4},
+    {"sourceId":"th16_hsifs","category":"Structure","name":"秘神舞台","asset":"th16/scenes/structure_hidden_god_stage.png","kind":"Scene","variant":5},
+    {"sourceId":"th16_hsifs","category":"Enemy","name":"季节妖精","asset":"th16/actors/seasonal_fairy.png","kind":"ActorStrip","variant":0},
+    {"sourceId":"th16_hsifs","category":"Enemy","name":"后户舞童","asset":"th16/actors/backdoor_dancer.png","kind":"ActorStrip","variant":1},
+    {"sourceId":"th16_hsifs","category":"Enemy","name":"秘神侍从","asset":"th16/actors/hidden_god_attendant.png","kind":"ActorStrip","variant":2},
+    {"sourceId":"th16_hsifs","category":"Character","name":"爱塔妮缇拉尔瓦","asset":"th16/portraits/eternity_larva.png","kind":"Portrait","variant":0},
+    {"sourceId":"th16_hsifs","category":"Character","name":"坂田合欢乃","asset":"th16/portraits/nemuno.png","kind":"Portrait","variant":1},
+    {"sourceId":"th16_hsifs","category":"Character","name":"高丽野阿吽","asset":"th16/portraits/aunn.png","kind":"Portrait","variant":2},
+    {"sourceId":"th16_hsifs","category":"Character","name":"矢田寺成美","asset":"th16/portraits/narumi.png","kind":"Portrait","variant":3},
+    {"sourceId":"th16_hsifs","category":"Character","name":"尔子田里乃","asset":"th16/portraits/satono.png","kind":"Portrait","variant":4},
+    {"sourceId":"th16_hsifs","category":"Character","name":"丁礼田舞","asset":"th16/portraits/mai.png","kind":"Portrait","variant":5},
+    {"sourceId":"th16_hsifs","category":"Character","name":"摩多罗隐岐奈","asset":"th16/portraits/okina.png","kind":"Portrait","variant":6}
+  ]
+}

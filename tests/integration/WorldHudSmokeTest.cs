@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Settings;
+using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
@@ -61,9 +62,7 @@ public partial class WorldHudSmokeTest : Node
                 healthValue.Text == "4/5", "Compact health bar did not follow player damage.");
 
             GD.Print("World HUD smoke test passed.");
-            demo.QueueFree();
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-            await ToSignal(GetTree().CreateTimer(0.1), SceneTreeTimer.SignalName.Timeout);
+            await WorldDemoTestCleanup.FreeAsync(this, demo);
             GetTree().Quit();
         }
         catch (Exception exception)

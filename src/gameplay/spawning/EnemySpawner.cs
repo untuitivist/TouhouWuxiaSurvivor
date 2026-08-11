@@ -74,7 +74,8 @@ public partial class EnemySpawner : Node
     /// </summary>
     public override void _Process(double delta)
     {
-        if (_player is null || _enemyContainer is null || EnemyScene is null)
+        if (_player is null ||
+            (_ecsWorld is null && (_enemyContainer is null || EnemyScene is null)))
         {
             return;
         }
@@ -114,7 +115,7 @@ public partial class EnemySpawner : Node
     private void SpawnOne()
     {
         int aliveLimit = EnemySpawnPacing.GetAliveLimit(_elapsedSeconds, MaximumAlive);
-        if (_player is null || _enemyContainer is null || EnemyScene is null || AliveCount >= aliveLimit)
+        if (_player is null || AliveCount >= aliveLimit)
         {
             return;
         }
@@ -125,6 +126,11 @@ public partial class EnemySpawner : Node
         if (_ecsWorld is not null)
         {
             _ecsWorld.SpawnEnemy(spawnPosition, definition);
+            return;
+        }
+
+        if (_enemyContainer is null || EnemyScene is null)
+        {
             return;
         }
 
