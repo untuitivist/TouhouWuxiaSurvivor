@@ -45,6 +45,18 @@
     {"source":"TH06 东方红魔乡/ST_DAT/face12a.png","mask":"TH06 东方红魔乡/ST_DAT/face12a_a.png","output":"th06/portraits/flandre.png","crop":[0,0,256,256]}
   ],
   "copies": [
-    {"source":"TH06 东方红魔乡/CM_DAT/etama3.png","mask":"TH06 东方红魔乡/CM_DAT/etama3_a.png","output":"th06/bullet_atlas.png"}
+    {"source":"TH06 东方红魔乡/CM_DAT/etama3.png","mask":"TH06 东方红魔乡/CM_DAT/etama3_a.png","output":"th06/bullet_atlas.png"},
+    {"source":"TH16 东方天空璋/ANM/ANM/bullet/item.png","output":"base/item_atlas.png"}
+  ],
+  "audioCopies": [
+    {"source":"TH17.5 东方刚欲异闻/data/bgm/reimu1.ogg","output":"base/audio/bgm_reimu.ogg","stripMetadata":true},
+    {"source":"TH17.5 东方刚欲异闻/data/se/reimu_shot.wav","output":"base/audio/shot.wav"},
+    {"source":"TH17.5 东方刚欲异闻/data/se/landing.wav","output":"base/audio/footstep.wav"},
+    {"source":"TH18 东方虹龙洞/MUSIC/se_item00.wav","output":"base/audio/pickup.wav"},
+    {"source":"TH18 东方虹龙洞/MUSIC/se_damage00.wav","output":"base/audio/enemy_hit.wav"},
+    {"source":"TH18 东方虹龙洞/MUSIC/se_enep00.wav","output":"base/audio/enemy_death.wav"},
+    {"source":"TH18 东方虹龙洞/MUSIC/se_boon00.wav","output":"base/audio/explosion.wav"},
+    {"source":"TH17.5 东方刚欲异闻/data/se/damage_player_000.wav","output":"base/audio/player_hurt.wav"},
+    {"source":"TH17.5 东方刚欲异闻/data/se/dead_player.wav","output":"base/audio/player_death.wav"}
   ]
 }

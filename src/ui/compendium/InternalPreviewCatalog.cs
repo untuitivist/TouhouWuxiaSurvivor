@@ -9,7 +9,12 @@ public sealed class InternalPreviewCatalog
 {
     private readonly InternalVisualCatalog _catalog = new();
 
-    public int Count => _catalog.Count;
+    public int Count => _catalog.CountCategories(
+        InternalVisualCategory.Biome,
+        InternalVisualCategory.Structure,
+        InternalVisualCategory.Enemy,
+        InternalVisualCategory.Character,
+        InternalVisualCategory.SpellCard);
 
     /// <summary>
     /// 构造共享目录适配器；共享目录负责处理内部清单缺失时的空目录回退。

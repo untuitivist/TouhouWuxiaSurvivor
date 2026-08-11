@@ -6,7 +6,7 @@ using TouhouWuxiaSurvivor.Ui.Compendium;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证内部原作素材的逐条覆盖、规范尺寸、来源追踪和公开导出隔离边界。
+/// 验证内部原作素材的逐条覆盖、规范尺寸、来源追踪和内部发行声明边界。
 /// </summary>
 public partial class InternalOriginalAssetBoundaryTest : Node
 {
@@ -15,7 +15,7 @@ public partial class InternalOriginalAssetBoundaryTest : Node
     private const string BuildManifestPath = "res://tools/internal_assets/build_manifest.json";
 
     /// <summary>
-    /// 依次验证图鉴映射、生成纹理、来源哈希和导出排除；任何失败都返回非零退出码。
+    /// 依次验证图鉴映射、生成纹理、来源哈希和内部包配置；任何失败都返回非零退出码。
     /// </summary>
     public override void _Ready()
     {
@@ -26,8 +26,9 @@ public partial class InternalOriginalAssetBoundaryTest : Node
             VerifyBaseEnemyVisuals();
             VerifyBaseEnemySources();
             VerifySourceHashes();
+            VerifyOriginalAudioFiles();
             VerifyReplacementManifest();
-            VerifyPublicExportExclusion();
+            VerifyInternalBuildInclusion();
             GD.Print("Internal original asset boundary test passed.");
             GetTree().Quit();
         }
@@ -143,7 +144,7 @@ public partial class InternalOriginalAssetBoundaryTest : Node
     }
 
     /// <summary>
-    /// 按渲染类型检查 38 个唯一输出的尺寸和 RGBA8 格式，允许两张符卡共享同一弹幕图集。
+    /// 按渲染类型检查 39 个唯一输出的尺寸和 RGBA8 格式，允许符卡和强化分别共享图集。
     /// </summary>
     private static void VerifyMappedAssets()
     {
@@ -164,6 +165,7 @@ public partial class InternalOriginalAssetBoundaryTest : Node
                 "ActorStrip" => new Vector2I(192, 48),
                 "Portrait" => new Vector2I(80, 80),
                 "BulletAtlas" => new Vector2I(256, 256),
+                "ItemAtlas" => new Vector2I(256, 64),
                 _ => throw new InvalidDataException($"Unknown internal preview kind: {kind}."),
             };
             Image image = Image.LoadFromFile(ProjectSettings.GlobalizePath(AssetRoot + relative));
@@ -173,22 +175,47 @@ public partial class InternalOriginalAssetBoundaryTest : Node
                 $"Internal asset is not RGBA8: {relative}.");
         }
 
-        Require(visited.Count == 38,
-            $"Expected 38 unique mapped assets, found {visited.Count}.");
+        Require(visited.Count == 39,
+            $"Expected 39 unique mapped assets, found {visited.Count}.");
     }
 
     /// <summary>
-    /// 确认生成器记录全部 42 个外部输入的 SHA-256，便于素材更新后判断是否需要重新生成。
+    /// 确认生成器记录全部 52 个外部输入的 SHA-256，便于素材更新后判断是否需要重新生成。
     /// </summary>
     private static void VerifySourceHashes()
     {
         string hashes = Godot.FileAccess.GetFileAsString(AssetRoot + "source_files.sha256");
         int count = hashes.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length;
-        Require(count == 42, $"Expected 42 source hashes, found {count}.");
+        Require(count == 52, $"Expected 52 source hashes, found {count}.");
     }
 
     /// <summary>
-    /// 确认声明同时包含内部使用边界、本体跨作品代用说明与公开前替换要求。
+    /// 确认正式世界需要的八类 TH16 原作 WAV 均已生成且包含 RIFF/WAVE 文件头，而不是空占位文件。
+    /// </summary>
+    private static void VerifyOriginalAudioFiles()
+    {
+        string[] names =
+        [
+            "shot", "footstep", "pickup", "enemy_hit",
+            "enemy_death", "explosion", "player_hurt", "player_death",
+        ];
+        foreach (string name in names)
+        {
+            string path = ProjectSettings.GlobalizePath(AssetRoot + $"base/audio/{name}.wav");
+            byte[] header = File.ReadAllBytes(path).Take(12).ToArray();
+            Require(header.Length == 12 && System.Text.Encoding.ASCII.GetString(header, 0, 4) == "RIFF" &&
+                System.Text.Encoding.ASCII.GetString(header, 8, 4) == "WAVE",
+                $"Original audio is missing or not a WAV file: {name}.");
+        }
+
+        string bgmPath = ProjectSettings.GlobalizePath(AssetRoot + "base/audio/bgm_reimu.ogg");
+        byte[] bgmHeader = File.ReadAllBytes(bgmPath).Take(4).ToArray();
+        Require(bgmHeader.Length == 4 && System.Text.Encoding.ASCII.GetString(bgmHeader) == "OggS",
+            "Original Reimu BGM is missing or not an OGG stream.");
+    }
+
+    /// <summary>
+    /// 确认声明同时包含内部使用边界、本体跨作品代用说明与内部包携带约定。
     /// </summary>
     private static void VerifyReplacementManifest()
     {
@@ -196,18 +223,20 @@ public partial class InternalOriginalAssetBoundaryTest : Node
         Require(manifest.Contains("非公开内部开发", StringComparison.Ordinal) &&
             manifest.Contains("跨作品视觉代用", StringComparison.Ordinal) &&
             manifest.Contains("不代表原著归属", StringComparison.Ordinal) &&
-            manifest.Contains("正式公开版本发布前", StringComparison.Ordinal),
+            manifest.Contains("内部测试包", StringComparison.Ordinal) &&
+            manifest.Contains("可携带", StringComparison.Ordinal),
             "Internal asset manifest lost usage, attribution, or replacement boundaries.");
     }
 
     /// <summary>
-    /// 读取真实导出预设，确认公开 Windows 包排除整个内部资源树而非当前文件列表。
+    /// 读取真实导出预设，确认当前内部 Windows 测试包会携带共享原作素材而不是产生文字回退。
     /// </summary>
-    private static void VerifyPublicExportExclusion()
+    private static void VerifyInternalBuildInclusion()
     {
         string presets = Godot.FileAccess.GetFileAsString("res://export_presets.cfg");
-        Require(presets.Contains("assets/internal_original/*", StringComparison.Ordinal),
-            "Windows Release no longer excludes the internal original-asset tree.");
+        Require(!presets.Contains("assets/internal_original/*", StringComparison.Ordinal) &&
+            presets.Contains("export_filter=\"all_resources\"", StringComparison.Ordinal),
+            "Internal Windows build no longer includes the shared original-asset tree.");
     }
 
     /// <summary>

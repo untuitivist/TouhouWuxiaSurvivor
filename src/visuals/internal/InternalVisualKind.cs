@@ -9,4 +9,5 @@ public enum InternalVisualKind
     ActorStrip,
     Portrait,
     BulletAtlas,
+    ItemAtlas,
 }

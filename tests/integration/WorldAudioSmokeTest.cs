@@ -9,7 +9,7 @@ using TouhouWuxiaSurvivor.Ecs.Combat;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 在真实世界场景中验证音频总线、循环 BGM 和主要战斗事件到示例音效的完整连接。
+/// 在真实世界场景中验证音频总线、原作循环 BGM 和主要战斗事件到东方音效的完整连接。
 /// </summary>
 public partial class WorldAudioSmokeTest : Node
 {
@@ -93,6 +93,9 @@ public partial class WorldAudioSmokeTest : Node
         Require(audio.GetNode<AudioStreamPlayer>("Bgm").Bus == "Music" &&
             audio.GetNode<AudioStreamPlayer>("Shot").Bus == "SFX",
             "Audio players are not routed to their category buses.");
+        Require(audio.GetNode<AudioStreamPlayer>("Bgm").Stream is AudioStreamOggVorbis
+            { Loop: true } bgm && Mathf.IsEqualApprox(bgm.LoopOffset, 32.4946f),
+            "Original Reimu BGM did not retain its declared loop start.");
         Require(audio.IsBgmPlaying, "World BGM did not start when the game page loaded.");
     }
 

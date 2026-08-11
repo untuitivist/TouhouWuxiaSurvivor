@@ -1,5 +1,27 @@
 # Findings and Decisions
 
+## All-DLC Completion - 2026-08-11
+
+- ECS refactor is committed at `91ed4a1`; all DLC work begins from a clean rollback point.
+- The prior internal-original pipeline fully covered only Gensokyo base and TH06, so existing TH01-TH20 content-pack JSON files do not prove actual visual/runtime completion.
+- Every DLC will be accepted only after data coverage, normalized original asset mappings, formal runtime wiring, and real Godot visual inspection all pass.
+- No supplied source-pack file may be modified or deleted; derived assets stay under `assets/internal_original`.
+- ECS runtime currently draws all enemies, pickups, and spirit drops as text in `EcsCombatWorld._Draw`; this regressed the already completed compendium enemy visuals.
+- `InternalVisualCatalog` is already the intended shared boundary for compendium and formal gameplay, so ECS rendering must query it instead of duplicating asset paths.
+- Existing normalized enemy strips are 192x48 with four 48x48 frames; formal ECS rendering can use the same frame contract as the compendium.
+- Pickup definitions have no internal visual mapping yet; all three currently read a borrowed reference-game sheet and therefore require a new shared original-item mapping.
+- Visual inspection confirms `assets/internal_original/base/actors/wild_fairy.png` is a valid four-frame normalized strip.
+- The supplied TH16 `bullet/item.png` is a 256x64 Touhou item atlas containing distinct P, life, star, S, and F icons; it is the selected source for temporary pickup and spirit visuals.
+- The existing TH06 `bullet_atlas.png` is already mapped and is the selected source for player bullets, so no formal combat path needs the borrowed item sheet.
+- The rebuilt `base/item_atlas.png` exactly preserves the 256x64 TH16 source with transparency; selected P, green star, F, and cyan season-item regions are visibly complete and distinct.
+- Formal ECS coverage must assert renderer counters after a real physics/draw frame; tests that instantiate `EnemyActor.tscn` cover only the compatibility path and cannot prove the survivor runtime uses original assets.
+- Formal gameplay and tests now have zero reference-game audio references: TH17.5 provides Reimu BGM/player events and TH18 provides item/enemy events; the only semantically imperfect mapping is `landing.wav` as an explicitly declared temporary footstep beat.
+- The supplied pack has complete mainline visual sources only for TH06-TH18, TH19 is a trial build, and TH01-TH05 plus TH20 are absent. Missing works require explicit cross-work proxy metadata or new sources; they cannot be falsely marked same-work originals.
+- Existing TH01-TH20 manifests represent data placeholders rather than complete DLC: the formal mapping remains base/TH06 only, and modern layered portraits require per-work composition rules before bulk generation.
+- User explicitly rejected all remaining reference-game art, including `assets/combat/projectiles/item_sheet.png` and `assets/combat/pickups/pickup_sheet.png`; those files must not be referenced by formal runtime code.
+- Pickup mechanics may retain survivor-style temporary movement/fire-pattern effects, but their names and visuals must become Touhou original-related items sourced from the provided original pack.
+
+
 ## Base Enemy Visual Audit - 2026-07-31
 
 - Godot provides `Image.GetUsedRect()` for automatic nontransparent Alpha bounding boxes, but it cannot select semantic frames from a sprite sheet.

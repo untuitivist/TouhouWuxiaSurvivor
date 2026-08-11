@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -16,14 +16,15 @@
 [ext_resource type="Script" path="res://src/actors/player/PlayerBuffController.cs" id="14_buffs"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerHealth.cs" id="15_health"]
 [ext_resource type="Script" path="res://src/audio/world/WorldAudioController.cs" id="16_audio"]
-[ext_resource type="AudioStream" path="res://assets/audio/music/cowboy_secret.wav" id="17_bgm"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/player/gunshot.wav" id="18_shot"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/player/footstep.wav" id="19_footstep"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/player/pickup.wav" id="20_pickup"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/enemies/hit.wav" id="21_hit"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/enemies/death.wav" id="22_enemy_death"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/enemies/explosion.wav" id="23_explosion"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/player/death.wav" id="24_player_death"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/bgm_reimu.ogg" id="17_bgm"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/shot.wav" id="18_shot"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/footstep.wav" id="19_footstep"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/pickup.wav" id="20_pickup"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/enemy_hit.wav" id="21_hit"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/enemy_death.wav" id="22_enemy_death"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/explosion.wav" id="23_explosion"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/player_death.wav" id="24_player_death"]
+[ext_resource type="AudioStream" path="res://assets/internal_original/base/audio/player_hurt.wav" id="34_player_hurt"]
 [ext_resource type="PackedScene" path="res://src/ui/death/DeathScreenOverlay.tscn" id="25_death_screen"]
 [ext_resource type="PackedScene" path="res://src/actors/spirit/SpiritDropActor.tscn" id="26_spirit"]
 [ext_resource type="Script" path="res://src/gameplay/spawning/SpiritDropSpawner.cs" id="27_spirit_spawner"]
@@ -206,7 +207,7 @@ max_polyphony = 4
 bus = &"SFX"
 
 [node name="PlayerHurt" type="AudioStreamPlayer" parent="WorldAudio"]
-stream = ExtResource("21_hit")
+stream = ExtResource("34_player_hurt")
 volume_db = -3.0
 max_polyphony = 2
 bus = &"SFX"

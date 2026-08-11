@@ -1,16 +1,18 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
+using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 在真实世界场景中排列九类本体敌人并保存截图，验证局内像素尺寸、遮挡和最近邻表现。
+/// 在真实世界中排列 ECS 敌人、道具、灵息与弹幕并保存截图，验证正式批量视觉链。
 /// </summary>
 public partial class GameplayEnemyVisualTest : Node
 {
     /// <summary>
-    /// 加载正式世界、在玩家周围生成九类敌人、验证精灵启用并于普通渲染器下保存截图。
+    /// 加载正式世界、在玩家周围生成九类敌人与原作道具，并于普通渲染器下保存截图。
     /// </summary>
     public override async void _Ready()
     {
@@ -19,8 +21,7 @@ public partial class GameplayEnemyVisualTest : Node
             Node world = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn").Instantiate();
             AddChild(world);
             var player = world.GetNode<PlayerController>("Player");
-            var container = world.GetNode<Node2D>("CombatEntities/Enemies");
-            PackedScene enemyScene = GD.Load<PackedScene>("res://src/actors/enemies/EnemyActor.tscn");
+            var ecs = world.GetNode<EcsCombatWorld>("CombatEntities/EcsCombatWorld");
             EnemyDefinition[] baseEnemies = EnemyCatalog.All
                 .Where(definition => definition.RequiredContentPack is null)
                 .Take(9)
@@ -28,16 +29,18 @@ public partial class GameplayEnemyVisualTest : Node
             Require(baseEnemies.Length == 9, $"Expected 9 base enemies, found {baseEnemies.Length}.");
             for (int index = 0; index < baseEnemies.Length; index++)
             {
-                EnemyActor enemy = enemyScene.Instantiate<EnemyActor>();
-                enemy.Configure(baseEnemies[index], player);
-                container.AddChild(enemy);
-                enemy.GlobalPosition = player.GlobalPosition + GetDisplayOffset(index);
-                Require(enemy.GetNode<EnemyVisualController>("Visual").UsesSprite,
-                    $"Gameplay visual is not active for {baseEnemies[index].DisplayName}.");
+                ecs.SpawnEnemy(player.GlobalPosition + GetDisplayOffset(index), baseEnemies[index]);
             }
+            AddOriginalItems(ecs, player.GlobalPosition);
 
+            await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            Require(ecs.MappedEnemyVisualCount >= 9,
+                "Formal ECS did not draw all nine base enemy actor strips.");
+            Require(ecs.PickupIconVisualCount >= 3 && ecs.SpiritIconVisualCount >= 1 &&
+                ecs.ProjectileIconVisualCount >= 1,
+                "Formal ECS original item/bullet visuals were not all active.");
             SaveScreenshot();
             GD.Print("Gameplay enemy visual test passed.");
             GetTree().Quit();
@@ -47,6 +50,18 @@ public partial class GameplayEnemyVisualTest : Node
             GD.PushError(exception.ToString());
             GetTree().Quit(1);
         }
+    }
+
+    /// <summary>
+    /// 将三种构筑强化、灵息和静止弹幕布置在玩家下方，便于一次截图核对图标裁切与区分度。
+    /// </summary>
+    private static void AddOriginalItems(EcsCombatWorld ecs, Vector2 origin)
+    {
+        ecs.SpawnPickup(PickupKind.MoveSpeed, origin + new Vector2(-90.0f, 110.0f));
+        ecs.SpawnPickup(PickupKind.RapidFire, origin + new Vector2(-30.0f, 110.0f));
+        ecs.SpawnPickup(PickupKind.SpiralShot, origin + new Vector2(30.0f, 110.0f));
+        ecs.SpawnSpirit(origin + new Vector2(90.0f, 110.0f), 3);
+        ecs.SpawnProjectile(origin + new Vector2(130.0f, 110.0f), Vector2.Right, 0.0f, 1);
     }
 
     /// <summary>

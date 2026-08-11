@@ -12,6 +12,7 @@ namespace TouhouWuxiaSurvivor.Audio.World;
 public partial class WorldAudioController : Node
 {
     private const double MinimumShotSoundInterval = 0.05;
+    private const float BgmLoopOffsetSeconds = 32.4946f;
     private AudioStreamPlayer? _bgm;
     private AudioStreamPlayer? _shot;
     private AudioStreamPlayer? _footstep;
@@ -37,7 +38,7 @@ public partial class WorldAudioController : Node
     public bool IsBgmPlaying => _bgm?.Playing == true;
 
     /// <summary>
-    /// 缓存按用途拆分的音频播放器，并在进入游戏页时仅播放一次示例游戏的开场音乐。
+    /// 缓存按用途拆分的音频播放器，配置原作灵梦曲循环点，并在进入游戏页时开始播放。
     /// </summary>
     public override void _Ready()
     {
@@ -50,6 +51,7 @@ public partial class WorldAudioController : Node
         _explosion = GetNode<AudioStreamPlayer>("Explosion");
         _playerHurt = GetNode<AudioStreamPlayer>("PlayerHurt");
         _playerDeath = GetNode<AudioStreamPlayer>("PlayerDeath");
+        ConfigureBgmLoop();
         _bgm.Play();
     }
 
@@ -79,7 +81,7 @@ public partial class WorldAudioController : Node
     }
 
     /// <summary>
-    /// 推进高射速音效限频，并根据玩家真实移动状态连续启停示例脚步素材。
+    /// 推进高射速音效限频，并根据玩家真实移动状态连续启停内部落地声节拍占位。
     /// </summary>
     public override void _Process(double delta)
     {
@@ -182,7 +184,7 @@ public partial class WorldAudioController : Node
     }
 
     /// <summary>
-    /// 玩家生命归零时停止脚步和 BGM，再播放示例游戏提供的死亡音效。
+    /// 玩家生命归零时停止脚步和 BGM，再播放灵梦原作死亡音效。
     /// </summary>
     private void OnPlayerDied()
     {
@@ -201,6 +203,20 @@ public partial class WorldAudioController : Node
         {
             player.Play();
         }
+    }
+
+    /// <summary>
+    /// 把原作附带的循环起点写入 Godot OGG 流；类型不匹配时保持可播放但不伪造循环属性。
+    /// </summary>
+    private void ConfigureBgmLoop()
+    {
+        if (_bgm?.Stream is not AudioStreamOggVorbis stream)
+        {
+            return;
+        }
+
+        stream.Loop = true;
+        stream.LoopOffset = BgmLoopOffsetSeconds;
     }
 
     /// <summary>

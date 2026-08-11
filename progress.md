@@ -179,6 +179,24 @@
 | What's the goal? | A playable in-run progression vertical slice |
 | What have I learned? | Existing systems are present but boundaries require inspection |
 | What have I done? | Scoped the phase and initialized persistent planning files |
+# 2026-08-11 全正作 DLC 完成
+
+- 已提交完整 ECS 重构：`91ed4a1 refactor_combat_runtime_to_ecs`。
+- 已启动全正作内容包、原作素材目录、正式素材管线三路并行审计。
+- 当前未导出发行包；用户要求先完成全部 DLC 并逐个视觉确认。
+- 用户中断 DLC 扩展，要求先修复正式游戏未使用图鉴敌人/道具素材的问题；已确认这是 ECS `_Draw` 文字回退造成的回归。
+- 用户进一步要求取消全部参考游戏美术；ECS 道具与子弹将改用东方原作素材，数值效果保留类幸存者构筑逻辑。
+- 已审计全部正式/兼容战斗引用：ECS 渲染器、旧 Projectile ECS 和 PlayerProjectile 场景仍引用参考游戏 `item_sheet.png`，将统一替换。
+- 已确认 TH16 原始 `bullet/item.png` 可作为道具图集，现有 TH06 `bullet_atlas.png` 可作为玩家弹幕图集；旧参考文件暂不删除，只断开引用。
+- 已新增共享 `Pickup/ItemAtlas` 映射，ECS 正式渲染、兼容 Projectile ECS 与旧 PlayerProjectile 场景均切换到东方原作图集。
+- 首次构建因沙箱禁止 Godot 写 `user://logs` 而崩溃；获准写入 Godot 用户目录后重跑成功，生成器确认 43 个来源文件并输出完整 256x64 道具图集。
+- 两项敌人视觉测试已改为实例化真实世界并检查 ECS 映射、回退、三种道具、灵息、玩家弹幕及截图，不再把旧 EnemyActor 链路当正式覆盖。
+- 素材边界测试首次运行仅因旧“必须排除内部素材”契约失败；已按内部 beta 可携带素材的既定决定更新。第二次仅因声明断言把中文逗号视为缺失而失败，已改为语义字段分别校验。
+- 正式截图复核通过：九类本体敌人均为完整原作动画条，高速点/火力点/全力点与绿色灵息图标清晰、无模糊、无半边裁切。
+- 已移除正式世界对参考游戏 BGM/音效的全部引用：TH17.5 灵梦 BGM/自机音效、TH18 道具/敌人音效接入完成，循环起点 32.4946 秒通过测试。
+- 原作 OGG 的旧编码注释已通过 FFmpeg 流复制清除，没有重新编码；音频测试、52 来源边界测试均无警告通过。
+- 当前子任务全部相关文件有效代码均低于 250 行；最高为边界测试 194 行，WorldAudioController 177 行，EcsCombatWorld 181 行。
+
 # 2026-07-30 符卡武侠化系统
 
 - 已切换计划目标：将符卡实现为具备原作元数据、灵力资源和真实战斗效果的武侠化奥义。

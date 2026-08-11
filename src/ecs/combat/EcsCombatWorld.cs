@@ -21,14 +21,13 @@ public partial class EcsCombatWorld : Node2D
     private readonly ProjectileCollisionSystem _projectileCollision = new();
     private readonly PickupSystem _pickupSystem = new();
     private readonly SpiritSystem _spiritSystem = new();
+    private readonly EcsCombatRenderer _renderer = new();
     private double _elapsedSeconds;
     private PlayerController? _player;
     private PlayerHealth? _health;
     private PlayerBuffController? _buffs;
     private RunModifierState? _modifiers;
     private RunProgressionState? _progression;
-    private Texture2D? _projectileTexture;
-    private Font? _font;
 
     /// <summary>敌人击破事件，参数为位置和定义。</summary>
     public event Action<Vector2, EnemyDefinition>? EnemyDefeated;
@@ -65,6 +64,16 @@ public partial class EcsCombatWorld : Node2D
     public int DefeatedCount { get; private set; }
     /// <summary>获取本局 ECS 世界运行时间，供刷怪节奏和结算读取。</summary>
     public double ElapsedSeconds => _elapsedSeconds;
+    /// <summary>获取上一绘制帧使用图鉴内部素材的敌人数。</summary>
+    public int MappedEnemyVisualCount => _renderer.LastMappedEnemyCount;
+    /// <summary>获取上一绘制帧回退为中文名的敌人数。</summary>
+    public int FallbackEnemyVisualCount => _renderer.LastFallbackEnemyCount;
+    /// <summary>获取上一绘制帧使用图集图标的强化掉落数。</summary>
+    public int PickupIconVisualCount => _renderer.LastPickupIconCount;
+    /// <summary>获取上一绘制帧使用东方道具图集的灵息数。</summary>
+    public int SpiritIconVisualCount => _renderer.LastSpiritIconCount;
+    /// <summary>获取上一绘制帧使用原作弹幕图集的玩家弹数。</summary>
+    public int ProjectileIconVisualCount => _renderer.LastProjectileIconCount;
 
     /// <summary>绑定玩家和局内状态，使批量系统不依赖场景查找。</summary>
     public void Configure(PlayerController player, PlayerHealth health, PlayerBuffController buffs,
@@ -75,8 +84,7 @@ public partial class EcsCombatWorld : Node2D
         _buffs = buffs;
         _modifiers = modifiers;
         _progression = progression;
-        _projectileTexture = GD.Load<Texture2D>("res://assets/combat/projectiles/item_sheet.png");
-        _font = ThemeDB.FallbackFont;
+        _renderer.Configure();
         TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
     }
 
@@ -186,14 +194,9 @@ public partial class EcsCombatWorld : Node2D
         QueueRedraw();
     }
 
-    /// <summary>绘制所有数据实体的中文标记和共享弹幕纹理。</summary>
-    public override void _Draw()
-    {
-        _enemies.ForEach(enemy => DrawString(_font, enemy.Position, enemy.Alive ? enemy.Definition.DisplayName : "消散", HorizontalAlignment.Center, -1, 10, enemy.Alive ? new Color("c8e7ff") : new Color("c5c5bf")));
-        foreach (PickupComponent pickup in _pickups) DrawString(_font, pickup.Position, pickup.Definition.DisplayName, HorizontalAlignment.Center, -1, 10, new Color("f0d477"));
-        foreach (SpiritComponent spirit in _spirits) DrawString(_font, spirit.Position, spirit.Value == 1 ? "灵息" : $"灵息×{spirit.Value}", HorizontalAlignment.Center, -1, 10, new Color("b8efcf"));
-        _projectiles.ForEach(projectile => { Rect2 rect = new(projectile.Position - Vector2.One * 4.0f, Vector2.One * 8.0f); if (_projectileTexture is not null) DrawTextureRectRegion(_projectileTexture, rect, new Rect2(22, 23, 4, 4)); else DrawRect(rect, new Color("f4df7d")); });
-    }
+    /// <summary>把当前 ECS 数据交给共享素材批量渲染器，不为单个实体创建节点。</summary>
+    public override void _Draw() =>
+        _renderer.Draw(this, _enemies, _pickups, _spirits, _projectiles, _elapsedSeconds);
 
     /// <summary>遍历投射物并在首次命中时消费数据。</summary>
     private void ResolveProjectileHits()

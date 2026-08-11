@@ -13,6 +13,7 @@
     <Compile Remove="tools/**/*.cs" />
     <Compile Include="tools/internal_assets/InternalPreviewAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalImageTransformer.cs" />
+    <Compile Include="tools/internal_assets/InternalBinaryAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalSourceHashWriter.cs" />
   </ItemGroup>
 </Project>

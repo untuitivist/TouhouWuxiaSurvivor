@@ -42,6 +42,9 @@ public partial class InternalPreviewAssetBuilder : Node
             GD.Print("Internal asset builder: portraits complete.");
             BuildCopies(sourceRoot, root.GetProperty("copies"));
             WriteProgress("copies complete");
+            InternalBinaryAssetBuilder.Build(
+                sourceRoot, OutputRoot, root.GetProperty("audioCopies"), _usedSources);
+            WriteProgress("audio copies complete");
             InternalSourceHashWriter.Write(sourceRoot, _usedSources,
                 ProjectSettings.GlobalizePath(OutputRoot + "source_files.sha256"));
             GD.Print($"Internal preview assets built from {_usedSources.Count} source files.");

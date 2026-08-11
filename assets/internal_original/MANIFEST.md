@@ -4,7 +4,7 @@
 
 - 本目录仅用于非公开内部开发、图鉴动效验证和后续替换定位。
 - 素材来自用户本地提供的东方原作解包内容，不授予公开分发许可。
-- `Windows Release` 导出预设必须持续排除 `assets/internal_original/*`。
+- 当前 `Windows Release` 是内部测试包，可携带本目录素材以核对真实游戏效果，但不得作为公开发行包分发。
 - 正式公开版本发布前，必须在对应作品文件夹中替换或移除全部原作提取素材。
 - 运行时代码允许本目录完全缺失，并回退到项目现有的中文文字动态图标。
 
@@ -25,9 +25,12 @@
 ## 可复现构建
 
 - `tools/internal_assets/build_manifest.json` 声明所有外部输入、裁切和规范化输出。
-- `tools/internal_assets/InternalPreviewAssetBuilder.tscn` 负责生成 128x80 场景、192x48 动画条、80x80 立绘和 RGBA8 弹幕图集。
-- `source_files.sha256` 记录本轮 48 个外部源文件的 SHA-256；源文件变化后必须重新生成并执行边界测试。
-- `preview_mappings.json` 保存 39 个图鉴条目的逐项映射；两张符卡共享一个弹幕图集，因此共有 38 个唯一输出。
+- `tools/internal_assets/InternalPreviewAssetBuilder.tscn` 负责生成 128x80 场景、192x48 动画条、80x80 立绘，以及 RGBA8 弹幕和道具图集。
+- `source_files.sha256` 记录本轮 52 个外部源文件的 SHA-256；源文件变化后必须重新生成并执行边界测试。
+- `preview_mappings.json` 保存 39 个图鉴条目和 3 个正式战斗道具的逐项映射；共享图集后共有 39 个唯一输出。
+- `base/audio/` 使用 TH17.5 灵梦 BGM/自机音效与 TH18 道具/敌人音效，替换全部参考游戏音频。
+- 灵梦 BGM 构建时仅流复制并移除非标准旧编码注释，不重编码音频数据，避免 Godot 每次加载产生元数据警告。
+- 原作包没有语义可靠的连续脚步声；当前 `footstep.wav` 明确使用 TH17.5 `landing.wav` 作为内部节拍占位，后续需原创替换。
 
 ## 替换约定
 

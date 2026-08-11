@@ -16,6 +16,15 @@ public sealed class InternalVisualCatalog
     public int Count => _definitions.Count;
 
     /// <summary>
+    /// 统计指定内容分类的映射数量，使图鉴适配器不会把仅供正式战斗使用的道具映射计为图鉴条目。
+    /// </summary>
+    public int CountCategories(params InternalVisualCategory[] categories)
+    {
+        var accepted = new HashSet<InternalVisualCategory>(categories);
+        return _definitions.Values.Count(definition => accepted.Contains(definition.Category));
+    }
+
+    /// <summary>
     /// 内部清单存在时严格解析；公开包排除清单时建立空目录，让正式玩法安全回退文字。
     /// </summary>
     public InternalVisualCatalog()

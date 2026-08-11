@@ -1,35 +1,44 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
+using TouhouWuxiaSurvivor.Actors.Pickups;
+using TouhouWuxiaSurvivor.Actors.Player;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 在正式敌人场景中验证图鉴动画接入、内容包映射、文字回退和战斗状态表现。
+/// 在正式世界中验证 ECS 敌人、强化、灵息和弹幕全部走共享东方原作素材链。
 /// </summary>
 public partial class GameplayEnemyVisualSmokeTest : Node
 {
-    private static readonly PackedScene EnemyScene =
-        GD.Load<PackedScene>("res://src/actors/enemies/EnemyActor.tscn");
-
     /// <summary>
-    /// 创建本体、红魔乡和未覆盖正作敌人，逐项检查运行时视觉契约后退出测试树。
+    /// 实例化正式世界并加入映射与回退实体，等待真实绘制帧后检查每种批量视觉计数。
     /// </summary>
     public override async void _Ready()
     {
         try
         {
-            var target = new Node2D();
-            AddChild(target);
-            EnemyActor baseEnemy = CreateEnemy(FindEnemy("野妖精"), target);
-            EnemyActor eosdEnemy = CreateEnemy(FindEnemy("湖上妖精"), target);
-            EnemyDefinition unmapped = EnemyCatalog.All.First(definition =>
-                definition.RequiredContentPack is not null and not "th06_eosd");
-            EnemyActor fallbackEnemy = CreateEnemy(unmapped, target);
+            Node world = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn").Instantiate();
+            AddChild(world);
+            var player = world.GetNode<PlayerController>("Player");
+            var ecs = world.GetNode<EcsCombatWorld>("CombatEntities/EcsCombatWorld");
+            AddVisualFixtures(ecs, player.GlobalPosition);
 
-            await VerifyAnimatedBaseEnemy(baseEnemy);
-            VerifyMappedContentEnemy(eosdEnemy);
-            VerifyFallbackEnemy(fallbackEnemy, unmapped);
-            VerifyCombatFeedback(baseEnemy);
+            await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+
+            Require(ecs.MappedEnemyVisualCount >= 2,
+                "Formal ECS did not draw both base and TH06 enemies from compendium mappings.");
+            Require(ecs.FallbackEnemyVisualCount >= 1,
+                "Unmapped DLC enemy did not preserve the Chinese-name fallback.");
+            Require(ecs.PickupIconVisualCount >= 3,
+                "The three build pickups did not use the Touhou item atlas.");
+            Require(ecs.SpiritIconVisualCount >= 1,
+                "Spirit experience did not use the Touhou item atlas.");
+            Require(ecs.ProjectileIconVisualCount >= 1,
+                "Player projectile did not use the original bullet atlas.");
+            VerifyTouhouPickupNames();
 
             GD.Print("Gameplay enemy visual smoke test passed.");
             GetTree().Quit();
@@ -42,71 +51,31 @@ public partial class GameplayEnemyVisualSmokeTest : Node
     }
 
     /// <summary>
-    /// 实例化真实敌人场景并在入树前注入定义，复现刷怪器采用的初始化顺序。
+    /// 在玩家镜头内布置本体、红魔乡、未映射敌人以及全部道具类型，使一次绘制覆盖所有分支。
     /// </summary>
-    private EnemyActor CreateEnemy(EnemyDefinition definition, Node2D target)
+    private static void AddVisualFixtures(EcsCombatWorld ecs, Vector2 origin)
     {
-        EnemyActor enemy = EnemyScene.Instantiate<EnemyActor>();
-        enemy.Configure(definition, target);
-        AddChild(enemy);
-        return enemy;
+        ecs.SpawnEnemy(origin + new Vector2(72.0f, 0.0f), FindEnemy("野妖精"));
+        ecs.SpawnEnemy(origin + new Vector2(-72.0f, 0.0f), FindEnemy("湖上妖精"));
+        EnemyDefinition unmapped = EnemyCatalog.All.First(definition =>
+            definition.RequiredContentPack is not null and not "th06_eosd");
+        ecs.SpawnEnemy(origin + new Vector2(0.0f, -84.0f), unmapped);
+        ecs.SpawnPickup(PickupKind.MoveSpeed, origin + new Vector2(-72.0f, 84.0f));
+        ecs.SpawnPickup(PickupKind.RapidFire, origin + new Vector2(0.0f, 84.0f));
+        ecs.SpawnPickup(PickupKind.SpiralShot, origin + new Vector2(72.0f, 84.0f));
+        ecs.SpawnSpirit(origin + new Vector2(-112.0f, 48.0f), 2);
+        ecs.SpawnProjectile(origin + new Vector2(112.0f, 48.0f), Vector2.Right, 0.0f, 1);
     }
 
     /// <summary>
-    /// 确认本体敌人启用 192×48 动画条、隐藏文字，并能换帧和水平翻转。
+    /// 确认正式显示名已脱离参考游戏语义，并和共享视觉映射的稳定键保持一致。
     /// </summary>
-    private async Task VerifyAnimatedBaseEnemy(EnemyActor enemy)
+    private static void VerifyTouhouPickupNames()
     {
-        var visual = enemy.GetNode<EnemyVisualController>("Visual");
-        var sprite = visual.GetNode<Sprite2D>("Sprite");
-        var label = visual.GetNode<Label>("FallbackLabel");
-        Require(visual.UsesSprite && sprite.Visible && !label.Visible,
-            "Base enemy did not replace its text label with the shared actor strip.");
-        Require(sprite.Texture?.GetSize() == new Vector2(192.0f, 48.0f),
-            "Base enemy actor strip has an unexpected texture size.");
-        float initialFrameX = sprite.RegionRect.Position.X;
-        await ToSignal(GetTree().CreateTimer(0.2), SceneTreeTimer.SignalName.Timeout);
-        Require(sprite.RegionRect.Position.X != initialFrameX,
-            "Base enemy actor strip did not advance to another frame.");
-        visual.SetFacing(-1.0f);
-        Require(sprite.FlipH, "Base enemy sprite did not face left.");
-    }
-
-    /// <summary>
-    /// 确认红魔乡敌人通过自身内容包 ID 命中图鉴映射，而不是错误复用本体同名资源。
-    /// </summary>
-    private static void VerifyMappedContentEnemy(EnemyActor enemy)
-    {
-        var visual = enemy.GetNode<EnemyVisualController>("Visual");
-        Require(visual.UsesSprite && visual.GetNode<Sprite2D>("Sprite").Visible,
-            "Mapped TH06 enemy did not use its internal actor strip in gameplay.");
-    }
-
-    /// <summary>
-    /// 确认尚未制作图鉴素材的正作敌人继续显示中文名，保证增量内容可以逐步接入。
-    /// </summary>
-    private static void VerifyFallbackEnemy(EnemyActor enemy, EnemyDefinition definition)
-    {
-        var visual = enemy.GetNode<EnemyVisualController>("Visual");
-        Label label = visual.GetNode<Label>("FallbackLabel");
-        Require(!visual.UsesSprite && !visual.GetNode<Sprite2D>("Sprite").Visible &&
-            label.Visible && label.Text == definition.DisplayName,
-            "Unmapped official enemy did not preserve the Chinese text fallback.");
-    }
-
-    /// <summary>
-    /// 确认受伤时精灵闪红，生命归零后隐藏纹理并切换到中文消散反馈。
-    /// </summary>
-    private static void VerifyCombatFeedback(EnemyActor enemy)
-    {
-        var visual = enemy.GetNode<EnemyVisualController>("Visual");
-        var sprite = visual.GetNode<Sprite2D>("Sprite");
-        visual.SetHurt(true);
-        Require(sprite.Modulate.G < 0.5f, "Enemy sprite did not apply the hurt tint.");
-        enemy.ReceiveDamage(999);
-        Label label = visual.GetNode<Label>("FallbackLabel");
-        Require(!sprite.Visible && label.Visible && label.Text == "消散",
-            "Defeated enemy did not switch from sprite to Chinese feedback.");
+        Require(PickupCatalog.Get(PickupKind.MoveSpeed).DisplayName == "高速点" &&
+            PickupCatalog.Get(PickupKind.RapidFire).DisplayName == "火力点" &&
+            PickupCatalog.Get(PickupKind.SpiralShot).DisplayName == "全力点",
+            "Pickup display names still expose borrowed demo-game terminology.");
     }
 
     /// <summary>

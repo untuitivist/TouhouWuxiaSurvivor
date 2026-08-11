@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Visuals.Internal;
 
 namespace TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 
@@ -10,6 +11,7 @@ public partial class ProjectileEcsRuntime : Node2D
     private readonly ProjectilePool _pool = new();
     private readonly ProjectileMovementSystem _movement = new();
     private readonly ProjectileCollisionSystem _collision = new();
+    private readonly InternalVisualCatalog _visuals = new();
     private Node2D? _enemyContainer;
     private Texture2D? _texture;
 
@@ -20,12 +22,18 @@ public partial class ProjectileEcsRuntime : Node2D
     public int TotalSpawned { get; private set; }
 
     /// <summary>
-    /// 绑定敌人容器并加载原有 4x4 像素弹素材；素材缺失时仍能绘制纯色占位点。
+    /// 绑定敌人容器并从共享清单加载红魔乡弹幕图集；素材缺失时仍能绘制纯色占位点。
     /// </summary>
     public void Configure(Node2D enemyContainer)
     {
         _enemyContainer = enemyContainer;
-        _texture = GD.Load<Texture2D>("res://assets/combat/projectiles/item_sheet.png");
+        if (_visuals.TryGet("th06_eosd", InternalVisualCategory.SpellCard,
+                "灵符「梦想封印」", out InternalVisualDefinition definition) &&
+            definition.Kind == InternalVisualKind.BulletAtlas &&
+            _visuals.TryGetTexture(definition, out Texture2D texture))
+        {
+            _texture = texture;
+        }
         TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
         QueueRedraw();
     }
@@ -72,7 +80,7 @@ public partial class ProjectileEcsRuntime : Node2D
             Rect2 destination = new(projectile.Position - new Vector2(4.0f, 4.0f), new Vector2(8.0f, 8.0f));
             if (_texture is not null)
             {
-                DrawTextureRectRegion(_texture, destination, new Rect2(22.0f, 23.0f, 4.0f, 4.0f));
+                DrawTextureRectRegion(_texture, destination, new Rect2(16.0f, 32.0f, 16.0f, 16.0f));
             }
             else
             {

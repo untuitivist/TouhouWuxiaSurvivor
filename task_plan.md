@@ -1,4 +1,45 @@
-# Task Plan: Complete Base and TH06 Internal Replacement
+# Task Plan: Complete All Official DLC Content
+
+## Current Goal - 2026-08-11
+
+Before resuming all-DLC completion, replace every formal combat reference to borrowed demo-game visuals with supplied Touhou original-game assets. Enemies must share the completed compendium mappings; pickups and player bullets must use auditable original atlases while keeping survivor-style build effects.
+
+## Current Phase
+
+Phase A - all-DLC source manifest and normalized asset expansion.
+
+## DLC Acceptance Criteria
+
+Each work must pass all four checks:
+
+- Content: biome, structure, enemy, character, spell-card/bullet additions are declared with correct ownership.
+- Assets: original source files are normalized and mapped without broken crops, blank frames, or blurred filtering.
+- Runtime: enabled DLC affects the formal game world, combat, compendium, and content-selection description.
+- Visual: automated real-UI capture exists and is manually inspected for nonblank, complete, correctly framed output.
+
+## Active Phases
+
+- [x] Commit ECS refactor baseline (`91ed4a1`).
+- [x] Audit the formal ECS visual regression and every borrowed combat-sheet reference.
+- [x] Add original pickup/bullet/audio mappings and wire ECS plus compatibility scenes to them.
+- [x] Replace the obsolete enemy visual smoke test with formal ECS coverage and inspect captures.
+- [ ] Audit TH01-TH20 manifests, original sources, runtime mappings, and gaps.
+- [ ] Implement a unified all-DLC content and internal-asset manifest.
+- [ ] Generate/import every required original asset and validate dimensions/crops.
+- [ ] Wire every DLC into world, combat, compendium, and selection UI.
+- [ ] Capture and inspect every DLC in Godot; repair all invalid mappings.
+- [ ] Run build, coverage, gameplay, visual, encoding, and line-limit audits.
+
+## Current Errors
+
+- Initial commit command used a quoted message that the host shell split into pathspecs; retried with the ASCII message `refactor_combat_runtime_to_ecs` and committed successfully.
+- First asset-builder run crashed because the sandbox denied Godot's `user://logs`; approved user-directory access fixed it.
+- The first formal pickup visual test ran before Godot imported the generated PNG; a complete headless editor scan generated the required import metadata.
+- Original TH17.5 OGG comments used invalid legacy metadata; FFmpeg stream-copy metadata stripping now removes the warning without audio re-encoding.
+
+---
+
+# Historical Plan: Complete Base and TH06 Internal Replacement
 
 ## Goal
 Replace every current compendium preview for Gensokyo base content and TH06 with distinct, appropriate internal original-game visual mappings, while preserving Chinese identity labels, runtime fallbacks, strict non-public isolation, and the public export exclusion boundary.
