@@ -2,6 +2,8 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Combat.Targeting;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 
 namespace TouhouWuxiaSurvivor.Combat.Weapons;
@@ -16,6 +18,8 @@ public partial class AutoShooter : Node2D
     private PlayerBuffController? _buffs;
     private PlayerHealth? _health;
     private RunModifierState? _runModifiers;
+    private ProjectileEcsRuntime? _ecsProjectiles;
+    private EcsCombatWorld? _ecsWorld;
     private double _cooldownLeft;
     private float _spiralPhase;
     private bool _wasSpiralActive;
@@ -50,13 +54,17 @@ public partial class AutoShooter : Node2D
         Node2D projectileContainer,
         PlayerBuffController buffs,
         PlayerHealth health,
-        RunModifierState runModifiers)
+        RunModifierState runModifiers,
+        ProjectileEcsRuntime? ecsProjectiles = null,
+        EcsCombatWorld? ecsWorld = null)
     {
         _targetFinder = new NearestEnemyTargetFinder(enemyContainer);
         _projectileContainer = projectileContainer;
         _buffs = buffs;
         _health = health;
         _runModifiers = runModifiers;
+        _ecsProjectiles = ecsProjectiles;
+        _ecsWorld = ecsWorld;
         _cooldownLeft = 0.15;
     }
 
@@ -65,8 +73,8 @@ public partial class AutoShooter : Node2D
     /// </summary>
     public override void _Process(double delta)
     {
-        if (_targetFinder is null || _projectileContainer is null || ProjectileScene is null ||
-            _health?.IsDead == true)
+        if (_targetFinder is null || _health?.IsDead == true ||
+            (_ecsProjectiles is null && (_projectileContainer is null || ProjectileScene is null)))
         {
             return;
         }
@@ -103,14 +111,16 @@ public partial class AutoShooter : Node2D
         }
 
         float effectiveRange = TargetRange * (_runModifiers?.TargetRangeMultiplier ?? 1.0f);
-        var target = _targetFinder.FindNearest(GlobalPosition, effectiveRange);
-        if (target is null)
+        Vector2 targetPosition = default;
+        bool hasTarget = _ecsWorld?.TryFindNearest(GlobalPosition, effectiveRange, out targetPosition) == true;
+        var target = hasTarget ? null : _targetFinder.FindNearest(GlobalPosition, effectiveRange);
+        if (!hasTarget && target is null)
         {
             _cooldownLeft = 0.1;
             return;
         }
 
-        FireAt(target.GlobalPosition);
+        FireAt(hasTarget ? targetPosition : target!.GlobalPosition);
         VolleyFired?.Invoke();
         _cooldownLeft = effectiveInterval;
     }
@@ -140,17 +150,30 @@ public partial class AutoShooter : Node2D
     /// </summary>
     private void SpawnProjectile(Vector2 direction)
     {
-        if (ProjectileScene is null || _projectileContainer is null)
+        if (_ecsWorld is null && _ecsProjectiles is null && (ProjectileScene is null || _projectileContainer is null))
         {
             return;
         }
 
-        var projectile = ProjectileScene.Instantiate<PlayerProjectile>();
         float speed = ProjectileSpeed * (_runModifiers?.ProjectileSpeedMultiplier ?? 1.0f);
         int damage = Damage + (_runModifiers?.DamageBonus ?? 0);
-        projectile.Configure(direction, speed, damage);
-        _projectileContainer.AddChild(projectile);
-        projectile.GlobalPosition = GlobalPosition + direction.Normalized() * SpawnDistance;
+        Vector2 spawnPosition = GlobalPosition + direction.Normalized() * SpawnDistance;
+        if (_ecsWorld is not null)
+        {
+            _ecsWorld.SpawnProjectile(spawnPosition, direction, speed, damage);
+        }
+        else if (_ecsProjectiles is not null)
+        {
+            _ecsProjectiles.Spawn(spawnPosition, direction, speed, damage);
+        }
+        else
+        {
+            var projectile = ProjectileScene!.Instantiate<PlayerProjectile>();
+            projectile.Configure(direction, speed, damage);
+            _projectileContainer!.AddChild(projectile);
+            projectile.GlobalPosition = spawnPosition;
+        }
+
         ShotsFired++;
     }
 }

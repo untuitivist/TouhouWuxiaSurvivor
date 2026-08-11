@@ -3,6 +3,8 @@ using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Combat.Weapons;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
@@ -24,17 +26,20 @@ public partial class CombatLoopSmokeTest : Node
             var player = demo.GetNode<PlayerController>("Player");
             var buffs = player.GetNode<PlayerBuffController>("Buffs");
             var shooter = player.GetNode<AutoShooter>("AutoShooter");
-            var enemies = demo.GetNode<Node2D>("CombatEntities/Enemies");
+            var ecsWorld = demo.GetNode<EcsCombatWorld>("CombatEntities/EcsCombatWorld");
             var spawner = demo.GetNode<EnemySpawner>("EnemySpawner");
             var pickupSpawner = demo.GetNode<PickupSpawner>("PickupSpawner");
 
             Require(spawner.AliveCount > 0, "Enemy spawner did not create the initial wave.");
-            var target = enemies.GetChild<EnemyActor>(0);
-            target.GlobalPosition = player.GlobalPosition + new Vector2(48.0f, 0.0f);
-
             await ToSignal(GetTree().CreateTimer(2.4), SceneTreeTimer.SignalName.Timeout);
             Require(shooter.ShotsFired > 0, "Auto shooter did not fire at the nearest enemy.");
-            Require(spawner.DefeatedCount > 0, "Automatic projectiles did not defeat an enemy.");
+            Require(ecsWorld.TotalProjectilesSpawned == shooter.ShotsFired &&
+                ecsWorld.TotalProjectilesSpawned > 0,
+                $"Automatic shooting did not enter the ECS projectile runtime: shots={shooter.ShotsFired}, ecs={ecsWorld.TotalProjectilesSpawned}.");
+            Require(demo.GetNode<Node2D>("CombatEntities/Projectiles").GetChildCount() == 0,
+                "ECS projectile mode must not create per-projectile scene nodes.");
+            Require(spawner.DefeatedCount > 0 && ecsWorld.DefeatedCount > 0,
+                "Automatic projectiles did not defeat an ECS enemy.");
 
             pickupSpawner.Spawn(PickupKind.RapidFire, player.GlobalPosition);
             await WaitForPickup();

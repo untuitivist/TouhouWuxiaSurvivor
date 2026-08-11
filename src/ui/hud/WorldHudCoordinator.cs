@@ -2,6 +2,7 @@ using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Map;
@@ -28,6 +29,7 @@ public sealed class WorldHudCoordinator
     private readonly RunProgressionCoordinator _progression;
     private readonly ContentPackSelection _content;
     private readonly SpellCardCoordinator _spellCards;
+    private readonly EcsCombatWorld? _ecsWorld;
 
     /// <summary>
     /// 注入所有只读状态来源，使组合根不再承担 HUD 坐标换算与快照拼装职责。
@@ -43,7 +45,8 @@ public sealed class WorldHudCoordinator
         PlayerHealth health,
         RunProgressionCoordinator progression,
         ContentPackSelection content,
-        SpellCardCoordinator spellCards)
+        SpellCardCoordinator spellCards,
+        EcsCombatWorld? ecsWorld = null)
     {
         _generator = generator;
         _streamer = streamer;
@@ -56,6 +59,7 @@ public sealed class WorldHudCoordinator
         _progression = progression;
         _content = content;
         _spellCards = spellCards;
+        _ecsWorld = ecsWorld;
     }
 
     /// <summary>
@@ -79,11 +83,11 @@ public sealed class WorldHudCoordinator
             biome,
             _streamer.ActiveCount,
             _streamer.PendingCount,
-            _enemies.AliveCount,
-            _enemies.DefeatedCount,
+            _ecsWorld?.AliveEnemyCount ?? _enemies.AliveCount,
+            _ecsWorld?.DefeatedCount ?? _enemies.DefeatedCount,
             _health.CurrentHealth,
             _health.MaxHealth,
-            _enemies.ElapsedSeconds,
+            _ecsWorld?.ElapsedSeconds ?? _enemies.ElapsedSeconds,
             _buffs.DescribeActiveEffects(),
             _content.Describe(),
             _progression.State.Level,

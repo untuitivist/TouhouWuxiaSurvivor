@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
 
@@ -11,6 +12,7 @@ public partial class PickupSpawner : Node
 {
     private readonly RandomNumberGenerator _random = new();
     private Node2D? _pickupContainer;
+    private EcsCombatWorld? _ecsWorld;
 
     [Export]
     public PackedScene? PickupScene { get; set; }
@@ -25,6 +27,13 @@ public partial class PickupSpawner : Node
     {
         _pickupContainer = pickupContainer;
         _random.Randomize();
+    }
+
+    /// <summary>绑定 ECS 世界并接收批量拾取事件。</summary>
+    public void ConfigureEcs(EcsCombatWorld world)
+    {
+        _ecsWorld = world;
+        world.PickupCollected += OnPickupCollected;
     }
 
     /// <summary>
@@ -50,6 +59,13 @@ public partial class PickupSpawner : Node
     /// </summary>
     private void Spawn(PickupDefinition definition, Vector2 position)
     {
+        if (_ecsWorld is not null)
+        {
+            _ecsWorld.SpawnPickup(definition.Kind, position);
+            SpawnedCount++;
+            return;
+        }
+
         if (PickupScene is null || _pickupContainer is null)
         {
             return;

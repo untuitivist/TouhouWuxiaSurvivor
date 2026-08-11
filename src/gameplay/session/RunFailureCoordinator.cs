@@ -4,6 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.Meta.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Ui.Death;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.Ui.Pause;
@@ -32,6 +33,7 @@ public sealed class RunFailureCoordinator
     private readonly CharacterStatsOverlay _stats;
     private readonly SpellCardCoordinator? _spellCards;
     private readonly ContentPackSelection _content;
+    private readonly EcsCombatWorld? _ecsWorld;
 
     public bool IsFinalized { get; private set; }
 
@@ -50,7 +52,8 @@ public sealed class RunFailureCoordinator
         MetaRunSession metaRun,
         CharacterStatsOverlay stats,
         SpellCardCoordinator? spellCards,
-        ContentPackSelection content)
+        ContentPackSelection content,
+        EcsCombatWorld? ecsWorld = null)
     {
         _streamer = streamer;
         _generator = generator;
@@ -64,6 +67,7 @@ public sealed class RunFailureCoordinator
         _stats = stats;
         _spellCards = spellCards;
         _content = content;
+        _ecsWorld = ecsWorld;
     }
 
     /// <summary>
@@ -89,13 +93,13 @@ public sealed class RunFailureCoordinator
         _spellCards?.BlockForRunEnd();
 
         RunSettlementResult settlement = _metaRun.Settle(
-            _enemySpawner.ElapsedSeconds,
-            _enemySpawner.DefeatedCount,
+            _ecsWorld?.ElapsedSeconds ?? _enemySpawner.ElapsedSeconds,
+            _ecsWorld?.DefeatedCount ?? _enemySpawner.DefeatedCount,
             _progression.State.Level);
         _failureScreen.Present(new RunSummary(
             endReason,
             _enemySpawner.ElapsedSeconds,
-            _enemySpawner.DefeatedCount,
+            _ecsWorld?.DefeatedCount ?? _enemySpawner.DefeatedCount,
             tileX,
             tileY,
             BiomeNames.GetChinese(biome),

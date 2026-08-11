@@ -1,5 +1,6 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
@@ -9,6 +10,8 @@ namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 public partial class FantasySealOrb : Node2D
 {
     private EnemyActor? _target;
+    private EcsCombatWorld? _ecsWorld;
+    private Vector2 _ecsTargetPosition;
     private int _damage = 1;
     private float _speed = 420.0f;
     private double _lifetimeLeft = 2.0;
@@ -22,6 +25,16 @@ public partial class FantasySealOrb : Node2D
     public void Configure(EnemyActor target, int damage, float speed, int visualVariant)
     {
         _target = target;
+        _damage = Math.Max(1, damage);
+        _speed = Math.Max(1.0f, speed);
+        _visualVariant = visualVariant;
+    }
+
+    /// <summary>配置 ECS 目标位置；低数量符卡视觉仍可作为独立节点播放。</summary>
+    public void ConfigureEcs(EcsCombatWorld world, Vector2 targetPosition, int damage, float speed, int visualVariant)
+    {
+        _ecsWorld = world;
+        _ecsTargetPosition = targetPosition;
         _damage = Math.Max(1, damage);
         _speed = Math.Max(1.0f, speed);
         _visualVariant = visualVariant;
@@ -44,16 +57,24 @@ public partial class FantasySealOrb : Node2D
     public override void _PhysicsProcess(double delta)
     {
         _lifetimeLeft -= delta;
-        if (_lifetimeLeft <= 0.0 || !GodotObject.IsInstanceValid(_target) || !_target!.IsAlive)
+        if (_lifetimeLeft <= 0.0 || (_ecsWorld is null &&
+            (!GodotObject.IsInstanceValid(_target) || !_target!.IsAlive)))
         {
             QueueFree();
             return;
         }
 
-        Vector2 targetPosition = _target.GlobalPosition;
+        Vector2 targetPosition = _ecsWorld is not null ? _ecsTargetPosition : _target!.GlobalPosition;
         if (GlobalPosition.DistanceSquaredTo(targetPosition) <= 144.0f)
         {
-            _target.ReceiveDamage(_damage);
+            if (_ecsWorld is not null)
+            {
+                _ecsWorld.DamageEnemies(targetPosition, 12.0f, _damage);
+            }
+            else
+            {
+                _target!.ReceiveDamage(_damage);
+            }
             QueueFree();
             return;
         }

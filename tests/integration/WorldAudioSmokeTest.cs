@@ -1,10 +1,10 @@
 using Godot;
-using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -26,7 +26,7 @@ public partial class WorldAudioSmokeTest : Node
             var player = demo.GetNode<PlayerController>("Player");
             var health = player.GetNode<PlayerHealth>("Health");
             var shooter = player.GetNode<AutoShooter>("AutoShooter");
-            var enemies = demo.GetNode<Node2D>("CombatEntities/Enemies");
+            var ecsWorld = demo.GetNode<EcsCombatWorld>("CombatEntities/EcsCombatWorld");
             var pickups = demo.GetNode<PickupSpawner>("PickupSpawner");
 
             VerifyAudioRouting(audio);
@@ -39,8 +39,6 @@ public partial class WorldAudioSmokeTest : Node
             Require(!audio.GetNode<AudioStreamPlayer>("Footstep").Playing,
                 "Stopping movement did not stop footstep audio.");
 
-            EnemyActor target = enemies.GetChild<EnemyActor>(0);
-            target.GlobalPosition = player.GlobalPosition + new Vector2(48.0f, 0.0f);
             await ToSignal(GetTree().CreateTimer(1.2), SceneTreeTimer.SignalName.Timeout);
             Require(audio.ShotSoundCount > 0, "Automatic firing did not trigger shot audio.");
             Require(audio.EnemyHitSoundCount > 0, "Non-lethal enemy damage did not trigger hit audio.");

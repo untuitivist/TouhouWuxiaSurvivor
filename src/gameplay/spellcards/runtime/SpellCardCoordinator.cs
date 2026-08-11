@@ -5,6 +5,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 
@@ -39,7 +40,8 @@ public partial class SpellCardCoordinator : Node
         Node2D enemies,
         Node2D effects,
         SpiritDropSpawner spiritSpawner,
-        RunBuildState build)
+        RunBuildState build,
+        EcsCombatWorld? ecsWorld = null)
     {
         if (FantasySealOrbScene is null || SealingCircleScene is null)
         {
@@ -52,7 +54,8 @@ public partial class SpellCardCoordinator : Node
             enemies,
             effects,
             FantasySealOrbScene,
-            SealingCircleScene);
+            SealingCircleScene,
+            ecsWorld);
         _spiritSpawner = spiritSpawner;
         _build = build;
         _spiritSpawner.SpiritCollected += GainFromSpirit;

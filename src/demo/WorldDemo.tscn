@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3]
+[gd_scene load_steps=41 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -33,6 +33,7 @@
 [ext_resource type="Script" path="res://src/gameplay/spellcards/runtime/SpellCardCoordinator.cs" id="31_spell_cards"]
 [ext_resource type="PackedScene" path="res://src/gameplay/spellcards/effects/FantasySealOrb.tscn" id="32_fantasy_orb"]
 [ext_resource type="PackedScene" path="res://src/gameplay/spellcards/effects/SealingCircleEffect.tscn" id="33_sealing_circle"]
+[ext_resource type="Script" path="res://src/ecs/combat/EcsCombatWorld.cs" id="35_combat_world"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -130,6 +131,10 @@ position_smoothing_enabled = false
 [node name="Enemies" type="Node2D" parent="CombatEntities"]
 
 [node name="Projectiles" type="Node2D" parent="CombatEntities"]
+
+[node name="EcsCombatWorld" type="Node2D" parent="CombatEntities"]
+z_index = 2
+script = ExtResource("35_combat_world")
 
 [node name="Pickups" type="Node2D" parent="CombatEntities"]
 

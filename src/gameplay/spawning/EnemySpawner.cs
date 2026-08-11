@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.World.Biomes;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
@@ -16,6 +17,7 @@ public partial class EnemySpawner : Node
     private Node2D? _enemyContainer;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private Func<Vector2, BiomeId>? _biomeAtPosition;
+    private EcsCombatWorld? _ecsWorld;
     private double _elapsedSeconds;
     private double _spawnCooldown;
     private double _cleanupCooldown;
@@ -29,9 +31,9 @@ public partial class EnemySpawner : Node
     [Export(PropertyHint.Range, "10,500,1")]
     public int MaximumAlive { get; set; } = 140;
 
-    public int AliveCount => _enemyContainer?.GetChildCount() ?? 0;
+    public int AliveCount => _ecsWorld?.EnemyCount ?? _enemyContainer?.GetChildCount() ?? 0;
     public int DefeatedCount { get; private set; }
-    public double ElapsedSeconds => _elapsedSeconds;
+    public double ElapsedSeconds => _ecsWorld?.ElapsedSeconds ?? _elapsedSeconds;
     public event Action<Vector2, EnemyDefinition>? EnemyDefeated;
     public event Action? EnemyDamaged;
     public event Action? EnemyExploded;
@@ -56,6 +58,15 @@ public partial class EnemySpawner : Node
         {
             SpawnOne();
         }
+    }
+
+    /// <summary>绑定 ECS 战斗世界；之后刷怪只写入敌人组件池，不创建 EnemyActor 节点。</summary>
+    public void ConfigureEcs(EcsCombatWorld world)
+    {
+        _ecsWorld = world;
+        world.EnemyDefeated += OnEnemyDefeated;
+        world.EnemyDamaged += OnEnemyDamaged;
+        world.EnemyExploded += OnEnemyExploded;
     }
 
     /// <summary>
@@ -110,8 +121,15 @@ public partial class EnemySpawner : Node
 
         Vector2 spawnPosition = ChooseSpawnPosition();
         BiomeId biome = _biomeAtPosition?.Invoke(spawnPosition) ?? BiomeId.Common;
+        EnemyDefinition definition = EnemyCatalog.Choose(_random, _elapsedSeconds, biome, _content);
+        if (_ecsWorld is not null)
+        {
+            _ecsWorld.SpawnEnemy(spawnPosition, definition);
+            return;
+        }
+
         var enemy = EnemyScene.Instantiate<EnemyActor>();
-        enemy.Configure(EnemyCatalog.Choose(_random, _elapsedSeconds, biome, _content), _player);
+        enemy.Configure(definition, _player);
         enemy.Defeated += OnEnemyDefeated;
         enemy.Damaged += OnEnemyDamaged;
         enemy.Exploded += OnEnemyExploded;
@@ -145,6 +163,13 @@ public partial class EnemySpawner : Node
     /// </summary>
     private void RecycleDistantEnemies()
     {
+        if (_ecsWorld is not null)
+        {
+            float ecsRecycleDistance = GetViewport().GetVisibleRect().Size.Length() * 1.8f;
+            _ecsWorld.RecycleDistant(_player!.GlobalPosition, ecsRecycleDistance);
+            return;
+        }
+
         if (_player is null || _enemyContainer is null)
         {
             return;

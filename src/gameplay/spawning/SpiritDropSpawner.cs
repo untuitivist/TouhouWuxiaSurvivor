@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Spirit;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
 
@@ -14,6 +15,7 @@ public partial class SpiritDropSpawner : Node
     private Node2D? _player;
     private RunModifierState? _modifiers;
     private RunProgressionState? _progression;
+    private EcsCombatWorld? _ecsWorld;
 
     [Export]
     public PackedScene? SpiritScene { get; set; }
@@ -24,7 +26,7 @@ public partial class SpiritDropSpawner : Node
     [Export(PropertyHint.Range, "10,1000,1")]
     public int MaximumAlive { get; set; } = 240;
 
-    public int AliveCount => _container?.GetChildCount() ?? 0;
+    public int AliveCount => _ecsWorld?.SpiritCount ?? _container?.GetChildCount() ?? 0;
     public int SpawnedCount { get; private set; }
     public event Action<int>? SpiritCollected;
 
@@ -43,6 +45,13 @@ public partial class SpiritDropSpawner : Node
         _progression = progression;
     }
 
+    /// <summary>绑定 ECS 世界并接收经验交付事件。</summary>
+    public void ConfigureEcs(EcsCombatWorld world)
+    {
+        _ecsWorld = world;
+        world.SpiritCollected += OnSpiritCollected;
+    }
+
     /// <summary>
     /// 从敌人耐久计算灵息价值，并延迟到安全时机创建或合并掉落。
     /// </summary>
@@ -57,6 +66,13 @@ public partial class SpiritDropSpawner : Node
     /// </summary>
     public void Spawn(Vector2 position, int value)
     {
+        if (_ecsWorld is not null)
+        {
+            _ecsWorld.SpawnSpirit(position, value);
+            SpawnedCount++;
+            return;
+        }
+
         if (SpiritScene is null || _container is null || _player is null ||
             _modifiers is null || _progression is null || value <= 0)
         {

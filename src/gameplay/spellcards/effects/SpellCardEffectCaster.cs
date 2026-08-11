@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
@@ -13,6 +14,7 @@ public sealed class SpellCardEffectCaster
     private readonly Node2D _player;
     private readonly PlayerHealth _health;
     private readonly Node2D _enemies;
+    private readonly EcsCombatWorld? _ecsWorld;
     private readonly Node2D _effects;
     private readonly PackedScene _orbScene;
     private readonly PackedScene _circleScene;
@@ -26,7 +28,8 @@ public sealed class SpellCardEffectCaster
         Node2D enemies,
         Node2D effects,
         PackedScene orbScene,
-        PackedScene circleScene)
+        PackedScene circleScene,
+        EcsCombatWorld? ecsWorld = null)
     {
         _player = player;
         _health = health;
@@ -34,6 +37,7 @@ public sealed class SpellCardEffectCaster
         _effects = effects;
         _orbScene = orbScene;
         _circleScene = circleScene;
+        _ecsWorld = ecsWorld;
     }
 
     /// <summary>
@@ -53,14 +57,9 @@ public sealed class SpellCardEffectCaster
     {
         int nearby = card.EffectKind switch
         {
-            SpellCardEffectKind.FantasySeal => SpellCardTargetSelector.SelectNearest(
-                _enemies,
-                _player.GlobalPosition,
-                card.Combat.EffectRange,
-                card.Combat.TargetCount).Count,
-            SpellCardEffectKind.EvilSealingCircle => SpellCardTargetSelector.SelectInRange(
-                _enemies,
-                _player.GlobalPosition,
+            SpellCardEffectKind.FantasySeal => SelectNearestPositions(
+                card.Combat.EffectRange, card.Combat.TargetCount).Count,
+            SpellCardEffectKind.EvilSealingCircle => SelectInRangePositions(
                 card.Combat.EffectRange).Count,
             _ => 0,
         };
@@ -74,12 +73,8 @@ public sealed class SpellCardEffectCaster
     /// </summary>
     private bool CastFantasySeal(SpellCardDefinition card)
     {
-        IReadOnlyList<EnemyActor> targets =
-            SpellCardTargetSelector.SelectNearest(
-                _enemies,
-                _player.GlobalPosition,
-                card.Combat.EffectRange,
-                card.Combat.TargetCount);
+        IReadOnlyList<Vector2> targets = SelectNearestPositions(
+            card.Combat.EffectRange, card.Combat.TargetCount);
         if (targets.Count == 0)
         {
             return false;
@@ -88,10 +83,27 @@ public sealed class SpellCardEffectCaster
         for (int index = 0; index < targets.Count; index++)
         {
             float angle = Mathf.Tau * index / targets.Count;
-            var orb = _orbScene.Instantiate<FantasySealOrb>();
-            orb.Configure(targets[index], card.Combat.Damage, 440.0f, index);
-            _effects.AddChild(orb);
-            orb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
+            if (_ecsWorld is not null)
+            {
+                var orb = _orbScene.Instantiate<FantasySealOrb>();
+                orb.ConfigureEcs(_ecsWorld, targets[index], card.Combat.Damage, 440.0f, index);
+                _effects.AddChild(orb);
+                orb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
+                _ecsWorld.DamageEnemies(targets[index], 16.0f, card.Combat.Damage);
+                continue;
+            }
+
+            EnemyActor? target = SpellCardTargetSelector.SelectNearest(
+                _enemies, targets[index], 1.0f, 1).FirstOrDefault();
+            if (target is null)
+            {
+                continue;
+            }
+
+            var legacyOrb = _orbScene.Instantiate<FantasySealOrb>();
+            legacyOrb.Configure(target, card.Combat.Damage, 440.0f, index);
+            _effects.AddChild(legacyOrb);
+            legacyOrb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
         }
 
         return true;
@@ -102,12 +114,20 @@ public sealed class SpellCardEffectCaster
     /// </summary>
     private bool CastEvilSealingCircle(SpellCardDefinition card)
     {
-        foreach (EnemyActor enemy in SpellCardTargetSelector.SelectInRange(
-            _enemies,
-            _player.GlobalPosition,
-            card.Combat.EffectRange))
+        if (_ecsWorld is not null)
         {
-            enemy.ReceiveDamage(card.Combat.Damage);
+            _ecsWorld.DamageEnemies(
+                _player.GlobalPosition, card.Combat.EffectRange, card.Combat.Damage);
+        }
+        else
+        {
+            foreach (EnemyActor enemy in SpellCardTargetSelector.SelectInRange(
+                _enemies,
+                _player.GlobalPosition,
+                card.Combat.EffectRange))
+            {
+                enemy.ReceiveDamage(card.Combat.Damage);
+            }
         }
 
         _health.GrantInvincibility(card.Combat.DefenseSeconds);
@@ -116,4 +136,20 @@ public sealed class SpellCardEffectCaster
         effect.GlobalPosition = _player.GlobalPosition;
         return true;
     }
+
+    /// <summary>从 ECS 或兼容节点后端取得最近敌人的位置。</summary>
+    private IReadOnlyList<Vector2> SelectNearestPositions(float range, int count) =>
+        _ecsWorld is not null
+            ? _ecsWorld.SelectEnemies(_player.GlobalPosition, range, count)
+            : SpellCardTargetSelector.SelectNearest(
+                _enemies, _player.GlobalPosition, range, count)
+                .Select(enemy => enemy.GlobalPosition).ToArray();
+
+    /// <summary>从 ECS 或兼容节点后端取得范围内敌人的位置。</summary>
+    private IReadOnlyList<Vector2> SelectInRangePositions(float range) =>
+        _ecsWorld is not null
+            ? _ecsWorld.SelectEnemies(_player.GlobalPosition, range)
+            : SpellCardTargetSelector.SelectInRange(
+                _enemies, _player.GlobalPosition, range)
+                .Select(enemy => enemy.GlobalPosition).ToArray();
 }

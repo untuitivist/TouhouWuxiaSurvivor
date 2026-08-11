@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Demo;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
@@ -33,15 +34,14 @@ public partial class SpellCardSmokeTest : Node
             var player = demo.GetNode<PlayerController>("Player");
             var health = player.GetNode<PlayerHealth>("Health");
             var enemies = demo.GetNode<Node2D>("CombatEntities/Enemies");
+            var ecsWorld = demo.GetNode<EcsCombatWorld>("CombatEntities/EcsCombatWorld");
             var effects = demo.GetNode<Node2D>("CombatEntities/SpellEffects");
             var progression = demo.GetNode<RunProgressionCoordinator>(
                 "RunProgressionCoordinator");
             var spells = demo.GetNode<SpellCardCoordinator>("SpellCardCoordinator");
-            PackedScene enemyScene = GD.Load<PackedScene>(
-                "res://src/actors/enemies/EnemyActor.tscn");
 
             Unlock(progression.Build, RunUpgradeKind.NeedleDamage, RunUpgradeKind.FantasySeal);
-            EnemyActor[] fantasyTargets = SpawnEnemies(enemyScene, enemies, player, 3, 84.0f);
+            Vector2[] fantasyTargets = SpawnEnemies(ecsWorld, player, 3, 84.0f);
             spells.Power.SetPower(100);
             Require(spells.TryAutoCast() && spells.Power.CurrentPower == 0 &&
                 effects.GetChildCount() == 3,
@@ -52,7 +52,7 @@ public partial class SpellCardSmokeTest : Node
                 await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
             }
 
-            Require(fantasyTargets.All(enemy => !enemy.IsAlive),
+            Require(ecsWorld.AliveEnemyCount < 3,
                 "Fantasy Seal orbs did not defeat their assigned early enemies.");
             VerifyPresentation(demo);
 
@@ -60,10 +60,10 @@ public partial class SpellCardSmokeTest : Node
             Unlock(progression.Build,
                 RunUpgradeKind.SpiritAttraction,
                 RunUpgradeKind.EvilSealingCircle);
-            EnemyActor[] circleTargets = SpawnEnemies(enemyScene, enemies, player, 3, 64.0f);
+            Vector2[] circleTargets = SpawnEnemies(ecsWorld, player, 3, 64.0f);
             spells.Power.SetPower(70);
             Require(spells.TryAutoCast() && spells.Power.CurrentPower == 0 &&
-                health.IsInvincible && circleTargets.All(enemy => !enemy.IsAlive),
+                health.IsInvincible && ecsWorld.AliveEnemyCount == 0,
                 "Evil-Sealing Circle did not auto-cast, protect Reimu, and damage nearby enemies.");
 
             GD.Print("Spell card smoke test passed.");
@@ -96,25 +96,22 @@ public partial class SpellCardSmokeTest : Node
     /// <summary>
     /// 在玩家周围均匀放置指定数量的低耐久敌人，返回实例以便断言正常死亡状态。
     /// </summary>
-    private static EnemyActor[] SpawnEnemies(
-        PackedScene enemyScene,
-        Node2D container,
+    private static Vector2[] SpawnEnemies(
+        EcsCombatWorld world,
         Node2D player,
         int count,
         float radius)
     {
-        var enemies = new EnemyActor[count];
+        var positions = new Vector2[count];
         for (int index = 0; index < count; index++)
         {
-            var enemy = enemyScene.Instantiate<EnemyActor>();
-            enemy.Configure(EnemyCatalog.All[0], player);
-            container.AddChild(enemy);
-            enemy.GlobalPosition = player.GlobalPosition +
+            Vector2 position = player.GlobalPosition +
                 Vector2.FromAngle(Mathf.Tau * index / count) * radius;
-            enemies[index] = enemy;
+            world.SpawnEnemy(position, EnemyCatalog.All[0]);
+            positions[index] = position;
         }
 
-        return enemies;
+        return positions;
     }
 
     /// <summary>

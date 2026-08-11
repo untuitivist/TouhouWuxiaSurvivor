@@ -3,6 +3,7 @@ using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Session;
 using TouhouWuxiaSurvivor.Gameplay.Meta.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Meta.Persistence;
@@ -45,6 +46,7 @@ public partial class WorldDemo : Node2D
     private PlayerBuffController? _buffs;
     private PlayerHealth? _health;
     private AutoShooter? _autoShooter;
+    private EcsCombatWorld? _ecsCombatWorld;
     private WorldAudioController? _audio;
     private LevelUpOverlay? _levelUp;
     private MetaRunSession? _metaRun;
@@ -94,6 +96,7 @@ public partial class WorldDemo : Node2D
                 new VolatileProgressionProfileStore()));
         Node2D enemies = _combatEntities.GetNode<Node2D>("Enemies");
         Node2D projectiles = _combatEntities.GetNode<Node2D>("Projectiles");
+        _ecsCombatWorld = _combatEntities.GetNode<EcsCombatWorld>("EcsCombatWorld");
         Node2D pickups = _combatEntities.GetNode<Node2D>("Pickups");
         Node2D spiritDrops = _combatEntities.GetNode<Node2D>("SpiritDrops");
         Node2D spellEffects = _combatEntities.GetNode<Node2D>("SpellEffects");
@@ -127,6 +130,10 @@ public partial class WorldDemo : Node2D
         _progression.Configure(_levelUp, _map, _pauseMenu, _stats);
         _player.ConfigureRunModifiers(_progression.Modifiers);
         _pickupSpawner.Configure(pickups);
+        _ecsCombatWorld.Configure(_player, _health, _buffs, _progression.Modifiers, _progression.State);
+        _enemySpawner.ConfigureEcs(_ecsCombatWorld);
+        _pickupSpawner.ConfigureEcs(_ecsCombatWorld);
+        _spiritSpawner.ConfigureEcs(_ecsCombatWorld);
         _spiritSpawner.Configure(
             spiritDrops,
             _player,
@@ -138,18 +145,19 @@ public partial class WorldDemo : Node2D
             enemies,
             spellEffects,
             _spiritSpawner,
-            _progression.Build);
+            _progression.Build,
+            _ecsCombatWorld);
         _audio.Configure(_player, _health, _autoShooter, _enemySpawner, _pickupSpawner);
         _enemySpawner.EnemyDefeated += _pickupSpawner.TrySpawnForEnemy;
         _enemySpawner.EnemyDefeated += _spiritSpawner.SpawnForEnemy;
         _enemySpawner.Configure(_player, enemies, _content, GetBiomeAtLocalPosition);
-        _autoShooter.Configure(enemies, projectiles, _buffs, _health, _progression.Modifiers);
+        _autoShooter.Configure(enemies, projectiles, _buffs, _health, _progression.Modifiers, null, _ecsCombatWorld);
         _hudCoordinator = new WorldHudCoordinator(
             _generator, _streamer, _player, hud, _map, _enemySpawner,
-            _buffs, _health, _progression, _content, _spellCards);
+            _buffs, _health, _progression, _content, _spellCards, _ecsCombatWorld);
         _runFailure = new RunFailureCoordinator(
             _streamer, _generator, _player, _map, _pauseMenu, _deathScreen,
-            _enemySpawner, _progression, _metaRun, _stats, _spellCards, _content);
+            _enemySpawner, _progression, _metaRun, _stats, _spellCards, _content, _ecsCombatWorld);
         _health.Died += OnPlayerDied;
         _pauseMenu.RunAbandonRequested += OnRunAbandoned;
         _deathScreen.RestartRequested += RestartRun;
@@ -195,6 +203,11 @@ public partial class WorldDemo : Node2D
 
         foreach (Node category in _combatEntities.GetChildren())
         {
+            if (category == _ecsCombatWorld)
+            {
+                continue;
+            }
+
             foreach (Node child in category.GetChildren())
             {
                 if (child is Node2D entity)
@@ -203,6 +216,8 @@ public partial class WorldDemo : Node2D
                 }
             }
         }
+
+        _ecsCombatWorld?.Rebase(offset);
     }
 
     /// <summary>
