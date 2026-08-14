@@ -30,7 +30,7 @@ public partial class ChangelogPanelSmokeTest : Node
             ChangelogPanel panel = menu.GetNode<ChangelogPanel>("ChangelogPanel");
             VerifyCurrentEntry(menu, panel);
             VerifyLayout(menu, panel);
-            SaveScreenshot("visual-changelog-alpha-0.0.3-1280x720.png");
+            SaveScreenshot("visual-changelog-alpha-0.0.4-1280x720.png");
             VerifyHistoricalSelection(panel);
             panel.GetNode<Button>("Panel/Padding/Layout/Header/Back")
                 .EmitSignal(Button.SignalName.Pressed);
@@ -55,13 +55,13 @@ public partial class ChangelogPanelSmokeTest : Node
     private static void VerifyCatalog()
     {
         GameChangelogCatalog catalog = GameChangelogCatalog.LoadDefault();
-        Require(catalog.Entries.Count >= 4 && catalog.Entries[0].Version == GameVersion.Current,
+        Require(catalog.Entries.Count >= 5 && catalog.Entries[0].Version == GameVersion.Current,
             "Changelog catalog does not begin with the current version.");
         Require(catalog.Entries.Select(entry => entry.Version).SequenceEqual(
-                new[] { "alpha-0.0.3", "alpha-0.0.2", "alpha-0.0.1", "alpha-0.0.0" }),
+                new[] { "alpha-0.0.4", "alpha-0.0.3", "alpha-0.0.2", "alpha-0.0.1", "alpha-0.0.0" }),
             "Changelog version index is incomplete or not ordered newest first.");
-        Require(catalog.Entries[0].Sections.Any(section => section.Heading == "界面与版本日志") &&
-                catalog.Entries[0].ItemCount >= 8,
+        Require(catalog.Entries[0].Sections.Any(section => section.Heading == "自动战斗") &&
+                catalog.Entries[0].ItemCount >= 7,
             "Current changelog entry lost its structured sections or release details.");
     }
 
@@ -70,10 +70,10 @@ public partial class ChangelogPanelSmokeTest : Node
     {
         Require(panel.Visible && !menu.GetNode<Control>("Menu").Visible,
             "Main menu did not switch exclusively to the changelog panel.");
-        Require(panel.EntryCount == 4 && panel.SelectedVersion == "alpha-0.0.3",
-            "Changelog panel did not select the latest of four versions.");
-        Require(panel.CurrentBodyText.Contains("CHANGELOG.md", StringComparison.Ordinal) &&
-                panel.CurrentBodyText.Contains("物理插值", StringComparison.Ordinal),
+        Require(panel.EntryCount == 5 && panel.SelectedVersion == "alpha-0.0.4",
+            "Changelog panel did not select the latest of five versions.");
+        Require(panel.CurrentBodyText.Contains("最早拦截方向", StringComparison.Ordinal) &&
+                panel.CurrentBodyText.Contains("回退直瞄", StringComparison.Ordinal),
             "Current changelog body is not sourced from the latest Markdown entry.");
     }
 
@@ -99,12 +99,14 @@ public partial class ChangelogPanelSmokeTest : Node
             "Version index consumes too much horizontal space.");
     }
 
-    /// <summary>通过真实 ItemList 信号选择上一版本，并确认标题与正文一起更新。</summary>
+    /// <summary>按稳定版本身份通过真实 ItemList 信号选择历史条目，并确认标题与正文一起更新。</summary>
     private static void VerifyHistoricalSelection(ChangelogPanel panel)
     {
         ItemList versions = panel.GetNode<ItemList>("Panel/Padding/Layout/Browser/Index/Versions");
-        versions.Select(1);
-        versions.EmitSignal(ItemList.SignalName.ItemSelected, 1L);
+        int historicalIndex = Enumerable.Range(0, versions.ItemCount)
+            .Single(index => versions.GetItemText(index) == "alpha-0.0.2");
+        versions.Select(historicalIndex);
+        versions.EmitSignal(ItemList.SignalName.ItemSelected, (long)historicalIndex);
         Require(panel.SelectedVersion == "alpha-0.0.2" &&
                 panel.CurrentBodyText.Contains("数值与技能策划", StringComparison.Ordinal),
             "Selecting a historical version did not update the changelog body.");
