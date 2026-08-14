@@ -5,6 +5,7 @@ using TouhouWuxiaSurvivor.Settings;
 using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Hud;
+using TouhouWuxiaSurvivor.Ui.Hud.SpellCards;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -42,6 +43,7 @@ public partial class WorldHudSmokeTest : Node
                 "PacingMargin/Panel/Padding/Layout/PacingBar");
             var phaseRemaining = hud.GetNode<Label>(
                 "PacingMargin/Panel/Padding/Layout/Remaining");
+            var spellCards = hud.GetNode<SpellCardHudStrip>("SpellCards");
             int expectedHealth = (int)MathF.Round(
                 demo.RunContext.CharacterSelection.Current.PlayableProfile.MaxHealth);
             Require(status.Visible && status.Size.Y <= 44.0f,
@@ -50,11 +52,16 @@ public partial class WorldHudSmokeTest : Node
                 health.MaxHealth == expectedHealth &&
                 Mathf.IsEqualApprox((float)healthBar.MaxValue, expectedHealth),
                 "Player or compact health bar did not initialize from the character profile.");
+            Require(!spellCards.Visible && hud.SpellCardIconCount == 0 &&
+                spellCards.Position.X >= 0.0f && spellCards.Position.Y >= 0.0f &&
+                spellCards.Position.X + spellCards.Size.X <= 640.0f &&
+                spellCards.Position.Y + spellCards.Size.Y <= status.Position.Y,
+                "Empty spell-card strip was visible or escaped the compact HUD bounds.");
             Require(!hud.IsDebugVisible, "Debug overlay must be hidden by default.");
             Require(pacingMargin.Visible && pacingMargin.Size.Y <= 28.0f &&
-                hud.PhaseText == "异变初兆" && phaseRemaining.Text == "03:00" &&
+                hud.PhaseText == "异变初兆" && phaseRemaining.Text == "00:45" &&
                 pacingBar.ProgressRatio >= 0.0 && pacingBar.ProgressRatio < 0.01,
-                "Compact fifteen-minute pacing bar did not initialize at the opening phase.");
+                "Compact five-minute pacing bar did not initialize at the opening phase.");
             Require(hud.IsPhaseNoticeVisible,
                 "Opening phase cue did not appear without enlarging the status bar.");
             Require(!hud.StatusText.Contains('\n'), "Status bar must remain a single line.");

@@ -38,7 +38,7 @@ public partial class RunPacingFlowTest : Node
         var fixture = new RunPacingRuntimeFixture(this);
         try
         {
-            fixture.DefeatBoss(900.0);
+            fixture.DefeatBoss(RunPacingTimeline.FinalEncounterSeconds);
             Require(fixture.Overlay.IsOpen && GetTree().Paused &&
                 fixture.Pacing.IsCompletionPending && !fixture.Pacing.IsEndless,
                 "Final boss defeat did not open the paused completion choice.");
@@ -58,7 +58,7 @@ public partial class RunPacingFlowTest : Node
                 !fixture.Progression.IsChoicePresentationSuspended,
                 "Endless choice did not release modal input ownership.");
 
-            fixture.DefeatBoss(1100.0);
+            fixture.DefeatBoss(RunPacingTimeline.TargetClearSeconds + 60.0);
             Require(!fixture.Overlay.IsOpen,
                 "A later endless boss reopened the one-time completion choice.");
         }
@@ -74,7 +74,7 @@ public partial class RunPacingFlowTest : Node
         var fixture = new RunPacingRuntimeFixture(this);
         try
         {
-            fixture.DefeatBoss(900.0);
+            fixture.DefeatBoss(RunPacingTimeline.FinalEncounterSeconds);
             fixture.Overlay.GetNode<Button>(
                 "Root/Panel/Padding/Layout/Buttons/Settle").EmitSignal(Button.SignalName.Pressed);
             Require(fixture.FinalizedReason == RunEndReason.Cleared &&

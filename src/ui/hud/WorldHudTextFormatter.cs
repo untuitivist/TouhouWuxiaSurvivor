@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Ui.Hud;
 
@@ -15,16 +16,13 @@ public static class WorldHudTextFormatter
     public static string FormatStatus(WorldHudSnapshot snapshot)
     {
         TimeSpan elapsed = TimeSpan.FromSeconds(snapshot.ElapsedSeconds);
-        string spellMode = snapshot.SpellCards.HasUnlockedCard
-            ? snapshot.SpellCards.NextCardIsWaitingForCondition
-                ? "待机"
-                : $"{snapshot.SpellCards.NextCastRemaining:0.0}s"
-            : "未悟";
+        int spellCapacity = SpellCardSlotPolicy.MaximumOffensiveSlots +
+            SpellCardSlotPolicy.MaximumSupportSlots;
         return $"{(int)elapsed.TotalMinutes:00}:{elapsed.Seconds:00}" +
             $"  击破{snapshot.DefeatedEnemies}" +
             $"  敌人{snapshot.AliveEnemies}" +
             $"  强化{snapshot.ActiveBuffs}" +
-            $"  奥义{spellMode}";
+            $"  奥义{snapshot.SpellCards.UnlockedCards.Count}/{spellCapacity}";
     }
 
     /// <summary>

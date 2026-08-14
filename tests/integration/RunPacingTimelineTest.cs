@@ -7,7 +7,7 @@ using TouhouWuxiaSurvivor.Gameplay.Pacing;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证十五分钟阶段、敌人解锁、玩家弹幕与刷怪批量共享同一组稳定里程碑。
+/// 验证五分钟目标阶段、敌人解锁、玩家弹幕与刷怪批量共享同一组稳定里程碑。
 /// </summary>
 public partial class RunPacingTimelineTest : Node
 {
@@ -36,12 +36,12 @@ public partial class RunPacingTimelineTest : Node
         (double Seconds, RunPhaseId Phase)[] samples =
         [
             (0.0, RunPhaseId.Opening),
-            (179.999, RunPhaseId.Opening),
-            (180.0, RunPhaseId.Rising),
-            (300.0, RunPhaseId.Swarming),
-            (480.0, RunPhaseId.Barrage),
-            (600.0, RunPhaseId.Crisis),
-            (900.0, RunPhaseId.FinalEncounter),
+            (44.999, RunPhaseId.Opening),
+            (45.0, RunPhaseId.Rising),
+            (90.0, RunPhaseId.Swarming),
+            (150.0, RunPhaseId.Barrage),
+            (210.0, RunPhaseId.Crisis),
+            (270.0, RunPhaseId.FinalEncounter),
         ];
         foreach ((double seconds, RunPhaseId expected) in samples)
         {
@@ -50,21 +50,22 @@ public partial class RunPacingTimelineTest : Node
                 $"Run phase at {seconds} seconds was {snapshot.PhaseId}, expected {expected}.");
         }
 
-        RunPacingSnapshot midpoint = RunPacingTimeline.Evaluate(450.0);
+        RunPacingSnapshot midpoint = RunPacingTimeline.Evaluate(135.0);
         Require(Math.Abs(midpoint.TotalProgress - 0.5) < 0.000001 &&
-            midpoint.SecondsToNextPhase == 30.0,
+            midpoint.SecondsToNextPhase == 15.0,
             "Structured run progress or next milestone countdown drifted.");
-        RunPacingSnapshot final = RunPacingTimeline.Evaluate(1200.0);
-        RunPacingSnapshot endless = RunPacingTimeline.Evaluate(1200.0, true);
+        RunPacingSnapshot final = RunPacingTimeline.Evaluate(360.0);
+        RunPacingSnapshot endless = RunPacingTimeline.Evaluate(360.0, true);
         Require(final.IsFinalEncounter && !final.IsEndless && endless.IsEndless &&
-            final.TotalProgress == 1.0 && endless.TotalProgress == 1.0,
+            final.TotalProgress == 1.0 && endless.TotalProgress == 1.0 &&
+            RunPacingTimeline.TargetClearSeconds == 300.0,
             "Final encounter did not remain gated until the explicit endless choice.");
     }
 
     /// <summary>确认玩家弹数和敌人生成批量在阶段边界增长，而不是继续使用旧的独立分钟表。</summary>
     private static void VerifyCombatMilestones()
     {
-        double[] seconds = [0.0, 180.0, 300.0, 480.0, 600.0, 900.0];
+        double[] seconds = [0.0, 45.0, 90.0, 150.0, 210.0, 270.0];
         int[] expectedBatches = [1, 2, 3, 4, 5, 6];
         for (int index = 0; index < seconds.Length; index++)
         {
@@ -74,10 +75,10 @@ public partial class RunPacingTimelineTest : Node
                 $"Spawn batch drifted at {seconds[index]} seconds.");
         }
 
-        Require(PlayerBarrageCurve.EvaluateSeconds(179.0, false, 0, 0).ProjectileCount == 1 &&
-            PlayerBarrageCurve.EvaluateSeconds(180.0, false, 0, 0).ProjectileCount == 3 &&
-            PlayerBarrageCurve.EvaluateSeconds(480.0, false, 0, 0).ProjectileCount == 5 &&
-            PlayerBarrageCurve.EvaluateSeconds(600.0, false, 1, 0).Mode ==
+        Require(PlayerBarrageCurve.EvaluateSeconds(44.0, false, 0, 0).ProjectileCount == 1 &&
+            PlayerBarrageCurve.EvaluateSeconds(45.0, false, 0, 0).ProjectileCount == 3 &&
+            PlayerBarrageCurve.EvaluateSeconds(150.0, false, 0, 0).ProjectileCount == 5 &&
+            PlayerBarrageCurve.EvaluateSeconds(210.0, false, 1, 0).Mode ==
                 PlayerBarrageMode.RotatingRing,
             "Player barrage did not follow the shared phase milestones.");
     }
@@ -97,7 +98,7 @@ public partial class RunPacingTimelineTest : Node
             "Base enemy unlocks diverged from the five structured phases.");
     }
 
-    /// <summary>确认角色Boss导演默认等待十五分钟，避免旧两分钟遭遇破坏构筑成形窗口。</summary>
+    /// <summary>确认角色Boss导演在四分半进入决战，为五分钟目标保留约半分钟战斗窗口。</summary>
     private static void VerifyBossMilestone()
     {
         var director = new BossEncounterDirector();

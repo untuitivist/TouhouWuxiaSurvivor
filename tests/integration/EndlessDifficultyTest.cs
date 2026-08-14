@@ -3,6 +3,7 @@ using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Gameplay.Difficulty;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -146,12 +147,18 @@ public partial class EndlessDifficultyTest : Node
     private static void VerifyPlayerBarrageStages()
     {
         PlayerBarrageSnapshot opening = PlayerBarrageCurve.EvaluateSeconds(0.0, false, 0, 0);
-        PlayerBarrageSnapshot three = PlayerBarrageCurve.EvaluateSeconds(180.0, false, 0, 0);
-        PlayerBarrageSnapshot threeLate = PlayerBarrageCurve.EvaluateSeconds(300.0, false, 0, 0);
-        PlayerBarrageSnapshot five = PlayerBarrageCurve.EvaluateSeconds(480.0, false, 0, 0);
-        PlayerBarrageSnapshot fiveLate = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0);
-        PlayerBarrageSnapshot seven = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0, 2);
-        PlayerBarrageSnapshot rotating = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 1, 0);
+        PlayerBarrageSnapshot three = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.RisingSeconds, false, 0, 0);
+        PlayerBarrageSnapshot threeLate = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.BarrageSeconds - 1.0, false, 0, 0);
+        PlayerBarrageSnapshot five = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.BarrageSeconds, false, 0, 0);
+        PlayerBarrageSnapshot fiveLate = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.CrisisSeconds, false, 0, 0);
+        PlayerBarrageSnapshot seven = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.CrisisSeconds, false, 0, 0, 2);
+        PlayerBarrageSnapshot rotating = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.CrisisSeconds, false, 1, 0);
         PlayerBarrageSnapshot sixtyMinutes = PlayerBarrageCurve.EvaluateSeconds(3600.0, false, 1, 0);
         PlayerBarrageSnapshot thousandMinutes = PlayerBarrageCurve.EvaluateSeconds(60000.0, false, 1, 0);
         Require(opening.ProjectileCount == 1 && three.ProjectileCount == 3 &&
@@ -172,9 +179,11 @@ public partial class EndlessDifficultyTest : Node
             "Sixty- or thousand-minute barrage escaped its stable late-game stage.");
 
         PlayerBarrageSnapshot spiral = PlayerBarrageCurve.EvaluateSeconds(0.0, true, 0, 0);
-        PlayerBarrageSnapshot degraded = PlayerBarrageCurve.EvaluateSeconds(600.0,
+        PlayerBarrageSnapshot degraded = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.CrisisSeconds,
             false, 1, PlayerBarrageCurve.ProjectileSoftLimit - 1);
-        PlayerBarrageSnapshot saturated = PlayerBarrageCurve.EvaluateSeconds(600.0,
+        PlayerBarrageSnapshot saturated = PlayerBarrageCurve.EvaluateSeconds(
+            RunPacingTimeline.CrisisSeconds,
             false, 1, PlayerBarrageCurve.ProjectileSoftLimit);
         Require(spiral.ProjectileCount == 2 && spiral.Mode == PlayerBarrageMode.RotatingRing,
             "Existing opposite spiral pair was not preserved.");

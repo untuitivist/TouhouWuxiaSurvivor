@@ -6,7 +6,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Session;
 public enum RunEndReason
 {
     /// <summary>
-    /// 玩家击破十五分钟异变核心并主动结束探索，本局按成功完成进行结算。
+    /// 玩家击破约五分钟流程的异变核心并主动结束探索，本局按成功完成进行结算。
     /// </summary>
     Cleared,
 

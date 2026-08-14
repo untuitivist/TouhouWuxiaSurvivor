@@ -6,8 +6,11 @@ using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Content;
+using TouhouWuxiaSurvivor.Ui.Hud.SpellCards;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -40,6 +43,9 @@ public partial class CharacterWorldVisualAcceptanceTest : Node
             PopulateCombatAcceptanceScene(world, remilia.CharacterId);
             await WaitForFrames(3);
             VerifyRenderedCombat(world);
+            PopulateSpellHud(world);
+            await WaitForFrames(2);
+            VerifySpellHud(world);
             SaveScreenshot("visual-world-character-boss-1280x720.png", 1280, 720);
             GD.Print("Character and world visual acceptance test passed.");
         }
@@ -167,6 +173,42 @@ public partial class CharacterWorldVisualAcceptanceTest : Node
             "Formal ECS screenshot is missing player or enemy bullet atlas visuals.");
         Require(logicalViewport.Encloses(status.GetGlobalRect()) && status.Size.Y <= 48.0f,
             "World status bar extends beyond the logical viewport or became oversized.");
+    }
+
+    /// <summary>
+    /// 暂停正式世界刷新并注入六张本体奥义的不同剩余比例，使截图同时覆盖完整遮罩阶梯。
+    /// </summary>
+    private static void PopulateSpellHud(WorldDemo world)
+    {
+        world.ProcessMode = ProcessModeEnum.Disabled;
+        SpellCardDefinition[] cards = SpellCardCatalog.All
+            .Where(card => card.SourcePackId == "base")
+            .OrderBy(SpellCardSlotPolicy.Classify)
+            .ToArray();
+        Require(cards.Length == 6, "Visual spell HUD requires the complete four-plus-two base set.");
+        SpellCardTimerSnapshot[] timers = cards.Select((card, index) =>
+            new SpellCardTimerSnapshot(card, 10.0f, 10.0f - index * 2.0f, false))
+            .ToArray();
+        world.GetNode<SpellCardHudStrip>("WorldDebugHud/SpellCards")
+            .SetSnapshot(new SpellCardRuntimeSnapshot(cards, timers));
+    }
+
+    /// <summary>确认六枚印章完整位于状态栏右上方，且从全遮罩到待机形成单调高度阶梯。</summary>
+    private static void VerifySpellHud(WorldDemo world)
+    {
+        var strip = world.GetNode<SpellCardHudStrip>("WorldDebugHud/SpellCards");
+        Control status = world.GetNode<Control>("WorldDebugHud/StatusMargin");
+        Require(strip.Visible && strip.VisibleIconCount == 6 &&
+            strip.GetGlobalRect().End.Y <= status.GetGlobalRect().Position.Y,
+            "Six-card spell HUD is hidden, incomplete, or overlaps the compact status bar.");
+        float previousHeight = float.PositiveInfinity;
+        for (int index = 0; index < strip.VisibleIconCount; index++)
+        {
+            float height = strip.GetIcon(index).GetCooldownMaskRect().Size.Y;
+            Require(height <= previousHeight,
+                "Spell cooldown masks do not form the expected upward-shrinking progression.");
+            previousHeight = height;
+        }
     }
 
     /// <summary>

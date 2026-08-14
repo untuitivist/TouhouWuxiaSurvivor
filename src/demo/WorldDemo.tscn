@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -34,6 +34,7 @@
 [ext_resource type="Script" path="res://src/ecs/combat/EcsCombatWorld.cs" id="35_combat_world"]
 [ext_resource type="PackedScene" path="res://src/ui/completion/RunCompletionOverlay.tscn" id="37_completion"]
 [ext_resource type="Script" path="res://src/ui/hud/RunPacingBar.cs" id="38_pacing_bar"]
+[ext_resource type="Script" path="res://src/ui/hud/spellcards/SpellCardHudStrip.cs" id="39_spell_hud"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -278,7 +279,7 @@ custom_minimum_size = Vector2(34, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.76, 0.8, 0.7, 1)
 theme_override_font_sizes/font_size = 9
-text = "03:00"
+text = "00:45"
 horizontal_alignment = 2
 vertical_alignment = 1
 
@@ -397,9 +398,27 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.91, 0.94, 0.86, 1)
 theme_override_font_sizes/font_size = 12
-text = "00:00  击破0  敌人0  强化无  奥义未悟0/100"
+text = "00:00  击破0  敌人0  强化无  奥义0/6"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="SpellCards" type="HBoxContainer" parent="WorldDebugHud"]
+visible = false
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -208.0
+offset_top = -76.0
+offset_right = -25.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 1
+theme_override_constants/separation = 3
+alignment = 2
+script = ExtResource("39_spell_hud")
 
 [node name="DebugMargin" type="MarginContainer" parent="WorldDebugHud"]
 visible = false

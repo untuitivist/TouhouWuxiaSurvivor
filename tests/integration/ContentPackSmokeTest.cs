@@ -4,6 +4,7 @@ using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Ui.Content;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Structures;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -146,7 +147,8 @@ public partial class ContentPackSmokeTest : Node
             .ToArray();
         Require(baseEnemies.Length == 9, "Base enemy catalog must contain nine enemies.");
         Require(baseEnemies.Any(enemy => enemy.Archetype == EnemyArchetype.GreatYoukai &&
-            enemy.UnlockTime >= 240.0f), "Base enemy catalog is missing its late-game elite.");
+            enemy.UnlockTime >= RunPacingTimeline.CrisisSeconds),
+            "Base enemy catalog is missing its late-game elite.");
         EnemyArchetype[] regional =
         [
             EnemyArchetype.ForestSpirit,

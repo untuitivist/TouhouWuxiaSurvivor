@@ -1,15 +1,16 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 /// <summary>
-/// 集中定义十五分钟本体流程及其五个有限阶段，禁止HUD、刷怪和弹幕各自维护里程碑。
+/// 集中定义约五分钟本体流程及其五个有限阶段，禁止HUD、刷怪和弹幕各自维护里程碑。
 /// </summary>
 public static class RunPacingTimeline
 {
-    public const double RisingSeconds = 180.0;
-    public const double SwarmingSeconds = 300.0;
-    public const double BarrageSeconds = 480.0;
-    public const double CrisisSeconds = 600.0;
-    public const double FinalEncounterSeconds = 900.0;
+    public const double RisingSeconds = 45.0;
+    public const double SwarmingSeconds = 90.0;
+    public const double BarrageSeconds = 150.0;
+    public const double CrisisSeconds = 210.0;
+    public const double FinalEncounterSeconds = 270.0;
+    public const double TargetClearSeconds = 300.0;
 
     public static IReadOnlyList<double> MilestoneSeconds { get; } =
         [RisingSeconds, SwarmingSeconds, BarrageSeconds, CrisisSeconds];
@@ -29,7 +30,7 @@ public static class RunPacingTimeline
     ];
 
     /// <summary>
-    /// 把任意运行时间投影为唯一阶段；十五分钟后停在最终遭遇，玩家确认后才进入无尽。
+    /// 把任意运行时间投影为唯一阶段；四分半进入决战，目标在五分钟左右完成结算。
     /// </summary>
     public static RunPacingSnapshot Evaluate(double elapsedSeconds, bool isEndless = false)
     {

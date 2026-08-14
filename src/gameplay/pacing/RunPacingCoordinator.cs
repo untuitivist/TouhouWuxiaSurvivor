@@ -65,7 +65,7 @@ public sealed class RunPacingCoordinator : IDisposable
         completion.ContinueEndlessRequested += OnContinueEndlessRequested;
     }
 
-    /// <summary>以当前唯一战斗时钟创建HUD快照，十五分钟后保持最终遭遇直至玩家作出选择。</summary>
+    /// <summary>以当前唯一战斗时钟创建HUD快照，四分半后保持最终遭遇直至玩家作出选择。</summary>
     public RunPacingSnapshot CreateSnapshot() =>
         RunPacingTimeline.Evaluate(_elapsedSeconds(), IsEndless);
 
@@ -86,7 +86,7 @@ public sealed class RunPacingCoordinator : IDisposable
     }
 
     /// <summary>
-    /// 仅把十五分钟后的首次角色Boss视为本体终点；测试或无尽中的普通Boss不会重复打开选择层。
+    /// 仅把四分半后的首次角色Boss视为本体终点；测试或无尽中的普通Boss不会重复打开选择层。
     /// </summary>
     private void OnEncounterDefeated(CharacterDefinition character)
     {

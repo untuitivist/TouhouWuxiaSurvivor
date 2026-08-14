@@ -4,7 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.Pacing;
 namespace TouhouWuxiaSurvivor.Ui.Hud;
 
 /// <summary>
-/// 绘制固定尺寸的十五分钟分段进度带，以里程碑刻线表达阶段而不占用额外文字空间。
+/// 绘制固定尺寸的五分钟目标分段进度带，以里程碑刻线表达阶段而不占用额外文字空间。
 /// </summary>
 public partial class RunPacingBar : Control
 {

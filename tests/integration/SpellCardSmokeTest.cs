@@ -15,6 +15,7 @@ using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Stats;
 using TouhouWuxiaSurvivor.Ui.Stats.Build;
+using TouhouWuxiaSurvivor.Ui.Hud.SpellCards;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -74,7 +75,7 @@ public partial class SpellCardSmokeTest : Node
 
             Require(ecsWorld.AliveEnemyCount < fantasyThreshold,
                 "Fantasy Seal orbs did not defeat their assigned early enemies.");
-            VerifyPresentation(demo);
+            VerifyPresentation(demo, fantasy);
 
             Unlock(progression.Build, circle);
             SpawnEnemies(ecsWorld, player, 3, 64.0f);
@@ -86,6 +87,15 @@ public partial class SpellCardSmokeTest : Node
             spells._Process(1.0);
             Require(health.IsInvincible && ecsWorld.AliveEnemyCount == 0,
                 "Evil-Sealing Circle did not respond to damage, protect Reimu, and hit enemies.");
+            var spellStrip = demo.GetNode<SpellCardHudStrip>("WorldDebugHud/SpellCards");
+            for (int frame = 0; frame < 4 && spellStrip.VisibleIconCount < 2; frame++)
+            {
+                await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            }
+
+            Require(spellStrip.VisibleIconCount == 2 &&
+                spellStrip.GetIcon(1).CardId == circle.Id,
+                "Each unlocked offensive and support spell did not receive a stable HUD icon.");
 
             GD.Print("Spell card smoke test passed.");
         }
@@ -155,12 +165,14 @@ public partial class SpellCardSmokeTest : Node
     /// <summary>
     /// 确认常驻 HUD 标记自动奥义，且 E 面板显示已悟得符卡而不创建滚动区域。
     /// </summary>
-    private static void VerifyPresentation(WorldDemo demo)
+    private static void VerifyPresentation(WorldDemo demo, SpellCardDefinition fantasy)
     {
         var hud = demo.GetNode<WorldDebugHud>("WorldDebugHud");
-        Require(hud.StatusText.Contains("奥义", StringComparison.Ordinal) &&
-            hud.StatusText.Contains("s", StringComparison.Ordinal),
-            "HUD did not show the automatic spell countdown.");
+        var spellStrip = hud.GetNode<SpellCardHudStrip>("SpellCards");
+        Require(hud.StatusText.Contains("奥义1/6", StringComparison.Ordinal) &&
+            hud.SpellCardIconCount == 1 && spellStrip.GetIcon(0).CardId == fantasy.Id &&
+            spellStrip.GetIcon(0).CooldownRatio > 0.0f,
+            "HUD did not show the unlocked spell and its independent cooldown mask.");
         var stats = demo.GetNode<CharacterStatsOverlay>("CharacterStatsOverlay");
         stats.Open();
         CharacterBuildView buildView = stats.GetNode<CharacterBuildView>(

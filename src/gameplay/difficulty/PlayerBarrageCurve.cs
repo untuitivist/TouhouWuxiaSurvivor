@@ -12,7 +12,7 @@ public static class PlayerBarrageCurve
     public const double SaturatedRetryIntervalSeconds = 0.05;
 
     /// <summary>
-    /// 生成一次齐射计划：前三分钟单发，随后按统一阶段进入三、五发并在后期交错扇形与旋转环。
+    /// 生成一次齐射计划：开局保持单发，随后按统一阶段进入三、五发并在后期交错扇形与旋转环。
     /// </summary>
     public static PlayerBarrageSnapshot EvaluateSeconds(
         double elapsedSeconds,
@@ -57,7 +57,7 @@ public static class PlayerBarrageCurve
     }
 
     /// <summary>
-    /// 普通攻击由单发过渡到交错扇形，十分钟后每隔一轮插入旋转环；螺旋强化始终使用旋转环。
+    /// 普通攻击由单发过渡到交错扇形，危机阶段每隔一轮插入旋转环；螺旋强化始终使用旋转环。
     /// </summary>
     private static PlayerBarrageMode GetMode(
         double minutes,

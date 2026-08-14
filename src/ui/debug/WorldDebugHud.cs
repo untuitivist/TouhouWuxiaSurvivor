@@ -1,5 +1,6 @@
 using Godot;
 using TouhouWuxiaSurvivor.Ui.Hud;
+using TouhouWuxiaSurvivor.Ui.Hud.SpellCards;
 using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Ui.Debug;
@@ -21,6 +22,7 @@ public partial class WorldDebugHud : CanvasLayer
     private Label? _phaseRemaining;
     private Label? _phaseNotice;
     private RunPacingBar? _pacingBar;
+    private SpellCardHudStrip? _spellCards;
     private double _statusAccumulator;
     private double _debugAccumulator;
     private double _phaseNoticeLeft;
@@ -32,6 +34,7 @@ public partial class WorldDebugHud : CanvasLayer
     public string PhaseText => _phaseName?.Text ?? string.Empty;
     public double PacingProgress => _pacingBar?.ProgressRatio ?? 0.0;
     public bool IsPhaseNoticeVisible => _phaseNotice?.Visible == true;
+    public int SpellCardIconCount => _spellCards?.VisibleIconCount ?? 0;
 
     /// <summary>
     /// 缓存两类文字节点、启用暂停时输入，并确保进入游戏时调试层默认关闭。
@@ -49,6 +52,7 @@ public partial class WorldDebugHud : CanvasLayer
         _phaseRemaining = GetNode<Label>("PacingMargin/Panel/Padding/Layout/Remaining");
         _phaseNotice = GetNode<Label>("PhaseNotice");
         _pacingBar = GetNode<RunPacingBar>("PacingMargin/Panel/Padding/Layout/PacingBar");
+        _spellCards = GetNode<SpellCardHudStrip>("SpellCards");
         _debugOverlay = GetNode<Control>("DebugMargin");
         _debugLabel = GetNode<Label>("DebugMargin/Label");
         _debugOverlay.Hide();
@@ -104,6 +108,7 @@ public partial class WorldDebugHud : CanvasLayer
         _experienceBar.MaxValue = snapshot.ExperienceToNext;
         _experienceBar.Value = snapshot.Experience;
         _experienceValue.Text = $"{snapshot.Experience}/{snapshot.ExperienceToNext}";
+        _spellCards?.SetSnapshot(snapshot.SpellCards);
         RefreshPacing(snapshot.Pacing, deltaSeconds);
     }
 

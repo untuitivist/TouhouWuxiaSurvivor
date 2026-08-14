@@ -18,7 +18,7 @@ namespace TouhouWuxiaSurvivor.Tests.Support;
 /// </summary>
 public sealed class RunPacingRuntimeFixture
 {
-    private double _elapsedSeconds = 900.0;
+    private double _elapsedSeconds = RunPacingTimeline.FinalEncounterSeconds;
     public RunCompletionOverlay Overlay { get; }
     public EcsCombatWorld World { get; }
     public BossEncounterDirector Director { get; }
