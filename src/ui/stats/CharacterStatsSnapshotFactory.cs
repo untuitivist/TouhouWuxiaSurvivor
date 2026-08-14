@@ -4,6 +4,11 @@ using TouhouWuxiaSurvivor.Gameplay.Meta.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
+using TouhouWuxiaSurvivor.Ui.Stats.Build;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
+using TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
 namespace TouhouWuxiaSurvivor.Ui.Stats;
 
@@ -23,30 +28,51 @@ public static class CharacterStatsSnapshotFactory
         SpiritDropSpawner spiritSpawner,
         RunProgressionCoordinator progression,
         ProfileRunBonuses permanent,
-        SpellCardCoordinator spellCards)
+        SpellCardCoordinator spellCards,
+        ContentPackSelection content)
     {
         RunModifierState modifiers = progression.Modifiers;
         string characterName = player.GetNode<PlayerVisualController>("Visual").DisplayName;
+        CharacterCombatRole combatRole = CharacterCatalog.GetRequiredByDisplayName(
+            characterName).CombatRole;
         float fireRate = Math.Max(0.1f,
-            buffs.FireRateMultiplier * modifiers.FireRateMultiplier);
+            buffs.FireRateMultiplier * modifiers.FireRateMultiplier *
+            shooter.PassiveFireRateMultiplier);
         float moveSpeed = player.MoveSpeed * buffs.SpeedMultiplier *
-            modifiers.MoveSpeedMultiplier;
+            modifiers.MoveSpeedMultiplier *
+            (player.PassiveSpecializations?.MoveSpeedMultiplier ?? 1.0f);
+        PlayerBarrageSnapshot barrage = PlayerBarrageCurve.EvaluateSeconds(
+            shooter.CurrentBarrage.ElapsedMinutes * 60.0,
+            modifiers.UsesSpiralPattern || buffs.IsSpiralActive,
+            0,
+            0,
+            modifiers.ExtraProjectiles);
+        ProjectileVolleyDamageSnapshot volley = shooter.ProjectVolleyDamage(barrage);
         return new CharacterStatsSnapshot(
             characterName,
+            combatRole,
             health.CurrentHealth,
             health.MaxHealth,
             progression.State.Level,
             progression.State.Experience,
             progression.State.ExperienceToNext,
             progression.State.TotalExperience,
-            shooter.Damage + modifiers.DamageBonus,
-            shooter.BaseFireInterval / fireRate,
+            volley.PrimaryTotalDamage,
+            volley.ProjectileCount,
+            volley.MinimumPrimaryDamage,
+            volley.MaximumPrimaryDamage,
+            volley.SecondaryTotalDamage,
+            (float)AutoAttackCadence.CalculateInterval(
+                shooter.BaseFireInterval,
+                shooter.CharacterAttackIntervalMultiplier,
+                fireRate),
             moveSpeed,
             shooter.TargetRange * modifiers.TargetRangeMultiplier,
-            shooter.ProjectileSpeed * modifiers.ProjectileSpeedMultiplier,
+            shooter.GetEffectiveProjectileSpeed(),
             spiritSpawner.BaseAttractionRange * modifiers.SpiritAttractionMultiplier,
             FormatPermanentSummary(permanent),
-            progression.Build.Describe(),
+            CharacterBuildViewModelFactory.Create(
+                progression.Build, content, progression.State.Level, combatRole),
             spellCards.CreateSnapshot());
     }
 

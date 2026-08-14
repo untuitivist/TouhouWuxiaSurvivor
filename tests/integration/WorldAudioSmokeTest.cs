@@ -1,11 +1,14 @@
 using Godot;
+using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Ui.Progression;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -24,6 +27,7 @@ public partial class WorldAudioSmokeTest : Node
             WorldDemo demo = GD.Load<PackedScene>("res://src/demo/WorldDemo.tscn")
                 .Instantiate<WorldDemo>();
             demo.PersistMetaProgression = false;
+            demo.GetNode<EnemySpawner>("EnemySpawner").InitialSpawnCount = 0;
             AddChild(demo);
             var audio = demo.GetNode<WorldAudioController>("WorldAudio");
             var player = demo.GetNode<PlayerController>("Player");
@@ -42,7 +46,8 @@ public partial class WorldAudioSmokeTest : Node
             Require(!audio.GetNode<AudioStreamPlayer>("Footstep").Playing,
                 "Stopping movement did not stop footstep audio.");
 
-            await WaitForCombatAudio(audio);
+            TriggerEnemyAudio(ecsWorld, player.GlobalPosition);
+            await WaitForShotAudio(audio);
             Require(audio.ShotSoundCount > 0, "Automatic firing did not trigger shot audio.");
             Require(audio.EnemyHitSoundCount > 0, "Non-lethal enemy damage did not trigger hit audio.");
             Require(audio.EnemyDeathSoundCount > 0, "Enemy defeat did not trigger death audio.");
@@ -50,13 +55,18 @@ public partial class WorldAudioSmokeTest : Node
             pickups.Spawn(PickupKind.SpiralShot, player.GlobalPosition);
             await WaitForPickup();
             Require(audio.PickupSoundCount == 1, "Collected power pickup did not trigger pickup audio.");
+            BlockLevelUpsForAudioTest(
+                demo.GetNode<RunProgressionCoordinator>("RunProgressionCoordinator"));
             int projectilesBefore = shooter.ShotsFired;
             int soundsBefore = audio.ShotSoundCount;
-            await ToSignal(GetTree().CreateTimer(0.2), SceneTreeTimer.SignalName.Timeout);
+            await WaitForNextShotSound(audio, soundsBefore);
             int projectileDelta = shooter.ShotsFired - projectilesBefore;
             int soundDelta = audio.ShotSoundCount - soundsBefore;
             Require(projectileDelta > soundDelta && soundDelta > 0,
-                "High-rate spiral fire was not safely throttled at the audio layer.");
+                $"High-rate spiral fire was not safely throttled: " +
+                $"projectiles={projectileDelta}, sounds={soundDelta}, " +
+                $"paused={GetTree().Paused}, enemies={ecsWorld.AliveEnemyCount}, " +
+                $"levelUp={demo.GetNode<LevelUpOverlay>("LevelUpOverlay").IsOpen}.");
 
             health.InvincibilityDuration = 0.0f;
             Require(health.ApplyDamage(1), "Player damage setup failed.");
@@ -87,22 +97,84 @@ public partial class WorldAudioSmokeTest : Node
     }
 
     /// <summary>
-    /// 在三秒上限内等待自动战斗产生射击、受击和击破事件，避免依赖单次固定帧时序。
+    /// 通过正式 ECS 伤害入口依次产生非致命受击与击破，再留下一个目标供自动射击索敌。
     /// </summary>
-    private async Task WaitForCombatAudio(WorldAudioController audio)
+    private static void TriggerEnemyAudio(EcsCombatWorld world, Vector2 playerPosition)
+    {
+        EnemyDefinition definition = EnemyCatalog.All.Single(enemy => enemy.DisplayName == "大妖怪");
+        Vector2 position = playerPosition + new Vector2(36.0f, 0.0f);
+        world.SpawnEnemy(position, definition);
+        Require(world.DamageEnemies(position, 1.0f, 1) == 1,
+            "Deterministic non-lethal audio setup did not damage its ECS enemy.");
+        Require(world.DamageEnemies(position, 1.0f, definition.MaxHealth) == 1,
+            "Deterministic death-audio setup did not defeat its ECS enemy.");
+        world.SpawnEnemy(position, definition);
+    }
+
+    /// <summary>
+    /// 在三秒上限内等待自动武器锁定已生成目标并产生射击事件，避免依赖固定单帧时序。
+    /// </summary>
+    private async Task WaitForShotAudio(WorldAudioController audio)
     {
         const int maximumAttempts = 60;
         for (int attempt = 0; attempt < maximumAttempts; attempt++)
         {
-            if (audio.ShotSoundCount > 0 &&
-                audio.EnemyHitSoundCount > 0 &&
-                audio.EnemyDeathSoundCount > 0)
+            if (audio.ShotSoundCount > 0)
             {
                 return;
             }
 
             await ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
         }
+    }
+
+    /// <summary>
+    /// 生成不会被一次十点基础齐射击破的静止 ECS 靶，避免平衡改动让限流测试在测量前失去目标。
+    /// </summary>
+    private static void SpawnDurableAudioTarget(EcsCombatWorld world, Vector2 playerPosition)
+    {
+        EnemyDefinition template = EnemyCatalog.All.Single(
+            enemy => enemy.DisplayName == "大妖怪");
+        var durable = new EnemyDefinition(
+            template.Archetype,
+            "音效耐久靶",
+            10000,
+            0.0f,
+            template.CollisionRadius,
+            0.0f,
+            0.0f,
+            0.0f,
+            [],
+            contactDamage: 1,
+            aiProfile: template.AiProfile,
+            baseMaxHealth: 10000);
+        world.SpawnEnemy(playerPosition + new Vector2(36.0f, 0.0f), durable);
+    }
+
+    /// <summary>
+    /// 在一秒上限内等待下一次真实射击声，使断言跟随当前角色射击周期而非固定旧版 0.2 秒窗口。
+    /// </summary>
+    private async Task WaitForNextShotSound(WorldAudioController audio, int previousCount)
+    {
+        const int maximumAttempts = 20;
+        for (int attempt = 0; attempt < maximumAttempts; attempt++)
+        {
+            if (audio.ShotSoundCount > previousCount)
+            {
+                return;
+            }
+
+            await ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
+        }
+    }
+
+    /// <summary>
+    /// 解决击破灵息产生的正式升级选择，避免暂停中的三选一污染后续射击音效时序验证。
+    /// </summary>
+    private static void BlockLevelUpsForAudioTest(RunProgressionCoordinator progression)
+    {
+        progression.BlockForRunEnd();
+        progression.GetTree().Paused = false;
     }
 
     /// <summary>

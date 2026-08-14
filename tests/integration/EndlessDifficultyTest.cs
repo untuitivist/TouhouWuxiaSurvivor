@@ -67,7 +67,6 @@ public partial class EndlessDifficultyTest : Node
             EndlessDifficultySnapshot previous = snapshots[index - 1];
             EndlessDifficultySnapshot current = snapshots[index];
             Require(current.Intensity > previous.Intensity &&
-                current.SpawnBudgetPerSecond > previous.SpawnBudgetPerSecond &&
                 current.EnemyHealthMultiplier > previous.EnemyHealthMultiplier &&
                 current.EnemyDamageMultiplier > previous.EnemyDamageMultiplier &&
                 current.RewardMultiplier > previous.RewardMultiplier,
@@ -79,7 +78,7 @@ public partial class EndlessDifficultyTest : Node
         EndlessDifficultySnapshot extreme = EndlessDifficultyCurve.EvaluateSeconds(
             double.PositiveInfinity, int.MaxValue);
         Require(double.IsFinite(extreme.Intensity) &&
-            double.IsFinite(extreme.SpawnBudgetPerSecond) &&
+            double.IsFinite(extreme.ScheduledSpawnsPerSecond) &&
             double.IsFinite(extreme.EnemyHealthMultiplier) &&
             double.IsFinite(extreme.EnemyDamageMultiplier) &&
             double.IsFinite(extreme.RewardMultiplier),
@@ -87,11 +86,11 @@ public partial class EndlessDifficultyTest : Node
     }
 
     /// <summary>
-    /// 确认批次、间隔、速度和存活数遵守性能边界，同时公开刷怪预算在实体封顶后仍继续增长。
+    /// 确认批次、间隔、速度和存活数遵守性能边界，理论生成率严格来自正式批次除以正式间隔。
     /// </summary>
     private static void VerifyEntitySafetyLimits()
     {
-        double previousBudget = 0.0;
+        double previousRate = 0.0;
         foreach (double minutes in TestMinutes)
         {
             double seconds = minutes * 60.0;
@@ -108,12 +107,14 @@ public partial class EndlessDifficultyTest : Node
             Require(snapshot.EnemySpeedMultiplier <=
                 EndlessDifficultyCurve.MaximumEnemySpeedMultiplier,
                 "Enemy speed escaped its readability limit.");
-            Require(snapshot.SpawnBudgetPerSecond > previousBudget || minutes == 0.0,
-                "Spawn budget stopped after an entity safety cap.");
-            Require(Math.Abs(EnemySpawnPacing.GetSpawnBudgetPerSecond(seconds) -
-                snapshot.SpawnBudgetPerSecond) < 0.000001,
-                "Spawn pacing facade diverged from the endless budget.");
-            previousBudget = snapshot.SpawnBudgetPerSecond;
+            double expectedRate = snapshot.SpawnBatchSize / snapshot.SpawnIntervalSeconds;
+            Require(snapshot.ScheduledSpawnsPerSecond >= previousRate &&
+                Math.Abs(snapshot.ScheduledSpawnsPerSecond - expectedRate) < 0.000001,
+                "Scheduled spawn rate diverged from batch and interval.");
+            Require(Math.Abs(EnemySpawnPacing.GetScheduledSpawnsPerSecond(seconds) -
+                snapshot.ScheduledSpawnsPerSecond) < 0.000001,
+                "Spawn pacing facade diverged from the scheduled rate.");
+            previousRate = snapshot.ScheduledSpawnsPerSecond;
         }
     }
 
@@ -134,30 +135,35 @@ public partial class EndlessDifficultyTest : Node
         Require(RunLevelCurve.GetRequiredExperience(int.MaxValue) >= previous,
             "Maximum representable level overflowed after the million-level sample.");
         Require(RunLevelCurve.GetRequiredExperience(1) == 8 &&
-            RunLevelCurve.GetRequiredExperience(2) == 10,
-            "Opening level requirements drifted from eight and ten.");
+            RunLevelCurve.GetRequiredExperience(2) == 13,
+            "Opening level requirements drifted from eight and thirteen.");
     }
 
     /// <summary>
-    /// 验证自动武器依次形成一、三、五、七发，并在十分钟后交错旋转环且在池临界时退化而非越界。
+    /// 验证时间只提高弹幕密度不白送总伤，并由特化把五发阶段扩展为七发。
     /// </summary>
     private static void VerifyPlayerBarrageStages()
     {
         PlayerBarrageSnapshot opening = PlayerBarrageCurve.EvaluateSeconds(0.0, false, 0, 0);
         PlayerBarrageSnapshot three = PlayerBarrageCurve.EvaluateSeconds(120.0, false, 0, 0);
         PlayerBarrageSnapshot five = PlayerBarrageCurve.EvaluateSeconds(300.0, false, 0, 0);
-        PlayerBarrageSnapshot seven = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0);
+        PlayerBarrageSnapshot fiveLate = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0);
+        PlayerBarrageSnapshot seven = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0, 2);
         PlayerBarrageSnapshot rotating = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 1, 0);
         PlayerBarrageSnapshot sixtyMinutes = PlayerBarrageCurve.EvaluateSeconds(3600.0, false, 1, 0);
         PlayerBarrageSnapshot thousandMinutes = PlayerBarrageCurve.EvaluateSeconds(60000.0, false, 1, 0);
         Require(opening.ProjectileCount == 1 && three.ProjectileCount == 3 &&
-            five.ProjectileCount == 5 && seven.ProjectileCount == 7,
-            "Player barrage did not progress through 1/3/5/7 projectiles.");
-        Require(seven.Mode == PlayerBarrageMode.AlternatingFan &&
+            five.ProjectileCount == 5 && fiveLate.ProjectileCount == 5 &&
+            seven.ProjectileCount == 7 &&
+            opening.VolleyDamageBudget == three.VolleyDamageBudget &&
+            three.VolleyDamageBudget == fiveLate.VolleyDamageBudget &&
+            seven.VolleyDamageBudget > fiveLate.VolleyDamageBudget,
+            "Timed density or build-driven volley budget is incorrect.");
+        Require(fiveLate.Mode == PlayerBarrageMode.AlternatingFan &&
             rotating.Mode == PlayerBarrageMode.RotatingRing && !rotating.RequiresTarget,
             "Late volleys do not alternate fan and rotating patterns.");
-        Require(sixtyMinutes.ProjectileCount == PlayerBarrageCurve.MaximumProjectilesPerVolley &&
-            thousandMinutes.ProjectileCount == PlayerBarrageCurve.MaximumProjectilesPerVolley &&
+        Require(sixtyMinutes.ProjectileCount == 5 &&
+            thousandMinutes.ProjectileCount == 5 &&
             sixtyMinutes.Mode == PlayerBarrageMode.RotatingRing &&
             thousandMinutes.Mode == PlayerBarrageMode.RotatingRing,
             "Sixty- or thousand-minute barrage escaped its stable late-game stage.");

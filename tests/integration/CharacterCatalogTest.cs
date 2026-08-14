@@ -55,8 +55,8 @@ public partial class CharacterCatalogTest : Node
             }
         }
 
-        Require(manifestEntryCount == CharacterCatalog.All.Count + 1,
-            "Only the repeated Mima manifest entry should merge into a canonical identity.");
+        Require(manifestEntryCount == CharacterCatalog.All.Count + 2,
+            "Only the repeated Mima and Marisa manifest entries should merge canonically.");
         CharacterDefinition mima = CharacterCatalog.GetRequiredByDisplayName("魅魔");
         Require(mima.AvailableSourcePackIds.SequenceEqual(
             [ContentPackIds.HighlyResponsiveToPrayers, ContentPackIds.StoryOfEasternWonderland]),
@@ -127,7 +127,9 @@ public partial class CharacterCatalogTest : Node
                 $"Character is missing a gameplay role: {character.DisplayName}");
             Require(character.PlayableProfile.MaxHealth > 0.0f &&
                 character.PlayableProfile.MoveSpeedMultiplier > 0.0f &&
-                character.PlayableProfile.AttackMultiplier > 0.0f,
+                character.PlayableProfile.AttackMultiplier > 0.0f &&
+                character.PlayableProfile.UltimateIntervalSeconds > 0.0f &&
+                character.PlayableProfile.UltimateTargetCapacity > 0,
                 $"Playable profile is incomplete: {character.DisplayName}");
             Require(character.BossProfile.MaxHealth > 0.0f &&
                 character.BossProfile.MoveSpeed > 0.0f &&
@@ -143,15 +145,21 @@ public partial class CharacterCatalogTest : Node
     private static void VerifyBossCandidateExclusion()
     {
         CharacterDefinition reimu = CharacterCatalog.Default;
-        Require(CharacterBossCatalog.GetCandidates(
-            ContentPackSelection.BaseOnly, reimu.CharacterId).Count == 0,
-            "Single-character boss pool incorrectly filled the player back in.");
+        CharacterDefinition marisa = CharacterCatalog.GetRequiredByDisplayName("雾雨魔理沙");
+        IReadOnlyList<CharacterDefinition> baseCandidates = CharacterBossCatalog.GetCandidates(
+            ContentPackSelection.BaseOnly, reimu.CharacterId);
+        Require(marisa.CharacterId == "character_th02_soew_02" &&
+                marisa.SourcePackId == ContentPackCatalog.Base.Id,
+            "Marisa did not keep her pre-base stable identity after becoming permanent content.");
+        Require(baseCandidates.Count == 1 && baseCandidates[0].CharacterId == marisa.CharacterId,
+            "Base-only boss pool must offer Marisa while excluding selected Reimu.");
 
         var eosd = new ContentPackSelection([ContentPackIds.EmbodimentOfScarletDevil]);
         CharacterDefinition remilia = CharacterCatalog.GetRequiredByDisplayName("蕾米莉亚·斯卡蕾特");
         IReadOnlyList<CharacterDefinition> candidates = CharacterBossCatalog.GetCandidates(
             eosd, new CharacterSelection(remilia));
-        Require(candidates.Count == 7, "TH06 boss pool should contain Reimu plus six other characters.");
+        Require(candidates.Count == 8,
+            "TH06 boss pool should contain both base characters plus six other TH06 characters.");
         Require(candidates.All(character => character.CharacterId != remilia.CharacterId),
             "Selected player character leaked into the boss pool.");
         Require(candidates.All(character => CharacterCatalog.IsAvailable(character, eosd)),

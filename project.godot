@@ -11,10 +11,14 @@ config_version=5
 [application]
 
 config/name="Touhou-Wuxia-Survivor"
-config/version="0.0.0-beta"
+config/version="alpha-0.0.2"
 run/main_scene="res://src/ui/menu/MainMenu.tscn"
-config/features=PackedStringArray("4.7", "C#", "Mobile")
+config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://assets/branding/icon.png"
+
+[autoload]
+
+PerformanceDiagnostics="*res://src/diagnostics/performance/PerformanceDiagnosticsHost.tscn"
 
 [display]
 
@@ -85,7 +89,7 @@ pause_menu={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
-rendering_device/driver.windows="d3d12"
-renderer/rendering_method="mobile"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 2d/snap/snap_2d_transforms_to_pixel=true
 2d/snap/snap_2d_vertices_to_pixel=true

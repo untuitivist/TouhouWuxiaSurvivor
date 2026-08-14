@@ -134,6 +134,7 @@ public partial class MainMenu : Control
         GetNode<Label>("Menu/RoleBlock/Layout/Role").Text =
             $"生命 {character.PlayableProfile.MaxHealth:0}  ·  " +
             $"身法 ×{character.PlayableProfile.MoveSpeedMultiplier:0.00}  ·  " +
-            $"攻势 ×{character.PlayableProfile.AttackMultiplier:0.00}";
+            $"攻势 ×{character.PlayableProfile.AttackMultiplier:0.00}  ·  " +
+            $"奥义 {character.PlayableProfile.UltimateIntervalSeconds:0.#}秒";
     }
 }

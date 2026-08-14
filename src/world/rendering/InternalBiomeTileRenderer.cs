@@ -12,7 +12,6 @@ namespace TouhouWuxiaSurvivor.World.Rendering;
 public sealed class InternalBiomeTileRenderer : IChunkRenderer
 {
     private readonly TileMapLayer _layer;
-    private readonly BiomeSelector _biomes;
     private readonly Dictionary<BiomeId, Vector3I> _bindings = [];
     private readonly InternalVisualCatalog _catalog = new();
 
@@ -21,11 +20,17 @@ public sealed class InternalBiomeTileRenderer : IChunkRenderer
     /// <summary>
     /// 绑定独立地区图层，并为清单中存在的每个群系建立自己的原作场景图集来源。
     /// </summary>
-    public InternalBiomeTileRenderer(TileMapLayer layer, BiomeSelector biomes)
+    public InternalBiomeTileRenderer(TileMapLayer layer)
     {
         _layer = layer;
-        _biomes = biomes;
         _layer.TileSet = CreateTileSet();
+    }
+
+    /// <summary>
+    /// 保留既有构造签名；群系选择器不再参与绘制，所有语义直接读取已生成区块。
+    /// </summary>
+    public InternalBiomeTileRenderer(TileMapLayer layer, BiomeSelector biomes) : this(layer)
+    {
     }
 
     /// <summary>
@@ -45,7 +50,7 @@ public sealed class InternalBiomeTileRenderer : IChunkRenderer
             {
                 long worldX = worldBaseX + x;
                 long worldY = worldBaseY + y;
-                BiomeId biome = _biomes.Select(worldX, worldY);
+                BiomeId biome = chunk.GetBiome(x, y);
                 if (!_bindings.TryGetValue(biome, out Vector3I binding))
                 {
                     continue;

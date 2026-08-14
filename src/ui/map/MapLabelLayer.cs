@@ -16,7 +16,6 @@ public partial class MapLabelLayer : Control
     private static readonly Color StructureBackground = new(0.16f, 0.065f, 0.045f, 0.92f);
     private IReadOnlyList<MapLabel> _labels = [];
     private ExploredMapStore? _exploredMap;
-    private BiomeSelector? _biomes;
     private MapLabelProvider? _provider;
     private MapLabel? _hoveredBiome;
     private Vector2 _pointerPosition;
@@ -45,18 +44,16 @@ public partial class MapLabelLayer : Control
     /// </summary>
     public void Configure(
         ExploredMapStore exploredMap,
-        BiomeSelector biomes,
-        StructureLocator structures)
+        DiscoveredStructureStore structures)
     {
         _exploredMap = exploredMap;
-        _biomes = biomes;
-        _provider = new MapLabelProvider(exploredMap, structures);
+        _provider = new MapLabelProvider(structures);
     }
 
     /// <summary>
     /// 更新地图投影参数并重新生成当前视口标签集合。
     /// </summary>
-    public void UpdateView(long left, long top, int width, int height, float pixelsPerTile)
+    public void UpdateView(long left, long top, long width, long height, float pixelsPerTile)
     {
         if (_provider is null)
         {
@@ -82,7 +79,7 @@ public partial class MapLabelLayer : Control
         _hasPointer = true;
         _pointerPosition = localPosition;
         _hoveredBiome = null;
-        if (_exploredMap is null || _biomes is null || _pixelsPerTile <= 0.0f ||
+        if (_exploredMap is null || _pixelsPerTile <= 0.0f ||
             !new Rect2(Vector2.Zero, Size).HasPoint(localPosition))
         {
             QueueRedraw();
@@ -91,9 +88,8 @@ public partial class MapLabelLayer : Control
 
         long tileX = _leftTile + Mathf.FloorToInt(localPosition.X / _pixelsPerTile);
         long tileY = _topTile + Mathf.FloorToInt(localPosition.Y / _pixelsPerTile);
-        if (_exploredMap.TryGetTile(tileX, tileY, out _))
+        if (_exploredMap.TryGetBiome(tileX, tileY, out BiomeId biome))
         {
-            BiomeId biome = _biomes.Select(tileX, tileY);
             _hoveredBiome = new MapLabel(
                 MapLabelKind.Biome,
                 $"群系 · {BiomeNames.GetChinese(biome)}",

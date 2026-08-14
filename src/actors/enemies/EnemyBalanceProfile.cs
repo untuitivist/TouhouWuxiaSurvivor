@@ -5,7 +5,8 @@ namespace TouhouWuxiaSurvivor.Actors.Enemies;
 /// </summary>
 public sealed class EnemyBalanceProfile
 {
-    public const float BaseWeaponInterval = 0.18f;
+    public const float BaseWeaponInterval = 0.28f;
+    public const float BaseWeaponDamage = 10.0f;
     public int ThreatRank { get; }
     public float ThreatScore { get; }
     public float BaseTimeToKill { get; }
@@ -54,7 +55,7 @@ public sealed class EnemyBalanceProfile
         return new EnemyBalanceProfile(
             rank,
             score,
-            enemy.MaxHealth * BaseWeaponInterval,
+            enemy.MaxHealth / BaseWeaponDamage * BaseWeaponInterval,
             labels[rank - 1],
             GetCombatRole(enemy),
             GetArrivalPhase(enemy.UnlockTime));

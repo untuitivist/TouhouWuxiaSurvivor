@@ -4,6 +4,8 @@ using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Content.Characters;
+using TouhouWuxiaSurvivor.Diagnostics.Performance;
+using TouhouWuxiaSurvivor.Demo.Diagnostics;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Session;
 using TouhouWuxiaSurvivor.Gameplay.Encounters;
@@ -12,6 +14,7 @@ using TouhouWuxiaSurvivor.Gameplay.Meta.Persistence;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Settings;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Death;
@@ -23,6 +26,7 @@ using TouhouWuxiaSurvivor.Ui.Stats;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Coordinates;
 using TouhouWuxiaSurvivor.World.Generation;
+using TouhouWuxiaSurvivor.World.Map;
 using TouhouWuxiaSurvivor.World.Rendering;
 using TouhouWuxiaSurvivor.World.Streaming;
 
@@ -54,8 +58,10 @@ public partial class WorldDemo : Node2D
     private MetaRunSession? _metaRun;
     private CharacterStatsOverlay? _stats;
     private SpellCardCoordinator? _spellCards;
+    private SpellCardEffectAssets? _spellAssets;
     private RunFailureCoordinator? _runFailure;
     private BossEncounterDirector? _bossEncounters;
+    private WorldDemoMapRuntime? _mapRuntime;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private RunContentContext? _runContext;
 
@@ -96,6 +102,7 @@ public partial class WorldDemo : Node2D
         _levelUp = GetNode<LevelUpOverlay>("LevelUpOverlay");
         _stats = GetNode<CharacterStatsOverlay>("CharacterStatsOverlay");
         _spellCards = GetNode<SpellCardCoordinator>("SpellCardCoordinator");
+        _spellAssets = GetNode<SpellCardEffectAssets>("SpellCardEffectAssets");
         _buffs = _player.GetNode<PlayerBuffController>("Buffs");
         _health = _player.GetNode<PlayerHealth>("Health");
         _autoShooter = _player.GetNode<AutoShooter>("AutoShooter");
@@ -116,8 +123,9 @@ public partial class WorldDemo : Node2D
         _player.GetNode<PlayerVisualController>("Visual").ConfigureCharacter(character);
         _player.MoveSpeed *= character.PlayableProfile.MoveSpeedMultiplier;
         _health.ConfigureCharacterBase((int)MathF.Round(character.PlayableProfile.MaxHealth));
-        _autoShooter.Damage = Math.Max(1, (int)MathF.Round(
-            _autoShooter.Damage * character.PlayableProfile.AttackMultiplier));
+        _autoShooter.CharacterAttackMultiplier = character.PlayableProfile.AttackMultiplier;
+        _autoShooter.CharacterAttackIntervalMultiplier =
+            character.PlayableProfile.AttackIntervalMultiplier;
         _generator = new WorldGenerator(unchecked((ulong)WorldSeed), _content);
         var renderer = new CompositeChunkRenderer(
             new ChunkTileMapRenderer(GetNode<TileMapLayer>("Ground")),
@@ -127,10 +135,14 @@ public partial class WorldDemo : Node2D
                 GetNode<Node2D>("InternalStructures"), _generator.StructureLocations));
         _streamer = new ChunkStreamer(_generator, renderer, LoadRadius, ChunksPerFrame);
         _streamer.Prime(_player.Position);
-        _map.Configure(
+        var discoveredStructures = new DiscoveredStructureStore();
+        var mapDiscovery = new WorldMapDiscovery(
             _streamer.ExploredMap,
-            _generator.Biomes,
+            discoveredStructures,
             _generator.StructureLocations);
+        _mapRuntime = new WorldDemoMapRuntime(
+            _streamer, _player, _map, mapDiscovery, discoveredStructures);
+        _mapRuntime.Update();
         _pauseMenu.Configure(_map);
         ProfileRunBonuses bonuses = _metaRun.Bonuses;
         _progression.Modifiers.ConfigureBase(
@@ -141,7 +153,7 @@ public partial class WorldDemo : Node2D
         _stats.Configure(
             () => CharacterStatsSnapshotFactory.Create(
                 _player, _health, _autoShooter, _buffs,
-                _spiritSpawner, _progression, bonuses, _spellCards),
+                _spiritSpawner, _progression, bonuses, _spellCards, _content),
             _map,
             _pauseMenu);
         _progression.Configure(_levelUp, _map, _pauseMenu, _stats, _content);
@@ -159,15 +171,14 @@ public partial class WorldDemo : Node2D
             _player,
             _progression.Modifiers,
             _progression.State);
-        _spellCards.Configure(
-            _player,
-            _health,
-            enemies,
-            spellEffects,
-            _spiritSpawner,
-            _progression.Build,
-            _ecsCombatWorld,
-            _content);
+        if (_player.PassiveSpecializations is not null)
+        {
+            _spiritSpawner.SpiritCollected +=
+                _player.PassiveSpecializations.RegisterSpiritCollected;
+        }
+        WorldDemoSpellRuntime.Configure(
+            _spellCards, _spellAssets, _player, _health, _autoShooter, _progression,
+            character.PlayableProfile, enemies, spellEffects, _ecsCombatWorld, _content);
         _audio.Configure(_player, _health, _autoShooter, _enemySpawner, _pickupSpawner);
         _enemySpawner.EnemyDefeated += _pickupSpawner.TrySpawnForEnemy;
         _enemySpawner.EnemyDefeated += _spiritSpawner.SpawnForEnemy;
@@ -184,6 +195,10 @@ public partial class WorldDemo : Node2D
         _deathScreen.RestartRequested += RestartRun;
         _deathScreen.MainMenuRequested += ReturnToMainMenu;
         _hudCoordinator.Refresh();
+        PerformanceDiagnosticsHost.AttachWorld(this, () =>
+            WorldPerformanceDiagnosticsSnapshotFactory.Capture(
+                Name, _content, _runContext!, _player!, _streamer!,
+                _ecsCombatWorld!, _progression!));
     }
 
     /// <summary>
@@ -209,8 +224,14 @@ public partial class WorldDemo : Node2D
         }
 
         _streamer.Update(_player.Position);
-        _hudCoordinator?.Refresh();
+        _mapRuntime?.Update();
+        _hudCoordinator?.Refresh(delta);
     }
+
+    /// <summary>
+    /// 世界离开场景树时解除诊断委托，防止常驻节点在场景切换期间读取已释放节点。
+    /// </summary>
+    public override void _ExitTree() => PerformanceDiagnosticsHost.DetachWorld(this);
 
     /// <summary>
     /// 原点重定位时同步平移所有存活敌人、子弹和掉落物，维持它们与玩家的局部距离。
@@ -271,17 +292,11 @@ public partial class WorldDemo : Node2D
     /// 清除暂停状态并重新载入游戏场景，以当前内容包选择开始一局全新探索。
     /// </summary>
     private void RestartRun()
-    {
-        GetTree().Paused = false;
-        GetTree().ReloadCurrentScene();
-    }
+        => WorldDemoSceneTransition.Restart(GetTree());
 
     /// <summary>
     /// 清除死亡暂停状态并切换回主菜单，避免主菜单继承无法处理的暂停状态。
     /// </summary>
     private void ReturnToMainMenu()
-    {
-        GetTree().Paused = false;
-        GetTree().ChangeSceneToFile("res://src/ui/menu/MainMenu.tscn");
-    }
+        => WorldDemoSceneTransition.ReturnToMainMenu(GetTree());
 }

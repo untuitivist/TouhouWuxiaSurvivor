@@ -7,7 +7,7 @@ using TouhouWuxiaSurvivor.World.Rendering;
 namespace TouhouWuxiaSurvivor.World.Streaming;
 
 /// <summary>
-/// 围绕玩家维护有限活动区块窗口，分帧生成新区域，并把生成结果登记到探索地图。
+/// 围绕玩家维护有限活动区块窗口，分帧生成新区域，并把生成语义登记给独立探索系统。
 /// </summary>
 public sealed class ChunkStreamer
 {
@@ -53,12 +53,17 @@ public sealed class ChunkStreamer
     }
 
     /// <summary>
-    /// 同步生成初始可视窗口，确保第一帧进入场景时周围不存在地图空洞。
+    /// 同步生成玩家周围 3×3 核心窗口，外围区块随后按帧预算补齐，降低首次入场尖峰。
     /// </summary>
     public void Prime(Vector2 localPlayerPosition)
     {
         EnsureWindow(localPlayerPosition);
-        GeneratePending(int.MaxValue);
+        int coreCount = Math.Min(9, (2 * _loadRadius + 1) * (2 * _loadRadius + 1));
+        GeneratePending(coreCount);
+        if (_hasCenter)
+        {
+            RefreshWindow(_lastCenter);
+        }
     }
 
     /// <summary>
@@ -102,7 +107,7 @@ public sealed class ChunkStreamer
 
             GeneratedChunk chunk = _generator.Generate(coordinate);
             _renderer.Draw(chunk, OriginChunk);
-            ExploredMap.Remember(chunk);
+            ExploredMap.RememberGenerated(chunk);
             _active.Add(coordinate);
             generated++;
         }

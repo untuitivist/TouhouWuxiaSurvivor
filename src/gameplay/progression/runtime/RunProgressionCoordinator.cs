@@ -14,6 +14,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 public partial class RunProgressionCoordinator : Node
 {
     private readonly RandomNumberGenerator _random = new();
+    private readonly RunOfferGenerator _offerGenerator = new();
     private LevelUpOverlay? _overlay;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private bool _runEndBlocked;
@@ -69,8 +70,8 @@ public partial class RunProgressionCoordinator : Node
     {
         while (State.PendingChoices > 0)
         {
-            IReadOnlyList<RunUpgradeDefinition> choices =
-                RunUpgradeCatalog.CreateOffer(_random, Build, _content, 3);
+            IReadOnlyList<RunUpgradeChoice> choices =
+                _offerGenerator.CreateOffer(_random, Build, _content, State.Level, 3);
             if (choices.Count > 0)
             {
                 _overlay!.Present(choices, Build, State.Level);
@@ -86,9 +87,9 @@ public partial class RunProgressionCoordinator : Node
     /// <summary>
     /// 应用玩家选择、重建倍率并解决一次待选升级；存在积压时直接刷新下一组选项。
     /// </summary>
-    private void OnChoiceSelected(RunUpgradeDefinition definition)
+    private void OnChoiceSelected(RunUpgradeChoice choice)
     {
-        if (_runEndBlocked || !Build.Apply(definition))
+        if (_runEndBlocked || !Build.Apply(choice, State.Level))
         {
             return;
         }

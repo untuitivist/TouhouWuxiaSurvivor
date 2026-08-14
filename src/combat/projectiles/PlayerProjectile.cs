@@ -11,17 +11,32 @@ public partial class PlayerProjectile : Area2D
     private Vector2 _direction = Vector2.Right;
     private float _speed = 360.0f;
     private int _damage = 1;
+    private int _nextHitDamage;
+    private int _remainingHits = 1;
     private double _lifetimeLeft = 2.0;
     private bool _consumed;
 
     /// <summary>
     /// 注入归一化飞行方向、速度和伤害；零方向会安全回退为向右飞行。
     /// </summary>
-    public void Configure(Vector2 direction, float speed, int damage)
+    public void Configure(
+        Vector2 direction,
+        float speed,
+        int damage,
+        int maximumHits = 1,
+        int secondaryHitDamage = -1)
     {
         _direction = direction.IsZeroApprox() ? Vector2.Right : direction.Normalized();
         _speed = Math.Max(0.0f, speed);
         _damage = Math.Max(1, damage);
+        _remainingHits = Math.Max(1, maximumHits);
+        _nextHitDamage = _remainingHits > 1
+            ? secondaryHitDamage >= 0
+                ? secondaryHitDamage
+                : Ecs.Combat.Projectiles.ProjectileDamageBudget.ScaleDamage(
+                    _damage,
+                    Ecs.Combat.Projectiles.ProjectileDamageBudget.SecondaryHitMultiplier)
+            : 0;
         Rotation = _direction.Angle();
     }
 
@@ -48,12 +63,23 @@ public partial class PlayerProjectile : Area2D
     /// </summary>
     private void OnBodyEntered(Node2D body)
     {
-        if (_consumed || body is not EnemyActor enemy || !enemy.ReceiveDamage(_damage))
+        if (_consumed || body is not EnemyActor enemy ||
+            (_damage > 0 && !enemy.ReceiveDamage(_damage)))
         {
             return;
         }
 
-        _consumed = true;
-        QueueFree();
+        _remainingHits--;
+        if (_remainingHits <= 0)
+        {
+            _consumed = true;
+            QueueFree();
+            return;
+        }
+
+        _damage = _nextHitDamage;
+        _nextHitDamage = Ecs.Combat.Projectiles.ProjectileDamageBudget.ScaleDamage(
+            _nextHitDamage,
+            Ecs.Combat.Projectiles.ProjectileDamageBudget.SecondaryHitMultiplier);
     }
 }

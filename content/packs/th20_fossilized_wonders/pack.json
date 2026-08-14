@@ -5,11 +5,32 @@
   "title_en": "Fossilized Wonders",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["山麓圣域", "佐尔塔克斯迷宫", "浅间净化山"],
-    "structures": ["圣域门", "迷宫核心", "地下金字塔"],
-    "enemies": ["山姥", "异变石灵", "月都净化兵"],
-    "characters": ["尘塚姥芽", "封兽魑魅", "道神驯子", "维缦·浅间", "绵月丰姬", "磐永阿梨夜", "渡里贝子"]
+    "biomes": [
+      "山麓圣域",
+      "佐尔塔克斯迷宫",
+      "浅间净化山"
+    ],
+    "structures": [
+      "圣域门",
+      "迷宫核心",
+      "地下金字塔"
+    ],
+    "enemies": [
+      "山姥",
+      "异变石灵",
+      "月都净化兵"
+    ],
+    "characters": [
+      "尘塚姥芽",
+      "封兽魑魅",
+      "道神驯子",
+      "维缦·浅间",
+      "绵月丰姬",
+      "磐永阿梨夜",
+      "渡里贝子"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方锦上京。",
       "wuxia_style": "化石神法 · 弹幕遗层",
-      "description": "敌群聚集时唤醒层叠的古老弹幕，对大范围目标造成爆发。",
+      "description": "周天就绪且敌群进入范围时，唤醒层叠的古老弹幕，对大范围目标造成爆发。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 90,
-      "cooldown_seconds": 8,
-      "effect_range": 336,
-      "damage": 15,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "spirit_gathering",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.523809524,
+      "range_scale": 0.730434783,
+      "damage_scale": 1.78,
+      "target_scale": 0.9,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.619047619,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "ring"
     },
     {
       "id": "th20_beiko_tartarian_rhapsody",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方锦上京。",
       "wuxia_style": "真相秘律 · 塔尔塔洛斯狂想",
-      "description": "锁定最强敌人奏响真相狂想，以集中弹幕连续追击。",
+      "description": "周天一转，锁定最强敌人奏响真相狂想，以集中弹幕连续追击。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 100,
-      "cooldown_seconds": 9,
-      "effect_range": 640,
-      "damage": 18,
-      "target_count": 6,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.714285714,
+      "range_scale": 1.391304348,
+      "damage_scale": 1.55,
+      "target_scale": 0.6,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.01875,
+      "travel_duration_scale": 1.375,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

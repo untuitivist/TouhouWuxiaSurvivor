@@ -1,23 +1,27 @@
 using Godot;
-using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Balance;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Contracts;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Scaling;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Geometry;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
 /// <summary>
 /// 把符卡定义转换为具体战斗实体与伤害，同时保持运行协调器不依赖效果细节。
 /// </summary>
-public sealed class SpellCardEffectCaster
+public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
 {
     private readonly Node2D _player;
     private readonly PlayerHealth _health;
-    private readonly Node2D _enemies;
-    private readonly EcsCombatWorld? _ecsWorld;
+    private readonly SpellCardCombatBackend _backend;
     private readonly Node2D _effects;
     private readonly PackedScene _orbScene;
     private readonly PackedScene _circleScene;
+    private readonly ISpellCardAttributeProvider _attributes;
 
     /// <summary>
     /// 注入施法者、生命、敌人和效果容器，以及两类可实例化视觉场景。
@@ -29,134 +33,125 @@ public sealed class SpellCardEffectCaster
         Node2D effects,
         PackedScene orbScene,
         PackedScene circleScene,
+        ISpellCardAttributeProvider attributes,
         EcsCombatWorld? ecsWorld = null)
     {
         _player = player;
         _health = health;
-        _enemies = enemies;
+        _backend = new SpellCardCombatBackend(enemies, ecsWorld);
         _effects = effects;
         _orbScene = orbScene;
         _circleScene = circleScene;
-        _ecsWorld = ecsWorld;
+        _attributes = attributes ?? throw new ArgumentNullException(nameof(attributes));
     }
 
     /// <summary>
-    /// 按符卡效果类型施放对应奥义；无有效追踪目标时梦想封印不会消耗资源。
+    /// 使用当前角色与构筑属性解析一次不可变战斗参数，确保下一次施展会自然响应升级。
     /// </summary>
-    public bool TryCast(SpellCardDefinition card) => card.EffectKind switch
+    public ResolvedSpellCardCombat Resolve(SpellCardDefinition card) =>
+        SpellCardScalingResolver.Resolve(card.Combat, _attributes.Capture());
+
+    /// <summary>
+    /// 按效果类型选择攻势载体，再把选敌、起手与轨迹完整委托给卡牌声明的几何策略。
+    /// </summary>
+    public bool TryCast(
+        SpellCardDefinition card,
+        ResolvedSpellCardCombat resolved) => card.EffectKind switch
     {
-        SpellCardEffectKind.HomingVolley => CastTargetedVolley(card),
-        SpellCardEffectKind.FocusedVolley => CastTargetedVolley(card),
-        SpellCardEffectKind.AreaBurst => CastArea(card, false),
-        SpellCardEffectKind.GuardField => CastArea(card, true),
+        SpellCardEffectKind.HomingVolley => CastTargetedVolley(card, resolved, false),
+        SpellCardEffectKind.FocusedVolley => CastTargetedVolley(card, resolved, true),
+        SpellCardEffectKind.AreaBurst => CastArea(card, resolved, false),
+        SpellCardEffectKind.GuardField => CastArea(card, resolved, true),
         _ => false,
     };
 
     /// <summary>
-    /// 判断当前战况是否值得自动消耗符卡：追踪奥义要求三名目标，护身阵要求近身受围。
+    /// 为射程内目标生成按属性缩放的灵玉；集中型重复首目标，追踪型依次分配不同目标。
     /// </summary>
-    public bool ShouldAutoCast(SpellCardDefinition card)
+    private bool CastTargetedVolley(
+        SpellCardDefinition card,
+        ResolvedSpellCardCombat resolved,
+        bool focused)
     {
-        int nearby = SelectInRangePositions(card.Combat.EffectRange).Count;
-        return card.TriggerKind switch
-        {
-            SpellCardTriggerKind.Crowd => nearby >= 3,
-            SpellCardTriggerKind.Danger => nearby >= 3 ||
-                (nearby > 0 && _health.CurrentHealth * 2 <= _health.MaxHealth),
-            SpellCardTriggerKind.SingleTarget => nearby > 0,
-            _ => false,
-        };
-    }
-
-    /// <summary>
-    /// 为射程内最近的不同目标各生成一枚追踪灵玉，并以环形起点避免视觉重叠。
-    /// </summary>
-    private bool CastTargetedVolley(SpellCardDefinition card)
-    {
-        IReadOnlyList<Vector2> targets = SelectNearestPositions(
-            card.Combat.EffectRange, card.Combat.TargetCount);
-        if (targets.Count == 0)
+        IReadOnlyList<SpellCardTargetReference> candidates = focused
+            ? _backend.SelectHighestThreatTargets(
+                _player.GlobalPosition, resolved.EffectRange)
+            : _backend.SelectCandidateTargets(
+                _player.GlobalPosition, resolved.EffectRange);
+        SpellCardGeometryPlan plan = CreatePlan(card, resolved, focused,
+            candidates.Select(target => target.InitialPosition).ToArray());
+        if (plan.Projectiles.Count == 0)
         {
             return false;
         }
 
-        for (int index = 0; index < targets.Count; index++)
+        var assignedTargets = focused
+            ? null
+            : new HashSet<SpellCardTargetReference>();
+        for (int index = 0; index < plan.Projectiles.Count; index++)
         {
-            float angle = Mathf.Tau * index / targets.Count;
-            if (_ecsWorld is not null)
-            {
-                var orb = _orbScene.Instantiate<FantasySealOrb>();
-                orb.ConfigureEcs(_ecsWorld, targets[index], card.Combat.Damage, 440.0f,
-                    index, card.SourcePackId, card.FullName);
-                _effects.AddChild(orb);
-                orb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
-                _ecsWorld.DamageEnemies(targets[index], 16.0f, card.Combat.Damage);
-                continue;
-            }
-
-            EnemyActor? target = SpellCardTargetSelector.SelectNearest(
-                _enemies, targets[index], 1.0f, 1).FirstOrDefault();
-            if (target is null)
-            {
-                continue;
-            }
-
-            var legacyOrb = _orbScene.Instantiate<FantasySealOrb>();
-            legacyOrb.Configure(target, card.Combat.Damage, 440.0f, index,
-                card.SourcePackId, card.FullName);
-            _effects.AddChild(legacyOrb);
-            legacyOrb.GlobalPosition = _player.GlobalPosition + Vector2.FromAngle(angle) * 24.0f;
+            SpellCardTrajectory trajectory = plan.Projectiles[index];
+            var orb = _orbScene.Instantiate<FantasySealOrb>();
+            orb.ConfigureImpact(
+                _backend,
+                trajectory.TargetPosition,
+                resolved.Damage,
+                resolved.ProjectileSpeed,
+                resolved.ImpactRange, resolved.TravelDurationSeconds, index,
+                card.SourcePackId, card.FullName, trajectory.Curvature,
+                SpellCardCombatBackend.MatchTarget(
+                    trajectory.TargetPosition, candidates, assignedTargets));
+            _effects.AddChild(orb);
+            orb.GlobalPosition = trajectory.SpawnPosition;
         }
 
         return true;
     }
 
     /// <summary>
-    /// 对结界范围内全部存活敌人结算伤害、延长玩家无敌并生成一次结界演出。
+    /// 对结界内最近目标结算距离衰减伤害、延长玩家无敌并生成一次结界演出。
     /// </summary>
-    private bool CastArea(SpellCardDefinition card, bool grantDefense)
+    private bool CastArea(
+        SpellCardDefinition card,
+        ResolvedSpellCardCombat resolved,
+        bool grantDefense)
     {
-        if (_ecsWorld is not null)
-        {
-            _ecsWorld.DamageEnemies(
-                _player.GlobalPosition, card.Combat.EffectRange, card.Combat.Damage);
-        }
-        else
-        {
-            foreach (EnemyActor enemy in SpellCardTargetSelector.SelectInRange(
-                _enemies,
-                _player.GlobalPosition,
-                card.Combat.EffectRange))
-            {
-                enemy.ReceiveDamage(card.Combat.Damage);
-            }
-        }
+        SpellCardGeometryPlan plan = CreatePlan(card, resolved, false,
+            _backend.SelectCandidates(_player.GlobalPosition, resolved.EffectRange));
+        _backend.DamageImpacts(
+            _player.GlobalPosition,
+            plan,
+            resolved.Damage,
+            resolved.EffectRange,
+            (float)SpellCardContributionModel.AreaEdgeDamageMultiplier);
 
-        if (grantDefense && card.Combat.DefenseSeconds > 0.0f)
+        if (grantDefense && resolved.DefenseSeconds > 0.0f)
         {
-            _health.GrantInvincibility(card.Combat.DefenseSeconds);
+            _health.GrantInvincibility(resolved.DefenseSeconds);
         }
 
         var effect = _circleScene.Instantiate<SealingCircleEffect>();
-        effect.Configure(card.SourcePackId, card.FullName);
+        effect.Configure(card.SourcePackId, card.FullName, card.GeometryKind);
         _effects.AddChild(effect);
-        effect.GlobalPosition = _player.GlobalPosition;
+        effect.GlobalPosition = plan.VisualCenter;
         return true;
     }
 
-    /// <summary>从 ECS 或兼容节点后端取得最近敌人的位置。</summary>
-    private IReadOnlyList<Vector2> SelectNearestPositions(float range, int count) =>
-        _ecsWorld is not null
-            ? _ecsWorld.SelectEnemies(_player.GlobalPosition, range, count)
-            : SpellCardTargetSelector.SelectNearest(
-                _enemies, _player.GlobalPosition, range, count)
-                .Select(enemy => enemy.GlobalPosition).ToArray();
+    /// <summary>使用卡牌声明的策略规划本次命中目标和轨迹，数值预算在进入策略前已经固定。</summary>
+    private SpellCardGeometryPlan CreatePlan(
+        SpellCardDefinition card,
+        ResolvedSpellCardCombat resolved,
+        bool focused,
+        IReadOnlyList<Vector2> candidates)
+    {
+        var request = new SpellCardGeometryRequest(
+            _player.GlobalPosition,
+            candidates,
+            resolved.TargetCount,
+            resolved.EffectRange,
+            resolved.SpawnDistance,
+            focused);
+        return SpellCardGeometryCatalog.Get(card.GeometryKind).CreatePlan(request);
+    }
 
-    /// <summary>从 ECS 或兼容节点后端取得范围内敌人的位置。</summary>
-    private IReadOnlyList<Vector2> SelectInRangePositions(float range) =>
-        _ecsWorld is not null
-            ? _ecsWorld.SelectEnemies(_player.GlobalPosition, range)
-            : SpellCardTargetSelector.SelectInRange(
-                _enemies, _player.GlobalPosition, range)
-                .Select(enemy => enemy.GlobalPosition).ToArray();
 }

@@ -34,7 +34,7 @@ public static class RunUpgradeCatalog
     }
 
     /// <summary>
-    /// 使用独立随机源洗牌可升级项目并返回指定数量，已满重项目不会占据选择位。
+    /// 使用统一亲和生成器返回普通升级定义兼容视图；新运行链应读取完整候选以支持特化。
     /// </summary>
     public static IReadOnlyList<RunUpgradeDefinition> CreateOffer(
         RandomNumberGenerator random,
@@ -45,15 +45,37 @@ public static class RunUpgradeCatalog
         var candidates = All.Where(definition =>
             (definition.RequiredContentPack is null ||
                 content.IsEnabled(definition.RequiredContentPack)) &&
-            build.CanUpgrade(definition)).ToList();
-        for (int index = candidates.Count - 1; index > 0; index--)
+            build.CanUpgrade(definition))
+            .Select(definition => new RunUpgradeChoice(definition))
+            .ToList();
+        var result = new List<RunUpgradeDefinition>();
+        while (result.Count < Math.Max(0, choiceCount) && candidates.Count > 0)
         {
-            int swapIndex = random.RandiRange(0, index);
-            (candidates[index], candidates[swapIndex]) =
-                (candidates[swapIndex], candidates[index]);
+            double[] weights = RunOfferWeightTable.Create(build, candidates);
+            double roll = random.Randf() * weights.Sum();
+            int selectedIndex = candidates.Count - 1;
+            for (int index = 0; index < candidates.Count; index++)
+            {
+                roll -= weights[index];
+                if (roll <= 0.0)
+                {
+                    selectedIndex = index;
+                    break;
+                }
+            }
+
+            result.Add(candidates[selectedIndex].Definition);
+            bool selectedSpell = candidates[selectedIndex].Definition.Category ==
+                RunUpgradeCategory.SpellCard;
+            candidates.RemoveAt(selectedIndex);
+            if (selectedSpell)
+            {
+                candidates.RemoveAll(choice =>
+                    choice.Definition.Category == RunUpgradeCategory.SpellCard);
+            }
         }
 
-        return candidates.Take(Math.Max(0, choiceCount)).ToArray();
+        return result;
     }
 
     /// <summary>
@@ -66,34 +88,11 @@ public static class RunUpgradeCatalog
             random, build, ContentPackSelectionService.Current, choiceCount);
 
     /// <summary>
-    /// 建立六项有限基础修行、三项后期无尽修行和全部内容包符卡解锁，目录顺序保持稳定。
+    /// 建立六项有限基础修行、六项后期无尽修行和全部内容包符卡解锁，目录顺序保持稳定。
     /// </summary>
     private static IReadOnlyList<RunUpgradeDefinition> CreateAll()
     {
-        var definitions = new List<RunUpgradeDefinition>
-        {
-            new("needle_damage", "封魔针法", RunUpgradeKind.NeedleDamage,
-                RunUpgradeCategory.MartialArt, 5, "弹丸伤害 +1"),
-            new("hakurei_breathing", "博丽呼吸法", RunUpgradeKind.FireRate,
-                RunUpgradeCategory.InnerArt, 5, "射击速度 +12%"),
-            new("tengu_step", "天狗步", RunUpgradeKind.MoveSpeed,
-                RunUpgradeCategory.InnerArt, 5, "移动速度 +8%"),
-            new("soul_seeking", "追魂诀", RunUpgradeKind.TargetRange,
-                RunUpgradeCategory.MartialArt, 5, "索敌范围 +10%"),
-            new("wind_riding", "御风诀", RunUpgradeKind.ProjectileSpeed,
-                RunUpgradeCategory.InnerArt, 5, "弹丸速度 +12%"),
-            new("spirit_gathering", "聚灵诀", RunUpgradeKind.SpiritAttraction,
-                RunUpgradeCategory.InnerArt, 5, "灵息吸引范围 +25%"),
-            new("endless_damage", "真元淬锋", RunUpgradeKind.EndlessDamage,
-                RunUpgradeCategory.MartialArt, int.MaxValue, "弹丸伤害持续提高",
-                new RunUpgradeRequirement("needle_damage", 5), isRepeatable: true),
-            new("endless_fire_rate", "周天吐纳", RunUpgradeKind.EndlessFireRate,
-                RunUpgradeCategory.InnerArt, int.MaxValue, "射击速度以递减幅度持续提高",
-                new RunUpgradeRequirement("hakurei_breathing", 5), isRepeatable: true),
-            new("endless_move_speed", "无相身法", RunUpgradeKind.EndlessMoveSpeed,
-                RunUpgradeCategory.InnerArt, int.MaxValue, "移动速度以递减幅度持续提高",
-                new RunUpgradeRequirement("tengu_step", 5), isRepeatable: true),
-        };
+        var definitions = new List<RunUpgradeDefinition>(BaseRunUpgradeFactory.CreateAll());
         definitions.AddRange(SpellCardCatalog.All.Select(CreateSpellCardUpgrade));
         return definitions;
     }
@@ -109,6 +108,9 @@ public static class RunUpgradeCatalog
         1,
         $"自动施展：{card.EffectDescription}",
         new RunUpgradeRequirement(card.PrerequisiteUpgradeId, card.MinimumRank),
-        card.SourcePackId,
-        card.Id);
+        string.Equals(card.SourcePackId, ContentPackCatalog.Base.Id, StringComparison.Ordinal)
+            ? null
+            : card.SourcePackId,
+        card.Id,
+        affinities: SpellCardAffinityResolver.Resolve(card));
 }

@@ -12,9 +12,14 @@ public sealed class RunUpgradeDefinition
     public int MaxRank { get; }
     public string EffectText { get; }
     public RunUpgradeRequirement? Requirement { get; }
+    public IReadOnlyList<RunUpgradeRequirement> Requirements { get; }
     public string? RequiredContentPack { get; }
     public string? SpellCardId { get; }
     public bool IsRepeatable { get; }
+    public float BaseOfferWeight { get; }
+    public IReadOnlyList<RunUpgradeAffinity> Affinities { get; }
+    public IReadOnlySet<string> ExcludedUpgradeIds { get; }
+    public IReadOnlyList<RunUpgradeSpecialization> Specializations { get; }
 
     /// <summary>
     /// 构造不可变升级定义，并限制至少一重，避免目录产生永远不可选择的项目。
@@ -29,7 +34,12 @@ public sealed class RunUpgradeDefinition
         RunUpgradeRequirement? requirement = null,
         string? requiredContentPack = null,
         string? spellCardId = null,
-        bool isRepeatable = false)
+        bool isRepeatable = false,
+        float baseOfferWeight = 1.0f,
+        IEnumerable<RunUpgradeAffinity>? affinities = null,
+        IEnumerable<RunUpgradeRequirement>? requirements = null,
+        IEnumerable<string>? excludedUpgradeIds = null,
+        IEnumerable<RunUpgradeSpecialization>? specializations = null)
     {
         Id = id;
         DisplayName = displayName;
@@ -38,9 +48,15 @@ public sealed class RunUpgradeDefinition
         MaxRank = Math.Max(1, maxRank);
         EffectText = effectText;
         Requirement = requirement;
+        Requirements = MergeRequirements(requirement, requirements);
         RequiredContentPack = requiredContentPack;
         SpellCardId = spellCardId;
         IsRepeatable = isRepeatable;
+        BaseOfferWeight = Math.Max(0.01f, baseOfferWeight);
+        Affinities = (affinities ?? []).Distinct().ToArray();
+        ExcludedUpgradeIds = new HashSet<string>(
+            excludedUpgradeIds ?? [], StringComparer.Ordinal);
+        Specializations = (specializations ?? []).ToArray();
     }
 
     /// <summary>
@@ -63,5 +79,21 @@ public sealed class RunUpgradeDefinition
             ? "悟得"
             : IsRepeatable ? $"第 {currentRank + 1} 重" : $"{currentRank + 1}/{MaxRank}";
         return $"{GetCategoryName()} · {DisplayName}    {rankText}\n{EffectText}";
+    }
+
+    /// <summary>
+    /// 合并兼容单前置与新多前置集合，并按升级 ID 去重保留最高重数要求。
+    /// </summary>
+    private static IReadOnlyList<RunUpgradeRequirement> MergeRequirements(
+        RunUpgradeRequirement? requirement,
+        IEnumerable<RunUpgradeRequirement>? requirements)
+    {
+        IEnumerable<RunUpgradeRequirement> merged = requirement is null
+            ? requirements ?? []
+            : (requirements ?? []).Prepend(requirement);
+        return merged.GroupBy(item => item.RequiredUpgradeId, StringComparer.Ordinal)
+            .Select(group => new RunUpgradeRequirement(
+                group.Key, group.Max(item => item.MinimumRank)))
+            .ToArray();
     }
 }

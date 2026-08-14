@@ -65,7 +65,7 @@ public sealed class WorldHudCoordinator
     /// <summary>
     /// 换算玩家绝对坐标、更新地图标记，并以同一帧数据刷新生命、战斗和经验显示。
     /// </summary>
-    public void Refresh()
+    public void Refresh(double deltaSeconds = 1.0 / 60.0)
     {
         (long tileX, long tileY) = GridMath.LocalPositionToAbsoluteTile(
             _player.Position,
@@ -93,6 +93,6 @@ public sealed class WorldHudCoordinator
             _progression.State.Level,
             _progression.State.Experience,
             _progression.State.ExperienceToNext,
-            _spellCards.CreateSnapshot()));
+            _spellCards.CreateSnapshot()), deltaSeconds);
     }
 }

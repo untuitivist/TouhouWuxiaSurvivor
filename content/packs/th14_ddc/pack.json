@@ -5,11 +5,33 @@
   "title_en": "Double Dealing Character",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["暴风湖面", "付丧神云海", "逆转天"],
-    "structures": ["遗弃乐器堆", "雷鼓舞台", "辉针城"],
-    "enemies": ["水栖妖怪", "付丧神", "小人卫兵"],
-    "characters": ["若鹭姬", "赤蛮奇", "今泉影狼", "九十九弁弁", "九十九八桥", "鬼人正邪", "少名针妙丸", "堀川雷鼓"]
+    "biomes": [
+      "暴风湖面",
+      "付丧神云海",
+      "逆转天"
+    ],
+    "structures": [
+      "遗弃乐器堆",
+      "雷鼓舞台",
+      "辉针城"
+    ],
+    "enemies": [
+      "水栖妖怪",
+      "付丧神",
+      "小人卫兵"
+    ],
+    "characters": [
+      "若鹭姬",
+      "赤蛮奇",
+      "今泉影狼",
+      "九十九弁弁",
+      "九十九八桥",
+      "鬼人正邪",
+      "少名针妙丸",
+      "堀川雷鼓"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +42,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方辉针城。",
       "wuxia_style": "小槌秘术 · 万物膨胀",
-      "description": "敌群进入槌域时放大弹幕，以范围冲击碾压周围目标。",
+      "description": "周天就绪且敌群进入范围时，敌群进入槌域时放大弹幕，以范围冲击碾压周围目标。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 80,
-      "cooldown_seconds": 6.5,
-      "effect_range": 300,
-      "damage": 12,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "spirit_gathering",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.238095238,
+      "range_scale": 0.652173913,
+      "damage_scale": 1.546,
+      "target_scale": 1,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.933333333,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "ring"
     },
     {
       "id": "th14_raiko_pristine_beat",
@@ -40,17 +67,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方辉针城。",
       "wuxia_style": "雷鼓心法 · 原始律动",
-      "description": "危急时敲出原始节拍，震退近敌并以音障短暂护身。",
+      "description": "周天就绪且受到伤害时，敲出原始节拍，震退近敌并以音障短暂护身。",
       "effect": "guard_field",
-      "trigger": "danger",
-      "power_cost": 85,
-      "cooldown_seconds": 8,
-      "effect_range": 232,
-      "damage": 11,
-      "target_count": 0,
-      "defense_seconds": 1.6,
       "prerequisite": "hakurei_breathing",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.523809524,
+      "range_scale": 0.504347826,
+      "damage_scale": 0.738,
+      "target_scale": 0.644,
+      "defense_scale": 1.6,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 3.793103448,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "on_damaged",
+      "activation_threshold_scale": 0.5,
+      "geometry": "orbit"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

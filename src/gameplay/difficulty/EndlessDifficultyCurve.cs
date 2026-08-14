@@ -1,7 +1,7 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
 /// <summary>
-/// 以无状态纯函数生成无尽难度；强度、预算和战斗倍率持续增长，只有性能相关字段允许封顶。
+/// 以无状态纯函数生成无尽难度；战斗倍率持续增长，刷新率与实体参数按性能边界允许封顶。
 /// </summary>
 public static class EndlessDifficultyCurve
 {
@@ -21,13 +21,13 @@ public static class EndlessDifficultyCurve
         int batchSize = CalculateBatchSize(minutes);
         double interval = CalculateSpawnInterval(minutes);
         int aliveLimit = CalculateAliveLimit(minutes, hardAliveLimit);
-        double budget = batchSize / interval + 0.12 * minutes;
+        double scheduledSpawnsPerSecond = batchSize / interval;
         double intensity = 1.0 + 0.25 * minutes + 0.08 * logarithm * logarithm;
         double health = 1.0 + 0.12 * minutes + 0.04 * logarithm * logarithm;
         double damage = 1.0 + 0.055 * minutes + 0.02 * logarithm * logarithm;
         double reward = 1.0 + 0.018 * minutes + 0.01 * logarithm * logarithm;
         double speed = Math.Min(MaximumEnemySpeedMultiplier, 1.0 + 0.12 * logarithm);
-        return new EndlessDifficultySnapshot(minutes, intensity, budget, batchSize,
+        return new EndlessDifficultySnapshot(minutes, intensity, scheduledSpawnsPerSecond, batchSize,
             interval, aliveLimit, health, damage, reward, speed);
     }
 

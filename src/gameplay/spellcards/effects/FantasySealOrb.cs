@@ -1,6 +1,4 @@
 using Godot;
-using TouhouWuxiaSurvivor.Actors.Enemies;
-using TouhouWuxiaSurvivor.Ecs.Combat;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
@@ -9,54 +7,49 @@ namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 /// </summary>
 public partial class FantasySealOrb : Node2D
 {
-    private EnemyActor? _target;
-    private EcsCombatWorld? _ecsWorld;
-    private Vector2 _ecsTargetPosition;
+    private SpellCardCombatBackend? _backend;
+    private Vector2 _targetPosition;
     private int _damage = 1;
     private float _speed = 420.0f;
+    private float _impactRange = 12.0f;
     private double _lifetimeLeft = 2.0;
     private int _visualVariant;
+    private float _curvature;
+    private SpellCardTargetReference? _trackingTarget;
+    private bool _lostTrackingTarget;
     private string _sourcePackId = "th06_eosd";
     private string _spellCardName = "灵符「梦想封印」";
     private InternalSpellBulletVisual? _visual;
     private Label? _fallbackLabel;
 
     /// <summary>
-    /// 注入唯一追踪目标、伤害和飞行速度；无效数值会被限制到安全下限。
+    /// 注入统一战斗后端和固定命中点，使五种几何可以在 ECS 与兼容节点模式中复用相同飞行节点。
     /// </summary>
-    public void Configure(
-        EnemyActor target,
-        int damage,
-        float speed,
-        int visualVariant,
-        string sourcePackId,
-        string spellCardName)
-    {
-        _target = target;
-        _damage = Math.Max(1, damage);
-        _speed = Math.Max(1.0f, speed);
-        _visualVariant = visualVariant;
-        _sourcePackId = sourcePackId;
-        _spellCardName = spellCardName;
-    }
-
-    /// <summary>配置 ECS 目标位置；低数量符卡视觉仍可作为独立节点播放。</summary>
-    public void ConfigureEcs(
-        EcsCombatWorld world,
+    public void ConfigureImpact(
+        SpellCardCombatBackend backend,
         Vector2 targetPosition,
         int damage,
         float speed,
+        float impactRange,
+        float lifetimeSeconds,
         int visualVariant,
         string sourcePackId,
-        string spellCardName)
+        string spellCardName,
+        float curvature,
+        SpellCardTargetReference? trackingTarget = null)
     {
-        _ecsWorld = world;
-        _ecsTargetPosition = targetPosition;
+        _backend = backend ?? throw new ArgumentNullException(nameof(backend));
+        _targetPosition = targetPosition;
         _damage = Math.Max(1, damage);
         _speed = Math.Max(1.0f, speed);
+        _impactRange = Math.Max(1.0f, impactRange);
+        _lifetimeLeft = Math.Max(0.1f, lifetimeSeconds);
         _visualVariant = visualVariant;
         _sourcePackId = sourcePackId;
         _spellCardName = spellCardName;
+        _curvature = curvature;
+        _trackingTarget = trackingTarget;
+        _lostTrackingTarget = false;
     }
 
     /// <summary>
@@ -76,29 +69,62 @@ public partial class FantasySealOrb : Node2D
     public override void _PhysicsProcess(double delta)
     {
         _lifetimeLeft -= delta;
-        if (_lifetimeLeft <= 0.0 || (_ecsWorld is null &&
-            (!GodotObject.IsInstanceValid(_target) || !_target!.IsAlive)))
+        if (_lifetimeLeft <= 0.0 || _backend is null)
         {
             QueueFree();
             return;
         }
 
-        Vector2 targetPosition = _ecsWorld is not null ? _ecsTargetPosition : _target!.GlobalPosition;
-        if (GlobalPosition.DistanceSquaredTo(targetPosition) <= 144.0f)
+        RefreshTrackingPosition();
+
+        if (GlobalPosition.DistanceSquaredTo(_targetPosition) <= _impactRange * _impactRange)
         {
-            if (_ecsWorld is not null)
-            {
-                _ecsWorld.DamageEnemies(targetPosition, 12.0f, _damage);
-            }
-            else
-            {
-                _target!.ReceiveDamage(_damage);
-            }
+            ResolveImpact();
             QueueFree();
             return;
         }
 
-        GlobalPosition = GlobalPosition.MoveToward(targetPosition, _speed * (float)delta);
+        Vector2 direction = GlobalPosition.DirectionTo(_targetPosition);
+        if (!direction.IsZeroApprox() && !Mathf.IsZeroApprox(_curvature))
+        {
+            direction = direction.Rotated(_curvature);
+            _curvature = Mathf.MoveToward(_curvature, 0.0f, 3.4f * (float)delta);
+        }
+
+        GlobalPosition += direction * _speed * (float)delta;
         Rotation += (float)delta * 5.0f;
+    }
+
+    /// <summary>目标存活时刷新最新位置；失效后解除引用并保留最后一次有效落点继续飞行。</summary>
+    private void RefreshTrackingPosition()
+    {
+        if (_trackingTarget is null)
+        {
+            return;
+        }
+
+        if (_backend!.TryGetTargetPosition(_trackingTarget, out Vector2 position))
+        {
+            _targetPosition = position;
+            return;
+        }
+
+        _trackingTarget = null;
+        _lostTrackingTarget = true;
+    }
+
+    /// <summary>活目标按身份命中；固定落点使用邻近伤害，已失效目标不转而误伤占位敌人。</summary>
+    private void ResolveImpact()
+    {
+        if (_trackingTarget is not null)
+        {
+            _backend!.DamageTarget(_trackingTarget, _damage);
+            return;
+        }
+
+        if (!_lostTrackingTarget)
+        {
+            _backend!.DamageAt(_targetPosition, _impactRange, _damage);
+        }
     }
 }

@@ -5,11 +5,32 @@
   "title_en": "Wily Beast and Weakest Creature",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["地狱关口", "畜生界", "灵长园境内"],
-    "structures": ["三途关卡", "兽组织战场", "灵长园"],
-    "enemies": ["兽灵", "鹰灵", "埴轮兵"],
-    "characters": ["戎璎花", "牛崎润美", "庭渡久侘歌", "吉吊八千慧", "杖刀偶磨弓", "埴安神袿姬", "骊驹早鬼"]
+    "biomes": [
+      "地狱关口",
+      "畜生界",
+      "灵长园境内"
+    ],
+    "structures": [
+      "三途关卡",
+      "兽组织战场",
+      "灵长园"
+    ],
+    "enemies": [
+      "兽灵",
+      "鹰灵",
+      "埴轮兵"
+    ],
+    "characters": [
+      "戎璎花",
+      "牛崎润美",
+      "庭渡久侘歌",
+      "吉吊八千慧",
+      "杖刀偶磨弓",
+      "埴安神袿姬",
+      "骊驹早鬼"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方鬼形兽。",
       "wuxia_style": "造形神功 · 鬼形兵阵",
-      "description": "敌群成势时塑出鬼形兵阵，对范围内目标发动齐攻。",
+      "description": "周天就绪且敌群进入范围时，敌群成势时塑出鬼形兵阵，对范围内目标发动齐攻。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 85,
-      "cooldown_seconds": 7,
-      "effect_range": 304,
-      "damage": 13,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "spirit_gathering",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.333333333,
+      "range_scale": 0.660869565,
+      "damage_scale": 1.625,
+      "target_scale": 0.967,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.894736842,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     },
     {
       "id": "th17_saki_black_pegasus_meteor_shot",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方鬼形兽。",
       "wuxia_style": "黑马劲法 · 流星疾射",
-      "description": "锁定强敌后以黑马般的速度连续射出流星弹。",
+      "description": "周天一转，锁定强敌后以黑马般的速度连续射出流星弹。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 80,
-      "cooldown_seconds": 5,
-      "effect_range": 640,
-      "damage": 12,
-      "target_count": 6,
-      "defense_seconds": 0,
       "prerequisite": "wind_riding",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 0.952380952,
+      "range_scale": 1.391304348,
+      "damage_scale": 1.1,
+      "target_scale": 0.6,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.01875,
+      "travel_duration_scale": 1.375,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

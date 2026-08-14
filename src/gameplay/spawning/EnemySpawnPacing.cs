@@ -7,6 +7,11 @@ namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
 /// </summary>
 public static class EnemySpawnPacing
 {
+    /// <summary>正式世界开局预置的敌人数，也是离线供给投影的唯一默认值。</summary>
+    public const int DefaultInitialSpawnCount = 12;
+    /// <summary>正式世界允许同时存活的敌人数上限，也是离线供给投影的唯一默认值。</summary>
+    public const int DefaultAliveHardLimit = 140;
+
     /// <summary>
     /// 从无尽难度快照读取批量；早期仍在 120、240、420 秒跳档，长局最终受单批性能上限保护。
     /// </summary>
@@ -26,8 +31,12 @@ public static class EnemySpawnPacing
         EndlessDifficultyCurve.EvaluateSeconds(elapsedSeconds, hardLimit).AliveLimit;
 
     /// <summary>
-    /// 返回不会封顶的每秒威胁预算，供生命、伤害、奖励或精英生成在实体数量封顶后继续提高强度。
+    /// 返回正式批次和刷新间隔对应的理论生成率；该值只描述生成器供给，不混入额外虚构压力。
     /// </summary>
-    public static double GetSpawnBudgetPerSecond(double elapsedSeconds) =>
-        EndlessDifficultyCurve.EvaluateSeconds(elapsedSeconds, int.MaxValue).SpawnBudgetPerSecond;
+    public static double GetScheduledSpawnsPerSecond(double elapsedSeconds)
+    {
+        EndlessDifficultySnapshot snapshot = EndlessDifficultyCurve.EvaluateSeconds(
+            elapsedSeconds, int.MaxValue);
+        return snapshot.SpawnBatchSize / snapshot.SpawnIntervalSeconds;
+    }
 }

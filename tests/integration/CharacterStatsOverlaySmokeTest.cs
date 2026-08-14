@@ -45,8 +45,33 @@ public partial class CharacterStatsOverlaySmokeTest : Node
                 "博丽灵梦", StringComparison.Ordinal),
                 "Stats panel omitted the active character identity.");
             Require(stats.GetNode<Label>(
-                "Root/Panel/Padding/Layout/Combat/DamageValue").Text == "1",
-                "Stats panel did not display effective opening damage.");
+                "Root/Panel/Padding/Layout/Header/Role").Text.Contains(
+                "定位", StringComparison.Ordinal),
+                "Stats panel omitted the active character combat role.");
+            stats.ShowPage(CharacterStatsPage.Stats);
+            int displayedDamage = int.Parse(stats.GetNode<Label>(
+                "Root/Panel/Padding/Layout/Pages/StatsPage/Combat/DamageValue").Text);
+            Require(displayedDamage > 0,
+                "Stats panel did not display a positive effective opening damage.");
+            string volleyText = stats.GetNode<Label>(
+                "Root/Panel/Padding/Layout/Pages/StatsPage/Combat/VolleyValue").Text;
+            Require(volleyText.Contains("发", StringComparison.Ordinal) &&
+                volleyText.Contains("单弹", StringComparison.Ordinal),
+                "Stats panel did not explain the current volley composition.");
+            Require(stats.GetNode<Label>(
+                    "Root/Panel/Padding/Layout/Pages/StatsPage/Combat/DamageCaption").Text ==
+                "齐射总伤",
+                "Stats panel still labels the volley budget as ambiguous projectile damage.");
+            stats.ShowPage(CharacterStatsPage.Build);
+            CharacterBuildView buildView = stats.GetNode<CharacterBuildView>(
+                "Root/Panel/Padding/Layout/Pages/BuildPage");
+            Require(buildView.Graph is not null,
+                "Stats panel did not expose the interactive build graph.");
+            Require(buildView.GetNode<Label>("Summary/Spells").Text.Contains(
+                    "攻0/4", StringComparison.Ordinal) &&
+                buildView.GetNode<Label>("Summary/Spells").Text.Contains(
+                    "护0/2", StringComparison.Ordinal),
+                "Build page omitted the shared four-offense/two-support capacity.");
 
             stats._UnhandledInput(toggleStats);
             Require(!stats.IsOpen && !GetTree().Paused &&

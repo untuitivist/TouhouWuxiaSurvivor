@@ -16,6 +16,7 @@ public partial class SettingsPanelSmokeTest : Node
     {
         try
         {
+            VerifyVideoMigration();
             Node menu = GD.Load<PackedScene>("res://src/ui/menu/MainMenu.tscn").Instantiate();
             AddChild(menu);
             var settings = menu.GetNode<SettingsPanel>("SettingsPanel");
@@ -97,6 +98,45 @@ public partial class SettingsPanelSmokeTest : Node
         Require(settings.GetNode<CheckButton>(
             "Padding/Layout/Tabs/视频/Video/Vsync/Toggle") is not null,
             "VSync toggle is missing from the video tab.");
+
+        OptionButton fps = settings.GetNode<OptionButton>(
+            "Padding/Layout/Tabs/视频/Video/FpsLimit/Option");
+        string[] fpsChoices = Enumerable.Range(0, fps.ItemCount)
+            .Select(fps.GetItemText)
+            .ToArray();
+        Require(fpsChoices.SequenceEqual(new[]
+            { "30 FPS", "60 FPS", "120 FPS", "144 FPS", "不限制" }),
+            "FPS options diverged from the shared video catalog.");
+    }
+
+    /// <summary>
+    /// 验证旧存档中的三帧锁定和非法尺寸会被审计并修复，同时合法值与无限制保持不变。
+    /// </summary>
+    private static void VerifyVideoMigration()
+    {
+        GameSettingsData invalid = GameSettingsData.CreateDefault();
+        invalid.MaxFps = 3;
+        invalid.ResolutionWidth = 7680;
+        invalid.ResolutionHeight = 4320;
+        GameSettingsRepairReport repair = VideoSettingsCatalog.Normalize(invalid);
+        Require(repair.Changed && repair.OriginalMaxFps == 3 &&
+            repair.AppliedMaxFps == 30 && invalid.MaxFps == 30,
+            "Legacy three-FPS settings were not migrated to the nearest supported limit.");
+        Require(invalid.ResolutionWidth == 1280 && invalid.ResolutionHeight == 720,
+            "An unsupported legacy resolution was not restored to the visible default.");
+
+        foreach (int expected in new[] { 30, 60, 120, 144, 0 })
+        {
+            GameSettingsData valid = GameSettingsData.CreateDefault();
+            valid.MaxFps = expected;
+            Require(!VideoSettingsCatalog.Normalize(valid).Changed && valid.MaxFps == expected,
+                $"Supported FPS limit changed during migration: {expected}.");
+        }
+
+        Require(VideoSettingsCatalog.NormalizeFpsLimit(90) == 60 &&
+            VideoSettingsCatalog.NormalizeFpsLimit(360) == 144 &&
+            VideoSettingsCatalog.NormalizeFpsLimit(-1) == 30,
+            "Invalid FPS limits do not follow nearest-finite migration rules.");
     }
 
     /// <summary>

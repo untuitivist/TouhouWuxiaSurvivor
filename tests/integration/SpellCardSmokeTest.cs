@@ -4,6 +4,7 @@ using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
@@ -13,6 +14,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Tests.Support;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Stats;
+using TouhouWuxiaSurvivor.Ui.Stats.Build;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -21,6 +23,10 @@ namespace TouhouWuxiaSurvivor.Tests.Integration;
 /// </summary>
 public partial class SpellCardSmokeTest : Node
 {
+    private static readonly EnemyDefinition SpellTarget = new(
+        EnemyArchetype.Fairy, "奥义测试靶", 1, 0.0f, 5.0f,
+        0.0f, 0.0f, 0.0f, []);
+
     /// <summary>
     /// 构造无随机首批敌人的世界，依次验证梦想封印追踪和封魔阵护身流程。
     /// </summary>
@@ -52,28 +58,34 @@ public partial class SpellCardSmokeTest : Node
             SpellCardDefinition circle = SpellCardCatalog.All.Single(
                 card => card.FullName == "梦符「封魔阵」");
             Unlock(progression.Build, fantasy);
-            Vector2[] fantasyTargets = SpawnEnemies(ecsWorld, player, 3, 84.0f);
-            spells.Power.SetPower(100);
-            Require(spells.TryAutoCast() && spells.Power.CurrentPower == 0 &&
-                effects.GetChildCount() == 3,
-                "Fantasy Seal did not auto-cast three homing orbs and spend power.");
+            int fantasyThreshold = ResolveTargetDimension(
+                fantasy.Combat.ActivationThresholdScale);
+            int fantasyTargets = ResolveTargetDimension(fantasy.Combat.TargetScale);
+            SpawnEnemies(ecsWorld, player, fantasyThreshold, 84.0f);
+            spells._Process(10.0);
+            int expectedOrbs = Math.Min(fantasyThreshold, fantasyTargets);
+            Require(effects.GetChildCount() == expectedOrbs,
+                "Fantasy Seal did not respond when its cycle and crowd condition were ready.");
             VerifyInternalSpellVisuals(effects);
             for (int frame = 0; frame < 20; frame++)
             {
                 await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
             }
 
-            Require(ecsWorld.AliveEnemyCount < 3,
+            Require(ecsWorld.AliveEnemyCount < fantasyThreshold,
                 "Fantasy Seal orbs did not defeat their assigned early enemies.");
             VerifyPresentation(demo);
 
-            spells._Process(10.0);
             Unlock(progression.Build, circle);
-            Vector2[] circleTargets = SpawnEnemies(ecsWorld, player, 3, 64.0f);
-            spells.Power.SetPower(70);
-            Require(spells.TryAutoCast() && spells.Power.CurrentPower == 0 &&
-                health.IsInvincible && ecsWorld.AliveEnemyCount == 0,
-                "Evil-Sealing Circle did not auto-cast, protect Reimu, and damage nearby enemies.");
+            SpawnEnemies(ecsWorld, player, 3, 64.0f);
+            spells._Process(10.0);
+            Require(!health.IsInvincible && ecsWorld.AliveEnemyCount == 3,
+                "Evil-Sealing Circle cast before receiving its passive damage signal.");
+            Require(health.ApplyDamage(1),
+                "Could not emit the real player-damage signal for the passive spell test.");
+            spells._Process(1.0);
+            Require(health.IsInvincible && ecsWorld.AliveEnemyCount == 0,
+                "Evil-Sealing Circle did not respond to damage, protect Reimu, and hit enemies.");
 
             GD.Print("Spell card smoke test passed.");
         }
@@ -115,22 +127,29 @@ public partial class SpellCardSmokeTest : Node
     /// <summary>
     /// 在玩家周围均匀放置指定数量的低耐久敌人，返回实例以便断言正常死亡状态。
     /// </summary>
-    private static Vector2[] SpawnEnemies(
+    private static void SpawnEnemies(
         EcsCombatWorld world,
         Node2D player,
         int count,
         float radius)
     {
-        var positions = new Vector2[count];
         for (int index = 0; index < count; index++)
         {
             Vector2 position = player.GlobalPosition +
                 Vector2.FromAngle(Mathf.Tau * index / count) * radius;
-            world.SpawnEnemy(position, EnemyCatalog.All[0]);
-            positions[index] = position;
+            world.SpawnEnemy(position, SpellTarget);
         }
+    }
 
-        return positions;
+    /// <summary>
+    /// 以当前所选角色的奥义目标容量解析正式倍率，使冒烟场景不依赖已经废弃的固定角色常数。
+    /// </summary>
+    private static int ResolveTargetDimension(float scale)
+    {
+        int capacity = CharacterSelectionService.Current.Current
+            .PlayableProfile.UltimateTargetCapacity;
+        return Math.Max(1, (int)MathF.Round(
+            capacity * Math.Max(0.0f, scale), MidpointRounding.AwayFromZero));
     }
 
     /// <summary>
@@ -139,13 +158,16 @@ public partial class SpellCardSmokeTest : Node
     private static void VerifyPresentation(WorldDemo demo)
     {
         var hud = demo.GetNode<WorldDebugHud>("WorldDebugHud");
-        Require(hud.StatusText.Contains("奥义自动", StringComparison.Ordinal),
-            "HUD did not show automatic spell mode.");
+        Require(hud.StatusText.Contains("奥义", StringComparison.Ordinal) &&
+            hud.StatusText.Contains("s", StringComparison.Ordinal),
+            "HUD did not show the automatic spell countdown.");
         var stats = demo.GetNode<CharacterStatsOverlay>("CharacterStatsOverlay");
         stats.Open();
-        Label spellValue = stats.GetNode<Label>(
-            "Root/Panel/Padding/Layout/Sources/SpellValue");
-        Require(spellValue.Text.Contains("梦想封印", StringComparison.Ordinal) &&
+        CharacterBuildView buildView = stats.GetNode<CharacterBuildView>(
+            "Root/Panel/Padding/Layout/Pages/BuildPage");
+        buildView.SelectFilter(CharacterBuildFilter.SpellCard);
+        Label detail = buildView.GetNode<Label>("Body/DetailsFrame/Details/Name");
+        Require(detail.Text.Contains("梦想封印", StringComparison.Ordinal) &&
             stats.FindChildren("*", "ScrollContainer").Count == 0,
             "Stats panel omitted the unlocked spell or introduced scrolling.");
         stats.Close();

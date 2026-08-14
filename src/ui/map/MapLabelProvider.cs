@@ -8,19 +8,12 @@ namespace TouhouWuxiaSurvivor.Ui.Map;
 /// </summary>
 public sealed class MapLabelProvider
 {
-    private readonly ExploredMapStore _exploredMap;
-    private readonly StructureLocator _structures;
+    private readonly DiscoveredStructureStore _structures;
 
     /// <summary>
     /// 创建只读取共享世界数据的标签提供器，不重新生成或修改任何区块。
     /// </summary>
-    public MapLabelProvider(
-        ExploredMapStore exploredMap,
-        StructureLocator structures)
-    {
-        _exploredMap = exploredMap;
-        _structures = structures;
-    }
+    public MapLabelProvider(DiscoveredStructureStore structures) => _structures = structures;
 
     /// <summary>
     /// 为可见绝对 Tile 矩形生成已经探索的结构标签。
@@ -28,8 +21,8 @@ public sealed class MapLabelProvider
     public IReadOnlyList<MapLabel> Build(
         long left,
         long top,
-        int width,
-        int height)
+        long width,
+        long height)
     {
         long right = left + width - 1;
         long bottom = top + height - 1;
@@ -39,7 +32,7 @@ public sealed class MapLabelProvider
     }
 
     /// <summary>
-    /// 查询视口内的确定性结构锚点，并过滤尚未探索的结构。
+    /// 查询视口内已经由玩家亲自发现的结构实例，不会因区块预加载泄露地标。
     /// </summary>
     private void AddStructureLabels(
         List<MapLabel> labels,
@@ -50,11 +43,6 @@ public sealed class MapLabelProvider
     {
         foreach (StructurePlacement placement in _structures.FindInBounds(left, top, right, bottom))
         {
-            if (!_exploredMap.TryGetTile(placement.X, placement.Y, out _))
-            {
-                continue;
-            }
-
             labels.Add(new MapLabel(
                 MapLabelKind.Structure,
                 $"地标 · {StructureNames.GetChinese(placement.Id)}",
@@ -62,5 +50,4 @@ public sealed class MapLabelProvider
                 placement.Y));
         }
     }
-
 }

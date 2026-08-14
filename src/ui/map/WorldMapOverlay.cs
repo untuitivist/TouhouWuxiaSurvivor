@@ -1,9 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Ui.Map.Input;
-using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Coordinates;
 using TouhouWuxiaSurvivor.World.Map;
-using TouhouWuxiaSurvivor.World.Structures;
 
 namespace TouhouWuxiaSurvivor.Ui.Map;
 
@@ -14,7 +12,6 @@ namespace TouhouWuxiaSurvivor.Ui.Map;
 public partial class WorldMapOverlay : Control
 {
     private static readonly Color BackgroundColor = new("0b0f11");
-    private static readonly Color ChunkGridColor = new(0.85f, 0.9f, 0.88f, 0.16f);
     private readonly WorldMapTextureBuilder _textureBuilder = new();
     private readonly MapViewState _view = new();
     private ExploredMapStore? _exploredMap;
@@ -24,6 +21,9 @@ public partial class WorldMapOverlay : Control
     private long _playerTileY;
     private bool _dragging;
     private bool _wasPaused;
+    private bool _hasOpened;
+    private Vector2 _dragVisualOffset;
+    private int _lastMapRevision = -1;
 
     public float PixelsPerTile => _view.PixelsPerTile;
     public bool HasRenderedTexture => _textureBuilder.Texture is not null;
@@ -50,6 +50,11 @@ public partial class WorldMapOverlay : Control
     public override void _Process(double delta)
     {
         if (Visible && Size != _lastSize)
+        {
+            RebuildTexture();
+        }
+        else if (Visible && !_dragging && _exploredMap is not null &&
+            _lastMapRevision != _exploredMap.Revision)
         {
             RebuildTexture();
         }
@@ -93,10 +98,9 @@ public partial class WorldMapOverlay : Control
         else if (inputEvent is InputEventMouseMotion motion && _dragging)
         {
             _labelLayer?.UpdatePointer(motion.Position);
-            if (_view.PanPixels(motion.Relative))
-            {
-                RebuildTexture();
-            }
+            _dragVisualOffset += motion.Relative;
+            _view.PanPixels(motion.Relative);
+            QueueRedraw();
             AcceptEvent();
         }
         else if (inputEvent is InputEventMouseMotion pointerMotion)
@@ -117,10 +121,12 @@ public partial class WorldMapOverlay : Control
         }
 
         var mapSize = new Vector2(
-            _textureBuilder.Width * PixelsPerTile,
-            _textureBuilder.Height * PixelsPerTile);
-        DrawTextureRect(_textureBuilder.Texture, new Rect2(Vector2.Zero, mapSize), false);
-        DrawChunkGrid();
+            _textureBuilder.Width * _textureBuilder.PixelsPerSample,
+            _textureBuilder.Height * _textureBuilder.PixelsPerSample);
+        DrawTextureRect(
+            _textureBuilder.Texture,
+            new Rect2(_dragVisualOffset, mapSize),
+            false);
         DrawPlayerMarker();
     }
 
@@ -140,11 +146,10 @@ public partial class WorldMapOverlay : Control
     /// </summary>
     public void Configure(
         ExploredMapStore exploredMap,
-        BiomeSelector biomes,
-        StructureLocator structures)
+        DiscoveredStructureStore structures)
     {
         _exploredMap = exploredMap;
-        _labelLayer!.Configure(exploredMap, biomes, structures);
+        _labelLayer!.Configure(exploredMap, structures);
     }
     /// <summary>
     /// 更新玩家的绝对 Tile 坐标，供重新居中和玩家标记绘制使用。
@@ -169,10 +174,16 @@ public partial class WorldMapOverlay : Control
         _labelLayer?.UpdatePointer(button.Position);
         if (button.ButtonIndex == MouseButton.Left)
         {
-            _dragging = button.Pressed;
-            if (_dragging)
+            if (button.Pressed)
             {
+                _dragging = true;
                 _view.BeginPointerDrag();
+                _dragVisualOffset = Vector2.Zero;
+            }
+            else if (_dragging)
+            {
+                _dragging = false;
+                RebuildTexture();
             }
             AcceptEvent();
         }
@@ -230,7 +241,13 @@ public partial class WorldMapOverlay : Control
             _wasPaused = GetTree().Paused;
             GetTree().Paused = true;
             Show();
-            Recenter();
+            if (!_hasOpened)
+            {
+                _view.Recenter(_playerTileX, _playerTileY);
+                _hasOpened = true;
+            }
+
+            RebuildTexture();
         }
         else
         {
@@ -250,44 +267,21 @@ public partial class WorldMapOverlay : Control
         }
 
         _lastSize = Size;
+        _lastMapRevision = _exploredMap.Revision;
+        _dragVisualOffset = Vector2.Zero;
         _textureBuilder.Rebuild(
             _exploredMap,
             _view.CenterTileX,
             _view.CenterTileY,
             Size,
-            PixelsPerTile);
+            _view.Scale);
         _labelLayer!.UpdateView(
             _textureBuilder.LeftTile,
             _textureBuilder.TopTile,
-            _textureBuilder.Width,
-            _textureBuilder.Height,
+            _textureBuilder.SpanTilesX,
+            _textureBuilder.SpanTilesY,
             PixelsPerTile);
         QueueRedraw();
-    }
-
-    /// <summary>
-    /// 根据纹理左上角绝对坐标绘制 32 Tile 间距的弱化区块参考线。
-    /// </summary>
-    private void DrawChunkGrid()
-    {
-        long left = _textureBuilder.LeftTile;
-        long top = _textureBuilder.TopTile;
-        long right = left + _textureBuilder.Width;
-        long bottom = top + _textureBuilder.Height;
-        long firstX = GridMath.FloorDiv(left, WorldMetrics.ChunkTiles) * WorldMetrics.ChunkTiles;
-        long firstY = GridMath.FloorDiv(top, WorldMetrics.ChunkTiles) * WorldMetrics.ChunkTiles;
-
-        for (long x = firstX; x <= right; x += WorldMetrics.ChunkTiles)
-        {
-            float screenX = (x - left) * PixelsPerTile;
-            DrawLine(new Vector2(screenX, 0), new Vector2(screenX, Size.Y), ChunkGridColor);
-        }
-
-        for (long y = firstY; y <= bottom; y += WorldMetrics.ChunkTiles)
-        {
-            float screenY = (y - top) * PixelsPerTile;
-            DrawLine(new Vector2(0, screenY), new Vector2(Size.X, screenY), ChunkGridColor);
-        }
     }
 
     /// <summary>
@@ -297,7 +291,8 @@ public partial class WorldMapOverlay : Control
     {
         var position = new Vector2(
             (_playerTileX - _textureBuilder.LeftTile + 0.5f) * PixelsPerTile,
-            (_playerTileY - _textureBuilder.TopTile + 0.5f) * PixelsPerTile);
+            (_playerTileY - _textureBuilder.TopTile + 0.5f) * PixelsPerTile) +
+            _dragVisualOffset;
         if (!new Rect2(Vector2.Zero, Size).HasPoint(position))
         {
             return;

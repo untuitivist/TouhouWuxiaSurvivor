@@ -1,6 +1,6 @@
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Content.Characters;
-using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Encounters;
 
@@ -18,17 +18,17 @@ public static class BossDefinitionFactory
     {
         ArgumentNullException.ThrowIfNull(character);
         BossCharacterProfile profile = character.BossProfile;
+        EndlessDifficultySnapshot difficulty = EndlessDifficultyCurve.EvaluateSeconds(
+            elapsedSeconds, int.MaxValue);
         int health = SaturatingPositiveInt(profile.MaxHealth *
-            CombatIntensityCurve.GetBossHealthMultiplier(elapsedSeconds));
-        int contactDamage = SaturatingPositiveInt(profile.ContactDamage *
-            (1.0 + CombatIntensityCurve.GetDamageBonus(elapsedSeconds)));
-        float moveSpeed = Math.Min(280.0f, profile.MoveSpeed *
-            CombatIntensityCurve.GetMoveSpeedMultiplier(elapsedSeconds));
+            difficulty.EnemyHealthMultiplier);
+        int contactDamage = EnemyDifficultyScaler.ScaleContactDamage(
+            profile.ContactDamage, difficulty.EnemyDamageMultiplier);
         return new EnemyDefinition(
             EnemyArchetype.CharacterBoss,
             character.DisplayName,
             health,
-            moveSpeed,
+            profile.MoveSpeed,
             profile.CollisionRadius,
             0.0f,
             0.0f,
@@ -39,7 +39,8 @@ public static class BossDefinitionFactory
             aiProfile: EnemyAiProfile.BossPhased,
             projectileProfile: EnemyProjectileProfile.Boss,
             isBoss: true,
-            characterId: character.CharacterId);
+            characterId: character.CharacterId,
+            baseMaxHealth: SaturatingPositiveInt(profile.MaxHealth));
     }
 
     /// <summary>把正数浮点战斗数值饱和为可安全相加的整数，拒绝零生命或整数溢出。</summary>

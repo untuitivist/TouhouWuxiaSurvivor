@@ -27,6 +27,7 @@ public partial class EnemyActor : CharacterBody2D
     public bool IsAlive { get; private set; } = true;
     public EnemyDefinition Definition => _definition
         ?? throw new InvalidOperationException("Enemy must be configured before use.");
+    public int CurrentHealth => Math.Max(0, _currentHealth);
 
     /// <summary>
     /// 在节点进入场景树之前注入敌人定义和追踪目标，使就绪阶段可一次性建立视觉与碰撞。

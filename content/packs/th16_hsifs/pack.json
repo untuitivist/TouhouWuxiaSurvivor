@@ -5,11 +5,32 @@
   "title_en": "Hidden Star in Four Seasons",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["四季异变林", "后户之国", "隐岐奈秘境"],
-    "structures": ["季节祭坛", "秘神后户", "秘神舞台"],
-    "enemies": ["季节妖精", "后户舞童", "秘神侍从"],
-    "characters": ["爱塔妮缇拉尔瓦", "坂田合欢乃", "高丽野阿吽", "矢田寺成美", "尔子田里乃", "丁礼田舞", "摩多罗隐岐奈"]
+    "biomes": [
+      "四季异变林",
+      "后户之国",
+      "隐岐奈秘境"
+    ],
+    "structures": [
+      "季节祭坛",
+      "秘神后户",
+      "秘神舞台"
+    ],
+    "enemies": [
+      "季节妖精",
+      "后户舞童",
+      "秘神侍从"
+    ],
+    "characters": [
+      "爱塔妮缇拉尔瓦",
+      "坂田合欢乃",
+      "高丽野阿吽",
+      "矢田寺成美",
+      "尔子田里乃",
+      "丁礼田舞",
+      "摩多罗隐岐奈"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方天空璋。",
       "wuxia_style": "后户神法 · 秘神后光",
-      "description": "敌群聚集时从目标背后开启秘门，放出追踪神光。",
+      "description": "周天就绪且敌群进入范围时，从目标背后开启秘门，放出追踪神光。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 80,
-      "cooldown_seconds": 6,
-      "effect_range": 560,
-      "damage": 10,
-      "target_count": 10,
-      "defense_seconds": 0,
       "prerequisite": "soul_seeking",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.142857143,
+      "range_scale": 1.217391304,
+      "damage_scale": 0.86,
+      "target_scale": 1.017,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.021428571,
+      "travel_duration_scale": 1.571428571,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "backstab"
     },
     {
       "id": "th16_okina_scorch_by_hot_summer",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方天空璋。",
       "wuxia_style": "里夏秘法 · 盛暑灼界",
-      "description": "敌群逼近时释放盛夏季力，对周围目标造成灼热爆发。",
+      "description": "周天就绪且受到伤害时，释放盛夏季力，对周围目标造成灼热爆发。",
       "effect": "area_burst",
-      "trigger": "danger",
-      "power_cost": 90,
-      "cooldown_seconds": 8,
-      "effect_range": 320,
-      "damage": 15,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "wind_riding",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.523809524,
+      "range_scale": 0.695652174,
+      "damage_scale": 1.78,
+      "target_scale": 0.9,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.75,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "on_damaged",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

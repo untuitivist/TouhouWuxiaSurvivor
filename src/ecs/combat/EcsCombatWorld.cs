@@ -17,11 +17,13 @@ public partial class EcsCombatWorld : Node2D
     private readonly List<PickupComponent> _pickups = new();
     private readonly List<SpiritComponent> _spirits = new();
     private readonly EnemyMovementSystem _enemyMovement = new();
+    private readonly EnemyTargetAccess _enemyTargets = new();
     private readonly EnemyProjectileSystem _enemyProjectiles = new();
     private readonly ProjectileMovementSystem _projectileMovement = new();
     private readonly ProjectileCollisionSystem _projectileCollision = new();
     private readonly PickupSystem _pickupSystem = new();
     private readonly SpiritSystem _spiritSystem = new();
+    private readonly AreaDamageSystem _areaDamage = new();
     private readonly EcsCombatRenderer _renderer = new();
     private double _elapsedSeconds;
     private PlayerController? _player;
@@ -92,6 +94,19 @@ public partial class EcsCombatWorld : Node2D
     public int FallbackBossVisualCount => _renderer.LastFallbackBossCount;
     /// <summary>获取上一绘制帧使用内部弹幕图集的敌方投射物数量。</summary>
     public int EnemyProjectileIconVisualCount => _renderer.LastEnemyProjectileIconCount;
+    /// <summary>获取上一物理帧玩家弹实际检查的空间索引候选数量。</summary>
+    public int ProjectileCollisionCandidateChecks => _projectileCollision.LastCandidateChecks;
+    /// <summary>兼容性能快照使用的稳定命名，返回上一物理帧玩家弹候选检查数。</summary>
+    public int LastPlayerCollisionCandidateChecks => _projectileCollision.LastCandidateChecks;
+    /// <summary>获取上一物理帧旧版全量碰撞遍历对应的比较次数上界。</summary>
+    public long ProjectileCollisionNaiveUpperBound =>
+        _projectileCollision.LastNaiveComparisonUpperBound;
+    /// <summary>获取上一绘制帧真正提交绘制的敌人数量。</summary>
+    public int VisibleEnemyRenderCount => _renderer.LastVisibleEnemyCount;
+    /// <summary>获取上一绘制帧真正提交绘制的投射物数量。</summary>
+    public int VisibleProjectileRenderCount => _renderer.LastVisibleProjectileCount;
+    /// <summary>获取上一绘制帧被 CPU 可视矩形拒绝的战斗实体数量。</summary>
+    public int CulledCombatRenderCount => _renderer.LastCulledEntityCount;
 
     /// <summary>绑定玩家和局内状态，使批量系统不依赖场景查找。</summary>
     public void Configure(PlayerController player, PlayerHealth health, PlayerBuffController buffs,
@@ -125,10 +140,15 @@ public partial class EcsCombatWorld : Node2D
     }
 
     /// <summary>添加一颗玩家投射物到连续数据池。</summary>
-    public void SpawnProjectile(Vector2 position, Vector2 direction, float speed, int damage)
+    public void SpawnProjectile(
+        Vector2 position,
+        Vector2 direction,
+        float speed,
+        int damage,
+        int maximumHits = 1, int secondaryHitDamage = -1)
     {
         if (_projectiles.TryAdd(position, direction, speed, damage,
-                ProjectileFaction.Player, 2.0f, 4.0f, 0, out _))
+                ProjectileFaction.Player, 2.0f, 4.0f, 0, out _, maximumHits, secondaryHitDamage))
         {
             TotalProjectilesSpawned++;
         }
@@ -176,36 +196,45 @@ public partial class EcsCombatWorld : Node2D
 
     /// <summary>对指定位置最近敌人执行批量索敌。</summary>
     public bool TryFindNearest(Vector2 origin, float range, out Vector2 position)
-    {
-        position = default;
-        float best = range * range;
-        bool found = false;
-        for (int index = 0; index < _enemies.Count; index++)
-        {
-            EnemyComponent enemy = _enemies.Get(index);
-            if (!enemy.Alive) continue;
-            float distance = origin.DistanceSquaredTo(enemy.Position);
-            if (distance >= best) continue;
-            best = distance;
-            position = enemy.Position;
-            found = true;
-        }
-        return found;
-    }
+        => _enemyTargets.TryFindNearest(_enemies, origin, range, out position);
 
     /// <summary>返回范围内存活敌人的位置，供符卡范围效果复用。</summary>
     public IReadOnlyList<Vector2> SelectEnemies(Vector2 origin, float range, int maximum = int.MaxValue)
-    {
-        var result = new List<(float distance, Vector2 position)>();
-        float squared = range * range;
-        for (int index = 0; index < _enemies.Count; index++)
-        {
-            EnemyComponent enemy = _enemies.Get(index);
-            if (enemy.Alive && origin.DistanceSquaredTo(enemy.Position) <= squared)
-                result.Add((origin.DistanceSquaredTo(enemy.Position), enemy.Position));
-        }
-        return result.OrderBy(item => item.distance).Take(maximum).Select(item => item.position).ToArray();
-    }
+        => _enemyTargets.Select(_enemies, origin, range, maximum)
+            .Select(target => target.Position).ToArray();
+
+    /// <summary>
+    /// 返回范围内敌人的稳定句柄与当前位置，供低数量跨帧效果追踪而不暴露连续池索引。
+    /// </summary>
+    public IReadOnlyList<(Core.EcsEntity Entity, Vector2 Position)> SelectEnemyTargets(
+        Vector2 origin,
+        float range,
+        int maximum = int.MaxValue) =>
+        _enemyTargets.Select(_enemies, origin, range, maximum);
+
+    /// <summary>按稳定威胁规则返回集中型攻势目标，具体排序由独立选择器维护。</summary>
+    public bool TryFindHighestThreat(Vector2 origin, float range, out Vector2 position)
+        => EnemyThreatTargetSelector.TrySelect(_enemies, origin, range, out position);
+
+    /// <summary>按稳定威胁规则返回目标句柄与当前位置，使投射物能跨越池交换持续追踪同一敌人。</summary>
+    public bool TryFindHighestThreatTarget(
+        Vector2 origin,
+        float range,
+        out Core.EcsEntity entity,
+        out Vector2 position) =>
+        EnemyThreatTargetSelector.TrySelect(_enemies, origin, range, out entity, out position);
+
+    /// <summary>按实体句柄读取活体敌人的最新位置；死亡或回收后返回 false。</summary>
+    public bool TryGetEnemyPosition(Core.EcsEntity entity, out Vector2 position)
+        => _enemyTargets.TryGetPosition(_enemies, entity, out position);
+
+    /// <summary>按稳定实体句柄施加一次伤害，避免追踪弹在尾部交换后误伤占用旧索引的敌人。</summary>
+    public bool DamageEnemy(Core.EcsEntity entity, int damage)
+        => _enemyTargets.Damage(_enemies, entity, damage, ApplyDamageByIndex);
+
+    /// <summary>无分配统计范围内存活敌人，供低频奥义触发判定读取而不创建索敌数组。</summary>
+    public int CountEnemiesInRange(Vector2 origin, float range) =>
+        _enemies.CountAliveInRange(origin, range);
 
     /// <summary>对范围内敌人逐项施加伤害并发出击破事件。</summary>
     public int DamageEnemies(Vector2 origin, float range, int damage)
@@ -221,6 +250,18 @@ public partial class EcsCombatWorld : Node2D
         }
         return hitCount;
     }
+
+    /// <summary>
+    /// 对范围内最近目标施加距离衰减伤害，供奥义等低频范围效果遵守明确命中预算。
+    /// </summary>
+    public int DamageNearestEnemies(
+        Vector2 origin,
+        float range,
+        int damage,
+        int maximumTargets,
+        float minimumMultiplier) => _areaDamage.Apply(
+            _enemies, origin, range, damage, maximumTargets,
+            minimumMultiplier, ApplyDamageByIndex);
 
     /// <summary>同步世界重定位，所有 ECS 实体保持相对玩家的局部距离。</summary>
     public void Rebase(Vector2 offset)

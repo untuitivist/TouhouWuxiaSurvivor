@@ -11,11 +11,16 @@ public partial class PlayerBuffController : Node
     private double _moveSpeedTimeLeft;
     private double _rapidFireTimeLeft;
     private double _spiralShotTimeLeft;
+    private float _moveSpeedMultiplier = 1.0f;
+    private float _rapidFireMultiplier = 1.0f;
+    private float _spiralFireMultiplier = 1.0f;
 
-    public float SpeedMultiplier => _moveSpeedTimeLeft > 0.0 ? 1.5f : 1.0f;
+    public float SpeedMultiplier => _moveSpeedTimeLeft > 0.0
+        ? _moveSpeedMultiplier
+        : 1.0f;
     public float FireRateMultiplier => IsSpiralActive
-        ? 20.0f
-        : _rapidFireTimeLeft > 0.0 ? 2.0f : 1.0f;
+        ? _spiralFireMultiplier
+        : _rapidFireTimeLeft > 0.0 ? _rapidFireMultiplier : 1.0f;
     public bool IsSpiralActive => _spiralShotTimeLeft > 0.0;
 
     /// <summary>
@@ -36,12 +41,15 @@ public partial class PlayerBuffController : Node
         switch (definition.Kind)
         {
             case PickupKind.MoveSpeed:
+                _moveSpeedMultiplier = definition.MoveSpeedMultiplier;
                 _moveSpeedTimeLeft = Math.Max(_moveSpeedTimeLeft, definition.Duration);
                 break;
             case PickupKind.RapidFire:
+                _rapidFireMultiplier = definition.FireRateMultiplier;
                 _rapidFireTimeLeft = Math.Max(_rapidFireTimeLeft, definition.Duration);
                 break;
             case PickupKind.SpiralShot:
+                _spiralFireMultiplier = definition.FireRateMultiplier;
                 _spiralShotTimeLeft = Math.Max(_spiralShotTimeLeft, definition.Duration);
                 break;
         }

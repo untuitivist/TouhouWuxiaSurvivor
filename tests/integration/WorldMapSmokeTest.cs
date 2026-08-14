@@ -35,7 +35,8 @@ public partial class WorldMapSmokeTest : Node
         using var mouseMotion = new InputEventMouseMotion { Position = map.Size * 0.5f };
         map._GuiInput(mouseMotion);
         Require(map.VisibleBiomeLabelCount == 1, "Map did not create hovered biome label.");
-        Require(map.VisibleStructureLabelCount > 0, "Map did not create structure labels.");
+        Require(map.VisibleStructureLabelCount > 0,
+            "Map did not create labels for structures actually discovered near the player.");
 
         float previousZoom = map.PixelsPerTile;
         using var mouseWheel = new InputEventMouseButton

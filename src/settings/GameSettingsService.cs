@@ -14,6 +14,8 @@ public static class GameSettingsService
     private static bool _initialized;
 
     public static GameSettingsData Current { get; private set; } = GameSettingsData.CreateDefault();
+    public static GameSettingsRepairReport LastVideoRepair { get; private set; } =
+        GameSettingsRepairReport.UnchangedDefaults();
 
     /// <summary>
     /// 首次调用时读取持久化文件、补全缺失键位并应用全部设置；后续调用保持幂等。
@@ -31,6 +33,10 @@ public static class GameSettingsService
         ApplyAudio();
         ApplyVideo();
         _initialized = true;
+        if (LastVideoRepair.Changed)
+        {
+            Save();
+        }
     }
 
     /// <summary>
@@ -99,7 +105,8 @@ public static class GameSettingsService
     /// </summary>
     public static void ApplyVideo()
     {
-        Engine.MaxFps = Math.Max(0, Current.MaxFps);
+        _ = VideoSettingsCatalog.Normalize(Current);
+        Engine.MaxFps = Current.MaxFps;
         DisplayServer.WindowSetVsyncMode(Current.VsyncEnabled
             ? DisplayServer.VSyncMode.Enabled
             : DisplayServer.VSyncMode.Disabled);
@@ -182,10 +189,8 @@ public static class GameSettingsService
         Current.MasterVolume = Math.Clamp(Current.MasterVolume, 0.0f, 1.0f);
         Current.MusicVolume = Math.Clamp(Current.MusicVolume, 0.0f, 1.0f);
         Current.SfxVolume = Math.Clamp(Current.SfxVolume, 0.0f, 1.0f);
-        Current.MaxFps = Math.Clamp(Current.MaxFps, 0, 360);
         Current.WindowMode = Math.Clamp(Current.WindowMode, 0, 2);
-        Current.ResolutionWidth = Math.Clamp(Current.ResolutionWidth, 640, 7680);
-        Current.ResolutionHeight = Math.Clamp(Current.ResolutionHeight, 360, 4320);
+        LastVideoRepair = VideoSettingsCatalog.Normalize(Current);
     }
 
     /// <summary>

@@ -1,33 +1,33 @@
 namespace TouhouWuxiaSurvivor.World.Rendering;
 
+using TouhouWuxiaSurvivor.World.StructureTemplates;
+
 /// <summary>
-/// 把结构语义栅格化为三层俯视像素轮廓；返回值 0 透明、1 主体、2 阴影、3 高光。
+/// 把结构语义栅格化为透明俯视建筑部件；返回值 0 透明、1 主体、2 墙体、3 地标高光。
 /// </summary>
 internal static class InternalStructurePatternRasterizer
 {
     /// <summary>
-    /// 将已解析形态分派到独立轮廓算法，确保每种结构拥有稳定占地且不依赖纹理尺寸。
+    /// 只保留建筑主体、墙体和交互插槽；普通地面与道路由 Tile 模板绘制，避免重复覆盖成巨大色块。
     /// </summary>
-    internal static int GetLayer(InternalStructureShape shape, int dx, int dy) => shape switch
+    internal static int GetLayer(
+        InternalStructureShape shape,
+        int dx,
+        int dy,
+        int quarterTurns = 0,
+        int variant = 0)
     {
-        InternalStructureShape.Shrine => Shrine(dx, dy),
-        InternalStructureShape.Settlement => Settlement(dx, dy),
-        InternalStructureShape.Circle => Circle(dx, dy),
-        InternalStructureShape.Garden => Garden(dx, dy),
-        InternalStructureShape.Manor => Manor(dx, dy),
-        InternalStructureShape.Terrace => Terrace(dx, dy),
-        InternalStructureShape.Crossroads => Crossroads(dx, dy),
-        InternalStructureShape.Gate => Gate(dx, dy),
-        InternalStructureShape.Ruin => Ruin(dx, dy),
-        InternalStructureShape.Bridge => Bridge(dx, dy),
-        InternalStructureShape.Ship => Ship(dx, dy),
-        InternalStructureShape.Stage => Stage(dx, dy),
-        InternalStructureShape.Tower => Tower(dx, dy),
-        InternalStructureShape.Market => Market(dx, dy),
-        InternalStructureShape.Cave => Cave(dx, dy),
-        InternalStructureShape.Outpost => Outpost(dx, dy),
-        _ => 0,
-    };
+        StructureTileRole role = StructureTemplateSampler.Sample(
+            (StructureTemplateKind)(int)shape,
+            dx, dy, 64, quarterTurns, variant);
+        return role switch
+        {
+            StructureTileRole.Arena => 1,
+            StructureTileRole.Detail => 2,
+            StructureTileRole.Socket => 3,
+            _ => 0,
+        };
+    }
 
     /// <summary>绘制北侧本殿、参道和南侧鸟居，适合博丽与守矢系神社。</summary>
     private static int Shrine(int dx, int dy)

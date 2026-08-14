@@ -5,11 +5,31 @@
   "title_en": "Phantasmagoria of Dim.Dream",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["概率空间", "维纳遗迹", "梦时空决斗场"],
-    "structures": ["可能性空间移动船", "维纳遗迹核心", "梦时空竞技台"],
-    "enemies": ["时空幻影", "北白河机械灵", "可能性复制体"],
-    "characters": ["爱莲", "小兔姬", "卡娜·安娜贝拉尔", "朝仓理香子", "北白河千百合", "冈崎梦美"]
+    "biomes": [
+      "概率空间",
+      "维纳遗迹",
+      "梦时空决斗场"
+    ],
+    "structures": [
+      "可能性空间移动船",
+      "维纳遗迹核心",
+      "梦时空竞技台"
+    ],
+    "enemies": [
+      "时空幻影",
+      "北白河机械灵",
+      "可能性复制体"
+    ],
+    "characters": [
+      "爱莲",
+      "小兔姬",
+      "卡娜·安娜贝拉尔",
+      "朝仓理香子",
+      "北白河千百合",
+      "冈崎梦美"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +40,22 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自北白河千百合的可能性空间移动船。",
       "wuxia_style": "异界遁法 · 可能性航路",
-      "description": "遭受围攻时折叠周身空间，冲击近敌并短暂护住自身。",
+      "description": "周天就绪且受到伤害时，折叠周身空间，冲击近敌并短暂护住自身。",
       "effect": "guard_field",
-      "trigger": "danger",
-      "power_cost": 65,
-      "cooldown_seconds": 7,
-      "effect_range": 176,
-      "damage": 6,
-      "target_count": 0,
-      "defense_seconds": 1.4,
       "prerequisite": "tengu_step",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.333333333,
+      "range_scale": 0.382608696,
+      "damage_scale": 0.55,
+      "target_scale": 0.8,
+      "defense_scale": 1.4,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 5,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "on_damaged",
+      "activation_threshold_scale": 0.5,
+      "geometry": "backstab"
     },
     {
       "id": "th03_yumemi_science_magic_cannon",
@@ -40,17 +65,23 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自冈崎梦美以科学解析魔法的攻击。",
       "wuxia_style": "科学奇功 · 魔炮演算",
-      "description": "以演算锁定单一强敌，连续发射高密度科学魔炮。",
+      "description": "周天一转，以演算锁定单一强敌，连续发射高密度科学魔炮。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 95,
-      "cooldown_seconds": 8.5,
-      "effect_range": 640,
-      "damage": 17,
-      "target_count": 5,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.619047619,
+      "range_scale": 1.391304348,
+      "damage_scale": 1.475,
+      "target_scale": 0.55,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.01875,
+      "travel_duration_scale": 1.375,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

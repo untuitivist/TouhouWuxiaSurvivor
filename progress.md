@@ -1,6 +1,49 @@
 # Progress Log
 
-## Session: 2026-08-12 - 0.0.0-beta release candidate
+## 2026-08-12 - Combat Balance and Skill Design
+
+- Started a complete runtime balance audit across characters, upgrades, spell cards, enemies, Bosses, progression, and endless curves.
+- Locked the horizontal-DLC rule: content sources may change mechanics and synergies, but never receive a larger power budget merely for being enabled or newer.
+- Identified opaque character hash stats, work-number enemy variation, flat-stat core builds, and time-granted player barrage multiplication as the first four balance defects to replace.
+
+
+## 2026-08-12 - Horizontal build and world implementation
+
+- Completed the shared affinity offer system, specialization branches, prerequisite/exclusion graph, and stable spell-card rank lookup.
+- Replaced clipped official biome circles with deterministic warped macro regions and stored `BiomeId` in every generated chunk.
+- Rebuilt structure placement and rendering around per-definition profiles, stable instances, hard separation, footprints, variants, rotations, and sixteen layered templates.
+- Split generated map cache from player discovery, added circular reveal and structure discovery, semantic colors, seven zoom levels, and deferred drag rebuilding.
+- Changed first-world prime from 25 synchronous chunks to 9 synchronous plus 16 budgeted chunks; throttled HUD formatting.
+- Compared the supplied D3D12 and OpenGL sessions and changed the default renderer to OpenGL Compatibility while retaining both diagnostic launchers.
+- Passed build, map discovery, map interaction, world geography, structure placement/templates, affinity/progression, spell cards, all-work content, world art, HUD, diagnostics, version, combat, and source-policy tests. Final ECS high-load contract and visual acceptance remain in progress.
+
+
+## Session: 2026-08-12 - Beta debug performance diagnostics
+
+- Started a separate diagnostics artifact for the historical version now named `alpha-0.0.1`, without changing its semantic version or overwriting existing executables.
+- Confirmed the report is being treated as roughly 3 FPS and that the formal diagnostic must work for a tester who only double-clicks the EXE.
+- Audited current video settings and found the project forces D3D12 Mobile while user settings can apply desktop/fullscreen resolution, VSync, and frame caps.
+- Confirmed the local Godot editor supports debug export, log-file output, FPS printing, and renderer overrides; implementation and export-layout audits are running in parallel.
+- First parallel read command failed because the outer terminal parsed a regular-expression `|` before `cmd.exe`; no write occurred. Reissued the reads with repeated `-e` patterns and the nested project root.
+- Verified renderer, adapter, driver, pipeline, frame-time, memory, draw-call, object, and 2D-physics monitors from the installed Godot 4.7.1 C# reference.
+- Chosen sampling boundary: one immutable environment record per session, one buffered JSONL sample per second, and a world-owned aggregate snapshot without per-entity logging.
+- Found a direct three-FPS defect in legacy settings migration: an unlisted `MaxFps: 3` was applied to `Engine.MaxFps` while the menu visually selected 30 FPS.
+- Added one shared video option catalog, deterministic invalid-value repair, immediate persistence, and a before/after repair report for the diagnostic header.
+- Refined invalid FPS migration to the nearest finite supported limit (`3 -> 30`, `90 -> 60`, `360 -> 144`) while preserving explicit unlimited `0`; `ApplyVideo` now defensively normalizes direct runtime mutations too.
+- Added viewport render CPU/GPU timing, hitch bands, managed heap/GC, process memory/CPU and theoretical player-projectile collision pressure to the one-second sample.
+- Added a no-file diagnostics smoke test for inactive normal builds, Autoload wiring, one-second aggregate math, O(P*E) pressure and stable camelCase JSONL records.
+- `SettingsPanelSmokeTest` and `PerformanceDiagnosticsSmokeTest` passed on Godot 4.7.1 headless.
+- `SourcePolicyTest` rejected `WorldDemo.cs` at 261 effective lines after the first integration. Extracted snapshot projection into `WorldPerformanceDiagnosticsSnapshotFactory` instead of weakening the 250-line policy.
+- Closed a collection gap by routing the project-owned JSONL into the launcher's unique session directory; direct EXE launches still fall back to `user://diagnostics`, and logger initialization failures no longer prevent the game from running.
+- `CombatLoopSmokeTest` failed twice on its fixed 2.4-second random first-wave kill, then passed under structured diagnostics with one defeat by 1.8 run seconds. Replaced the random timing dependency with a nearby one-health stationary ECS target and a bounded condition wait while preserving the full automatic-fire/death/drop path.
+- Removed the potentially multi-second video-driver query from the game process; adapter/API evidence stays in JSONL and exact driver details stay in the same session's verbose Godot log, so neither startup nor shutdown can wait on that API.
+- First diagnostics build found only a namespace collision between the project diagnostics namespace and `Godot.Performance`; the initial cross-shell line-count probe also had an unmatched quote. No runtime artifact was produced. The type is now fully qualified and line limits will be checked by `SourcePolicyTest`.
+- Final build, source policy, video migration, inactive/active diagnostics, export policy, version policy, and combat-loop tests all passed; Debug compilation finished with zero warnings and zero errors.
+- Exported the Release-optimized diagnostic variant with embedded PCK, console wrapper, D3D12/OpenGL launchers, structured JSONL collection and a Chinese guide. Under the current rule that package is named `release/TouhouWuxiaSurvivor_alpha-0.0.1_windows-x86_64-debug.zip`.
+- The final exported EXE completed a 600-frame headless smoke run from an isolated Mono cache and wrote four one-second samples without engine warnings or errors. Main EXE SHA-256 is `e051da32a11ba51f173b43d55107a64cd2bd04e48b1ddc6f8ef963f373d394f0`; ZIP SHA-256 is `ead9f558dfabc66e633e73e8c0d276a9b6e7dd01b8d88e7c86270de31eceef46`.
+- The first diagnostic directory was retained because deletion was not authorized; the corrected historical distributable used `release/diagnostics-final`, and formal validation artifacts remained untouched.
+
+## Session: 2026-08-12 - alpha-0.0.1 release candidate
 
 - Completed stable character catalogs for 132 identities and verified every manifest character is playable and Boss-capable.
 - Added compact character selection, formal WorldDemo injection, and strict current-player exclusion from the Boss candidate pool.
@@ -10,9 +53,9 @@
 - Verified 20 packs dynamically: each has 3 regions, 3 structures, 3 enemies, registered characters, at least 2 spell cards, and an explicit visual mapping or unavailable declaration.
 - Captured and inspected 640x360 character selection plus 1280x720 formal combat; Scarlet sisters are complete, text fits, Boss health and both projectile factions remain readable.
 - Restored the previously requested branding icon only after proving its source hash exactly matches the committed asset; no file was deleted.
-- Updated the unique runtime version, release notes, and export filename to 0.0.0-beta; final full-suite rerun and export remain.
+- Updated the unique runtime version, release notes, and export filename to the version now identified as `alpha-0.0.1`; final full-suite rerun and export remained.
 - Final verification covers 36 integration scenes: the 35 unchanged scenes passed in the full serial run, and the display-only visual scene passed after headless screenshot capture became an explicit skip while retaining all layout/material assertions.
-- Exported `release/TouhouWuxiaSurvivor_0.0.0-beta.exe` with embedded PCK; independent headless launch passed and the existing alpha executable remains untouched.
+- Exported the artifact now named `release/TouhouWuxiaSurvivor_alpha-0.0.1.exe` with embedded PCK; independent headless launch passed and `alpha-0.0.0` remained untouched.
 - Beta artifact size is 196,391,048 bytes with SHA-256 `25dbf41bf5f52be480409e9ebdb50a2ac3086f84e921c88b6407c19848571272`.
 - Binary scanning confirms internal-original resources are present and legacy `assets/audio`, `item_sheet.png`, `first_player`, and `cowboy_secret.wav` paths are absent.
 
@@ -24,7 +67,7 @@
 - Locked the role rule: every registered character is playable and Boss-capable, while the current player character ID is excluded from that run's Boss pool.
 - Waiting on the exact TH01-TH20 two-card matrix before editing content manifests; runtime architecture work proceeds independently.
 - Added enemy/Boss AI, endless difficulty and upgrade curves, and sparse-to-dense player/enemy danmaku to the same completion milestone.
-- User authorized a final `0.0.0-beta` export only after the complete implementation and verification pass; the current alpha artifact remains untouched.
+- User authorized the build now identified as `alpha-0.0.1` only after the complete implementation and verification pass; `alpha-0.0.0` remained untouched.
 - Added 132 canonical character identities from 133 registrations, with one merged cross-work Mima identity and address-derived ASCII IDs.
 - Added compact content-aware character selection and applied the selected profile to the real player name, nearest-neighbor visual, health, movement, damage, stats, and Boss exclusion context.
 - Replaced two hard-coded Reimu spell enums with a 42-card data catalog: TH06 has four cards and every other work has two; TH01-TH05 are explicitly labeled pre-spell-card adaptations.
@@ -241,12 +284,12 @@
 - TH01 至 TH05、TH20 因用户素材包缺少同作来源，地区、结构和敌人明确登记跨作代用；对应角色保留中文动态图标回退，不拿相似角色冒充。
 - 21 个来源的联系表测试通过；已逐作检查场景、敌人四帧与角色完整轮廓，并修正 TH09、TH13、TH14、TH18 等错误帧界。
 - 正式 WorldDemo 已移除四个旧节点实体场景依赖；69 个正式敌人全部在 ECS 绘制中命中原作动画纹理，未知身份才使用文字回退。
-- 新版本规则落地为 `x.y.z-stage`，当前 `0.0.0-alpha`；CHANGELOG、运行时设置、导出文件名与 Windows 数字版本纳入一致性测试。
+- 该阶段当时使用数字在前的旧命名；现已迁移为 `stage-x.y.z`，历史版本对应 `alpha-0.0.0`，CHANGELOG、运行时设置、导出文件名与 Windows 数字版本均纳入一致性测试。
 - 最终素材登记包含 294 个原始来源文件、60 条明确跨作代用和 42 条明确暂缺；TH19 体验版复用 TH18 场景也已按代用来源登记。
 - 修复 ECS 灵息经验被事件链重复结算的问题，`SpiritDropSpawner` 现为经验写入的唯一入口；成长测试精确验证 8 点经验升至 2 级。
 - 修复测试退出时音频混音线程仍持有 OGG/WAV 的竞态，并让死亡音频测试使用内存档案，不再写真实用户存档。
 - 31 个集成测试场景全部通过；702 个文本文件通过 UTF-8 无 BOM 检查，253 个 C# 文件通过 250 有效行上限检查，最终构建为 0 警告、0 错误。
-- 最终只读审查发现被 Git 忽略的 `release` 目录只剩 2026-08-11 22:06 生成的 `TouhouWuxiaSurvivor_0.0.0-alpha.exe`；其内仍含旧 `item_sheet.png` 导入路径，早于最终修复，不能作为当前验证包。旧 beta 文件已不在原位置且 Git 无法恢复，本轮不再触碰任何发行物。
+- 最终只读审查发现的旧产物现按新规则命名为 `TouhouWuxiaSurvivor_alpha-0.0.0.exe`；其内仍含旧 `item_sheet.png` 导入路径，早于最终修复，不能作为后续版本验证包。
 - 旧参考资源已从导出规则隔离，物理文件与诊断残留 `stdout` 仍等待用户确认删除。
 
 # 2026-07-30 符卡武侠化系统
@@ -407,3 +450,25 @@
 - Inspected and limited TH09 to fairy roles; rejected TH07 stage 1 as another mixed named-character sheet.
 - Verified kedama/Mountain-of-Faith provenance and identified TH11 evil spirits plus TH12 ghost fairies as generic ecology candidates.
 - Logged one atomically rejected planning-record patch caused by an incorrect heading assumption.
+# 2026-08-12 - Horizontal Build and World Refactor
+
+- Confirmed the nested Godot project is the active repository and preserved all existing diagnostic/settings changes.
+- Baseline `dotnet build --configuration Debug --no-restore` passed with zero warnings and zero errors.
+- Completed read-only audits of upgrade offers, macro biome selection, structure placement/stamping, world rendering, exploration storage, and travel-map rendering.
+- Identified the referenced game as `Everything is Crab` and verified its three-choice evolution, affinity-weighting, prerequisites, exclusions, repeated ranks, and specialization model.
+- Locked the user correction that base and DLC content are horizontally equivalent; regions and characters must not secretly alter offer odds.
+- Started parallel analysis of the supplied D3D12 and two OpenGL diagnostic sessions.
+
+# 2026-08-13 - alpha-0.0.2 Freeze
+
+- Completed the shared combat budget, explicit character roles, enemy and Boss reward curves, six finite and six endless martial paths, spell slots, five geometries, and E-panel build projection.
+- Expanded the permanent base spell pool to 4 offensive + 2 support choices; every optional work remains a two-card horizontal alternative.
+- Verified 21 manifests contain 46 unique cards; schema, balance, geometry, provenance, compendium, build-view, and 120-minute timeline contracts pass.
+- Unified current and historical version records under the stage-first scheme and configured the formal embedded-PCK output as `release/TouhouWuxiaSurvivor_alpha-0.0.2.exe`.
+- Final dynamic integration regression passed 63/63 scenes, including all eight Windows-rendered visual acceptance scenes; Debug, Release, and ExportRelease builds completed with zero warnings and zero errors.
+- Content audits passed for all 21 manifests and 46 cards: schema v2, shared balance budgets, and geometry assignment all remained deterministic and complete.
+- Exported `release/TouhouWuxiaSurvivor_alpha-0.0.2.exe` at 196,404,288 bytes with SHA-256 `d8339b4a54c3f3cfd0cc13ff6200e8a183d00336f5aa07353d14f1ff818c2acc` and Windows version `0.0.2.0`.
+- The final artifact has an embedded PCK (`GDPC` trailer), no sidecar PCK, excludes tests/tool builders and legacy sample-resource content, and completed a 180-frame headless smoke run with exit code 0 and a clean log.
+- Historical `alpha-0.0.0` and `alpha-0.0.1` executables were preserved unchanged.
+
+---

@@ -5,11 +5,32 @@
   "title_en": "Perfect Cherry Blossom",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["冬樱林", "冥界", "白玉楼庭园"],
-    "structures": ["冥界结界", "幽明结界门", "白玉楼"],
-    "enemies": ["冬季妖精", "幽灵", "樱花亡灵"],
-    "characters": ["蕾蒂·霍瓦特洛克", "橙", "普莉兹姆利巴三姐妹", "魂魄妖梦", "西行寺幽幽子", "八云蓝", "八云紫"]
+    "biomes": [
+      "冬樱林",
+      "冥界",
+      "白玉楼庭园"
+    ],
+    "structures": [
+      "冥界结界",
+      "幽明结界门",
+      "白玉楼"
+    ],
+    "enemies": [
+      "冬季妖精",
+      "幽灵",
+      "樱花亡灵"
+    ],
+    "characters": [
+      "蕾蒂·霍瓦特洛克",
+      "橙",
+      "普莉兹姆利巴三姐妹",
+      "魂魄妖梦",
+      "西行寺幽幽子",
+      "八云蓝",
+      "八云紫"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方妖妖梦。",
       "wuxia_style": "幽冥樱法 · 亡我墨染",
-      "description": "敌群聚集时令墨樱盛放，对周围敌人造成持续扩散的爆发伤害。",
+      "description": "周天就绪且敌群进入范围时，令墨樱沿外环盛放，由远及近覆盖多个敌人并造成爆发伤害。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 85,
-      "cooldown_seconds": 7,
-      "effect_range": 320,
-      "damage": 12,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "spirit_gathering",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.333333333,
+      "range_scale": 0.695652174,
+      "damage_scale": 1.546,
+      "target_scale": 1,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.75,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "ring"
     },
     {
       "id": "th07_yukari_boundary_of_life_and_death",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方妖妖梦。",
       "wuxia_style": "境界神通 · 生死一隙",
-      "description": "危急时展开生死境界，震开近敌并获得短暂护身。",
+      "description": "周天就绪且受到伤害时，在强敌背后展开生死境界，伤害目标并获得短暂护身。",
       "effect": "guard_field",
-      "trigger": "danger",
-      "power_cost": 90,
-      "cooldown_seconds": 9,
-      "effect_range": 224,
-      "damage": 11,
-      "target_count": 0,
-      "defense_seconds": 1.8,
       "prerequisite": "hakurei_breathing",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.714285714,
+      "range_scale": 0.486956522,
+      "damage_scale": 0.738,
+      "target_scale": 0.644,
+      "defense_scale": 1.8,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 3.928571429,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "on_damaged",
+      "activation_threshold_scale": 0.5,
+      "geometry": "backstab"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

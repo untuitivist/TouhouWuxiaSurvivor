@@ -9,6 +9,7 @@ public sealed class CharacterDefinition
     public string SourcePackId { get; }
     public int SourceNumber { get; }
     public string DisplayName { get; }
+    public CharacterCombatRole CombatRole { get; }
     public IReadOnlyList<string> AvailableSourcePackIds { get; }
     public bool IsPlayable { get; }
     public bool IsBoss { get; }
@@ -23,6 +24,7 @@ public sealed class CharacterDefinition
         string sourcePackId,
         int sourceNumber,
         string displayName,
+        CharacterCombatRole combatRole,
         IEnumerable<string> availableSourcePackIds,
         PlayableCharacterProfile playableProfile,
         BossCharacterProfile bossProfile)
@@ -31,6 +33,7 @@ public sealed class CharacterDefinition
         SourcePackId = sourcePackId;
         SourceNumber = sourceNumber;
         DisplayName = displayName;
+        CombatRole = combatRole;
         AvailableSourcePackIds = availableSourcePackIds
             .Distinct(StringComparer.Ordinal)
             .ToArray();

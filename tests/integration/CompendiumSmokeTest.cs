@@ -44,7 +44,20 @@ public partial class CompendiumSmokeTest : Node
             Require(preview.AnimationTime > animationStart,
                 "Compendium preview did not advance its live animation.");
 
+            OptionButton source = panel.GetNode<OptionButton>(
+                "Panel/Padding/Layout/Filters/SourceFilter");
             TabBar tabs = panel.GetNode<TabBar>("Panel/Padding/Layout/CategoryTabs");
+            source.Select(1);
+            source.EmitSignal(OptionButton.SignalName.ItemSelected, 1L);
+            tabs.CurrentTab = (int)CompendiumCategory.SpellCard;
+            Require(panel.VisibleEntryCount == 6,
+                "Base compendium did not expose the complete permanent spell-card pool.");
+            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            Require(preview.InternalOriginalActive,
+                "Base spell-card preview did not activate its mapped bullet atlas.");
+            source.Select(0);
+            source.EmitSignal(OptionButton.SignalName.ItemSelected, 0L);
+
             tabs.CurrentTab = (int)CompendiumCategory.Enemy;
             Require(panel.VisibleEntryCount == 69,
                 "Enemy page must contain nine base and sixty official enemies.");
@@ -65,7 +78,6 @@ public partial class CompendiumSmokeTest : Node
             Require(factMinimum.Y <= facts.Size.Y + 1.0f,
                 $"Enemy attributes do not fit: minimum {factMinimum}, actual {facts.Size}.");
 
-            OptionButton source = panel.GetNode<OptionButton>("Panel/Padding/Layout/Filters/SourceFilter");
             source.Select(7);
             source.EmitSignal(OptionButton.SignalName.ItemSelected, 7L);
             Require(panel.VisibleEntryCount == 3,
@@ -86,20 +98,24 @@ public partial class CompendiumSmokeTest : Node
                 details.Contains("本局 Boss 候选", StringComparison.Ordinal),
                 "Character detail omitted playable, Boss, or self-exclusion state.");
             tabs.CurrentTab = (int)CompendiumCategory.SpellCard;
-            Require(panel.VisibleEntryCount == 4 &&
+            Require(panel.VisibleEntryCount == 2 &&
                 preview.CurrentCategory == CompendiumCategory.SpellCard,
-                "TH06 spell-card page must expose player and representative Boss cards.");
+                "TH06 spell-card page must expose the Scarlet sisters' representative cards.");
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             Require(preview.InternalOriginalActive,
                 "TH06 spell-card preview did not activate the internal bullet atlas.");
             details = panel.CurrentDetailsText;
-            Require(details.Contains("所属角色：博丽灵梦", StringComparison.Ordinal) &&
+            Require(details.Contains("所属角色：", StringComparison.Ordinal) &&
+                (details.Contains("蕾米莉亚·斯卡蕾特", StringComparison.Ordinal) ||
+                    details.Contains("芙兰朵露·斯卡蕾特", StringComparison.Ordinal)) &&
                 details.Contains("设定来源：原作正式符卡", StringComparison.Ordinal) &&
                 details.Contains("前置构筑", StringComparison.Ordinal) &&
                 details.Contains("自动触发", StringComparison.Ordinal) &&
-                details.Contains("灵力消耗", StringComparison.Ordinal) &&
-                details.Contains("单次伤害", StringComparison.Ordinal),
-                "Spell-card details omitted canon, build, trigger, or balance fields.");
+                details.Contains("定位与槽位", StringComparison.Ordinal) &&
+                details.Contains("弹幕形态", StringComparison.Ordinal) &&
+                details.Contains("周天换算", StringComparison.Ordinal) &&
+                details.Contains("攻势换算", StringComparison.Ordinal),
+                "Spell-card details omitted canon, build, timing, or scaling fields.");
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             Vector2 spellFactMinimum = facts.GetCombinedMinimumSize();
             Require(facts.GetChildCount() == 9 &&

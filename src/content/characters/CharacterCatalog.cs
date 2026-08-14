@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 
 namespace TouhouWuxiaSurvivor.Content.Characters;
@@ -9,6 +8,8 @@ namespace TouhouWuxiaSurvivor.Content.Characters;
 public static class CharacterCatalog
 {
     private const string CharacterCategory = "角色";
+    private const string MarisaName = "雾雨魔理沙";
+    private const string LegacyMarisaId = "character_th02_soew_02";
     private static IReadOnlyList<CharacterDefinition>? _all;
 
     public static IReadOnlyList<CharacterDefinition> All => _all ??= LoadAll();
@@ -98,7 +99,7 @@ public static class CharacterCatalog
     }
 
     /// <summary>
-    /// 根据规范名的稳定摘要生成身份与平衡档案，使清单遍历顺序变化不会改写角色数值。
+    /// 根据显式战斗定位生成身份与平衡档案，使角色数值可解释且不受清单遍历顺序影响。
     /// </summary>
     private static CharacterDefinition CreateDefinition(
         string displayName,
@@ -106,20 +107,24 @@ public static class CharacterCatalog
         int primaryOrdinal,
         IReadOnlyList<string> availableSourceIds)
     {
-        string characterId = $"character_{primarySource.Id}_{primaryOrdinal:00}";
-        byte[] digest = SHA256.HashData(Encoding.UTF8.GetBytes(characterId));
-        var playable = new PlayableCharacterProfile(
-            4.0f + digest[8] % 3,
-            0.92f + digest[9] % 9 * 0.02f,
-            0.92f + digest[10] % 9 * 0.02f);
-        var boss = new BossCharacterProfile(
-            700.0f + digest[11] % 11 * 50.0f,
-            30.0f + digest[12] % 9 * 2.0f,
-            8.0f + digest[13] % 9,
-            16.0f + digest[14] % 7);
+        string characterId = ResolveStableId(displayName, primarySource, primaryOrdinal);
+        CharacterCombatRole role = CharacterRoleCatalog.GetRequired(displayName);
+        PlayableCharacterProfile playable = CharacterCombatProfileFactory.CreatePlayable(role);
+        BossCharacterProfile boss = CharacterCombatProfileFactory.CreateBoss(role);
         return new CharacterDefinition(characterId, primarySource.Id, primarySource.Number,
-            displayName, availableSourceIds, playable, boss);
+            displayName, role, availableSourceIds, playable, boss);
     }
+
+    /// <summary>
+    /// 保留早期版本已写入存档的魔理沙身份；其内容归属提升为本体时不得让同一角色换成新 ID。
+    /// </summary>
+    private static string ResolveStableId(
+        string displayName,
+        ContentPackDefinition primarySource,
+        int primaryOrdinal) => string.Equals(
+            displayName, MarisaName, StringComparison.Ordinal)
+        ? LegacyMarisaId
+        : $"character_{primarySource.Id}_{primaryOrdinal:00}";
 
     /// <summary>
     /// 使用兼容等价规范化统一角色名，使相同中文名可靠合并为单一角色身份。

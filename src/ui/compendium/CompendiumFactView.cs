@@ -63,7 +63,7 @@ public static class CompendiumFactView
         CompendiumFact first, CompendiumFact? second, bool isWide = false)
     {
         var row = new HBoxContainer();
-        row.AddThemeConstantOverride("separation", 12);
+        row.AddThemeConstantOverride("separation", 9);
         row.AddChild(CreatePair(first, isWide));
         if (second is not null)
         {
@@ -83,15 +83,15 @@ public static class CompendiumFactView
     private static HBoxContainer CreatePair(CompendiumFact fact, bool isWide)
     {
         var pair = new HBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
-        pair.AddThemeConstantOverride("separation", 5);
+        pair.AddThemeConstantOverride("separation", 4);
         var key = new Label
         {
             Text = fact.Label,
             AutowrapMode = TextServer.AutowrapMode.Off,
             VerticalAlignment = VerticalAlignment.Center,
-            CustomMinimumSize = new Vector2(52.0f, 0.0f),
+            CustomMinimumSize = new Vector2(50.0f, 0.0f),
         };
-        key.AddThemeFontSizeOverride("font_size", 11);
+        key.AddThemeFontSizeOverride("font_size", 10);
         key.AddThemeColorOverride("font_color", new Color("aebca6"));
         pair.AddChild(key);
 
@@ -104,7 +104,7 @@ public static class CompendiumFactView
             VerticalAlignment = VerticalAlignment.Center,
             SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
         };
-        value.AddThemeFontSizeOverride("font_size", 11);
+        value.AddThemeFontSizeOverride("font_size", 10);
         pair.AddChild(value);
         return pair;
     }

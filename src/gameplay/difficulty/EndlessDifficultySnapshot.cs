@@ -6,7 +6,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 public readonly record struct EndlessDifficultySnapshot(
     double ElapsedMinutes,
     double Intensity,
-    double SpawnBudgetPerSecond,
+    double ScheduledSpawnsPerSecond,
     int SpawnBatchSize,
     double SpawnIntervalSeconds,
     int AliveLimit,

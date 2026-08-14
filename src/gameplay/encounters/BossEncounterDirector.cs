@@ -15,6 +15,8 @@ public partial class BossEncounterDirector : Node
     private RunContentContext? _context;
     private Func<Vector2>? _playerPosition;
     private double _nextEncounterSeconds;
+    private double _activeEncounterStartedSeconds;
+    private bool _encounterActive;
 
     [Export(PropertyHint.Range, "10,600,1")]
     public double FirstEncounterSeconds { get; set; } = 120.0;
@@ -43,6 +45,8 @@ public partial class BossEncounterDirector : Node
         _context = context;
         _playerPosition = playerPosition;
         _nextEncounterSeconds = Math.Max(0.0, FirstEncounterSeconds);
+        _activeEncounterStartedSeconds = 0.0;
+        _encounterActive = false;
         _random.Randomize();
         world.BossDefeated += OnBossDefeated;
     }
@@ -51,7 +55,8 @@ public partial class BossEncounterDirector : Node
     public override void _Process(double delta)
     {
         if (_world is null || _context is null || _playerPosition is null ||
-            _world.ElapsedSeconds < _nextEncounterSeconds || _world.AliveBossCount > 0)
+            _encounterActive || _world.ElapsedSeconds < _nextEncounterSeconds ||
+            _world.AliveBossCount > 0)
         {
             return;
         }
@@ -73,7 +78,8 @@ public partial class BossEncounterDirector : Node
         double elapsedSeconds,
         int candidateIndex = -1)
     {
-        if (_world is null || _context is null || _world.AliveBossCount > 0)
+        if (_world is null || _context is null || _encounterActive ||
+            _world.AliveBossCount > 0)
         {
             return false;
         }
@@ -92,15 +98,46 @@ public partial class BossEncounterDirector : Node
         _world.SpawnBoss(position, BossDefinitionFactory.Create(character, elapsedSeconds));
         LastSpawnedCharacter = character;
         SpawnedCount++;
-        _nextEncounterSeconds = elapsedSeconds + Math.Max(1.0, EncounterIntervalSeconds);
+        _activeEncounterStartedSeconds = Math.Max(0.0, elapsedSeconds);
+        _encounterActive = true;
+        _nextEncounterSeconds = double.PositiveInfinity;
+        return true;
+    }
+
+    /// <summary>
+    /// 结束当前 Boss 遭遇并从结束时刻安排完整恢复期；该入口同时服务击破事件和场景强制结束，
+    /// 重复结束会返回 false 且不重置计时，防止多个清理通知无限延后下一次遭遇。
+    /// </summary>
+    public bool ResolveActiveEncounter(double elapsedSeconds)
+    {
+        if (!_encounterActive)
+        {
+            return false;
+        }
+
+        double normalizedSeconds = double.IsFinite(elapsedSeconds)
+            ? Math.Max(0.0, elapsedSeconds)
+            : _activeEncounterStartedSeconds;
+        double resolutionSeconds = Math.Max(_activeEncounterStartedSeconds, normalizedSeconds);
+        _nextEncounterSeconds = resolutionSeconds + Math.Max(1.0, EncounterIntervalSeconds);
+        _encounterActive = false;
         return true;
     }
 
     /// <summary>离开场景树时取消世界事件订阅，避免重开一局后旧导演继续累计击破。</summary>
     public override void _ExitTree() => Unsubscribe();
 
-    /// <summary>记录角色 Boss 击破；下一次遭遇仍遵守已安排的无尽时间里程碑。</summary>
-    private void OnBossDefeated(Vector2 position, EnemyDefinition definition) => DefeatedCount++;
+    /// <summary>
+    /// 记录角色 Boss 击破，并从战斗结束时重新计算完整恢复期；若测试直接指定了未来生成时间，
+    /// 使用生成时间与世界时间中的较大值，避免下一场遭遇被长战斗或测试时钟提前吞掉。
+    /// </summary>
+    private void OnBossDefeated(Vector2 position, EnemyDefinition definition)
+    {
+        if (ResolveActiveEncounter(_world?.ElapsedSeconds ?? _activeEncounterStartedSeconds))
+        {
+            DefeatedCount++;
+        }
+    }
 
     /// <summary>安全解除当前世界订阅，并保留配置数据供同一节点随后重新绑定。</summary>
     private void Unsubscribe()

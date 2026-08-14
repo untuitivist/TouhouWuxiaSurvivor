@@ -3,20 +3,32 @@ using Godot;
 namespace TouhouWuxiaSurvivor.Ui.Map;
 
 /// <summary>
-/// 保存全屏地图的中心坐标、离散缩放级别和亚 Tile 拖动余量。
+/// 保存全屏地图的中心坐标、语义缩放级别和亚 Tile 拖动余量。
 /// 该类不依赖场景树，便于独立验证地图导航算法。
 /// </summary>
 public sealed class MapViewState
 {
-    private static readonly float[] ZoomLevels = [1.0f, 2.0f, 4.0f, 8.0f];
+    private static readonly MapRenderScale[] ZoomLevels =
+    [
+        new(8, 1),
+        new(4, 1),
+        new(2, 1),
+        new(1, 1),
+        new(1, 2),
+        new(1, 4),
+        new(1, 8),
+        new(1, 16),
+    ];
     private Vector2 _dragRemainder;
-    private int _zoomIndex = 2;
+    private int _zoomIndex = 6;
 
     public long CenterTileX { get; private set; }
 
     public long CenterTileY { get; private set; }
 
-    public float PixelsPerTile => ZoomLevels[_zoomIndex];
+    public MapRenderScale Scale => ZoomLevels[_zoomIndex];
+
+    public float PixelsPerTile => Scale.PixelsPerTile;
 
     /// <summary>
     /// 把视图中心直接设置到指定绝对 Tile，通常用于打开地图或按 F 回到玩家。

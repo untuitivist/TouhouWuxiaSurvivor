@@ -21,6 +21,14 @@ public static class SpellCardManifestLoader
             return [];
         }
 
+        int schemaVersion = document.RootElement.GetProperty(
+            "spellcard_schema_version").GetInt32();
+        if (schemaVersion != 2)
+        {
+            throw new InvalidDataException(
+                $"Unsupported spell card schema version: {schemaVersion}");
+        }
+
         return cards.EnumerateArray()
             .Select(card => Parse(card, sourcePackId))
             .ToArray();
@@ -31,6 +39,7 @@ public static class SpellCardManifestLoader
     /// </summary>
     private static SpellCardDefinition Parse(JsonElement card, string sourcePackId)
     {
+        RejectLegacyFields(card);
         string ownerName = RequiredString(card, "owner");
         CharacterDefinition owner = CharacterCatalog.GetRequiredByDisplayName(ownerName);
         return new SpellCardDefinition(
@@ -45,16 +54,39 @@ public static class SpellCardManifestLoader
             RequiredString(card, "wuxia_style"),
             RequiredString(card, "description"),
             ParseEffect(RequiredString(card, "effect")),
-            ParseTrigger(RequiredString(card, "trigger")),
+            ParseGeometry(RequiredString(card, "geometry")),
+            ParseActivation(RequiredString(card, "activation")),
             RequiredString(card, "prerequisite"),
             RequiredInt(card, "minimum_rank"),
             new SpellCardCombatProfile(
-                RequiredInt(card, "power_cost"),
-                RequiredFloat(card, "cooldown_seconds"),
-                RequiredFloat(card, "effect_range"),
-                RequiredInt(card, "damage"),
-                RequiredInt(card, "target_count"),
-                RequiredFloat(card, "defense_seconds")));
+                RequiredFloat(card, "interval_scale"),
+                RequiredFloat(card, "range_scale"),
+                RequiredFloat(card, "damage_scale"),
+                RequiredFloat(card, "target_scale"),
+                RequiredFloat(card, "activation_threshold_scale"),
+                RequiredFloat(card, "defense_scale"),
+                RequiredFloat(card, "projectile_speed_scale"),
+                RequiredFloat(card, "impact_range_scale"),
+                RequiredFloat(card, "travel_duration_scale"),
+                RequiredFloat(card, "spawn_distance_scale")));
+    }
+
+    /// <summary>
+    /// v2 明确拒绝旧充能、绝对值与战况触发字段，避免新旧语义混合后被 JSON 解析器静默忽略。
+    /// </summary>
+    private static void RejectLegacyFields(JsonElement card)
+    {
+        string[] legacyFields =
+        [
+            "trigger", "power_cost", "cooldown_seconds", "effect_range",
+            "damage", "target_count", "defense_seconds",
+        ];
+        string? legacy = legacyFields.FirstOrDefault(
+            field => card.TryGetProperty(field, out _));
+        if (legacy is not null)
+        {
+            throw new InvalidDataException($"Spell schema v2 contains legacy field: {legacy}");
+        }
     }
 
     /// <summary>把清单规范层字符串严格映射为枚举，拒绝未声明的来源语义。</summary>
@@ -75,13 +107,24 @@ public static class SpellCardManifestLoader
         _ => throw new InvalidDataException($"Unknown spell effect: {value}"),
     };
 
-    /// <summary>把自动触发标识转换为运行时枚举，确保数据不能偷偷增加主动输入路径。</summary>
-    private static SpellCardTriggerKind ParseTrigger(string value) => value switch
+    /// <summary>把空间组织字段映射为独立策略枚举，拒绝未实现的内容拼写或隐式默认值。</summary>
+    private static SpellCardGeometryKind ParseGeometry(string value) => value switch
     {
-        "crowd" => SpellCardTriggerKind.Crowd,
-        "danger" => SpellCardTriggerKind.Danger,
-        "single_target" => SpellCardTriggerKind.SingleTarget,
-        _ => throw new InvalidDataException($"Unknown spell trigger: {value}"),
+        "orbit" => SpellCardGeometryKind.Orbit,
+        "fan" => SpellCardGeometryKind.Fan,
+        "line" => SpellCardGeometryKind.Line,
+        "ring" => SpellCardGeometryKind.Ring,
+        "backstab" => SpellCardGeometryKind.Backstab,
+        _ => throw new InvalidDataException($"Unknown spell geometry: {value}"),
+    };
+
+    /// <summary>严格解析无资源消耗的自动运转方式，禁止内容包以任意字符串偷偷恢复灵力条件。</summary>
+    private static SpellCardActivationKind ParseActivation(string value) => value switch
+    {
+        "periodic" => SpellCardActivationKind.Periodic,
+        "crowd" => SpellCardActivationKind.Crowd,
+        "on_damaged" => SpellCardActivationKind.OnDamaged,
+        _ => throw new InvalidDataException($"Unknown spell activation: {value}"),
     };
 
     /// <summary>读取非空字符串字段并给出包含字段名的清单错误。</summary>

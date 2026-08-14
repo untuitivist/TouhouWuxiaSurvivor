@@ -1,3 +1,5 @@
+using TouhouWuxiaSurvivor.World.Biomes;
+using TouhouWuxiaSurvivor.World.Generation;
 using TouhouWuxiaSurvivor.World.Tiles;
 
 namespace TouhouWuxiaSurvivor.Ui.Map;
@@ -14,12 +16,42 @@ public static class MapColorPalette
     /// 将一个砖块或未知区域的颜色写入 RGBA8 像素缓冲区的指定偏移。
     /// </summary>
     public static void WritePixel(byte[] pixels, int offset, TileId? tile)
+        => WritePixel(pixels, offset, tile, null);
+
+    /// <summary>
+    /// 结合群系身份与砖块明暗写入地图色；同一地表 Tile 在不同 DLC 地区仍可辨识。
+    /// </summary>
+    public static void WritePixel(
+        byte[] pixels,
+        int offset,
+        TileId? tile,
+        BiomeId? biome)
     {
         uint rgb = tile.HasValue ? GetRgb(tile.Value) : Unknown;
+        if (tile.HasValue && biome.HasValue)
+        {
+            uint identity = BiomeIdentityColor.GetRgb(biome.Value);
+            rgb = Blend(rgb, identity, 0.36f);
+        }
+
         pixels[offset] = (byte)(rgb >> 16);
         pixels[offset + 1] = (byte)(rgb >> 8);
         pixels[offset + 2] = (byte)rgb;
         pixels[offset + 3] = 255;
+    }
+
+    /// <summary>
+    /// 线性混合两个 24 位 RGB 颜色，使地表纹理和地区身份同时可读。
+    /// </summary>
+    private static uint Blend(uint left, uint right, float weight)
+    {
+        int red = (int)MathF.Round(((left >> 16) & 255) * (1 - weight) +
+            ((right >> 16) & 255) * weight);
+        int green = (int)MathF.Round(((left >> 8) & 255) * (1 - weight) +
+            ((right >> 8) & 255) * weight);
+        int blue = (int)MathF.Round((left & 255) * (1 - weight) +
+            (right & 255) * weight);
+        return (uint)((red << 16) | (green << 8) | blue);
     }
 
     /// <summary>

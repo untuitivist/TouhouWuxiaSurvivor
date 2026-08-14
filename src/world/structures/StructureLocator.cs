@@ -1,31 +1,33 @@
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Coordinates;
 using TouhouWuxiaSurvivor.World.Generation;
-using TouhouWuxiaSurvivor.World.Official;
 
 namespace TouhouWuxiaSurvivor.World.Structures;
 
 /// <summary>
-/// 根据世界种子和稀疏网格定位结构锚点，供地形生成与已探索地图共同查询。
+/// 合并本体 spacing 网格和正作宏域地标，再以稳定优先级执行跨类型硬间距裁决。
 /// </summary>
 public sealed class StructureLocator
 {
     public const int CellSize = 96;
-    public const int Radius = 12;
+    public static int Radius => StructureCatalog.MaximumFootprintRadius;
+    public static int MaximumFootprintRadius => StructureCatalog.MaximumFootprintRadius;
     private readonly ulong _seed;
     private readonly BiomeSelector _biomes;
+    private readonly OfficialStructureSiteLocator _officialSites;
 
     /// <summary>
-    /// 创建共享世界种子和群系规则的结构选址器。
+    /// 创建共享世界种子与宏域规则的结构定位器，使三层地区与三处正作地标保持关联。
     /// </summary>
     public StructureLocator(ulong seed, BiomeSelector biomes)
     {
         _seed = seed;
         _biomes = biomes;
+        _officialSites = new OfficialStructureSiteLocator(seed, biomes);
     }
 
     /// <summary>
-    /// 返回锚点落在指定绝对 Tile 矩形内的全部结构，并始终包含范围内的出生神社。
+    /// 查询指定绝对 Tile 矩形内锚点；内部扩大冲突边界后裁决，因此窗口与加载顺序不影响结果。
     /// </summary>
     public IReadOnlyList<StructurePlacement> FindInBounds(
         long minX,
@@ -33,75 +35,106 @@ public sealed class StructureLocator
         long maxX,
         long maxY)
     {
-        var placements = new List<StructurePlacement>();
+        int margin = StructurePlacementConflictResolver.QueryMargin;
+        var candidates = new List<StructurePlacement>();
+        candidates.AddRange(FindBaseCandidates(
+            minX - margin, minY - margin, maxX + margin, maxY + margin));
+        candidates.AddRange(_officialSites.FindCandidates(
+            minX - margin, minY - margin, maxX + margin, maxY + margin));
+        IReadOnlyList<StructurePlacement> resolved =
+            StructurePlacementConflictResolver.Resolve(candidates);
+        var placements = resolved.Where(item => item.X >= minX && item.X <= maxX &&
+            item.Y >= minY && item.Y <= maxY).ToList();
         if (minX <= 0 && maxX >= 0 && minY <= 0 && maxY >= 0)
         {
             placements.Add(new StructurePlacement(StructureId.HakureiShrine, 0, 0));
         }
 
-        long firstCellX = GridMath.FloorDiv(minX, CellSize);
-        long firstCellY = GridMath.FloorDiv(minY, CellSize);
-        long lastCellX = GridMath.FloorDiv(maxX, CellSize);
-        long lastCellY = GridMath.FloorDiv(maxY, CellSize);
-        for (long cellY = firstCellY; cellY <= lastCellY; cellY++)
+        return placements.OrderBy(item => item.Y).ThenBy(item => item.X)
+            .ThenBy(item => item.Id).ToArray();
+    }
+
+    /// <summary>
+    /// 返回中心圆形范围内的结构，矩形预筛选后再执行精确距离判断。
+    /// </summary>
+    public IReadOnlyList<StructurePlacement> FindNear(long x, long y, int radius) =>
+        FindInBounds(x - radius, y - radius, x + radius, y + radius)
+            .Where(item => DistanceSquared(item.X, item.Y, x, y) <= (double)radius * radius)
+            .ToArray();
+
+    /// <summary>
+    /// 枚举每个本体定义自己的网格单元；正作结构由宏域站点定位器单独处理。
+    /// </summary>
+    private IReadOnlyList<StructurePlacement> FindBaseCandidates(
+        long minX,
+        long minY,
+        long maxX,
+        long maxY)
+    {
+        var candidates = new List<StructurePlacement>();
+        foreach (StructureDefinition definition in StructureCatalog.All.Where(item =>
+            !item.IsSpawnStructure && string.IsNullOrEmpty(item.SourcePackId)))
         {
-            for (long cellX = firstCellX; cellX <= lastCellX; cellX++)
+            StructurePlacementProfile profile = definition.Placement;
+            long firstX = GridMath.FloorDiv(minX, profile.Spacing);
+            long firstY = GridMath.FloorDiv(minY, profile.Spacing);
+            long lastX = GridMath.FloorDiv(maxX, profile.Spacing);
+            long lastY = GridMath.FloorDiv(maxY, profile.Spacing);
+            for (long cellY = firstY; cellY <= lastY; cellY++)
             {
-                StructurePlacement? placement = LocateCell(cellX, cellY);
-                if (placement is { } found &&
-                    found.X >= minX && found.X <= maxX &&
-                    found.Y >= minY && found.Y <= maxY)
+                for (long cellX = firstX; cellX <= lastX; cellX++)
                 {
-                    placements.Add(found);
+                    if (TryCreateBase(definition, cellX, cellY, out var placement))
+                    {
+                        candidates.Add(placement);
+                    }
                 }
             }
         }
 
-        return placements;
+        return candidates;
     }
 
     /// <summary>
-    /// 确定性判断一个结构网格单元是否生成结构，并计算留有边距的随机锚点。
+    /// 在单个定义网格中计算概率、随机偏移、出生保护和合法群系，并生成完整稳定实例。
     /// </summary>
-    private StructurePlacement? LocateCell(long cellX, long cellY)
+    private bool TryCreateBase(
+        StructureDefinition definition,
+        long cellX,
+        long cellY,
+        out StructurePlacement placement)
     {
-        if (DeterministicHash.Range(_seed, cellX, cellY, 100, 0x6600) >= 62)
+        StructurePlacementProfile profile = definition.Placement;
+        int spread = profile.Spacing - profile.Separation;
+        long x = cellX * profile.Spacing +
+            DeterministicHash.Range(_seed, cellX, cellY, spread, profile.Salt + 1);
+        long y = cellY * profile.Spacing +
+            DeterministicHash.Range(_seed, cellX, cellY, spread, profile.Salt + 2);
+        bool generated = DeterministicHash.Unit(_seed, cellX, cellY, profile.Salt + 3) < profile.Chance;
+        bool spawnProtected = DistanceSquared(x, y, 0, 0) <
+            (double)profile.SpawnProtectionRadius * profile.SpawnProtectionRadius;
+        if (!generated || spawnProtected || !definition.Allows(_biomes.Select(x, y)))
         {
-            return null;
+            placement = default;
+            return false;
         }
 
-        long anchorX = cellX * CellSize + 16 +
-            DeterministicHash.Range(_seed, cellX, cellY, 64, 0x6601);
-        long anchorY = cellY * CellSize + 16 +
-            DeterministicHash.Range(_seed, cellX, cellY, 64, 0x6602);
-        if (anchorX is > -28 and < 28 && anchorY is > -28 and < 28)
-        {
-            return null;
-        }
-
-        return new StructurePlacement(
-            GetStructureId(_biomes.Select(anchorX, anchorY), anchorX, anchorY),
-            anchorX,
-            anchorY);
+        placement = new StructurePlacement(
+            definition.Id, x, y,
+            DeterministicHash.At(_seed, x, y, profile.Salt + 4), definition.DefinitionId,
+            DeterministicHash.Range(_seed, x, y, 4, profile.Salt + 5),
+            DeterministicHash.Range(_seed, x, y, 4, profile.Salt + 6),
+            profile.FootprintRadius);
+        return true;
     }
 
     /// <summary>
-    /// 把锚点群系映射为对应结构；正作地区严格使用各自登记的地标。
+    /// 以双精度计算世界距离，避免远离原点后 long 平方溢出。
     /// </summary>
-    private StructureId GetStructureId(BiomeId biome, long x, long y)
+    private static double DistanceSquared(long ax, long ay, long bx, long by)
     {
-        if (OfficialWorldContentCatalog.TryGet(biome, out OfficialWorldContentDefinition definition))
-        {
-            return definition.Structure;
-        }
-
-        return biome switch
-        {
-            BiomeId.HakureiShrine => StructureId.ShrineCourt,
-            BiomeId.HumanVillage => StructureId.HumanVillage,
-            BiomeId.MagicForest => StructureId.MagicCircle,
-            BiomeId.YoukaiMountain => StructureId.MountainTerrace,
-            _ => StructureId.Crossroads,
-        };
+        double dx = (double)ax - bx;
+        double dy = (double)ay - by;
+        return dx * dx + dy * dy;
     }
 }

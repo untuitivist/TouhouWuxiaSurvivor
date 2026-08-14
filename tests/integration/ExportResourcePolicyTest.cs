@@ -1,5 +1,6 @@
 using Godot;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -39,6 +40,8 @@ public partial class ExportResourcePolicyTest : Node
         "res://assets/combat/projectiles/",
     ];
 
+    private static readonly string[] RootDiagnosticResidues = ["-e", "stdout"];
+
     private static readonly string[] TextResourceExtensions =
     [
         ".cs", ".gd", ".tscn", ".tres", ".cfg", ".json", ".godot",
@@ -53,8 +56,10 @@ public partial class ExportResourcePolicyTest : Node
         {
             string[] exclusions = ReadExcludePatterns();
             VerifyLegacyAssetsExcluded(exclusions);
+            VerifyRootDiagnosticResiduesExcluded(exclusions);
             VerifyFormalResourcesDoNotReferenceLegacyAssets();
             VerifyInternalOriginalAssetsRemainIncluded(exclusions);
+            VerifyReleaseCompilationBoundary();
             GD.Print("Export resource policy test passed.");
             GetTree().Quit();
         }
@@ -62,6 +67,57 @@ public partial class ExportResourcePolicyTest : Node
         {
             GD.PushError(exception.ToString());
             GetTree().Quit(1);
+        }
+    }
+
+    /// <summary>
+    /// 结构化解析项目文件，确保测试与素材构建器只服务开发环境而不进入正式托管程序集。
+    /// </summary>
+    private static void VerifyReleaseCompilationBoundary()
+    {
+        string xml = Godot.FileAccess.GetFileAsString(
+            "res://TouhouWuxiaSurvivor.csproj");
+        XDocument document = XDocument.Parse(xml);
+        XElement[] compileItems = document.Descendants("Compile").ToArray();
+        bool removesTestsInRelease = compileItems.Any(item =>
+            ItemPath(item, "Remove") == "tests/**/*.cs" &&
+            IsShippingCondition(item.Parent?.Attribute("Condition")?.Value, true));
+        Require(removesTestsInRelease,
+            "Release compilation must remove all integration and support test code.");
+
+        XElement[] toolIncludes = compileItems.Where(item =>
+            ItemPath(item, "Include").StartsWith(
+                "tools/internal_assets/", StringComparison.Ordinal)).ToArray();
+        Require(toolIncludes.Length > 0 && toolIncludes.All(item =>
+                IsShippingCondition(item.Parent?.Attribute("Condition")?.Value, false)),
+            "Internal asset builders must only compile outside Release builds.");
+    }
+
+    /// <summary>读取一个 Compile 项的路径属性，缺失时返回空串以便统一判定。</summary>
+    private static string ItemPath(XElement item, string attribute) =>
+        item.Attribute(attribute)?.Value ?? string.Empty;
+
+    /// <summary>
+    /// 同时识别普通 Release 与 Godot ExportRelease 条件，防止编辑器导出绕过发布边界。
+    /// </summary>
+    private static bool IsShippingCondition(string? condition, bool expectedShipping) =>
+        condition is not null &&
+        condition.Contains("$(Configuration)", StringComparison.Ordinal) &&
+        condition.Contains(expectedShipping ? "== 'Release'" : "!= 'Release'",
+            StringComparison.Ordinal) &&
+        condition.Contains(expectedShipping ? "== 'ExportRelease'" : "!= 'ExportRelease'",
+            StringComparison.Ordinal) &&
+        condition.Contains(expectedShipping ? " Or " : " And ", StringComparison.Ordinal);
+
+    /// <summary>
+    /// 确认仍待用户决定是否删除的根目录诊断残留不会进入任何正式导出物。
+    /// </summary>
+    private static void VerifyRootDiagnosticResiduesExcluded(IReadOnlyList<string> exclusions)
+    {
+        foreach (string residue in RootDiagnosticResidues)
+        {
+            Require(exclusions.Any(pattern => MatchesExportPattern(residue, pattern)),
+                $"Root diagnostic residue is not excluded from export: {residue}.");
         }
     }
 

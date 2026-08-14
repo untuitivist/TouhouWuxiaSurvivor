@@ -14,5 +14,8 @@ public enum RunUpgradeKind
     EndlessDamage,
     EndlessFireRate,
     EndlessMoveSpeed,
+    EndlessTargetRange,
+    EndlessProjectileSpeed,
+    EndlessSpiritAttraction,
     SpellCard,
 }

@@ -1,10 +1,128 @@
-# Task Plan: Complete All Official DLC Content
+# Task Plan: Combat Balance and Skill Design
 
-## Current Goal - 2026-08-11
+## Current Goal - 2026-08-12
+
+Turn the existing playable systems into one measurable horizontal balance model. Replace opaque hash/modulo stat variation with curated combat roles, make core martial arts change combat behavior instead of only adding flat numbers, calibrate the endless enemy/experience/player curves against explicit time targets, and keep all content packs power-neutral.
+
+## Current Phase
+
+Phase 8 - final regression, formal export, and exported-build smoke verification.
+
+## Acceptance Criteria
+
+- Character, ordinary-enemy, Boss, martial-art, spell-card, experience, and endless curves share documented units and target windows.
+- Character differences come from named roles with equal total budgets, never from ID hashes or work numbers.
+- Core build choices produce visible mechanical differences in projectile behavior, survival, targeting, or economy; repeated ranks remain useful without becoming mandatory.
+- Every DLC remains horizontal: enabling a pack adds alternatives but does not raise expected offer quality or raw power.
+- The opening, transition, and late-game barrage phases have measurable damage, density, survival, and level-rate targets.
+- Automated balance tests reject outliers, non-monotonic curves, invalid combinations, and content whose budget exceeds its peers.
+- The E build view and compendium explain resolved effects using the same definitions consumed by combat.
+
+## Active Phases
+
+- [x] Audit current formulas, dead modifiers, duplicate scaling, and hard-coded content variance.
+- [x] Define shared balance constants, role budgets, skill tags, and target time windows.
+- [x] Replace opaque character/enemy variation with curated horizontal profiles.
+- [x] Implement mechanically distinct core skills and their ECS/runtime effects.
+- [x] Rebalance all 46 spell cards against shared effect and trigger budgets without erasing identity.
+- [x] Calibrate level, reward, spawn, enemy, Boss, and barrage curves together.
+- [x] Add deterministic simulations, invariants, UI text, and targeted regression coverage.
+- [x] Pass the complete frozen regression suite and content tools.
+- [x] Export and smoke-test the embedded-PCK `alpha-0.0.2` Windows executable.
+
+## Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Balance by role budget, not source work | DLC is a horizontal choice set and must not become a power ladder. |
+| One runtime definition owns each number | Combat, UI, compendium, and tests must not carry parallel constants. |
+| Prefer mechanism over flat percentage | A build should change how the player positions and fights, not only inflate DPS. |
+| Endless growth is bounded by performance, not progression | Entity counts may cap, while health, damage, reward, and player scaling remain monotonic. |
+
+---
+
+# Historical Plan: Horizontal Builds and World Geography
+
+## Current Goal - 2026-08-12
+
+Replace the equal-random upgrade pool and flat random-circle world with two shared, data-driven systems. Base content and every DLC remain horizontally equivalent: content packs add choices, never a higher power tier or mandatory progression gate. Player choices create build affinity naturally; regions and structures create tactical conditions without directly forcing upgrade odds.
+
+## Current Phase
+
+Phase 7 - implementation complete; running full regression and visual acceptance before test handoff.
+
+## Acceptance Criteria
+
+- Every base/DLC upgrade uses the same affinity, prerequisite, exclusion, rank, and specialization rules.
+- Upgrade offers remain three choices, contain no duplicate IDs, naturally favor the affinities already chosen, and preserve a meaningful off-route option.
+- Content packs cannot increase rarity or strength budgets merely because they are DLC.
+- Regions do not directly boost drop or offer odds; enemy and terrain design produce contextual strengths naturally.
+- The infinite world uses deterministic macro regions with coherent same-work region relationships and soft boundaries instead of cell-clipped circles.
+- Structures use per-definition spacing, separation, footprint, variation, and discovery rules rather than one global 96-Tile lottery.
+- Generated chunks retain biome/region semantics so rendering, spawning, diagnostics, and maps do not recompute terrain identity.
+- The travel map records true player discovery, biome identity, structure discovery state, and semantic zoom without displaying chunk-grid seams by default.
+- Build, source policy, gameplay/world/map integration tests, deterministic generation tests, and visual acceptance all pass.
+
+## Active Phases
+
+- [x] Audit the current build offer, world generation, structure, travel map, and diagnostic-log pipelines.
+- [x] Implement horizontal affinity builds and deterministic three-choice offers.
+- [x] Implement macro-region planning, coherent official-work region chains, and transition fields.
+- [x] Implement data-driven structure placement, footprints, templates, and runtime discovery.
+- [x] Upgrade semantic chunk storage and the travel map discovery/rendering pipeline.
+- [x] Add regression, distribution, determinism, interaction, and visual tests.
+- [x] Analyze the supplied D3D12/OpenGL sessions and correlate findings with the optimized build.
+- [x] Run the complete verification suite and prepare the test handoff without publishing a release.
+
+## Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| DLC is horizontal content only | The complete base game must remain complete; DLC adds alternatives, not vertical power. |
+| Affinity comes only from chosen build items | Characters and regions should create natural synergy through mechanics, not hidden offer manipulation. |
+| Keep three choices but assign generation roles | Two choices may reinforce established affinity while at least one preserves exploration and pivoting. |
+| Region identity is generated before chunks | Terrain, structures, enemies, and the map must share one coherent deterministic geography. |
+| Structures are stable world instances | Discovery, encounter, map state, and cross-chunk rendering require stable IDs and footprints. |
+
+---
+
+# Historical Plan: Beta Debug Performance Diagnostics
+
+## Current Goal - 2026-08-12
+
+Produce a separate Windows diagnostic build variant for the historical version now named `alpha-0.0.1` to diagnose the reported roughly 3 FPS on another machine. Preserve existing formal artifacts. The diagnostic build must collect actionable hardware, renderer, frame pacing, ECS load, world-streaming, and graphics workload evidence with low sampling overhead, then provide a Chinese collection guide.
+
+## Current Phase
+
+Complete - the isolated Windows artifact, ZIP, structured log, launchers, guide, tests, and exported smoke run all passed.
+
+## Debug Acceptance Criteria
+
+- The normal runtime version remains `alpha-0.0.1`; diagnostics is an artifact flavor, not another semantic stage.
+- A timestamped diagnostic log records OS, CPU concurrency, display/GPU/driver, rendering method, resolution, window mode, VSync, frame cap, and enabled content.
+- Periodic samples record FPS/frame time plus ECS enemies, both projectile factions, pickups, spirits, active/pending chunks, and relevant Godot performance monitors.
+- Sampling is bounded and buffered so the logger cannot become the cause of a 3 FPS result.
+- The debug EXE launches independently with embedded PCK, retains console/debug logging, and does not overwrite alpha or beta.
+- A Chinese guide states the exact log path, reproduction steps, and files the tester should return.
+
+## Active Phases
+
+- [x] Audit existing logging, performance APIs, and debug export behavior.
+- [x] Implement and test low-overhead session diagnostics in the formal WorldDemo runtime.
+- [x] Add a reproducible debug export command and artifact naming without changing semantic version.
+- [x] Write the Chinese reproduction/log-collection guide.
+- [x] Run build, diagnostics, gameplay, source-policy, and export-policy verification.
+- [x] Export and smoke-test the diagnostic artifact now named `TouhouWuxiaSurvivor_alpha-0.0.1_windows-x86_64-debug.exe` without deleting existing artifacts.
+
+---
+
+# Historical Plan: Complete All Official DLC Content
+
+## Goal - 2026-08-11
 
 Complete the five runtime content domains for base and TH01-TH20: biome, structure, ordinary enemy, character, and spell card. Every registered character is both playable and Boss-capable; the selected player character is excluded from the current run's Boss candidates by stable character ID. Spell cards remain build-only automatic techniques with no active input.
 
-## Current Phase
+## Final Phase
 
 Complete - implementation, visual acceptance, full-suite verification, and the embedded-PCK beta export all passed.
 
@@ -31,7 +149,7 @@ Each work must pass all checks:
 - [x] Replace finite spawn/experience/upgrade assumptions with monotonic endless difficulty and progression functions.
 - [x] Make player and enemy projectile budgets evolve from sparse opening shots to bounded late-game danmaku.
 - [x] Run build, gameplay, selection, Boss, compendium, provenance, visual, encoding, and line-limit verification.
-- [x] After all acceptance checks pass, update version/changelog to `0.0.0-beta` and export one embedded-PCK Windows executable without deleting the existing alpha artifact.
+- [x] After all acceptance checks pass, update version/changelog to the version now named `alpha-0.0.1` and export one embedded-PCK Windows executable without deleting `alpha-0.0.0`.
 
 ## Completed Foundation
 
@@ -66,7 +184,7 @@ Each work must pass all checks:
 - First asset-builder run crashed because the sandbox denied Godot's `user://logs`; approved user-directory access fixed it.
 - The first formal pickup visual test ran before Godot imported the generated PNG; a complete headless editor scan generated the required import metadata.
 - Original TH17.5 OGG comments used invalid legacy metadata; FFmpeg stream-copy metadata stripping now removes the warning without audio re-encoding.
-- Final review found that ignored `release/` contains only a local `0.0.0-alpha` executable created at 22:06; previous beta executables are absent and cannot be recovered from Git, so no release file may be removed or overwritten without user direction.
+- Final review found one local artifact now named `alpha-0.0.0` created at 22:06; release files remain outside Git, so none may be removed or overwritten without user direction.
 
 ---
 

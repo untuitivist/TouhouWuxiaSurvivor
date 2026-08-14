@@ -107,9 +107,10 @@ public partial class EnemyAiBossTest : Node
         Require(candidates.Count > 0 && candidates.All(character =>
             character.CharacterId != selected.CharacterId),
             "Boss candidates leaked the selected player character.");
-        Require(CharacterBossCatalog.GetCandidates(ContentPackSelection.BaseOnly,
-            selected.CharacterId).Count == 0,
-            "An empty base-only boss pool must remain empty instead of restoring the player.");
+        IReadOnlyList<CharacterDefinition> baseCandidates = CharacterBossCatalog.GetCandidates(
+            ContentPackSelection.BaseOnly, selected.CharacterId);
+        Require(baseCandidates.Count == 1 && baseCandidates[0].DisplayName == "雾雨魔理沙",
+            "Base-only boss pool must offer Marisa while preserving selected-player exclusion.");
         var renderer = new EcsCombatRenderer();
         renderer.Configure();
         bool visualFound = candidates.Any(character => renderer.TryResolveBossVisual(

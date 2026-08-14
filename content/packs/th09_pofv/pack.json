@@ -5,11 +5,28 @@
   "title_en": "Phantasmagoria of Flower View",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["无名之丘", "无缘塚", "太阳花田"],
-    "structures": ["铃兰花田", "无缘塚墓园", "太阳花园"],
-    "enemies": ["铃兰毒灵", "魂花", "太阳花妖"],
-    "characters": ["梅蒂欣·梅兰可莉", "小野塚小町", "四季映姬·夜摩仙那度"]
+    "biomes": [
+      "无名之丘",
+      "无缘塚",
+      "太阳花田"
+    ],
+    "structures": [
+      "铃兰花田",
+      "无缘塚墓园",
+      "太阳花园"
+    ],
+    "enemies": [
+      "铃兰毒灵",
+      "魂花",
+      "太阳花妖"
+    ],
+    "characters": [
+      "梅蒂欣·梅兰可莉",
+      "小野塚小町",
+      "四季映姬·夜摩仙那度"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +37,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方花映塚；角色身份沿用东方幻想乡登记的幽香。",
       "wuxia_style": "花间秘法 · 百华齐放",
-      "description": "敌群密集时催开幻想花海，以范围爆发清扫周围目标。",
+      "description": "周天就绪且敌群进入范围时，敌群密集时催开幻想花海，以范围爆发清扫周围目标。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 70,
-      "cooldown_seconds": 5.5,
-      "effect_range": 304,
-      "damage": 9,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "spirit_gathering",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.047619048,
+      "range_scale": 0.660869565,
+      "damage_scale": 1.313,
+      "target_scale": 1.1,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.894736842,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "ring"
     },
     {
       "id": "th09_eiki_last_judgement",
@@ -40,17 +62,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方花映塚。",
       "wuxia_style": "净琉璃法 · 最终裁断",
-      "description": "锁定当前最强敌人，以净罪弹幕执行高伤害裁断。",
+      "description": "周天一转，锁定当前最强敌人，以净罪弹幕执行高伤害裁断。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 95,
-      "cooldown_seconds": 8.5,
-      "effect_range": 620,
-      "damage": 17,
-      "target_count": 4,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.619047619,
+      "range_scale": 1.347826087,
+      "damage_scale": 1.475,
+      "target_scale": 0.5,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.019354839,
+      "travel_duration_scale": 1.419354839,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

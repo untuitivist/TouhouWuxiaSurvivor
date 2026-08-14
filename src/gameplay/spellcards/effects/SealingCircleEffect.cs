@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
@@ -12,14 +13,19 @@ public partial class SealingCircleEffect : Node2D
     private Label? _fallbackLabel;
     private string _sourcePackId = "th06_eosd";
     private string _spellCardName = "梦符「封魔阵」";
+    private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Ring;
 
     /// <summary>
     /// 在节点进入场景树前注入当前符卡视觉键，使所有作品复用结界演出而不复用错误素材身份。
     /// </summary>
-    public void Configure(string sourcePackId, string spellCardName)
+    public void Configure(
+        string sourcePackId,
+        string spellCardName,
+        SpellCardGeometryKind geometryKind)
     {
         _sourcePackId = sourcePackId;
         _spellCardName = spellCardName;
+        _geometryKind = geometryKind;
     }
 
     /// <summary>
@@ -58,11 +64,28 @@ public partial class SealingCircleEffect : Node2D
             var bullet = new InternalSpellBulletVisual();
             AddChild(bullet);
             bullet.Configure(_sourcePackId, _spellCardName, index + 5);
-            bullet.Position = Vector2.FromAngle(Mathf.Tau * index / 8.0f) * 26.0f;
+            bullet.Position = ResolveBulletPosition(index);
             bullet.Scale = Vector2.One * 0.8f;
             available |= bullet.Visible;
         }
 
         return available;
+    }
+
+    /// <summary>按符卡几何改变结界弹幕轮廓，使范围效果在不增加命中预算时仍有明确辨识度。</summary>
+    private Vector2 ResolveBulletPosition(int index)
+    {
+        float angle = Mathf.Tau * index / 8.0f;
+        return _geometryKind switch
+        {
+            SpellCardGeometryKind.Fan => new Vector2(
+                Mathf.Cos(Mathf.Lerp(-1.05f, 1.05f, index / 7.0f)),
+                Mathf.Sin(Mathf.Lerp(-1.05f, 1.05f, index / 7.0f))) * 30.0f,
+            SpellCardGeometryKind.Line => new Vector2((index - 3.5f) * 9.0f, 0.0f),
+            SpellCardGeometryKind.Backstab => Vector2.FromAngle(angle) *
+                (index % 2 == 0 ? 34.0f : 18.0f),
+            SpellCardGeometryKind.Orbit => Vector2.FromAngle(angle + 0.42f) * 25.0f,
+            _ => Vector2.FromAngle(angle) * 26.0f,
+        };
     }
 }

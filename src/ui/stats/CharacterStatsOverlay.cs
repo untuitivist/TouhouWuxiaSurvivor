@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.Ui.Pause;
 
@@ -13,6 +14,9 @@ public partial class CharacterStatsOverlay : CanvasLayer
     private Func<CharacterStatsSnapshot>? _snapshotProvider;
     private WorldMapOverlay? _map;
     private PauseMenuOverlay? _pauseMenu;
+    private CharacterBuildView? _buildView;
+    private CharacterStatsPage _page = CharacterStatsPage.Build;
+    private CharacterStatsSnapshot? _snapshot;
     private bool _wasPaused;
 
     public bool IsOpen => _root?.Visible == true;
@@ -26,6 +30,11 @@ public partial class CharacterStatsOverlay : CanvasLayer
         ProcessMode = ProcessModeEnum.Always;
         _root = GetNode<Control>("Root");
         GetNode<Button>("Root/Panel/Padding/Layout/Header/Close").Pressed += Close;
+        GetNode<Button>("Root/Panel/Padding/Layout/Header/StatsTab").Pressed +=
+            () => ShowPage(CharacterStatsPage.Stats);
+        GetNode<Button>("Root/Panel/Padding/Layout/Header/BuildTab").Pressed +=
+            () => ShowPage(CharacterStatsPage.Build);
+        _buildView = GetNode<CharacterBuildView>("Root/Panel/Padding/Layout/Pages/BuildPage");
         _root.Hide();
         SetProcessUnhandledInput(true);
     }
@@ -99,9 +108,18 @@ public partial class CharacterStatsOverlay : CanvasLayer
         _wasPaused = GetTree().Paused;
         GetTree().Paused = true;
         SetOtherInputBlocked(true);
-        Refresh(_snapshotProvider());
+        _snapshot = _snapshotProvider();
+        Refresh(_snapshot);
+        ShowPage(_page);
         _root.Show();
-        GetNode<Button>("Root/Panel/Padding/Layout/Header/Close").GrabFocus();
+        if (_page == CharacterStatsPage.Build)
+        {
+            _buildView?.Graph.GrabFocus();
+        }
+        else
+        {
+            GetNode<Button>("Root/Panel/Padding/Layout/Header/StatsTab").GrabFocus();
+        }
     }
 
     /// <summary>
@@ -140,36 +158,78 @@ public partial class CharacterStatsOverlay : CanvasLayer
     /// </summary>
     private void Refresh(CharacterStatsSnapshot snapshot)
     {
-        SetText("Header/Title", $"{snapshot.CharacterName} · 属性");
-        SetText("Status/HealthValue", $"{snapshot.CurrentHealth}/{snapshot.MaxHealth}");
-        SetText("Status/LevelValue", $"境界 {snapshot.Level}");
-        SetText("Status/ExperienceValue", $"{snapshot.Experience}/{snapshot.ExperienceToNext}");
-        SetText("Status/TotalExperienceValue", snapshot.TotalExperience.ToString());
-        SetText("Combat/DamageValue", snapshot.Damage.ToString());
-        SetText("Combat/FireValue", $"{snapshot.FireInterval:0.000} 秒");
-        SetText("Combat/MoveValue", $"{snapshot.MoveSpeed:0.0}");
-        SetText("Combat/RangeValue", $"{snapshot.TargetRange:0}");
-        SetText("Combat/ProjectileValue", $"{snapshot.ProjectileSpeed:0}");
-        SetText("Combat/AttractionValue", $"{snapshot.AttractionRange:0}");
-        SetText("Sources/PermanentValue", snapshot.PermanentSummary);
-        SetText("Sources/BuildValue", snapshot.RunBuildSummary);
-        SetText("Sources/SpellValue", FormatSpellSummary(snapshot));
+        SetText("Header/Title", snapshot.CharacterName);
+        SetText("Header/Role", $"定位 {snapshot.CombatRoleName}");
+        SetText("Pages/StatsPage/Sources/RoleValue",
+            $"{snapshot.CombatRoleName} · {snapshot.CombatRoleDescription}");
+        SetText("Pages/StatsPage/Status/HealthValue", $"{snapshot.CurrentHealth}/{snapshot.MaxHealth}");
+        SetText("Pages/StatsPage/Status/LevelValue", $"境界 {snapshot.Level}");
+        SetText("Pages/StatsPage/Status/ExperienceValue", $"{snapshot.Experience}/{snapshot.ExperienceToNext}");
+        SetText("Pages/StatsPage/Status/TotalExperienceValue", snapshot.TotalExperience.ToString());
+        SetText("Pages/StatsPage/Combat/DamageValue", snapshot.VolleyTotalDamage.ToString());
+        SetText("Pages/StatsPage/Combat/VolleyValue",
+            FormatVolleyDamage(snapshot));
+        SetText("Pages/StatsPage/Combat/FireValue", $"{snapshot.FireInterval:0.000} 秒");
+        SetText("Pages/StatsPage/Combat/MoveValue", $"{snapshot.MoveSpeed:0.0}");
+        SetText("Pages/StatsPage/Combat/RangeValue", $"{snapshot.TargetRange:0}");
+        SetText("Pages/StatsPage/Combat/ProjectileValue", $"{snapshot.ProjectileSpeed:0}");
+        SetText("Pages/StatsPage/Combat/AttractionValue", $"{snapshot.AttractionRange:0}");
+        SetText("Pages/StatsPage/Sources/PermanentValue", snapshot.PermanentSummary);
+        SetText("Pages/StatsPage/Sources/SpellValue", FormatSpellSummary(snapshot));
+        _buildView?.SetModel(snapshot.Build);
     }
 
     /// <summary>
-    /// 将已悟符卡的原作名、武侠流派和自动施放资源合并为一条可换行属性摘要。
+    /// 把正式齐射投影压成一行可核对文本，明确弹数、单弹范围以及破甲分支的次击总伤。
+    /// </summary>
+    private static string FormatVolleyDamage(CharacterStatsSnapshot snapshot)
+    {
+        string single = snapshot.MinimumProjectileDamage == snapshot.MaximumProjectileDamage
+            ? snapshot.MinimumProjectileDamage.ToString()
+            : $"{snapshot.MinimumProjectileDamage}-{snapshot.MaximumProjectileDamage}";
+        string pierce = snapshot.SecondaryVolleyDamage > 0
+            ? $" · 贯穿 +{snapshot.SecondaryVolleyDamage}"
+            : string.Empty;
+        return $"{snapshot.ProjectileCount} 发 · 单弹 {single}{pierce}";
+    }
+
+    /// <summary>
+    /// 切换属性与构筑页并同步页签状态；两个页面共享同一打开瞬间的冻结快照。
+    /// </summary>
+    public void ShowPage(CharacterStatsPage page)
+    {
+        _page = page;
+        bool showStats = page == CharacterStatsPage.Stats;
+        GetNode<Control>("Root/Panel/Padding/Layout/Pages/StatsPage").Visible = showStats;
+        GetNode<Control>("Root/Panel/Padding/Layout/Pages/BuildPage").Visible = !showStats;
+        GetNode<Button>("Root/Panel/Padding/Layout/Header/StatsTab").ButtonPressed = showStats;
+        GetNode<Button>("Root/Panel/Padding/Layout/Header/BuildTab").ButtonPressed = !showStats;
+        if (IsOpen && !showStats)
+        {
+            _buildView?.Graph.GrabFocus();
+        }
+    }
+
+    /// <summary>
+    /// 将四主攻二护持的占用量与下一次独立触发合并为紧凑摘要，不重复展示旧资源规则。
     /// </summary>
     private static string FormatSpellSummary(CharacterStatsSnapshot snapshot)
     {
         if (!snapshot.SpellCards.HasUnlockedCard)
         {
-            return $"尚未悟得 · 灵力 {snapshot.SpellCards.CurrentPower}/{snapshot.SpellCards.MaximumPower}";
+            return "主攻 0/4 · 护持 0/2 · 尚未悟得";
         }
 
-        string cards = string.Join("、", snapshot.SpellCards.UnlockedCards.Select(
-            card => $"{card.FullName}（{card.WuxiaStyle}）"));
-        return $"{cards} · 自动施放 · 灵力 " +
-            $"{snapshot.SpellCards.CurrentPower}/{snapshot.SpellCards.MaximumPower}";
+        int offensive = snapshot.SpellCards.UnlockedCards.Count(card =>
+            SpellCardSlotPolicy.Classify(card) == SpellCardSlotKind.Offensive);
+        int support = snapshot.SpellCards.UnlockedCards.Count(card =>
+            SpellCardSlotPolicy.Classify(card) == SpellCardSlotKind.Support);
+        string state = snapshot.SpellCards.NextCardIsWaitingForCondition
+            ? "周天就绪，等待条件"
+            : $"{snapshot.SpellCards.NextCastRemaining:0.0}秒";
+        return $"主攻 {offensive}/{SpellCardSlotPolicy.MaximumOffensiveSlots} · " +
+            $"护持 {support}/{SpellCardSlotPolicy.MaximumSupportSlots} · 自动运转\n" +
+            $"下一式 {snapshot.SpellCards.NextCardName} {state} · 随实效属性换算";
     }
 
     /// <summary>

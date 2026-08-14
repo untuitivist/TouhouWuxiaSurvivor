@@ -5,11 +5,32 @@
   "title_en": "Legacy of Lunatic Kingdom",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["月之虹海", "月之都", "静海"],
-    "structures": ["月面传送门", "月都门", "静海前哨"],
-    "enemies": ["月兔兵", "月都卫兵", "纯化灵"],
-    "characters": ["清兰", "铃瑚", "哆来咪·苏伊特", "稀神探女", "克劳恩皮丝", "纯狐", "赫卡提亚·拉碧斯拉祖利"]
+    "biomes": [
+      "月之虹海",
+      "月之都",
+      "静海"
+    ],
+    "structures": [
+      "月面传送门",
+      "月都门",
+      "静海前哨"
+    ],
+    "enemies": [
+      "月兔兵",
+      "月都卫兵",
+      "纯化灵"
+    ],
+    "characters": [
+      "清兰",
+      "铃瑚",
+      "哆来咪·苏伊特",
+      "稀神探女",
+      "克劳恩皮丝",
+      "纯狐",
+      "赫卡提亚·拉碧斯拉祖利"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方绀珠传。",
       "wuxia_style": "纯化绝学 · 弹幕炼狱",
-      "description": "敌群密集时将弹幕纯化为高威力爆发，清扫大范围目标。",
+      "description": "周天就绪且敌群进入范围时，敌群密集时将弹幕纯化为高威力爆发，清扫大范围目标。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 100,
-      "cooldown_seconds": 9,
-      "effect_range": 360,
-      "damage": 18,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.714285714,
+      "range_scale": 0.782608696,
+      "damage_scale": 2.013,
+      "target_scale": 0.8,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 2.444444444,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "ring"
     },
     {
       "id": "th15_hecatia_trinitarian_rhapsody",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方绀珠传。",
       "wuxia_style": "三界神通 · 狂想轮舞",
-      "description": "灵力充盈时驱动三界追弹，轮流锁定多名敌人。",
+      "description": "周天就绪且敌群进入范围时，驱动三界追弹，轮流锁定多名敌人。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 90,
-      "cooldown_seconds": 7,
-      "effect_range": 600,
-      "damage": 12,
-      "target_count": 12,
-      "defense_seconds": 0,
       "prerequisite": "soul_seeking",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.333333333,
+      "range_scale": 1.304347826,
+      "damage_scale": 1,
+      "target_scale": 1.15,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.02,
+      "travel_duration_scale": 1.466666667,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "orbit"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

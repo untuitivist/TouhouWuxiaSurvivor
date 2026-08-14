@@ -4,13 +4,15 @@ using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Contracts;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Scaling;
 using TouhouWuxiaSurvivor.Settings;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证符卡目录、前置构筑、灵力边界与无主动按键契约，防止奥义退化成额外操作负担。
+/// 验证奥义目录、触发策略、系数缩放与无主动按键契约，防止自动体系退化成充能技能。
 /// </summary>
 public partial class SpellCardBalanceTest : Node
 {
@@ -22,7 +24,8 @@ public partial class SpellCardBalanceTest : Node
         try
         {
             VerifyCatalog();
-            VerifyPowerState();
+            VerifyActivationCoverage();
+            VerifyScaling();
             VerifyBuildRequirements();
             VerifyContentIsolation();
             VerifyNoActiveBindings();
@@ -37,22 +40,29 @@ public partial class SpellCardBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认二十部作品都有代表符卡，身份、角色归属、来源性质和灵力数值均可解析。
+    /// 确认二十部作品都有代表奥义，身份、角色归属、来源性质和缩放系数均可解析。
     /// </summary>
     private static void VerifyCatalog()
     {
-        Require(SpellCardCatalog.All.Count == 42,
-            "The all-work catalog must contain 42 representative spell cards.");
-        Require(SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 42 &&
+        Require(SpellCardCatalog.All.Count == 46,
+            "The all-work catalog must contain 46 representative spell cards.");
+        Require(SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 46 &&
             SpellCardCatalog.All.All(card =>
                 CharacterCatalog.FindById(card.OwnerCharacterId) is not null),
             "Spell card IDs or stable owner identities are invalid.");
         Require(SpellCardCatalog.All.All(card =>
-                card.Combat.PowerCost is > 0 and <= SpellPowerState.MaximumPower),
-            "Every spell card cost must fit the shared power pool.");
+                card.Combat.IntervalScale > 0.0f && card.Combat.RangeScale > 0.0f &&
+                card.Combat.DamageScale > 0.0f && card.Combat.TargetScale >= 0.0f &&
+                card.Combat.ActivationThresholdScale > 0.0f &&
+                card.Combat.DefenseScale >= 0.0f &&
+                card.Combat.ProjectileSpeedScale > 0.0f),
+            "Every spell card must define valid scaling dimensions.");
+        Require(SpellCardCatalog.All.Count(card =>
+                card.SourcePackId == ContentPackCatalog.Base.Id) == 6,
+            "Base must own its complete six-card loadout.");
         foreach (ContentPackDefinition pack in ContentPackCatalog.All)
         {
-            int expected = pack.Number == 6 ? 4 : 2;
+            const int expected = 2;
             SpellCardDefinition[] cards = SpellCardCatalog.All.Where(
                 card => card.SourcePackId == pack.Id).ToArray();
             Require(cards.Length == expected,
@@ -65,19 +75,40 @@ public partial class SpellCardBalanceTest : Node
         }
     }
 
-    /// <summary>
-    /// 确认灵息换算会裁剪到上限，扣费失败不改变状态，成功扣费保留准确余量。
-    /// </summary>
-    private static void VerifyPowerState()
+    /// <summary>确认三类无资源自动触发均有正式内容，且旧灵力字段不会进入运行定义。</summary>
+    private static void VerifyActivationCoverage()
     {
-        var power = new SpellPowerState();
-        Require(power.GainFromSpirit(3) == 12 && power.CurrentPower == 12,
-            "Spirit-to-power conversion is incorrect.");
-        Require(!power.TrySpend(70) && power.CurrentPower == 12,
-            "Failed spending changed spell power.");
-        power.GainFromSpirit(100);
-        Require(power.CurrentPower == 100 && power.TrySpend(70) && power.CurrentPower == 30,
-            "Power cap or successful spending is incorrect.");
+        var counts = SpellCardCatalog.All.GroupBy(card => card.ActivationKind)
+            .ToDictionary(group => group.Key, group => group.Count());
+        Require(counts.GetValueOrDefault(SpellCardActivationKind.Periodic) == 13 &&
+            counts.GetValueOrDefault(SpellCardActivationKind.Crowd) == 23 &&
+            counts.GetValueOrDefault(SpellCardActivationKind.OnDamaged) == 10,
+            "Spell activation migration did not preserve the 13/23/10 design matrix.");
+    }
+
+    /// <summary>
+    /// 确认解析器只消费角色基础属性，并让攻势、范围、弹速、目标与周天保持单调成长。
+    /// </summary>
+    private static void VerifyScaling()
+    {
+        SpellCardDefinition card = SpellCardCatalog.All.Single(
+            item => item.FullName == "灵符「梦想封印」");
+        var baseline = new SpellCardBaseAttributes(
+            10.0f, 0.18f, 460.0f, 360.0f, 1.0f, 5.25f, 6, 18.0f);
+        var upgraded = new SpellCardBaseAttributes(
+            30.0f, 0.12f, 690.0f, 540.0f, 1.5f, 3.5f, 9, 18.0f);
+        ResolvedSpellCardCombat before = SpellCardScalingResolver.Resolve(
+            card.Combat, baseline);
+        ResolvedSpellCardCombat after = SpellCardScalingResolver.Resolve(
+            card.Combat, upgraded);
+        Require(before.Damage == 7 && Mathf.IsEqualApprox(before.EffectRange, 560.0f) &&
+            before.TargetCount == 5 && before.ActivationThreshold == 3 &&
+            Mathf.IsEqualApprox(before.IntervalSeconds, 4.0f),
+            "Schema v2 did not preserve the reference spell behavior.");
+        Require(after.Damage > before.Damage && after.EffectRange > before.EffectRange &&
+            after.TargetCount > before.TargetCount && after.ProjectileSpeed > before.ProjectileSpeed &&
+            after.IntervalSeconds < before.IntervalSeconds,
+            "Spell card scaling did not follow upgraded base attributes.");
     }
 
     /// <summary>
@@ -105,12 +136,16 @@ public partial class SpellCardBalanceTest : Node
     /// </summary>
     private static void VerifyContentIsolation()
     {
-        Require(SpellCardCatalog.GetEnabled(ContentPackSelection.BaseOnly).Count == 0,
-            "Base-only runs leaked official spell cards.");
+        Require(SpellCardCatalog.GetEnabled(ContentPackSelection.BaseOnly).Count == 6 &&
+            SpellCardCatalog.GetEnabled(ContentPackSelection.BaseOnly).All(card =>
+                card.SourcePackId == ContentPackCatalog.Base.Id),
+            "Base-only runs must expose the complete permanent 4+2 spell loadout.");
         ContentPackDefinition th06 = ContentPackCatalog.All.Single(pack => pack.Number == 6);
         var selection = new ContentPackSelection([th06.Id]);
-        Require(SpellCardCatalog.GetEnabled(selection).Count == 4 &&
-            SpellCardCatalog.GetEnabled(selection).All(card => card.SourcePackId == th06.Id),
+        Require(SpellCardCatalog.GetEnabled(selection).Count == 8 &&
+            SpellCardCatalog.GetEnabled(selection).Count(card =>
+                card.SourcePackId == ContentPackCatalog.Base.Id) == 6 &&
+            SpellCardCatalog.GetEnabled(selection).Count(card => card.SourcePackId == th06.Id) == 2,
             "Single-pack spell filtering is incorrect.");
     }
 

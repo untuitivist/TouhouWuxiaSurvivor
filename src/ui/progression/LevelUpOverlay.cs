@@ -13,7 +13,7 @@ namespace TouhouWuxiaSurvivor.Ui.Progression;
 public partial class LevelUpOverlay : CanvasLayer
 {
     private readonly List<Button> _buttons = [];
-    private IReadOnlyList<RunUpgradeDefinition> _choices = [];
+    private IReadOnlyList<RunUpgradeChoice> _choices = [];
     private Control? _root;
     private Label? _levelLabel;
     private WorldMapOverlay? _map;
@@ -23,7 +23,7 @@ public partial class LevelUpOverlay : CanvasLayer
 
     public bool IsOpen => _root?.Visible == true;
     public int ChoiceCount => _choices.Count;
-    public event Action<RunUpgradeDefinition>? ChoiceSelected;
+    public event Action<RunUpgradeChoice>? ChoiceSelected;
 
     /// <summary>
     /// 缓存标题和三个固定选择按钮，连接索引稳定的选择回调并默认隐藏界面。
@@ -61,7 +61,7 @@ public partial class LevelUpOverlay : CanvasLayer
     /// 写入本次候选项；首次打开时记录暂停状态，多级连续选择时保持同一暂停所有权。
     /// </summary>
     public void Present(
-        IReadOnlyList<RunUpgradeDefinition> choices,
+        IReadOnlyList<RunUpgradeChoice> choices,
         RunBuildState build,
         int level)
     {
@@ -80,8 +80,8 @@ public partial class LevelUpOverlay : CanvasLayer
             _buttons[index].Visible = available;
             if (available)
             {
-                RunUpgradeDefinition definition = choices[index];
-                _buttons[index].Text = definition.FormatChoice(build.GetRank(definition.Kind));
+                _buttons[index].Text = RunUpgradeChoiceTextFormatter.Format(
+                    choices[index], build);
             }
         }
 
@@ -99,7 +99,7 @@ public partial class LevelUpOverlay : CanvasLayer
             return;
         }
 
-        RunUpgradeDefinition choice = _choices[index];
+        RunUpgradeChoice choice = _choices[index];
         _choices = [];
         ChoiceSelected?.Invoke(choice);
     }

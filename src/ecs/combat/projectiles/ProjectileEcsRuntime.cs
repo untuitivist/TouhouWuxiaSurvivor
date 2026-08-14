@@ -22,12 +22,12 @@ public partial class ProjectileEcsRuntime : Node2D
     public int TotalSpawned { get; private set; }
 
     /// <summary>
-    /// 绑定敌人容器并从共享清单加载红魔乡弹幕图集；素材缺失时仍能绘制纯色占位点。
+    /// 绑定敌人容器并按本体常驻奥义身份加载弹幕图集；素材缺失时仍能绘制纯色占位点。
     /// </summary>
     public void Configure(Node2D enemyContainer)
     {
         _enemyContainer = enemyContainer;
-        if (_visuals.TryGet("th06_eosd", InternalVisualCategory.SpellCard,
+        if (_visuals.TryGet("base", InternalVisualCategory.SpellCard,
                 "灵符「梦想封印」", out InternalVisualDefinition definition) &&
             definition.Kind == InternalVisualKind.BulletAtlas &&
             _visuals.TryGetTexture(definition, out Texture2D texture))
@@ -39,10 +39,20 @@ public partial class ProjectileEcsRuntime : Node2D
     }
 
     /// <summary>在 ECS 连续池中生成一颗投射物，并返回轻量实体句柄。</summary>
-    public void Spawn(Vector2 position, Vector2 direction, float speed, int damage)
+    public void Spawn(
+        Vector2 position,
+        Vector2 direction,
+        float speed,
+        int damage,
+        int maximumHits = 1,
+        int secondaryHitDamage = -1)
     {
-        _pool.Add(position, direction, speed, damage);
-        TotalSpawned++;
+        if (_pool.TryAdd(position, direction, speed, damage,
+                ProjectileFaction.Player, 2.0f, 4.0f, 0, out _, maximumHits,
+                secondaryHitDamage))
+        {
+            TotalSpawned++;
+        }
         QueueRedraw();
     }
 

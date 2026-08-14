@@ -5,11 +5,32 @@
   "title_en": "Undefined Fantastic Object",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["春云之海", "圣辇船甲板", "法界"],
-    "structures": ["云海宝船遗物", "圣辇船", "法界封印"],
-    "enemies": ["飞天妖怪", "飞仓灵", "法界魔灵"],
-    "characters": ["娜兹玲", "多多良小伞", "云居一轮与云山", "村纱水蜜", "寅丸星", "圣白莲", "封兽鵺"]
+    "biomes": [
+      "春云之海",
+      "圣辇船甲板",
+      "法界"
+    ],
+    "structures": [
+      "云海宝船遗物",
+      "圣辇船",
+      "法界封印"
+    ],
+    "enemies": [
+      "飞天妖怪",
+      "飞仓灵",
+      "法界魔灵"
+    ],
+    "characters": [
+      "娜兹玲",
+      "多多良小伞",
+      "云居一轮与云山",
+      "村纱水蜜",
+      "寅丸星",
+      "圣白莲",
+      "封兽鵺"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方星莲船。",
       "wuxia_style": "魔人经法 · 复诵增幅",
-      "description": "锁定强敌复诵魔经，以连续强化弹击贯穿目标。",
+      "description": "周天一转，锁定最高威胁强敌复诵魔经，从身前扇面齐射连续强化弹。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 90,
-      "cooldown_seconds": 7,
-      "effect_range": 600,
-      "damage": 15,
-      "target_count": 5,
-      "defense_seconds": 0,
       "prerequisite": "wind_riding",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.333333333,
+      "range_scale": 1.304347826,
+      "damage_scale": 1.325,
+      "target_scale": 0.55,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.02,
+      "travel_duration_scale": 1.466666667,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     },
     {
       "id": "th12_nue_barrage_chimera",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方星莲船。",
       "wuxia_style": "鵺影奇功 · 万象混形",
-      "description": "敌群聚集时放出难辨正体的混合追弹，分袭多个目标。",
+      "description": "周天就绪且敌群进入范围时，放出难辨正体的混合追弹，分袭多个目标。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 75,
-      "cooldown_seconds": 5.5,
-      "effect_range": 540,
-      "damage": 9,
-      "target_count": 9,
-      "defense_seconds": 0,
       "prerequisite": "soul_seeking",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.047619048,
+      "range_scale": 1.173913043,
+      "damage_scale": 0.79,
+      "target_scale": 0.95,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.022222222,
+      "travel_duration_scale": 1.62962963,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

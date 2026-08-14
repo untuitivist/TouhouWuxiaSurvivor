@@ -49,11 +49,27 @@ public static class EnemyDifficultyScaler
             definition.AllowedBiomes,
             definition.ExplodesOnDeath,
             definition.RequiredContentPack,
-            SaturatingPositiveInt(definition.ContactDamage * snapshot.EnemyDamageMultiplier),
+            ScaleContactDamage(definition.ContactDamage, snapshot.EnemyDamageMultiplier),
             definition.AiProfile,
             definition.ProjectileProfile,
             definition.IsBoss,
-            definition.CharacterId);
+            definition.CharacterId,
+            definition.BaseMaxHealth);
+    }
+
+    /// <summary>
+    /// 将基础接触伤害按共享倍率取最近整数；这样 1 点伤害不会因十秒档位的微小增长立刻跳成 2 点，
+    /// 同时倍率跨过半整数阈值后仍会持续提高，普通敌人与角色 Boss 共用完全相同的离散规则。
+    /// </summary>
+    public static int ScaleContactDamage(double baseDamage, double multiplier)
+    {
+        double normalizedBase = double.IsFinite(baseDamage) ? Math.Max(1.0, baseDamage) : 1.0;
+        double normalizedMultiplier = double.IsFinite(multiplier) ? Math.Max(1.0, multiplier) : 1.0;
+        double scaled = normalizedBase * normalizedMultiplier;
+        return (int)Math.Clamp(
+            Math.Round(scaled, MidpointRounding.AwayFromZero),
+            1.0,
+            int.MaxValue / 2.0);
     }
 
     /// <summary>把持续增长的正数倍率安全转换为战斗整数，避免极端长局发生符号翻转。</summary>

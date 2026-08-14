@@ -5,11 +5,31 @@
   "title_en": "Lotus Land Story",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["梦幻世界", "幻想花田", "梦幻馆庭园"],
-    "structures": ["梦幻世界入口", "花田凉亭", "梦幻馆"],
-    "enemies": ["梦幻花妖", "幻想莲灵", "梦幻馆卫灵"],
-    "characters": ["奥莲姬", "胡桃", "艾丽", "幽香", "梦月", "幻月"]
+    "biomes": [
+      "梦幻世界",
+      "幻想花田",
+      "梦幻馆庭园"
+    ],
+    "structures": [
+      "梦幻世界入口",
+      "花田凉亭",
+      "梦幻馆"
+    ],
+    "enemies": [
+      "梦幻花妖",
+      "幻想莲灵",
+      "梦幻馆卫灵"
+    ],
+    "characters": [
+      "奥莲姬",
+      "胡桃",
+      "艾丽",
+      "幽香",
+      "梦月",
+      "幻月"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +40,22 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自幽香的花弹与魔炮。",
       "wuxia_style": "花间绝学 · 幻想盛放",
-      "description": "敌群成势时令花弹遍地绽放，对范围内敌人造成爆发伤害。",
+      "description": "周天就绪且敌群进入范围时，敌群成势时令花弹遍地绽放，对范围内敌人造成爆发伤害。",
       "effect": "area_burst",
-      "trigger": "crowd",
-      "power_cost": 80,
-      "cooldown_seconds": 6.5,
-      "effect_range": 288,
-      "damage": 10,
-      "target_count": 0,
-      "defense_seconds": 0,
       "prerequisite": "spirit_gathering",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.238095238,
+      "range_scale": 0.626086957,
+      "damage_scale": 1.39,
+      "target_scale": 1.067,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0,
+      "travel_duration_scale": 3.055555556,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "ring"
     },
     {
       "id": "th04_gengetsu_double_magic_cannon",
@@ -40,17 +65,23 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自幻月与梦月联手的终局攻势。",
       "wuxia_style": "双月合击 · 天魔双炮",
-      "description": "锁定强敌后由幻月主攻、梦月助阵，交错轰出两路集中魔炮。",
+      "description": "周天一转，锁定强敌后由幻月主攻、梦月助阵，交错轰出两路集中魔炮。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 90,
-      "cooldown_seconds": 8,
-      "effect_range": 600,
-      "damage": 16,
-      "target_count": 4,
-      "defense_seconds": 0,
       "prerequisite": "wind_riding",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.523809524,
+      "range_scale": 1.304347826,
+      "damage_scale": 1.4,
+      "target_scale": 0.5,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.02,
+      "travel_duration_scale": 1.466666667,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

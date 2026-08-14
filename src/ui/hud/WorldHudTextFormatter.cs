@@ -15,12 +15,16 @@ public static class WorldHudTextFormatter
     public static string FormatStatus(WorldHudSnapshot snapshot)
     {
         TimeSpan elapsed = TimeSpan.FromSeconds(snapshot.ElapsedSeconds);
-        string spellMode = snapshot.SpellCards.HasUnlockedCard ? "自动" : "未悟";
+        string spellMode = snapshot.SpellCards.HasUnlockedCard
+            ? snapshot.SpellCards.NextCardIsWaitingForCondition
+                ? "待机"
+                : $"{snapshot.SpellCards.NextCastRemaining:0.0}s"
+            : "未悟";
         return $"{(int)elapsed.TotalMinutes:00}:{elapsed.Seconds:00}" +
             $"  击破{snapshot.DefeatedEnemies}" +
             $"  敌人{snapshot.AliveEnemies}" +
             $"  强化{snapshot.ActiveBuffs}" +
-            $"  奥义{spellMode}{snapshot.SpellCards.CurrentPower}/{snapshot.SpellCards.MaximumPower}";
+            $"  奥义{spellMode}";
     }
 
     /// <summary>
@@ -37,14 +41,16 @@ public static class WorldHudTextFormatter
         $"Spell  {FormatSpellDetail(snapshot.SpellCards)}";
 
     /// <summary>
-    /// 把已悟符卡、共享灵力和公共冷却格式化为属性提示与 F3 共用的紧凑诊断文字。
+    /// 把已悟奥义与最近独立倒计时格式化为属性提示与 F3 共用的紧凑诊断文字。
     /// </summary>
     public static string FormatSpellDetail(SpellCardRuntimeSnapshot snapshot)
     {
         string cards = snapshot.HasUnlockedCard
             ? string.Join("、", snapshot.UnlockedCards.Select(card => card.ShortName))
             : "尚未悟得";
-        return $"{cards} · 灵力 {snapshot.CurrentPower}/{snapshot.MaximumPower}" +
-            $" · 冷却 {snapshot.CooldownRemaining:0.0}秒";
+        string state = snapshot.NextCardIsWaitingForCondition
+            ? "周天已就绪，等待被动条件"
+            : $"{snapshot.NextCastRemaining:0.0}秒";
+        return $"{cards} · 下一式 {snapshot.NextCardName} · {state}";
     }
 }

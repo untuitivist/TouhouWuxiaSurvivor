@@ -34,7 +34,7 @@ public partial class RunProgressionBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认首级需要八点灵息、需求单调增长，并能一次正确跨越多个等级。
+    /// 确认首级需要八点灵息、后续需求单调增长，并能一次正确跨越多个等级。
     /// </summary>
     private static void VerifyLevelCurve()
     {
@@ -48,7 +48,7 @@ public partial class RunProgressionBalanceTest : Node
         }
 
         var state = new RunProgressionState();
-        Require(state.AddExperience(18) == 2 && state.Level == 3 &&
+        Require(state.AddExperience(21) == 2 && state.Level == 3 &&
             state.Experience == 0 && state.PendingChoices == 2,
             "Multi-level experience accounting is incorrect.");
         Require(state.ResolveChoice() && state.PendingChoices == 1,
@@ -56,14 +56,14 @@ public partial class RunProgressionBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认所有敌人的灵息处于一至八点，并且目录中最高耐久敌人的奖励不低于最低耐久敌人。
+    /// 确认普通敌人的灵息处于安全范围，并且更耐久敌人的奖励不会反向降低。
     /// </summary>
     private static void VerifySpiritValues()
     {
         foreach (EnemyDefinition enemy in EnemyCatalog.All)
         {
-            Require(SpiritValueCalculator.Calculate(enemy) is >= 1 and <= 8,
-                $"Spirit value is outside 1-8: {enemy.DisplayName}");
+            Require(SpiritValueCalculator.Calculate(enemy) is >= 1 and <= 16,
+                $"Spirit value is outside 1-16: {enemy.DisplayName}");
         }
 
         EnemyDefinition weakest = EnemyCatalog.All.MinBy(enemy => enemy.MaxHealth)!;
@@ -84,16 +84,17 @@ public partial class RunProgressionBalanceTest : Node
             item.IsRepeatable).ToArray();
         RunUpgradeDefinition[] spellCards = RunUpgradeCatalog.All
             .Where(item => item.Category == RunUpgradeCategory.SpellCard).ToArray();
-        Require(finite.Length == 6 && endless.Length == 3 && spellCards.Length == 42,
+        Require(finite.Length == 6 && endless.Length == 6 && spellCards.Length == 46,
             "The pool does not contain the expected finite, endless, and spell upgrades.");
         Require(RunUpgradeCatalog.All.Select(item => item.Id).Distinct().Count() ==
                 RunUpgradeCatalog.All.Count &&
-            finite.Concat(endless).Select(item => item.Kind).Distinct().Count() == 9,
+            finite.Concat(endless).Select(item => item.Kind).Distinct().Count() == 12,
             "Upgrade IDs or cultivation effect kinds are duplicated.");
         Require(finite.All(item => item.MaxRank == 5) &&
             endless.All(item => item.MaxRank == int.MaxValue && item.Requirement is not null) &&
             spellCards.All(item => item.MaxRank == 1 && item.Requirement is not null &&
-                item.RequiredContentPack is not null && item.SpellCardId is not null),
+                item.SpellCardId is not null) &&
+            spellCards.Count(item => item.RequiredContentPack is null) == 6,
             "Upgrade rank, requirement, or content ownership contract is incorrect.");
     }
 
@@ -117,12 +118,13 @@ public partial class RunProgressionBalanceTest : Node
 
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
-        Require(modifiers.DamageBonus == 1 &&
-            Mathf.IsEqualApprox(modifiers.FireRateMultiplier, 1.12f) &&
-            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.08f) &&
-            Mathf.IsEqualApprox(modifiers.TargetRangeMultiplier, 1.10f) &&
-            Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.12f) &&
-            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.25f),
+        Require(modifiers.DamageBonus == 0 &&
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.10f) &&
+            Mathf.IsEqualApprox(modifiers.FireRateMultiplier, 1.09f) &&
+            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.07f) &&
+            Mathf.IsEqualApprox(modifiers.TargetRangeMultiplier, 1.08f) &&
+            Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.08f) &&
+            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.18f),
             "First-rank runtime modifiers are incorrect.");
 
         RunUpgradeDefinition damage = RunUpgradeCatalog.All[0];
@@ -135,9 +137,10 @@ public partial class RunProgressionBalanceTest : Node
 
         modifiers.ConfigureBase(2, 1.04f, 1.16f);
         modifiers.Refresh(build);
-        Require(modifiers.DamageBonus == 7 &&
-            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.04f * 1.08f) &&
-            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.16f * 1.25f),
+        Require(modifiers.DamageBonus == 2 &&
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.50f) &&
+            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.04f * 1.07f) &&
+            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.16f * 1.18f),
             "Permanent and in-run modifiers did not compose from stable bases.");
     }
 
@@ -158,14 +161,14 @@ public partial class RunProgressionBalanceTest : Node
 
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
-        int previous = modifiers.DamageBonus;
+        float previous = modifiers.AttackPowerMultiplier;
         for (int rank = 0; rank < 1000; rank++)
         {
             Require(build.Apply(endless), "Repeatable cultivation rejected a valid rank.");
         }
 
         modifiers.Refresh(build);
-        Require(modifiers.DamageBonus > previous && build.CanUpgrade(endless),
+        Require(modifiers.AttackPowerMultiplier > previous && build.CanUpgrade(endless),
             "Endless cultivation stopped growing or became unavailable.");
     }
 

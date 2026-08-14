@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3]
+[gd_scene load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -28,6 +28,7 @@
 [ext_resource type="PackedScene" path="res://src/ui/progression/LevelUpOverlay.tscn" id="29_level_up"]
 [ext_resource type="PackedScene" path="res://src/ui/stats/CharacterStatsOverlay.tscn" id="30_stats"]
 [ext_resource type="Script" path="res://src/gameplay/spellcards/runtime/SpellCardCoordinator.cs" id="31_spell_cards"]
+[ext_resource type="Script" path="res://src/gameplay/spellcards/effects/SpellCardEffectAssets.cs" id="36_spell_assets"]
 [ext_resource type="PackedScene" path="res://src/gameplay/spellcards/effects/FantasySealOrb.tscn" id="32_fantasy_orb"]
 [ext_resource type="PackedScene" path="res://src/gameplay/spellcards/effects/SealingCircleEffect.tscn" id="33_sealing_circle"]
 [ext_resource type="Script" path="res://src/ecs/combat/EcsCombatWorld.cs" id="35_combat_world"]
@@ -152,6 +153,9 @@ script = ExtResource("28_progression")
 
 [node name="SpellCardCoordinator" type="Node" parent="."]
 script = ExtResource("31_spell_cards")
+
+[node name="SpellCardEffectAssets" type="Node" parent="."]
+script = ExtResource("36_spell_assets")
 FantasySealOrbScene = ExtResource("32_fantasy_orb")
 SealingCircleScene = ExtResource("33_sealing_circle")
 

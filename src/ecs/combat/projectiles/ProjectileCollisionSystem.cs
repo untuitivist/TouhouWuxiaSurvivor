@@ -9,11 +9,19 @@ namespace TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 /// </summary>
 public sealed class ProjectileCollisionSystem
 {
+    private readonly EnemySpatialHash _enemyIndex = new();
+
+    public int LastCandidateChecks { get; private set; }
+
+    public long LastNaiveComparisonUpperBound { get; private set; }
+
     /// <summary>
     /// 查询敌人容器中的存活敌人；命中后调用既有受伤入口并消费投射物。
     /// </summary>
     public void Resolve(ProjectilePool pool, Node2D enemyContainer)
     {
+        LastCandidateChecks = 0;
+        LastNaiveComparisonUpperBound = 0;
         for (int projectileIndex = pool.Count - 1; projectileIndex >= 0; projectileIndex--)
         {
             ProjectileComponent projectile = pool.Get(projectileIndex);
@@ -22,7 +30,7 @@ public sealed class ProjectileCollisionSystem
                 continue;
             }
 
-            bool consumed = false;
+            bool hit = false;
             foreach (Node child in enemyContainer.GetChildren())
             {
                 if (child is not EnemyActor enemy || !enemy.IsAlive)
@@ -36,15 +44,31 @@ public sealed class ProjectileCollisionSystem
                     continue;
                 }
 
-                enemy.ReceiveDamage(projectile.Damage);
-                consumed = true;
+                ulong identity = enemy.GetInstanceId();
+                if (identity == projectile.LastHitIdentity)
+                {
+                    continue;
+                }
+
+                if (projectile.Damage > 0)
+                {
+                    enemy.ReceiveDamage(projectile.Damage);
+                }
+                projectile.RemainingHits--;
+                projectile.LastHitIdentity = identity;
+                projectile.AdvanceHitDamage();
+                hit = true;
                 break;
             }
 
-            if (consumed)
+            if (hit && projectile.RemainingHits <= 0)
             {
                 pool.RemoveSwap(projectileIndex);
                 pool.TrimLast();
+            }
+            else if (hit)
+            {
+                pool.Set(projectileIndex, projectile);
             }
         }
     }
@@ -60,14 +84,19 @@ public sealed class ProjectileCollisionSystem
         Action<int, int> damageEnemy,
         Action<int> damagePlayer)
     {
+        _enemyIndex.Build(enemies);
+        LastCandidateChecks = 0;
+        LastNaiveComparisonUpperBound =
+            (long)projectiles.CountFaction(ProjectileFaction.Player) * _enemyIndex.AliveCount;
         for (int projectileIndex = projectiles.Count - 1; projectileIndex >= 0; projectileIndex--)
         {
             ProjectileComponent projectile = projectiles.Get(projectileIndex);
             bool consumed = projectile.Faction == ProjectileFaction.Player
-                ? ResolvePlayerProjectile(projectile, enemies, damageEnemy)
+                ? ResolvePlayerProjectile(ref projectile, enemies, damageEnemy)
                 : ResolveEnemyProjectile(projectile, playerPosition, playerRadius, damagePlayer);
             if (!consumed)
             {
+                projectiles.Set(projectileIndex, projectile);
                 continue;
             }
 
@@ -77,26 +106,28 @@ public sealed class ProjectileCollisionSystem
     }
 
     /// <summary>查询玩家弹与存活敌人的圆形重叠，并把命中索引和伤害交回战斗世界处理死亡事件。</summary>
-    private static bool ResolvePlayerProjectile(
-        ProjectileComponent projectile,
+    private bool ResolvePlayerProjectile(
+        ref ProjectileComponent projectile,
         EnemyPool enemies,
         Action<int, int> damageEnemy)
     {
-        for (int enemyIndex = 0; enemyIndex < enemies.Count; enemyIndex++)
+        int candidateChecks = LastCandidateChecks;
+        bool found = _enemyIndex.TryFindFirstOverlap(
+            projectile, enemies, out int enemyIndex, ref candidateChecks);
+        LastCandidateChecks = candidateChecks;
+        if (!found)
         {
-            EnemyComponent enemy = enemies.Get(enemyIndex);
-            float radius = projectile.Radius + enemy.Definition.CollisionRadius;
-            if (!enemy.Alive ||
-                projectile.Position.DistanceSquaredTo(enemy.Position) > radius * radius)
-            {
-                continue;
-            }
-
-            damageEnemy(enemyIndex, projectile.Damage);
-            return true;
+            return false;
         }
 
-        return false;
+        if (projectile.Damage > 0)
+        {
+            damageEnemy(enemyIndex, projectile.Damage);
+        }
+        projectile.RemainingHits--;
+        projectile.LastHitIdentity = (ulong)enemies.Get(enemyIndex).Entity.Value;
+        projectile.AdvanceHitDamage();
+        return projectile.RemainingHits <= 0;
     }
 
     /// <summary>查询敌弹与玩家圆形碰撞；阵营已经由上层分派，因此不会误伤其他敌人。</summary>

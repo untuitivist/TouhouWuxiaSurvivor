@@ -1,5 +1,45 @@
 # Findings and Decisions
 
+## Combat Balance Audit - 2026-08-12
+
+- Character player and Boss values are currently derived from SHA-256 bytes of `CharacterId`; this is stable but not designable, explainable, or tied to Touhou identity.
+- Official ordinary-enemy values currently use work-number modulo variation. Source work therefore changes stats without a gameplay reason, contradicting horizontal DLC.
+- The six finite core upgrades are almost entirely flat stat growth. Their specializations also map back to the same six stats, so most choices do not alter targeting, projectile lifecycle, hit behavior, or defensive decisions.
+- Player barrage projectile count advances automatically by elapsed time (1/3/5/7 shots) independent of build. This makes time itself grant a large multiplicative DPS increase and can swamp upgrade balance.
+- Ordinary-enemy health, damage, spawn density, rewards, level requirements, and player projectile growth were authored separately. They need one simulation before individual constants can be considered balanced.
+- Spell cards correctly use runtime-resolved character/build attributes and no longer use spirit power, but their 42 factor sets still require archetype-budget comparison by trigger reliability, area coverage, target count, defense, and interval.
+
+
+## Horizontal build, world, and supplied-log result - 2026-08-12
+
+- D3D12 is the reproduced slow path: the supplied session runs around 13.9 FPS even in the main menu with no combat entities, while GPU render time remains below 1 ms and one CPU core stays saturated. This excludes the FPS cap, ECS population, collision count, and GPU saturation as the primary cause.
+- Both OpenGL sessions run correctly on the same RTX 3050 Laptop at 1280x720. Unpaused gameplay reaches roughly 298-645 FPS at the recorded low-to-mid entity load, so OpenGL Compatibility is now the default and D3D12 remains a diagnostic comparison path.
+- The 343-487 ms first-world spike aligns with synchronously generating 25 chunks. Prime now builds only the nearest 3x3 and queues the remaining 16 under the existing frame budget.
+- The second OpenGL session found a separate deterministic failure: a spell-card choice queried rank by upgrade kind, threw an exception, and left the tree paused. Stable upgrade-ID rank queries now cover all cards.
+- Horizontal affinity is derived only from choices made in the current run. Content source, selected character, biome, and enemy identity cannot change offer weight; every offer reserves an exploration route once affinity exists.
+- The world now owns one deterministic semantic region plan. Generation, biome art, enemy lookup, structures, map color, and diagnostics consume that identity instead of recomputing unrelated views.
+- Loaded world data and discovered map data are separate. Initial streaming no longer reveals a square, and stable structure instances appear on the travel map only after the player approaches them.
+- Structure placement is per definition with spacing, separation, chance, salt, footprint, rarity, orientation, and variant. Official structures bind to the matching work domain layer instead of sharing one global random grid.
+
+
+## Beta debug performance diagnostics - 2026-08-12
+
+- A concrete 3 FPS failure path exists: `GameSettingsService` previously accepted any persisted `MaxFps` from 0 through 360 and assigned it directly to `Engine.MaxFps`, while `VideoSettingsPanel` displayed the first list item for unknown values. A stale `MaxFps: 3` therefore truly caps gameplay at 3 FPS while the UI misleadingly appears to show 30 FPS.
+- Resolution had the same representational mismatch: an arbitrary persisted size could be applied while the UI displayed 640x360. Frame-rate and resolution options must come from one catalog, and migrations must retain before/after values for diagnostics.
+- Godot 4.7.1 C# exposes adapter, vendor, API, renderer, display driver and viewport timing directly. The potentially multi-second `OS.GetVideoAdapterDriverInfo` call is intentionally omitted in-process; the same session's verbose engine log supplies driver detail without risking startup or shutdown stalls.
+- The environment header and explicit driver-policy record are flushed immediately. JSON, metric, or disk failures disable sampling and viewport render-time measurement without aborting gameplay or leaving diagnostic overhead active.
+- Useful one-second monitors include FPS, process/physics frame time, draw calls, rendered objects/primitives, video/texture/buffer memory, object/node/resource counts, 2D physics load, and canvas pipeline compilations.
+- `EcsCombatWorld` already exposes alive enemies/Bosses, total/enemy projectiles, pickups, spirits, elapsed time, and visual fallbacks. `ChunkStreamer` exposes active/pending chunks. Diagnostics need only a read-only aggregate snapshot from `WorldDemo`, not entity traversal.
+- Godot viewport timing can report render CPU and GPU milliseconds independently of FPS caps. Combined with managed heap/GC, process memory/CPU, draw calls, and `player projectiles × enemy pool count`, this separates renderer, allocation, and the real O(P×E) collision traversal pressure without per-collision instrumentation.
+- The project explicitly forces the Windows D3D12 rendering driver with the Mobile renderer. A tester falling back to a software adapter or an unsuitable D3D12 path is a credible explanation for roughly 3 FPS, so the log must record the actual adapter, vendor, driver, rendering method, and display driver rather than only the configured value.
+- Video settings are user-persistent and can select up to 7680x4320, borderless desktop size, VSync, and a 0-360 FPS cap. Diagnostics must record the applied window size/mode, screen size, VSync state, and frame cap because another machine does not share the developer's settings file.
+- The local Godot 4.7.1 executable confirms `--export-debug`, `--log-file`, `--print-fps`, renderer overrides, and debug-template-only options are available. The diagnostic artifact can reuse the resource exclusions and embedded PCK while remaining a separate debug export.
+- `project.godot` has no explicit file-logging policy. A project-owned structured session log is still needed so double-click users produce the same evidence without knowing command-line flags.
+- A useful A/B test should run the same debug EXE once with its configured D3D12 path and once with `--rendering-method gl_compatibility --rendering-driver opengl3`; the guide must keep the logs separate.
+- A companion launcher must pass its unique session directory into the runtime diagnostics host. Engine logs beside the package and structured JSONL under AppData are otherwise easy for a remote tester to separate accidentally.
+- The optimized exported diagnostic executable completed a 600-frame headless smoke run and produced four one-second samples with no engine warning or error. Final ZIP SHA-256 is `ead9f558dfabc66e633e73e8c0d276a9b6e7dd01b8d88e7c86270de31eceef46`; final main EXE SHA-256 is `e051da32a11ba51f173b43d55107a64cd2bd04e48b1ddc6f8ef963f373d394f0`.
+- Initial exported smoke attempts hit Godot's shared Mono cache because the Codex sandbox group had read-only ACLs on the real user's old `%LOCALAPPDATA%` extraction. Re-running with a fresh task-owned cache succeeded; alpha, normal beta, and both diagnostic directories were preserved and no cache file was deleted.
+
 ## Release-candidate findings - 2026-08-12
 
 - Entity-count caps alone do not make an endless curve: ordinary health and contact damage now consume the same shared snapshot through ten-second cached definition tiers, while speed and entity counts retain readability/performance caps.
@@ -40,7 +80,7 @@
 - The formal WorldDemo no longer loads the legacy EnemyActor, PickupActor, SpiritDropActor, or PlayerProjectile scenes. All 69 registered enemies resolve through the ECS renderer; only a synthetic unknown identity exercises the text fallback.
 - ECS spirit collection previously wrote progression directly and then emitted an event whose subscriber wrote it again. SpiritSystem now emits collection only, leaving SpiritDropSpawner as the single progression writer.
 - Test-world teardown must allow the audio mixing thread to release active OGG/WAV playback before clearing streams and freeing the world; immediate QueueFree produces nondeterministic ObjectDB and resource leaks.
-- The current version is `0.0.0-alpha`. Final inspection found one ignored local export at `release/TouhouWuxiaSurvivor_0.0.0-alpha.exe` (196,463,928 bytes, SHA-256 `8b687f65ff34d4106b2a7ff92600644cd9482bc7c25aa9d47206955525425478`). Its embedded paths still contain the excluded legacy `item_sheet.png`, proving it predates the final source state and cannot serve as the verification build. Previous beta executables are absent and were never tracked by Git, so their recovery requires an external copy.
+- That historical validation build is now named `alpha-0.0.0`. Inspection found the ignored local export at `release/TouhouWuxiaSurvivor_alpha-0.0.0.exe` (196,463,928 bytes, SHA-256 `8b687f65ff34d4106b2a7ff92600644cd9482bc7c25aa9d47206955525425478`). Its embedded paths still contain the excluded legacy `item_sheet.png`, proving it predates the final source state and cannot verify a later build.
 - Legacy reference files remain physically present only because deletion requires explicit user confirmation; export policy excludes every legacy namespace. No release file will be removed or overwritten without separate user direction.
 
 ## All-DLC Completion - 2026-08-11
@@ -569,3 +609,26 @@
 - Godot provides `Image.GetUsedRect()` for automatic nontransparent Alpha bounding boxes.
 - Auto-trim does not choose semantic sprite-sheet frames; current base enemy failures originate from inappropriate source atlases and incorrect declared grids.
 - Scarlet portrait layout handling remains a separate manifest-region concern and should not be replaced by whole-image auto-trim alone.
+# Horizontal Build and World Audit - 2026-08-12
+
+- `RunUpgradeCatalog.CreateOffer` currently filters by pack/prerequisite/rank, uniformly shuffles, and takes three. It has no affinity, exclusion, specialization, offer history, or pivot guarantee.
+- `LevelUpOverlay.Present` queries rank by `RunUpgradeKind`; generic spell-card definitions require stable IDs, so the UI must query `definition.Id`.
+- Official regions are independent circles selected inside 192-Tile cells. Neighbor cells are not evaluated, so circles can be clipped by straight cell boundaries and the three regions of one work have no spatial relationship.
+- All structures share one 96-Tile grid and 62% chance. Official structures reuse three ground stamps; runtime markers reduce all structures to sixteen silhouettes and three sampled colors.
+- Chunk generation stores only `TileId`; the biome renderer recomputes biome selection for every tile. The map also stores only `TileId`, so DLC biomes that share surfaces become visually indistinguishable.
+- Chunk loading currently counts as exploration. The initial 5x5 active window therefore reveals a 160x160-Tile square before the player travels through it.
+- Target architecture: shared horizontal affinity graph; deterministic macro-region plan; semantic chunks; per-definition structure sets and stable instances; player-radius discovery; cached semantic map tiles.
+- Supplied diagnostics contain one D3D12 and two OpenGL sessions. Detailed comparison is being performed independently while implementation proceeds.
+
+# Balance and alpha-0.0.2 Freeze - 2026-08-13
+
+- The base game must fill the same 4 offensive + 2 support spell slots without any DLC; otherwise DLC becomes vertical progression rather than horizontal choice.
+- Base now owns six permanent spell cards: four offensive and two support. Each of the twenty optional works contributes exactly two same-budget alternatives, for 46 unique cards total.
+- Formal version identity is stage-first: `alpha-0.0.2`; Windows numeric metadata is `0.0.2.0`.
+- The canonical diagnostics and spell-balance entry names are stage-independent. Older stage-specific filenames remain compatibility aliases because deleting them requires separate user authorization.
+- Root files `-e` and `stdout` remain pending deletion approval and are explicitly excluded from both export presets.
+- Godot's Windows export uses the `ExportRelease` configuration, so the project file must exclude tests under both `Release` and `ExportRelease`; the final published assembly is 707,072 bytes and contains no test, internal builder, or legacy sample-resource identifiers.
+- The accepted formal artifact is `TouhouWuxiaSurvivor_alpha-0.0.2.exe`, 196,404,288 bytes, SHA-256 `d8339b4a54c3f3cfd0cc13ff6200e8a183d00336f5aa07353d14f1ff818c2acc`, Windows version `0.0.2.0`, with an embedded PCK and no sidecar package.
+- A direct 180-frame headless execution of the exported EXE returned exit code 0 without log errors, leaks, or orphan warnings.
+
+---

@@ -2,6 +2,8 @@
 .godot/
 /android/
 /release/
+/-e
+/stdout
 
 # .NET build artifacts
 **/bin/

@@ -19,28 +19,28 @@ public static class EnemyCatalog
     {
         var definitions = new List<EnemyDefinition>
         {
-            new(EnemyArchetype.Fairy, "野妖精", 2, 52.0f, 5.0f, 38.0f, 0.0f, 0.28f, [],
+            new(EnemyArchetype.Fairy, "野妖精", 18, 52.0f, 5.0f, 38.0f, 0.0f, 0.018f, [],
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Aimed),
-            new(EnemyArchetype.Kedama, "毛玉", 3, 42.0f, 6.0f, 34.0f, 0.0f, 0.32f,
+            new(EnemyArchetype.Kedama, "毛玉", 24, 42.0f, 6.0f, 34.0f, 0.0f, 0.022f,
                 [BiomeId.Common, BiomeId.HakureiShrine, BiomeId.HumanVillage]),
-            new(EnemyArchetype.Insect, "妖虫", 3, 46.0f, 6.0f, 30.0f, 15.0f, 0.35f,
+            new(EnemyArchetype.Insect, "妖虫", 26, 46.0f, 6.0f, 30.0f, 15.0f, 0.026f,
                 [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
-            new(EnemyArchetype.YinYangOrb, "阴阳玉", 5, 68.0f, 7.0f, 18.0f, 45.0f, 0.42f,
+            new(EnemyArchetype.YinYangOrb, "阴阳玉", 42, 68.0f, 7.0f, 18.0f, 45.0f, 0.030f,
                 [BiomeId.Common, BiomeId.YoukaiMountain],
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Fan),
-            new(EnemyArchetype.ForestSpirit, "森林精怪", 7, 34.0f, 9.0f, 18.0f, 60.0f, 0.48f,
+            new(EnemyArchetype.ForestSpirit, "森林精怪", 58, 34.0f, 9.0f, 18.0f, 60.0f, 0.034f,
                 [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
-            new(EnemyArchetype.MountainSpirit, "山精", 10, 30.0f, 10.0f, 20.0f, 90.0f, 0.55f,
+            new(EnemyArchetype.MountainSpirit, "山精", 82, 30.0f, 10.0f, 20.0f, 90.0f, 0.040f,
                 [BiomeId.YoukaiMountain]),
-            new(EnemyArchetype.VillageOutlaw, "流窜妖怪", 8, 48.0f, 8.0f, 14.0f, 105.0f, 0.52f,
+            new(EnemyArchetype.VillageOutlaw, "流窜妖怪", 68, 48.0f, 8.0f, 14.0f, 105.0f, 0.038f,
                 [BiomeId.HumanVillage, BiomeId.Common],
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Aimed),
-            new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 12, 42.0f, 9.0f, 10.0f, 150.0f, 0.62f, [],
+            new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 98, 42.0f, 9.0f, 10.0f, 150.0f, 0.048f, [],
                 aiProfile: EnemyAiProfile.Charger),
-            new(EnemyArchetype.GreatYoukai, "大妖怪", 30, 36.0f, 12.0f, 3.0f, 240.0f, 0.95f, [],
+            new(EnemyArchetype.GreatYoukai, "大妖怪", 240, 36.0f, 12.0f, 3.0f, 240.0f, 0.080f, [],
                 contactDamage: 2,
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Fan),
@@ -100,18 +100,15 @@ public static class EnemyCatalog
     /// </summary>
     private static OfficialEnemyStats GetOfficialStats(int number, int regionIndex)
     {
-        int variation = number * 7 % 3;
+        _ = number;
         return regionIndex switch
         {
             0 => new OfficialEnemyStats(
-                4 + variation, 58.0f + number % 3 * 2.0f, 6.0f,
-                18.0f, 12.0f + number % 4 * 6.0f, 0.30f),
+                38, 60.0f, 6.0f, 18.0f, 18.0f, 0.022f),
             1 => new OfficialEnemyStats(
-                10 + variation * 2, 46.0f + number % 3 * 2.0f, 8.0f,
-                9.0f, 90.0f + number % 4 * 8.0f, 0.46f),
+                92, 48.0f, 8.0f, 9.0f, 96.0f, 0.038f),
             _ => new OfficialEnemyStats(
-                24 + variation * 3, 36.0f + number % 3 * 2.0f, 11.0f,
-                3.2f, 210.0f + number % 4 * 10.0f, 0.70f),
+                216, 38.0f, 11.0f, 3.2f, 220.0f, 0.065f),
         };
     }
 

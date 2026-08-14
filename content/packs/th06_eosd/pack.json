@@ -5,53 +5,34 @@
   "title_en": "Embodiment of Scarlet Devil",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["雾之湖", "红魔馆领地", "巴瓦鲁魔法图书馆"],
-    "structures": ["雾湖小岛", "红魔馆", "大图书馆"],
-    "enemies": ["湖上妖精", "红雾妖虫", "使魔书灵"],
-    "characters": ["露米娅", "琪露诺", "红美铃", "帕秋莉·诺蕾姬", "十六夜咲夜", "蕾米莉亚·斯卡蕾特", "芙兰朵露·斯卡蕾特"]
+    "biomes": [
+      "雾之湖",
+      "红魔馆领地",
+      "巴瓦鲁魔法图书馆"
+    ],
+    "structures": [
+      "雾湖小岛",
+      "红魔馆",
+      "大图书馆"
+    ],
+    "enemies": [
+      "湖上妖精",
+      "红雾妖虫",
+      "使魔书灵"
+    ],
+    "characters": [
+      "露米娅",
+      "琪露诺",
+      "红美铃",
+      "帕秋莉·诺蕾姬",
+      "十六夜咲夜",
+      "蕾米莉亚·斯卡蕾特",
+      "芙兰朵露·斯卡蕾特"
+    ]
   },
   "spellcards": [
-    {
-      "id": "reimu_fantasy_seal",
-      "name": "灵符「梦想封印」",
-      "short_name": "梦想封印",
-      "owner": "博丽灵梦",
-      "canon": "official",
-      "source_note": "原作符卡：东方红魔乡；归属本体角色博丽灵梦。",
-      "wuxia_style": "博丽奥义 · 追封",
-      "description": "放出八枚灵玉，各自追踪附近妖怪并施加封魔伤害。",
-      "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 100,
-      "cooldown_seconds": 4,
-      "effect_range": 560,
-      "damage": 8,
-      "target_count": 8,
-      "defense_seconds": 0,
-      "prerequisite": "needle_damage",
-      "minimum_rank": 2
-    },
-    {
-      "id": "reimu_evil_sealing_circle",
-      "name": "梦符「封魔阵」",
-      "short_name": "封魔阵",
-      "owner": "博丽灵梦",
-      "canon": "official",
-      "source_note": "原作符卡：东方红魔乡；归属本体角色博丽灵梦。",
-      "wuxia_style": "博丽阵法 · 护身",
-      "description": "展开近身封魔阵伤害群敌，并以结界护身一段时间。",
-      "effect": "guard_field",
-      "trigger": "danger",
-      "power_cost": 70,
-      "cooldown_seconds": 6,
-      "effect_range": 176,
-      "damage": 6,
-      "target_count": 0,
-      "defense_seconds": 1.25,
-      "prerequisite": "spirit_gathering",
-      "minimum_rank": 2
-    },
     {
       "id": "th06_remilia_scarlet_shoot",
       "name": "红符「Scarlet Shoot」",
@@ -60,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "血枪秘技 · 绯红追猎",
-      "description": "敌群成势时放出绯红魔弹，沿命运轨迹追击多个目标。",
+      "description": "周天就绪且敌群进入范围时，敌群成势时放出绯红魔弹，沿命运轨迹追击多个目标。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 75,
-      "cooldown_seconds": 5,
-      "effect_range": 520,
-      "damage": 9,
-      "target_count": 8,
-      "defense_seconds": 0,
       "prerequisite": "soul_seeking",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 0.952380952,
+      "range_scale": 1.130434783,
+      "damage_scale": 0.79,
+      "target_scale": 0.883,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.023076923,
+      "travel_duration_scale": 1.692307692,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     },
     {
       "id": "th06_flandre_laevatein",
@@ -80,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "禁忌剑诀 · 灼目魔剑",
-      "description": "锁定最强敌人挥出灼热魔剑，以高伤害集中斩击撕开阵线。",
+      "description": "周天一转，锁定最强敌人挥出灼热魔剑，以高伤害集中斩击撕开阵线。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 95,
-      "cooldown_seconds": 8,
-      "effect_range": 360,
-      "damage": 18,
-      "target_count": 3,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.523809524,
+      "range_scale": 0.782608696,
+      "damage_scale": 1.55,
+      "target_scale": 0.45,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.033333333,
+      "travel_duration_scale": 2.444444444,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

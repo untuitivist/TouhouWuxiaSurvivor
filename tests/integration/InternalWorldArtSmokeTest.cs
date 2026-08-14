@@ -86,7 +86,27 @@ public partial class InternalWorldArtSmokeTest : Node
             Image marker = InternalStructureTextureFactory.CreateMarker(texture, structure).GetImage();
             Require(marker.GetSize() == new Vector2I(128, 128) && marker.GetUsedRect().HasArea(),
                 $"Structure marker is empty or malformed: {sourceId}/{name}.");
+            float coverage = CountVisiblePixels(marker) / (float)(marker.GetWidth() * marker.GetHeight());
+            Require(coverage is >= 0.005f and <= 0.70f,
+                $"Structure marker became an unreadable speck or opaque card: {sourceId}/{name}, {coverage:P1}.");
         }
+    }
+
+    /// <summary>
+    /// 统计结构纹样的可见像素，用透明覆盖率契约阻止上层美术重新退化为遮挡地图的大色卡。
+    /// </summary>
+    private static int CountVisiblePixels(Image image)
+    {
+        int count = 0;
+        for (int y = 0; y < image.GetHeight(); y++)
+        {
+            for (int x = 0; x < image.GetWidth(); x++)
+            {
+                count += image.GetPixel(x, y).A >= 0.05f ? 1 : 0;
+            }
+        }
+
+        return count;
     }
 
     /// <summary>

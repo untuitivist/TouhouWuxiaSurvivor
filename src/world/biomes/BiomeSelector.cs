@@ -1,6 +1,7 @@
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.World.Generation;
 using TouhouWuxiaSurvivor.World.Official;
+using TouhouWuxiaSurvivor.World.Regions;
 
 namespace TouhouWuxiaSurvivor.World.Biomes;
 
@@ -67,6 +68,12 @@ public sealed class BiomeSelector
             ? BiomeId.MagicForest
             : BiomeId.Common;
     }
+
+    /// <summary>
+    /// 返回坐标所属的原始宏域语义；出生保护区只覆盖表层群系，不改变宏域站点身份。
+    /// </summary>
+    public WorldRegionSample SampleRegion(long tileX, long tileY) =>
+        _officialBiomes.Sample(tileX, tileY);
 
     /// <summary>
     /// 使用圆形边界判断绝对坐标是否位于出生点神社保护区。

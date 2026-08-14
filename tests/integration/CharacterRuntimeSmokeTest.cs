@@ -117,8 +117,8 @@ public partial class CharacterRuntimeSmokeTest : Node
         Require(health.MaxHealth == (int)MathF.Round(expected.PlayableProfile.MaxHealth) &&
             Mathf.IsEqualApprox(player.MoveSpeed,
                 120.0f * expected.PlayableProfile.MoveSpeedMultiplier) &&
-            shooter.Damage == Math.Max(1, (int)MathF.Round(
-                expected.PlayableProfile.AttackMultiplier)),
+            Mathf.IsEqualApprox(shooter.CharacterAttackMultiplier,
+                expected.PlayableProfile.AttackMultiplier),
             "Playable character profile was not applied to runtime stats.");
         Require(CharacterBossCatalog.GetCandidates(content, expected.CharacterId).All(
                 candidate => candidate.CharacterId != expected.CharacterId),

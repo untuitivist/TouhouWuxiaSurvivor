@@ -8,18 +8,6 @@ namespace TouhouWuxiaSurvivor.Ui.Settings;
 /// </summary>
 public partial class VideoSettingsPanel : VBoxContainer
 {
-    private static readonly Vector2I[] Resolutions =
-    [
-        new(640, 360),
-        new(960, 540),
-        new(1280, 720),
-        new(1600, 900),
-        new(1920, 1080),
-        new(2560, 1440),
-        new(3840, 2160),
-    ];
-
-    private static readonly int[] FpsLimits = [30, 60, 120, 144, 0];
     private OptionButton? _windowMode;
     private OptionButton? _resolution;
     private OptionButton? _fpsLimit;
@@ -53,12 +41,12 @@ public partial class VideoSettingsPanel : VBoxContainer
         _windowMode!.AddItem("窗口化");
         _windowMode.AddItem("无边框窗口");
         _windowMode.AddItem("全屏");
-        foreach (Vector2I resolution in Resolutions)
+        foreach (Vector2I resolution in VideoSettingsCatalog.Resolutions)
         {
             _resolution!.AddItem($"{resolution.X} × {resolution.Y}");
         }
 
-        foreach (int fps in FpsLimits)
+        foreach (int fps in VideoSettingsCatalog.FpsLimits)
         {
             _fpsLimit!.AddItem(fps == 0 ? "不限制" : $"{fps} FPS");
         }
@@ -71,11 +59,9 @@ public partial class VideoSettingsPanel : VBoxContainer
     {
         GameSettingsData settings = GameSettingsService.Current;
         _windowMode!.Select(Math.Clamp(settings.WindowMode, 0, 2));
-        int resolutionIndex = Array.FindIndex(Resolutions, size =>
-            size.X == settings.ResolutionWidth && size.Y == settings.ResolutionHeight);
-        _resolution!.Select(Math.Max(0, resolutionIndex));
-        int fpsIndex = Array.IndexOf(FpsLimits, settings.MaxFps);
-        _fpsLimit!.Select(Math.Max(0, fpsIndex));
+        _resolution!.Select(VideoSettingsCatalog.FindResolutionIndex(
+            settings.ResolutionWidth, settings.ResolutionHeight));
+        _fpsLimit!.Select(VideoSettingsCatalog.FindFpsIndex(settings.MaxFps));
         _vsync!.ButtonPressed = settings.VsyncEnabled;
     }
 
@@ -94,7 +80,7 @@ public partial class VideoSettingsPanel : VBoxContainer
     /// </summary>
     private void OnResolutionSelected(long index)
     {
-        Vector2I size = Resolutions[(int)index];
+        Vector2I size = VideoSettingsCatalog.GetResolution((int)index);
         GameSettingsService.Current.ResolutionWidth = size.X;
         GameSettingsService.Current.ResolutionHeight = size.Y;
         ApplyAndSave();
@@ -105,7 +91,7 @@ public partial class VideoSettingsPanel : VBoxContainer
     /// </summary>
     private void OnFpsLimitSelected(long index)
     {
-        GameSettingsService.Current.MaxFps = FpsLimits[(int)index];
+        GameSettingsService.Current.MaxFps = VideoSettingsCatalog.GetFpsLimit((int)index);
         ApplyAndSave();
     }
 

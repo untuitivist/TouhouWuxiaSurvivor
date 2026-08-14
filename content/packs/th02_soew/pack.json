@@ -5,11 +5,29 @@
   "title_en": "Story of Eastern Wonderland",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["妖怪侵占神社", "幻梦界", "灵魔殿境内"],
-    "structures": ["战车残骸", "幻梦界壁", "灵魔殿"],
-    "enemies": ["战车妖怪", "幻梦界魔石", "灵魔殿使魔"],
-    "characters": ["里香", "明罗", "雾雨魔理沙", "魅魔"]
+    "biomes": [
+      "妖怪侵占神社",
+      "幻梦界",
+      "灵魔殿境内"
+    ],
+    "structures": [
+      "战车残骸",
+      "幻梦界壁",
+      "灵魔殿"
+    ],
+    "enemies": [
+      "战车妖怪",
+      "幻梦界魔石",
+      "灵魔殿使魔"
+    ],
+    "characters": [
+      "里香",
+      "明罗",
+      "雾雨魔理沙",
+      "魅魔"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +38,22 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自里香的邪眼战车。",
       "wuxia_style": "机关奇门 · 邪眼连炮",
-      "description": "敌群聚集时启动邪眼机关，向多个目标齐射追踪炮弹。",
+      "description": "周天就绪且敌群进入范围时，启动邪眼机关，向多个目标齐射追踪炮弹。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 75,
-      "cooldown_seconds": 6,
-      "effect_range": 520,
-      "damage": 8,
-      "target_count": 8,
-      "defense_seconds": 0,
       "prerequisite": "wind_riding",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.142857143,
+      "range_scale": 1.130434783,
+      "damage_scale": 0.72,
+      "target_scale": 0.883,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.023076923,
+      "travel_duration_scale": 1.692307692,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "fan"
     },
     {
       "id": "th02_mima_vengeful_spirit_cannon",
@@ -40,17 +63,23 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自魅魔的怨灵魔炮。",
       "wuxia_style": "怨灵心法 · 复仇一击",
-      "description": "锁定场上最强敌人，将积蓄的怨灵化为高伤害集中炮击。",
+      "description": "周天一转，锁定场上最强敌人，将积蓄的怨灵化为高伤害集中炮击。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 85,
-      "cooldown_seconds": 7.5,
-      "effect_range": 620,
-      "damage": 15,
-      "target_count": 4,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.428571429,
+      "range_scale": 1.347826087,
+      "damage_scale": 1.325,
+      "target_scale": 0.5,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.019354839,
+      "travel_duration_scale": 1.419354839,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

@@ -9,9 +9,9 @@ public static class PickupCatalog
 {
     public static IReadOnlyList<PickupDefinition> All { get; } =
     [
-        new(PickupKind.MoveSpeed, "高速点", 2.0f, 5.0f, 1.5f, 1.0f, false),
-        new(PickupKind.RapidFire, "火力点", 2.0f, 5.0f, 1.0f, 2.0f, false),
-        new(PickupKind.SpiralShot, "全力点", 1.0f, 5.0f, 1.0f, 20.0f, true),
+        new(PickupKind.MoveSpeed, "高速点", 2.0f, 6.0f, 1.18f, 1.0f, false),
+        new(PickupKind.RapidFire, "火力点", 2.0f, 6.0f, 1.0f, 1.25f, false),
+        new(PickupKind.SpiralShot, "全力点", 1.0f, 6.0f, 1.0f, 1.12f, true),
     ];
 
     /// <summary>

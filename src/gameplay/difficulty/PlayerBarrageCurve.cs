@@ -16,33 +16,42 @@ public static class PlayerBarrageCurve
         double elapsedSeconds,
         bool spiralActive,
         long volleySequence,
-        int activeProjectileCount)
+        int activeProjectileCount,
+        int bonusProjectiles = 0)
     {
         double minutes = EndlessDifficultyCurve.NormalizeMinutes(elapsedSeconds);
-        int requestedCount = GetRequestedProjectileCount(minutes, spiralActive);
+        int normalizedBonus = Math.Clamp(bonusProjectiles, 0, 2);
+        int requestedCount = GetRequestedProjectileCount(
+            minutes, spiralActive, normalizedBonus);
         PlayerBarrageMode mode = GetMode(minutes, spiralActive, volleySequence);
         int allowedCount = ApplyProjectileBudget(requestedCount, mode, activeProjectileCount);
         double angularStep = GetAngularStep(requestedCount, mode);
         double rotation = GetRotation(mode, volleySequence, angularStep);
         bool requiresTarget = mode != PlayerBarrageMode.RotatingRing;
         double retry = allowedCount == 0 ? SaturatedRetryIntervalSeconds : 0.0;
+        double damageBudget = 1.0 + normalizedBonus * 0.125 +
+            (spiralActive ? 0.20 : 0.0);
         return new PlayerBarrageSnapshot(minutes, mode, requestedCount, allowedCount,
-            angularStep, rotation, requiresTarget, retry);
+            angularStep, rotation, requiresTarget, retry, damageBudget);
     }
 
     /// <summary>
     /// 按分钟返回奇数扇形阶梯；螺旋强化在开局至少保留原有正反双发，后续共享三五七发成长。
     /// </summary>
-    private static int GetRequestedProjectileCount(double minutes, bool spiralActive)
+    private static int GetRequestedProjectileCount(
+        double minutes,
+        bool spiralActive,
+        int bonusProjectiles)
     {
         int timedCount = minutes switch
         {
             < 2.0 => 1,
             < 5.0 => 3,
             < 10.0 => 5,
-            _ => MaximumProjectilesPerVolley,
+            _ => 5,
         };
-        return spiralActive ? Math.Max(2, timedCount) : timedCount;
+        int builtCount = Math.Min(MaximumProjectilesPerVolley, timedCount + bonusProjectiles);
+        return spiralActive ? Math.Max(2, builtCount) : builtCount;
     }
 
     /// <summary>

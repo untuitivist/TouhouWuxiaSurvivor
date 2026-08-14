@@ -58,6 +58,7 @@ public sealed class WorldGenerator
                 long worldX = originX + x;
                 long worldY = originY + y;
                 BiomeId biome = Biomes.Select(worldX, worldY);
+                chunk.SetBiome(x, y, biome);
                 chunk.Set(x, y, _palette.Pick(biome, worldX, worldY));
             }
         }

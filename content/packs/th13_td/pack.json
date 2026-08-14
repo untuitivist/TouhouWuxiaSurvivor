@@ -5,11 +5,32 @@
   "title_en": "Ten Desires",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["夜樱墓地", "梦殿大祀庙", "神灵庙深处"],
-    "structures": ["命莲寺墓园门", "梦殿石门", "神灵庙"],
-    "enemies": ["僵尸", "欲灵", "道士灵"],
-    "characters": ["幽谷响子", "宫古芳香", "霍青娥", "苏我屠自古", "物部布都", "丰聪耳神子", "二岩猯藏"]
+    "biomes": [
+      "夜樱墓地",
+      "梦殿大祀庙",
+      "神灵庙深处"
+    ],
+    "structures": [
+      "命莲寺墓园门",
+      "梦殿石门",
+      "神灵庙"
+    ],
+    "enemies": [
+      "僵尸",
+      "欲灵",
+      "道士灵"
+    ],
+    "characters": [
+      "幽谷响子",
+      "宫古芳香",
+      "霍青娥",
+      "苏我屠自古",
+      "物部布都",
+      "丰聪耳神子",
+      "二岩猯藏"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "official",
       "source_note": "原作符卡：东方神灵庙。",
       "wuxia_style": "圣德秘传 · 古代奇宝",
-      "description": "强敌现身时驱动古代秘宝，集中发射高威力光弹。",
+      "description": "周天一转，驱动古代秘宝，集中发射高威力光弹。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 90,
-      "cooldown_seconds": 7.5,
-      "effect_range": 620,
-      "damage": 16,
-      "target_count": 4,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.428571429,
+      "range_scale": 1.347826087,
+      "damage_scale": 1.4,
+      "target_scale": 0.5,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.019354839,
+      "travel_duration_scale": 1.419354839,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "orbit"
     },
     {
       "id": "th13_mamizou_wild_deserted_island",
@@ -40,17 +66,23 @@
       "canon": "official",
       "source_note": "原作符卡：东方神灵庙。",
       "wuxia_style": "狸幻七变 · 野岛群影",
-      "description": "敌群围拢时唤出变化群影，向各处目标投射追踪弹。",
+      "description": "周天就绪且敌群进入范围时，敌群围拢时唤出变化群影，向各处目标投射追踪弹。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 75,
-      "cooldown_seconds": 6,
-      "effect_range": 520,
-      "damage": 8,
-      "target_count": 12,
-      "defense_seconds": 0,
       "prerequisite": "soul_seeking",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.142857143,
+      "range_scale": 1.130434783,
+      "damage_scale": 0.72,
+      "target_scale": 1.15,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.023076923,
+      "travel_duration_scale": 1.692307692,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "backstab"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

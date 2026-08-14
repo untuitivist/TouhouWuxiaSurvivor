@@ -11,4 +11,5 @@ public readonly record struct PlayerBarrageSnapshot(
     double AngularStepRadians,
     double RotationRadians,
     bool RequiresTarget,
-    double RetryIntervalSeconds);
+    double RetryIntervalSeconds,
+    double VolleyDamageBudget);

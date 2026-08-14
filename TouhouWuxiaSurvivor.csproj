@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Remove=".godot/**/*.cs" />
     <Compile Remove="tools/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' != 'Release' And '$(Configuration)' != 'ExportRelease' ">
     <Compile Include="tools/internal_assets/InternalActorStripAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalAssetBuildContext.cs" />
     <Compile Include="tools/internal_assets/InternalAssetManifestCompiler.cs" />
@@ -20,5 +22,8 @@
     <Compile Include="tools/internal_assets/InternalPortraitAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalSceneAssetBuilder.cs" />
     <Compile Include="tools/internal_assets/InternalSourceHashWriter.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease' ">
+    <Compile Remove="tests/**/*.cs" />
   </ItemGroup>
 </Project>

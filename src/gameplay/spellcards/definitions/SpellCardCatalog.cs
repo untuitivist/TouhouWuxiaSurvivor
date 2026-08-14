@@ -18,10 +18,12 @@ public static class SpellCardCatalog
         card => string.Equals(card.Id, id, StringComparison.Ordinal));
 
     /// <summary>
-    /// 返回本局已启用作品的符卡传承；本体不隐式解锁任何未勾选正作内容。
+    /// 返回本局已启用作品的符卡传承；本体奥义始终可用，可选正作仍按本局勾选隔离。
     /// </summary>
     public static IReadOnlyList<SpellCardDefinition> GetEnabled(ContentPackSelection selection) =>
-        All.Where(card => selection.IsEnabled(card.SourcePackId)).ToArray();
+        All.Where(card => string.Equals(
+                card.SourcePackId, ContentPackCatalog.Base.Id, StringComparison.Ordinal) ||
+            selection.IsEnabled(card.SourcePackId)).ToArray();
 
     /// <summary>
     /// 返回指定角色在原作目录中登记的代表符卡，供 Boss 签名攻击和图鉴归属查询。
@@ -31,11 +33,13 @@ public static class SpellCardCatalog
             card.OwnerCharacterId, characterId, StringComparison.Ordinal)).ToArray();
 
     /// <summary>
-    /// 按作品编号顺序读取所有 pack.json，并验证符卡 ID 与显示名的复合身份均不重复。
+    /// 先读取常驻本体，再按作品编号读取全部可选包，并在加载边界拒绝重复稳定 ID。
     /// </summary>
     private static IReadOnlyList<SpellCardDefinition> LoadAll()
     {
         var result = new List<SpellCardDefinition>();
+        result.AddRange(SpellCardManifestLoader.Load(
+            "res://content/base/pack.json", ContentPackCatalog.Base.Id));
         foreach (ContentPackDefinition pack in ContentPackCatalog.All)
         {
             result.AddRange(SpellCardManifestLoader.Load(

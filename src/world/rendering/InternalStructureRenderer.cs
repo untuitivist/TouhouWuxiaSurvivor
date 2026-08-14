@@ -95,22 +95,27 @@ public sealed class InternalStructureRenderer : IChunkRenderer
 
         long localTileX = placement.X - originChunk.X * WorldMetrics.ChunkTiles;
         long localTileY = placement.Y - originChunk.Y * WorldMetrics.ChunkTiles;
-        string markerKey = definition.AssetPath + ":" + (int)placement.Id;
+        string markerKey = $"{definition.AssetPath}:{(int)placement.Id}:" +
+            $"{placement.QuarterTurns}:{placement.Variant & 1}";
         if (!_markerTextures.TryGetValue(markerKey, out Texture2D? markerTexture))
         {
-            markerTexture = InternalStructureTextureFactory.CreateMarker(texture, placement.Id);
+            markerTexture = InternalStructureTextureFactory.CreateMarker(
+                texture, placement.Id, placement.QuarterTurns, placement.Variant);
             _markerTextures.Add(markerKey, markerTexture);
         }
 
+        float footprintPixels = (placement.FootprintRadius * 2 + 1) * WorldMetrics.TilePixels;
+        float markerScale = footprintPixels / markerTexture.GetWidth();
         var sprite = new Sprite2D
         {
-            Name = $"{placement.Id}_{placement.X}_{placement.Y}",
+            Name = $"{placement.Id}_{placement.InstanceId:X16}",
             Texture = markerTexture,
             TextureFilter = CanvasItem.TextureFilterEnum.Nearest,
             Position = new Vector2(
                 (float)(localTileX * WorldMetrics.TilePixels + WorldMetrics.TilePixels / 2),
                 (float)(localTileY * WorldMetrics.TilePixels + WorldMetrics.TilePixels / 2)),
-            Scale = Vector2.One * 1.5f
+            Scale = Vector2.One * markerScale,
+            ZIndex = 1,
         };
         _container.AddChild(sprite);
         _sprites.Add(placement, sprite);

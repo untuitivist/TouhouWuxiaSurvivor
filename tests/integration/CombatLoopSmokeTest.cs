@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Combat.Weapons;
@@ -45,7 +46,12 @@ public partial class CombatLoopSmokeTest : Node
             RequireLegacyContainersEmpty(demo);
             Require(spawner.AliveCount > 0 && ecsWorld.EnemyCount == spawner.AliveCount,
                 "Enemy spawner did not create the initial wave in the ECS pool.");
-            await ToSignal(GetTree().CreateTimer(2.4), SceneTreeTimer.SignalName.Timeout);
+            int defeatedBeforeTarget = ecsWorld.DefeatedCount;
+            var testTarget = new EnemyDefinition(
+                EnemyArchetype.Fairy, "野妖精", 1, 0.0f, 6.0f,
+                0.0f, 0.0f, 0.0f, []);
+            ecsWorld.SpawnEnemy(player.GlobalPosition + new Vector2(72.0f, 0.0f), testTarget);
+            await WaitForDefeat(ecsWorld, defeatedBeforeTarget);
             Require(shooter.ShotsFired > 0, "Auto shooter did not fire at the nearest enemy.");
             Require(ecsWorld.TotalProjectilesSpawned == shooter.ShotsFired &&
                 ecsWorld.TotalProjectilesSpawned > 0,
@@ -69,8 +75,9 @@ public partial class CombatLoopSmokeTest : Node
                 "Rapid-fire pickup did not enter the ECS pool.");
             RequireLegacyContainersEmpty(demo);
             await WaitForPickup();
-            Require(Mathf.IsEqualApprox(buffs.FireRateMultiplier, 2.0f),
-                "Rapid-fire pickup must provide exactly double fire rate.");
+            Require(Mathf.IsEqualApprox(buffs.FireRateMultiplier,
+                    PickupCatalog.Get(PickupKind.RapidFire).FireRateMultiplier),
+                "Rapid-fire pickup did not consume the catalog multiplier.");
 
             int pickupsBeforeMove = ecsWorld.PickupCount;
             pickupSpawner.Spawn(PickupKind.MoveSpeed, player.GlobalPosition);
@@ -78,8 +85,9 @@ public partial class CombatLoopSmokeTest : Node
                 "Move-speed pickup did not enter the ECS pool.");
             RequireLegacyContainersEmpty(demo);
             await WaitForPickup();
-            Require(Mathf.IsEqualApprox(buffs.SpeedMultiplier, 1.5f),
-                "Move-speed pickup must provide exactly 1.5x movement speed.");
+            Require(Mathf.IsEqualApprox(buffs.SpeedMultiplier,
+                    PickupCatalog.Get(PickupKind.MoveSpeed).MoveSpeedMultiplier),
+                "Move-speed pickup did not consume the catalog multiplier.");
 
             int shotsBeforeSpiral = shooter.ShotsFired;
             int pickupsBeforeSpiral = ecsWorld.PickupCount;
@@ -88,8 +96,9 @@ public partial class CombatLoopSmokeTest : Node
                 "Spiral pickup did not enter the ECS pool.");
             RequireLegacyContainersEmpty(demo);
             await WaitForPickup();
-            Require(buffs.IsSpiralActive && Mathf.IsEqualApprox(buffs.FireRateMultiplier, 20.0f),
-                "Power pickup must activate the 20x spiral state.");
+            Require(buffs.IsSpiralActive && Mathf.IsEqualApprox(buffs.FireRateMultiplier,
+                    PickupCatalog.Get(PickupKind.SpiralShot).FireRateMultiplier),
+                "Power pickup did not activate the catalog-driven spiral state.");
             var visual = player.GetNode<PlayerVisualController>("Visual");
             Require(visual.DisplayName == "博丽灵梦" && visual.IsArmedVisible,
                 "Power pickup did not preserve the player name and enable the armed text marker.");
@@ -189,6 +198,17 @@ public partial class CombatLoopSmokeTest : Node
     }
 
     /// <summary>
+    /// 等待近距离确定性 ECS 靶标被自动武器击破，避免随机首波位置和 AI 轨迹造成测试假阴性。
+    /// </summary>
+    private async Task WaitForDefeat(EcsCombatWorld world, int defeatedBefore)
+    {
+        for (int attempt = 0; attempt < 60 && world.DefeatedCount <= defeatedBefore; attempt++)
+        {
+            await ToSignal(GetTree().CreateTimer(0.05), SceneTreeTimer.SignalName.Timeout);
+        }
+    }
+
+    /// <summary>
     /// 校验三种基础道具都严格沿用参考游戏的五秒持续时间及对应倍率和特殊能力。
     /// </summary>
     private static void VerifyPickupDefinitions()
@@ -196,15 +216,13 @@ public partial class CombatLoopSmokeTest : Node
         PickupDefinition speed = PickupCatalog.Get(PickupKind.MoveSpeed);
         PickupDefinition rapid = PickupCatalog.Get(PickupKind.RapidFire);
         PickupDefinition spiral = PickupCatalog.Get(PickupKind.SpiralShot);
-        Require(Mathf.IsEqualApprox(speed.Duration, 5.0f) &&
-            Mathf.IsEqualApprox(speed.MoveSpeedMultiplier, 1.5f),
-            "Move-speed definition differs from the reference game.");
-        Require(Mathf.IsEqualApprox(rapid.Duration, 5.0f) &&
-            Mathf.IsEqualApprox(rapid.FireRateMultiplier, 2.0f),
-            "Rapid-fire definition differs from the reference game.");
-        Require(Mathf.IsEqualApprox(spiral.Duration, 5.0f) &&
-            Mathf.IsEqualApprox(spiral.FireRateMultiplier, 20.0f) && spiral.EnablesSpiral,
-            "Power definition differs from the reference game.");
+        Require(speed.Duration >= 5.0f && speed.MoveSpeedMultiplier is > 1.0f and <= 1.30f,
+            "Move-speed pickup escaped its short horizontal budget.");
+        Require(rapid.Duration >= 5.0f && rapid.FireRateMultiplier is > 1.0f and <= 1.35f,
+            "Rapid-fire pickup escaped its short horizontal budget.");
+        Require(spiral.Duration >= 5.0f &&
+            spiral.FireRateMultiplier is > 1.0f and <= 1.25f && spiral.EnablesSpiral,
+            "Power pickup escaped its pattern-focused horizontal budget.");
     }
 
     /// <summary>

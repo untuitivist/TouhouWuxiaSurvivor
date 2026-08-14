@@ -1,0 +1,272 @@
+using Godot;
+using TouhouWuxiaSurvivor.Content;
+using TouhouWuxiaSurvivor.Gameplay.Balance;
+using TouhouWuxiaSurvivor.Gameplay.Difficulty;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+
+namespace TouhouWuxiaSurvivor.Tests.Integration;
+
+/// <summary>
+/// 验证零至一百二十分钟策划预算有限、持续成长、路线横向有界且内容包不增加战力容量。
+/// </summary>
+public partial class BalanceTimelineContractTest : Node
+{
+    /// <summary>
+    /// 运行四路线与内容容量契约，打印全部里程碑，并以明确退出码报告任何数值回归。
+    /// </summary>
+    public override void _Ready()
+    {
+        try
+        {
+            var simulator = new BalanceTimelineSimulator();
+            var allContent = new ContentPackSelection(
+                ContentPackCatalog.All.Select(pack => pack.Id));
+            IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>>
+                timelines = simulator.SimulateAll(allContent);
+            PrintTimelines(timelines);
+            VerifyMilestonesAndFiniteValues(timelines);
+            VerifyDeterminism(simulator, allContent, timelines);
+            VerifyMonotonicProgression(timelines);
+            VerifyPacingWindows(timelines);
+            VerifyHorizontalBuildBand(timelines);
+            VerifyRouteIdentities(timelines);
+            VerifySpawnFlowUsesRuntimeLimits();
+            VerifyContentCapacity(simulator, allContent);
+            GD.Print("Balance timeline contract test passed.");
+            GetTree().Quit();
+        }
+        catch (Exception exception)
+        {
+            GD.PushError(exception.ToString());
+            GetTree().Quit(1);
+        }
+    }
+
+    /// <summary>
+    /// 以宽区间守住前期选择密度和长局无尽节奏，避免局部奖励改动让构筑过早填满或长期停滞。
+    /// </summary>
+    private static void VerifyPacingWindows(
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
+    {
+        (int Minimum, int Maximum)[] levelBands =
+        [
+            (1, 1), (11, 18), (17, 26), (21, 33),
+            (27, 40), (31, 46), (42, 59), (61, 74),
+        ];
+        foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
+        {
+            for (int index = 0; index < values.Count; index++)
+            {
+                BalanceTimelineSnapshot item = values[index];
+                (int minimum, int maximum) = levelBands[index];
+                Require(item.RunLevel >= minimum && item.RunLevel <= maximum,
+                    $"Level pacing left its target band: {kind}/{item.ElapsedMinutes}m " +
+                    $"was {item.RunLevel}, expected {minimum}-{maximum}.");
+            }
+
+            Require(values[3].OffensiveSpellCount + values[3].SupportSpellCount <
+                values[3].OffensiveSlotCapacity + values[3].SupportSlotCapacity,
+                $"The build filled every spell slot by ten minutes: {kind}.");
+            Require(values[^1].OffensiveSpellCount == values[^1].OffensiveSlotCapacity &&
+                values[^1].SupportSpellCount == values[^1].SupportSlotCapacity,
+                $"The long-run build did not eventually fill shared spell slots: {kind}.");
+        }
+    }
+
+    /// <summary>
+    /// 对相同内容和构筑再次运行完整模拟，确认快照逐项相等且结果不依赖隐藏随机状态或目录缓存时序。
+    /// </summary>
+    private static void VerifyDeterminism(
+        BalanceTimelineSimulator simulator,
+        ContentPackSelection content,
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> expected)
+    {
+        foreach (BalanceBuildKind kind in Enum.GetValues<BalanceBuildKind>())
+        {
+            BalanceTimelineSnapshot[] repeated = simulator.Simulate(kind, content).ToArray();
+            Require(repeated.SequenceEqual(expected[kind]),
+                $"Balance timeline is not deterministic for {kind}.");
+        }
+    }
+
+    /// <summary>按构筑枚举顺序打印所有时间点，使策划修改后的变化可以直接从测试输出审阅。</summary>
+    private static void PrintTimelines(
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
+    {
+        foreach (BalanceBuildKind kind in Enum.GetValues<BalanceBuildKind>())
+        {
+            GD.Print($"--- Balance timeline: {kind} ---");
+            foreach (BalanceTimelineSnapshot snapshot in timelines[kind])
+            {
+                GD.Print(snapshot.FormatReport());
+            }
+        }
+    }
+
+    /// <summary>
+    /// 确认四条路线均覆盖约定八个里程碑，并拒绝非有限、负数或无意义的基础字段。
+    /// </summary>
+    private static void VerifyMilestonesAndFiniteValues(
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
+    {
+        foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
+        {
+            Require(values.Select(item => item.ElapsedMinutes)
+                    .SequenceEqual(BalanceTimelineSimulator.DefaultMilestones),
+                $"Timeline milestones changed for {kind}.");
+            foreach (BalanceTimelineSnapshot item in values)
+            {
+                double[] finite = [item.WeaponDps, item.SpellDps, item.TotalDps,
+                    item.ReadinessScore, item.EnemyHealthMultiplier,
+                    item.EnemyDamageMultiplier, item.RewardMultiplier,
+                    item.ScheduledSpawnsPerSecond, item.EffectiveKillsPerSecond,
+                    item.EnemyPressure, item.PowerToPressureRatio,
+                    item.SpiritEconomyMultiplier, item.SpellCapacityBudget];
+                Require(finite.All(value => double.IsFinite(value) && value >= 0.0),
+                    $"Timeline contains an invalid value: {kind}/{item.ElapsedMinutes}m.");
+                Require(item.RunLevel >= 1 && item.TotalExperience >= 0 &&
+                    item.OffensiveSpellCount <= item.OffensiveSlotCapacity &&
+                    item.SupportSpellCount <= item.SupportSlotCapacity,
+                    $"Timeline contains an invalid level or slot count: {kind}/{item.ElapsedMinutes}m.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 要求等级、累计经验、伤害、敌人倍率和压力随时间不下降，并确保长局已进入无尽修行。
+    /// </summary>
+    private static void VerifyMonotonicProgression(
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
+    {
+        foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
+        {
+            for (int index = 1; index < values.Count; index++)
+            {
+                BalanceTimelineSnapshot before = values[index - 1];
+                BalanceTimelineSnapshot after = values[index];
+                Require(after.RunLevel >= before.RunLevel &&
+                    after.TotalExperience >= before.TotalExperience &&
+                    after.TotalDps + 0.0001 >= before.TotalDps &&
+                    after.EnemyHealthMultiplier >= before.EnemyHealthMultiplier &&
+                    after.EnemyDamageMultiplier >= before.EnemyDamageMultiplier &&
+                    after.RewardMultiplier >= before.RewardMultiplier &&
+                    after.EnemyPressure >= before.EnemyPressure,
+                    $"A required curve decreased: {kind}/{before.ElapsedMinutes}-{after.ElapsedMinutes}m.");
+            }
+
+            Require(values[^1].EndlessRankCount > values[^2].EndlessRankCount &&
+                values[^1].TotalDps > values[^2].TotalDps,
+                $"The 60-120 minute build stopped its endless growth: {kind}.");
+        }
+    }
+
+    /// <summary>
+    /// 在每个时间点比较综合准备度而非单一伤害，确保特色路线有差异但不形成跨级的纵向碾压。
+    /// </summary>
+    private static void VerifyHorizontalBuildBand(
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
+    {
+        int count = BalanceTimelineSimulator.DefaultMilestones.Count;
+        for (int index = 0; index < count; index++)
+        {
+            double[] readiness = Enum.GetValues<BalanceBuildKind>()
+                .Select(kind => timelines[kind][index].ReadinessScore)
+                .ToArray();
+            double spread = readiness.Max() / Math.Max(0.01, readiness.Min());
+            Require(spread <= 1.90,
+                $"Horizontal build readiness spread is too wide at " +
+                $"{BalanceTimelineSimulator.DefaultMilestones[index]}m: {spread:F3}.");
+        }
+    }
+
+    /// <summary>
+    /// 检查路线标签确实改变构筑：强攻前期爆发最高，速射后期普攻最高，效用保持更高经济成长。
+    /// </summary>
+    private static void VerifyRouteIdentities(
+        IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
+    {
+        BalanceTimelineSnapshot assault = timelines[BalanceBuildKind.Assault][1];
+        BalanceTimelineSnapshot rapid = timelines[BalanceBuildKind.Rapid][^1];
+        BalanceTimelineSnapshot utility = timelines[BalanceBuildKind.Utility][^1];
+        BalanceTimelineSnapshot baseline = timelines[BalanceBuildKind.Baseline][^1];
+        Require(assault.TotalDps == timelines.Values.Max(values => values[1].TotalDps),
+            "Assault route lost its early burst identity.");
+        Require(rapid.WeaponDps == timelines.Values.Max(values => values[^1].WeaponDps),
+            "Rapid route lost its late-game normal-attack identity.");
+        Require(utility.SpiritEconomyMultiplier == timelines.Values.Max(
+                values => values[^1].SpiritEconomyMultiplier),
+            "Utility route lost its per-drop economy identity.");
+        double rapidWeaponShare = rapid.WeaponDps / rapid.TotalDps;
+        double baselineWeaponShare = baseline.WeaponDps / baseline.TotalDps;
+        Require(rapidWeaponShare - baselineWeaponShare > 0.05 &&
+            Math.Abs(rapid.RunLevel - baseline.RunLevel) > 1,
+            "Rapid route collapsed into the baseline route.");
+    }
+
+    /// <summary>
+    /// 独立推进正式刷怪投影，确认无击破时会顶住动态存活上限，有处理能力时接纳率由批次与间隔决定。
+    /// </summary>
+    private static void VerifySpawnFlowUsesRuntimeLimits()
+    {
+        var stalled = new BalanceSpawnFlowState(initialAlive: 36);
+        EndlessDifficultySnapshot opening = EndlessDifficultyCurve.EvaluateSeconds(0.0, 140);
+        BalanceSpawnFlowSnapshot blocked = stalled.Advance(opening, 0.0);
+        Require(blocked.AliveCount == opening.AliveLimit &&
+            blocked.AcceptedSpawnsPerSecond == 0.0,
+            "Spawn projection ignored the runtime alive cap when combat stalled.");
+
+        var clearing = new BalanceSpawnFlowState(initialAlive: 0);
+        BalanceSpawnFlowSnapshot supplied = clearing.Advance(opening, 1000.0);
+        Require(Math.Abs(supplied.ScheduledSpawnsPerSecond -
+                opening.SpawnBatchSize / opening.SpawnIntervalSeconds) < 0.000001 &&
+            Math.Abs(supplied.AcceptedSpawnsPerSecond -
+                supplied.ScheduledSpawnsPerSecond) < 0.000001 &&
+            Math.Abs(supplied.DefeatsPerSecond -
+                supplied.AcceptedSpawnsPerSecond) < 0.000001,
+            "Spawn projection diverged from runtime batch and interval throughput.");
+    }
+
+    /// <summary>
+    /// 比较本体、单一正作与全正作：候选数可横向增加，但三者都必须独立填满同一 4+2 容量。
+    /// </summary>
+    private static void VerifyContentCapacity(
+        BalanceTimelineSimulator simulator,
+        ContentPackSelection allContent)
+    {
+        BalanceTimelineSnapshot baseOnly = simulator.Simulate(
+            BalanceBuildKind.Baseline, ContentPackSelection.BaseOnly)[^1];
+        ContentPackDefinition singlePack = ContentPackCatalog.All.First(pack =>
+            SpellCardCatalog.All.Count(card => card.SourcePackId == pack.Id) > 0);
+        var singleContent = new ContentPackSelection([singlePack.Id]);
+        BalanceTimelineSnapshot single = simulator.Simulate(
+            BalanceBuildKind.Baseline, singleContent)[^1];
+        BalanceTimelineSnapshot all = simulator.Simulate(
+            BalanceBuildKind.Baseline, allContent)[^1];
+        Require(single.EnabledSpellCount > baseOnly.EnabledSpellCount &&
+            all.EnabledSpellCount > single.EnabledSpellCount,
+            "All-content selection did not increase horizontal spell candidates.");
+        Require(all.OffensiveSlotCapacity == single.OffensiveSlotCapacity &&
+            all.OffensiveSlotCapacity == baseOnly.OffensiveSlotCapacity &&
+            all.SupportSlotCapacity == single.SupportSlotCapacity &&
+            all.SupportSlotCapacity == baseOnly.SupportSlotCapacity &&
+            Math.Abs(all.SpellCapacityBudget - single.SpellCapacityBudget) < 0.0001 &&
+            Math.Abs(all.SpellCapacityBudget - baseOnly.SpellCapacityBudget) < 0.0001,
+            "Content selection changed spell-card power capacity.");
+        Require(baseOnly.OffensiveSpellCount == SpellCardSlotPolicy.MaximumOffensiveSlots &&
+            baseOnly.SupportSpellCount == SpellCardSlotPolicy.MaximumSupportSlots &&
+            single.OffensiveSpellCount == SpellCardSlotPolicy.MaximumOffensiveSlots &&
+            single.SupportSpellCount == SpellCardSlotPolicy.MaximumSupportSlots &&
+            all.OffensiveSpellCount == SpellCardSlotPolicy.MaximumOffensiveSlots &&
+            all.SupportSpellCount == SpellCardSlotPolicy.MaximumSupportSlots,
+            "Base, single-pack, and all-content timelines must all fill the shared 4+2 slots.");
+    }
+
+    /// <summary>将任一策划契约失败转换为包含具体时间或路线的测试异常。</summary>
+    private static void Require(bool condition, string message)
+    {
+        if (!condition)
+        {
+            throw new InvalidOperationException(message);
+        }
+    }
+}

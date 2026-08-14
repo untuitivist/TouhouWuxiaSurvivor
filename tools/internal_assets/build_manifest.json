@@ -20,6 +20,7 @@
   ],
   "gridStrips": [
     {"source":"TH06 东方红魔乡/CM_DAT/player00.png","mask":"TH06 东方红魔乡/CM_DAT/player00_a.png","output":"base/players/reimu.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":48},
+    {"source":"TH19 东方兽王园体验版/ANM/ANM/player/pl01/pl01.png","output":"base/players/marisa.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":48},
     {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/wild_fairy.png","startX":0,"startY":0,"frameWidth":32,"frameHeight":32},
     {"source":"TH10 东方风神录/ANM/ANM/enemy/enemy.png","output":"base/actors/kedama.png","startX":256,"startY":128,"frameWidth":32,"frameHeight":32},
     {"source":"TH19 东方兽王园体验版/ANM/ANM/enemy/enemy5.png","output":"base/actors/youkai_insect.png","startX":0,"startY":64,"frameWidth":32,"frameHeight":32},
@@ -58,5 +59,14 @@
     {"source":"TH18 东方虹龙洞/MUSIC/se_boon00.wav","output":"base/audio/explosion.wav"},
     {"source":"TH17.5 东方刚欲异闻/data/se/damage_player_000.wav","output":"base/audio/player_hurt.wav"},
     {"source":"TH17.5 东方刚欲异闻/data/se/dead_player.wav","output":"base/audio/player_death.wav"}
+  ],
+  "proxyAssets": [
+    {"sourceId":"base","category":"Character","name":"雾雨魔理沙","asset":"base/players/marisa.png","kind":"ActorStrip","variant":1,"proxySourceWork":"th19_udoalg","reasonZh":"本体可操作角色沿用 TH19 体验版的魔理沙原作动态图集。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"base","category":"SpellCard","name":"灵符「梦想封印」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":0,"proxySourceWork":"th06_eosd","reasonZh":"本体常驻奥义源自东方红魔乡；沿用 TH06 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"base","category":"SpellCard","name":"梦符「封魔阵」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":1,"proxySourceWork":"th06_eosd","reasonZh":"本体常驻奥义源自东方红魔乡；沿用 TH06 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"base","category":"SpellCard","name":"梦符「二重结界」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":1,"proxySourceWork":"th08_in","reasonZh":"本体常驻奥义源自东方永夜抄；沿用 TH08 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"base","category":"SpellCard","name":"神技「八方鬼缚阵」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":3,"proxySourceWork":"th08_in","reasonZh":"本体常驻奥义源自东方永夜抄；沿用 TH08 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"base","category":"SpellCard","name":"恋符「Master Spark」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":4,"proxySourceWork":"th08_in","reasonZh":"本体常驻奥义源自东方永夜抄；沿用 TH08 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
+    {"sourceId":"base","category":"SpellCard","name":"魔符「Stardust Reverie」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":6,"proxySourceWork":"th08_in","reasonZh":"本体常驻奥义源自东方永夜抄；沿用 TH08 原作弹幕图集。","reviewStatus":"proxy-reviewed"}
   ]
 }

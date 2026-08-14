@@ -12,6 +12,7 @@ public partial class PlayerController : CharacterBody2D
     private PlayerBuffController? _buffs;
     private PlayerHealth? _health;
     private RunModifierState? _runModifiers;
+    private PassiveSpecializationState? _passiveSpecializations;
 
     [Export]
     public float MoveSpeed { get; set; } = 120.0f;
@@ -30,7 +31,14 @@ public partial class PlayerController : CharacterBody2D
     /// <summary>
     /// 注入本局构筑倍率，使移动速度与临时道具倍率组合而不修改基础角色数值。
     /// </summary>
-    public void ConfigureRunModifiers(RunModifierState modifiers) => _runModifiers = modifiers;
+    public void ConfigureRunModifiers(RunModifierState modifiers)
+    {
+        _runModifiers = modifiers ?? throw new ArgumentNullException(nameof(modifiers));
+        _passiveSpecializations = new PassiveSpecializationState(modifiers);
+    }
+
+    /// <summary>获取与移动、射击和灵息事件共享的条件特化状态；完成构筑装配前为空。</summary>
+    public PassiveSpecializationState? PassiveSpecializations => _passiveSpecializations;
 
     /// <summary>
     /// 读取 WASD 或方向键输入、执行碰撞移动，并同步角色朝向与当前螺旋强化标记。
@@ -46,9 +54,11 @@ public partial class PlayerController : CharacterBody2D
         }
 
         Vector2 input = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+        _passiveSpecializations?.AdvanceMovement(!input.IsZeroApprox(), delta);
         float speedMultiplier = _buffs?.SpeedMultiplier ?? 1.0f;
         float runMultiplier = _runModifiers?.MoveSpeedMultiplier ?? 1.0f;
-        Velocity = input * MoveSpeed * speedMultiplier * runMultiplier;
+        float passiveMultiplier = _passiveSpecializations?.MoveSpeedMultiplier ?? 1.0f;
+        Velocity = input * MoveSpeed * speedMultiplier * runMultiplier * passiveMultiplier;
         MoveAndSlide();
         _visual?.SetMotion(Velocity);
         _visual?.SetArmed(_buffs?.IsSpiralActive == true);

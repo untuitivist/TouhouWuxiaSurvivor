@@ -5,11 +5,32 @@
   "title_en": "Highly Responsive to Prayers",
   "status": "complete",
   "selectable": true,
+  "spellcard_schema_version": 2,
   "additions": {
-    "biomes": ["地狱遗迹", "魔界边境", "博丽神社遗迹"],
-    "structures": ["地狱门", "魔界门", "崩坏神社"],
-    "enemies": ["封印恶灵", "魔界邪眼", "阴阳玉怨灵"],
-    "characters": ["神玉", "幽幻魔眼", "伊莉斯", "萨丽爱尔", "魅魔", "菊理", "矜羯罗"]
+    "biomes": [
+      "地狱遗迹",
+      "魔界边境",
+      "博丽神社遗迹"
+    ],
+    "structures": [
+      "地狱门",
+      "魔界门",
+      "崩坏神社"
+    ],
+    "enemies": [
+      "封印恶灵",
+      "魔界邪眼",
+      "阴阳玉怨灵"
+    ],
+    "characters": [
+      "神玉",
+      "幽幻魔眼",
+      "伊莉斯",
+      "萨丽爱尔",
+      "魅魔",
+      "菊理",
+      "矜羯罗"
+    ]
   },
   "spellcards": [
     {
@@ -20,17 +41,22 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自神玉的阴阳形态变化。",
       "wuxia_style": "阴阳秘法 · 三相轮转",
-      "description": "灵力满溢时放出三轮阴阳追弹，依次锁定近处妖怪。",
+      "description": "周天就绪且敌群进入范围时，放出三轮阴阳追弹，依次锁定近处妖怪。",
       "effect": "homing_volley",
-      "trigger": "crowd",
-      "power_cost": 70,
-      "cooldown_seconds": 5.5,
-      "effect_range": 480,
-      "damage": 7,
-      "target_count": 6,
-      "defense_seconds": 0,
       "prerequisite": "soul_seeking",
-      "minimum_rank": 2
+      "minimum_rank": 2,
+      "interval_scale": 1.047619048,
+      "range_scale": 1.043478261,
+      "damage_scale": 0.65,
+      "target_scale": 0.75,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.025,
+      "travel_duration_scale": 1.833333333,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "crowd",
+      "activation_threshold_scale": 0.5,
+      "geometry": "orbit"
     },
     {
       "id": "th01_sariel_fallen_judgement",
@@ -40,17 +66,23 @@
       "canon": "adapted_pre_spell_card",
       "source_note": "原作无符卡规则，本作为武侠化拟制；取材自萨丽爱尔的终局弹幕。",
       "wuxia_style": "堕天绝学 · 审判天光",
-      "description": "强敌逼近时聚起审判光束，集中贯穿当前最危险的目标。",
+      "description": "周天一转，聚起审判光束，沿贯线集中轰击当前最高威胁目标。",
       "effect": "focused_volley",
-      "trigger": "single_target",
-      "power_cost": 90,
-      "cooldown_seconds": 8,
-      "effect_range": 600,
-      "damage": 16,
-      "target_count": 3,
-      "defense_seconds": 0,
       "prerequisite": "needle_damage",
-      "minimum_rank": 3
+      "minimum_rank": 3,
+      "interval_scale": 1.523809524,
+      "range_scale": 1.304347826,
+      "damage_scale": 1.4,
+      "target_scale": 0.45,
+      "defense_scale": 0,
+      "projectile_speed_scale": 1.222222222,
+      "impact_range_scale": 0.02,
+      "travel_duration_scale": 1.466666667,
+      "spawn_distance_scale": 1.333333333,
+      "activation": "periodic",
+      "activation_threshold_scale": 0.5,
+      "geometry": "line"
     }
-  ]
+  ],
+  "spellcard_balance_version": 2
 }

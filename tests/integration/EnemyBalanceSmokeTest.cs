@@ -92,8 +92,9 @@ public partial class EnemyBalanceSmokeTest : Node
         {
             EnemyBalanceProfile profile = EnemyBalanceProfile.Evaluate(enemy);
             Require(profile.ThreatRank is >= 1 and <= 5, "Threat rank is outside 1-5.");
-            Require(Math.Abs(profile.BaseTimeToKill -
-                enemy.MaxHealth * EnemyBalanceProfile.BaseWeaponInterval) < 0.001f,
+            Require(Math.Abs(profile.BaseTimeToKill - enemy.MaxHealth /
+                EnemyBalanceProfile.BaseWeaponDamage *
+                EnemyBalanceProfile.BaseWeaponInterval) < 0.001f,
                 "Base time-to-kill formula drifted.");
         }
 

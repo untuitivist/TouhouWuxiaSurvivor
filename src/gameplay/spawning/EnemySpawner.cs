@@ -29,10 +29,10 @@ public partial class EnemySpawner : Node
     public PackedScene? EnemyScene { get; set; }
 
     [Export(PropertyHint.Range, "0,100,1")]
-    public int InitialSpawnCount { get; set; } = 12;
+    public int InitialSpawnCount { get; set; } = EnemySpawnPacing.DefaultInitialSpawnCount;
 
     [Export(PropertyHint.Range, "10,500,1")]
-    public int MaximumAlive { get; set; } = 140;
+    public int MaximumAlive { get; set; } = EnemySpawnPacing.DefaultAliveHardLimit;
 
     public int AliveCount => _ecsWorld?.EnemyCount ?? _enemyContainer?.GetChildCount() ?? 0;
     public int DefeatedCount { get; private set; }

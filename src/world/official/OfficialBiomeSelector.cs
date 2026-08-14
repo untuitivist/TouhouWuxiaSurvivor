@@ -1,62 +1,37 @@
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.World.Biomes;
-using TouhouWuxiaSurvivor.World.Coordinates;
-using TouhouWuxiaSurvivor.World.Generation;
+using TouhouWuxiaSurvivor.World.Regions;
 
 namespace TouhouWuxiaSurvivor.World.Official;
 
 /// <summary>
-/// 在稀疏宏区块中确定性选择一个已启用正作地区，避免多内容包造成逐 Tile 线性开销。
+/// 从连续宏观地域规划中选择正作地区，保留原有查询接口供地形与结构系统使用。
 /// </summary>
 public sealed class OfficialBiomeSelector
 {
-    private const int RegionCellSize = 192;
-    private readonly ulong _seed;
-    private readonly OfficialWorldContentDefinition[] _enabled;
+    private readonly WorldRegionPlanner _regions;
 
     /// <summary>
-    /// 从本局不可变内容快照缓存已启用定义，后续地形生成不再读取菜单状态。
+    /// 从世界种子和本局不可变内容快照创建确定性宏域规划器。
     /// </summary>
     public OfficialBiomeSelector(ulong seed, ContentPackSelection content)
     {
-        _seed = seed;
-        _enabled = OfficialWorldContentCatalog.All
-            .Where(definition => content.IsEnabled(definition.PackId))
-            .ToArray();
+        _regions = new WorldRegionPlanner(seed, content);
     }
 
     /// <summary>
-    /// 查询坐标是否落入当前宏区块的圆形正作地区；没有启用包或位于区域外时返回 false。
+    /// 查询坐标所属宏域；本体宏域返回 false，正作宏域返回同一作品内相邻三层之一。
     /// </summary>
     public bool TrySelect(long tileX, long tileY, out BiomeId biome)
     {
-        biome = BiomeId.Common;
-        if (_enabled.Length == 0)
-        {
-            return false;
-        }
-
-        long cellX = GridMath.FloorDiv(tileX, RegionCellSize);
-        long cellY = GridMath.FloorDiv(tileY, RegionCellSize);
-        if (DeterministicHash.Range(_seed, cellX, cellY, 100, 0x7710) >= 58)
-        {
-            return false;
-        }
-
-        int index = DeterministicHash.Range(_seed, cellX, cellY, _enabled.Length, 0x7711);
-        long centerX = cellX * RegionCellSize + 48 +
-            DeterministicHash.Range(_seed, cellX, cellY, 96, 0x7712);
-        long centerY = cellY * RegionCellSize + 48 +
-            DeterministicHash.Range(_seed, cellX, cellY, 96, 0x7713);
-        int radius = 54 + DeterministicHash.Range(_seed, cellX, cellY, 24, 0x7714);
-        long dx = tileX - centerX;
-        long dy = tileY - centerY;
-        if (dx * dx + dy * dy > (long)radius * radius)
-        {
-            return false;
-        }
-
-        biome = _enabled[index].Biome;
-        return true;
+        WorldRegionSample sample = Sample(tileX, tileY);
+        biome = sample.Biome;
+        return sample.IsOfficial;
     }
+
+    /// <summary>
+    /// 返回完整宏域采样，供结构定位共享站点、作品和层级，不再独立猜测地区归属。
+    /// </summary>
+    public WorldRegionSample Sample(long tileX, long tileY) =>
+        _regions.Sample(tileX, tileY);
 }

@@ -16,6 +16,8 @@ public partial class WorldDebugHud : CanvasLayer
     private Label? _levelValue;
     private ProgressBar? _experienceBar;
     private Label? _experienceValue;
+    private double _statusAccumulator;
+    private double _debugAccumulator;
 
     public bool IsDebugVisible => _debugOverlay?.Visible == true;
     public string StatusText => _statusLabel?.Text ?? string.Empty;
@@ -56,7 +58,7 @@ public partial class WorldDebugHud : CanvasLayer
     /// <summary>
     /// 使用当前世界状态一次性重建调试文本；节点尚未就绪时安全忽略调用。
     /// </summary>
-    public void Refresh(WorldHudSnapshot snapshot)
+    public void Refresh(WorldHudSnapshot snapshot, double deltaSeconds = 1.0 / 60.0)
     {
         if (_statusLabel is null || _debugLabel is null || _healthBar is null ||
             _healthValue is null || _levelValue is null || _experienceBar is null ||
@@ -65,8 +67,21 @@ public partial class WorldDebugHud : CanvasLayer
             return;
         }
 
-        _statusLabel.Text = WorldHudTextFormatter.FormatStatus(snapshot);
-        _debugLabel.Text = WorldHudTextFormatter.FormatDebug(snapshot);
+        _statusAccumulator += Math.Max(0.0, deltaSeconds);
+        _debugAccumulator += Math.Max(0.0, deltaSeconds);
+        if (_statusAccumulator >= 0.1 || string.IsNullOrEmpty(_statusLabel.Text))
+        {
+            _statusAccumulator = 0.0;
+            _statusLabel.Text = WorldHudTextFormatter.FormatStatus(snapshot);
+        }
+
+        if (_debugOverlay?.Visible == true &&
+            (_debugAccumulator >= 0.5 || string.IsNullOrEmpty(_debugLabel.Text)))
+        {
+            _debugAccumulator = 0.0;
+            _debugLabel.Text = WorldHudTextFormatter.FormatDebug(snapshot);
+        }
+
         _healthBar.MaxValue = snapshot.MaxHealth;
         _healthBar.Value = snapshot.CurrentHealth;
         _healthValue.Text = $"{snapshot.CurrentHealth}/{snapshot.MaxHealth}";

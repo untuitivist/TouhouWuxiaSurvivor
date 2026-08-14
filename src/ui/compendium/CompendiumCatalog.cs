@@ -1,6 +1,7 @@
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Content.Characters;
+using TouhouWuxiaSurvivor.Ui;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Official;
 using TouhouWuxiaSurvivor.World.Tiles;
@@ -140,7 +141,8 @@ public static class CompendiumCatalog
         {
             CharacterDefinition definition = CharacterCatalog.GetRequiredByDisplayName(
                 character.Name);
-            const string state = "可选自机 · 可作为角色 Boss";
+            string role = CharacterCombatRoleText.GetName(definition.CombatRole);
+            string state = $"{role} · 可选自机 · 可作为角色 Boss";
             entries.Add(new CompendiumEntry(
                 CompendiumCategory.Character,
                 character.Name,
@@ -153,6 +155,8 @@ public static class CompendiumCatalog
                     new("自机生命", definition.PlayableProfile.MaxHealth.ToString("0")),
                     new("自机身法", $"×{definition.PlayableProfile.MoveSpeedMultiplier:0.00}"),
                     new("自机攻势", $"×{definition.PlayableProfile.AttackMultiplier:0.00}"),
+                    new("奥义周天", $"{definition.PlayableProfile.UltimateIntervalSeconds:0.##} 秒"),
+                    new("奥义承载", definition.PlayableProfile.UltimateTargetCapacity.ToString()),
                     new("Boss 生命", definition.BossProfile.MaxHealth.ToString("0")),
                     new("Boss 身法", definition.BossProfile.MoveSpeed.ToString("0")),
                     new("Boss 触伤", definition.BossProfile.ContactDamage.ToString("0")),

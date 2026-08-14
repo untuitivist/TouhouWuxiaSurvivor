@@ -16,7 +16,8 @@ public sealed class SpellCardDefinition
     public string WuxiaStyle { get; }
     public string EffectDescription { get; }
     public SpellCardEffectKind EffectKind { get; }
-    public SpellCardTriggerKind TriggerKind { get; }
+    public SpellCardGeometryKind GeometryKind { get; }
+    public SpellCardActivationKind ActivationKind { get; }
     public string UnlockUpgradeId { get; }
     public string PrerequisiteUpgradeId { get; }
     public int MinimumRank { get; }
@@ -37,7 +38,8 @@ public sealed class SpellCardDefinition
         string wuxiaStyle,
         string effectDescription,
         SpellCardEffectKind effectKind,
-        SpellCardTriggerKind triggerKind,
+        SpellCardGeometryKind geometryKind,
+        SpellCardActivationKind activationKind,
         string prerequisiteUpgradeId,
         int minimumRank,
         SpellCardCombatProfile combat)
@@ -53,7 +55,8 @@ public sealed class SpellCardDefinition
         WuxiaStyle = Require(wuxiaStyle, nameof(wuxiaStyle));
         EffectDescription = Require(effectDescription, nameof(effectDescription));
         EffectKind = effectKind;
-        TriggerKind = triggerKind;
+        GeometryKind = geometryKind;
+        ActivationKind = activationKind;
         UnlockUpgradeId = $"spell_{Id}";
         PrerequisiteUpgradeId = Require(prerequisiteUpgradeId, nameof(prerequisiteUpgradeId));
         MinimumRank = Math.Max(1, minimumRank);

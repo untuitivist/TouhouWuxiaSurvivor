@@ -21,6 +21,7 @@ public partial class PlayerHealth : Node
     public int CurrentHealth { get; private set; }
     public bool IsDead => CurrentHealth <= 0;
     public bool IsInvincible => _invincibilityLeft > 0.0;
+    public long DamageRevision { get; private set; }
     public event Action<int, int>? HealthChanged;
     public event Action? Damaged;
     public event Action? Died;
@@ -86,6 +87,10 @@ public partial class PlayerHealth : Node
         }
 
         CurrentHealth = Math.Max(0, CurrentHealth - amount);
+        if (DamageRevision < long.MaxValue)
+        {
+            DamageRevision++;
+        }
         HealthChanged?.Invoke(CurrentHealth, MaxHealth);
         if (IsDead)
         {
