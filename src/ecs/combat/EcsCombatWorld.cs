@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Actors.Player;
+using TouhouWuxiaSurvivor.Combat.Targeting;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 
@@ -148,7 +149,8 @@ public partial class EcsCombatWorld : Node2D
         int maximumHits = 1, int secondaryHitDamage = -1)
     {
         if (_projectiles.TryAdd(position, direction, speed, damage,
-                ProjectileFaction.Player, 2.0f, 4.0f, 0, out _, maximumHits, secondaryHitDamage))
+                ProjectileFaction.Player, ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
+                4.0f, 0, out _, maximumHits, secondaryHitDamage))
         {
             TotalProjectilesSpawned++;
         }
@@ -197,6 +199,13 @@ public partial class EcsCombatWorld : Node2D
     /// <summary>对指定位置最近敌人执行批量索敌。</summary>
     public bool TryFindNearest(Vector2 origin, float range, out Vector2 position)
         => _enemyTargets.TryFindNearest(_enemies, origin, range, out position);
+
+    /// <summary>返回最近存活敌人的当前位置与权威速度，供自动武器计算弹道拦截提前量。</summary>
+    public bool TryFindNearestTarget(
+        Vector2 origin,
+        float range,
+        out TargetMotion motion)
+        => _enemyTargets.TryFindNearestMotion(_enemies, origin, range, out motion);
 
     /// <summary>返回范围内存活敌人的位置，供符卡范围效果复用。</summary>
     public IReadOnlyList<Vector2> SelectEnemies(Vector2 origin, float range, int maximum = int.MaxValue)

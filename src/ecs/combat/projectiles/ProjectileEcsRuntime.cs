@@ -48,7 +48,8 @@ public partial class ProjectileEcsRuntime : Node2D
         int secondaryHitDamage = -1)
     {
         if (_pool.TryAdd(position, direction, speed, damage,
-                ProjectileFaction.Player, 2.0f, 4.0f, 0, out _, maximumHits,
+                ProjectileFaction.Player, ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
+                4.0f, 0, out _, maximumHits,
                 secondaryHitDamage))
         {
             TotalSpawned++;

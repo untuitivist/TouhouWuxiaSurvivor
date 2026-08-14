@@ -136,10 +136,17 @@ public partial class AutoShooter : Node2D
         }
 
         float effectiveRange = TargetRange * (_runModifiers?.TargetRangeMultiplier ?? 1.0f);
-        Vector2 targetPosition = default;
-        bool hasTarget = _ecsWorld?.TryFindNearest(GlobalPosition, effectiveRange, out targetPosition) == true;
+        TargetMotion targetMotion = default;
+        bool hasTarget = _ecsWorld?.TryFindNearestTarget(
+            GlobalPosition, effectiveRange, out targetMotion) == true;
         var target = hasTarget ? null : _targetFinder.FindNearest(GlobalPosition, effectiveRange);
-        if (!hasTarget && target is null && CurrentBarrage.RequiresTarget)
+        if (!hasTarget && target is not null)
+        {
+            targetMotion = new TargetMotion(target.GlobalPosition, target.Velocity);
+            hasTarget = true;
+        }
+
+        if (!hasTarget && CurrentBarrage.RequiresTarget)
         {
             _volleySequence++;
             _cooldownLeft = 0.1;
@@ -147,10 +154,10 @@ public partial class AutoShooter : Node2D
         }
 
         Vector2 baseDirection = hasTarget
-            ? GlobalPosition.DirectionTo(targetPosition)
-            : target is not null
-                ? GlobalPosition.DirectionTo(target.GlobalPosition)
-                : Vector2.Right;
+            ? InterceptAimSolver.ResolveDirection(GlobalPosition, targetMotion,
+                GetEffectiveProjectileSpeed(), SpawnDistance,
+                ProjectileKinematicsPolicy.PlayerLifetimeSeconds)
+            : Vector2.Right;
         LastVolleyProjectileCount = FireVolley(baseDirection, CurrentBarrage);
         _volleySequence++;
         if (LastVolleyProjectileCount > 0)

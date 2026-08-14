@@ -33,7 +33,8 @@ public sealed class ProjectilePool
     public EcsEntity Add(Vector2 position, Vector2 direction, float speed, int damage)
     {
         TryAdd(position, direction, speed, damage, ProjectileFaction.Player,
-            2.0f, 4.0f, 0, out EcsEntity entity);
+            ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
+            4.0f, 0, out EcsEntity entity);
         return entity;
     }
 

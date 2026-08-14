@@ -5,6 +5,7 @@ namespace TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 /// </summary>
 public static class ProjectileKinematicsPolicy
 {
+    public const float PlayerLifetimeSeconds = 2.0f;
     public const float SoftCapStartSpeed = 1800.0f;
     public const float MaximumEffectiveSpeed = 2400.0f;
 

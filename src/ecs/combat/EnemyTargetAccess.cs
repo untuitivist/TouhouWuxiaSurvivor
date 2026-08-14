@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Combat.Targeting;
 using TouhouWuxiaSurvivor.Ecs.Core;
 
 namespace TouhouWuxiaSurvivor.Ecs.Combat;
@@ -15,7 +16,19 @@ public sealed class EnemyTargetAccess
         float range,
         out Vector2 position)
     {
-        position = default;
+        bool found = TryFindNearestMotion(enemies, origin, range, out TargetMotion motion);
+        position = motion.Position;
+        return found;
+    }
+
+    /// <summary>在指定射程内寻找距离最近的存活敌人，同时返回当前坐标和移动系统写入的权威速度。</summary>
+    public bool TryFindNearestMotion(
+        EnemyPool enemies,
+        Vector2 origin,
+        float range,
+        out TargetMotion motion)
+    {
+        motion = default;
         float best = range * range;
         bool found = false;
         for (int index = 0; index < enemies.Count; index++)
@@ -33,7 +46,7 @@ public sealed class EnemyTargetAccess
             }
 
             best = distance;
-            position = enemy.Position;
+            motion = new TargetMotion(enemy.Position, enemy.Velocity);
             found = true;
         }
 

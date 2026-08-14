@@ -13,7 +13,8 @@ public partial class PlayerProjectile : Area2D
     private int _damage = 1;
     private int _nextHitDamage;
     private int _remainingHits = 1;
-    private double _lifetimeLeft = 2.0;
+    private double _lifetimeLeft =
+        Ecs.Combat.Projectiles.ProjectileKinematicsPolicy.PlayerLifetimeSeconds;
     private bool _consumed;
 
     /// <summary>
