@@ -13,7 +13,7 @@ public struct EnemyComponent
     public EnemyComponent(EcsEntity entity, Vector2 position, EnemyDefinition definition)
     {
         Entity = entity;
-        Position = position;
+        _position = new InterpolatedPosition2D(position);
         Velocity = Vector2.Zero;
         Definition = definition;
         Health = definition.MaxHealth;
@@ -33,8 +33,23 @@ public struct EnemyComponent
     /// <summary>获取实体句柄。</summary>
     public EcsEntity Entity;
 
-    /// <summary>获取或设置局部世界位置。</summary>
-    public Vector2 Position;
+    private InterpolatedPosition2D _position;
+
+    /// <summary>获取或设置碰撞与 AI 使用的权威局部世界位置。</summary>
+    public Vector2 Position
+    {
+        get => _position.Current;
+        set => _position.Current = value;
+    }
+
+    /// <summary>在移动系统写入新位置前保存上一物理位置。</summary>
+    public void BeginPhysicsStep() => _position.BeginPhysicsStep();
+
+    /// <summary>同步平移前后物理位置，防止世界重定位被渲染成高速移动。</summary>
+    public void Translate(Vector2 offset) => _position.Translate(offset);
+
+    /// <summary>按渲染时物理分数读取平滑位置，不改变碰撞使用的权威位置。</summary>
+    public readonly Vector2 GetRenderPosition(float fraction) => _position.Sample(fraction);
 
     /// <summary>获取或设置追踪、突进和绕行系统共享的当前速度。</summary>
     public Vector2 Velocity;

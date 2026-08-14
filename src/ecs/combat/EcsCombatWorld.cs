@@ -266,10 +266,10 @@ public partial class EcsCombatWorld : Node2D
     /// <summary>同步世界重定位，所有 ECS 实体保持相对玩家的局部距离。</summary>
     public void Rebase(Vector2 offset)
     {
-        for (int index = 0; index < _enemies.Count; index++) { var item = _enemies.Get(index); item.Position -= offset; _enemies.Set(index, item); }
-        for (int index = 0; index < _projectiles.Count; index++) { var item = _projectiles.Get(index); item.Position -= offset; _projectiles.Set(index, item); }
+        for (int index = 0; index < _enemies.Count; index++) { var item = _enemies.Get(index); item.Translate(-offset); _enemies.Set(index, item); }
+        for (int index = 0; index < _projectiles.Count; index++) { var item = _projectiles.Get(index); item.Translate(-offset); _projectiles.Set(index, item); }
         for (int index = 0; index < _pickups.Count; index++) { var item = _pickups[index]; item.Position -= offset; _pickups[index] = item; }
-        for (int index = 0; index < _spirits.Count; index++) { var item = _spirits[index]; item.Position -= offset; _spirits[index] = item; }
+        for (int index = 0; index < _spirits.Count; index++) { var item = _spirits[index]; item.Translate(-offset); _spirits[index] = item; }
     }
 
     /// <summary>回收远离玩家的敌人，防止无限移动时死亡反馈或场外实体长期积压。</summary>
@@ -300,12 +300,15 @@ public partial class EcsCombatWorld : Node2D
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());
         _spiritSystem.Step(_spirits, _player.GlobalPosition, 72.0f * _modifiers.SpiritAttractionMultiplier,
             (float)delta, value => SpiritCollected?.Invoke(value));
-        QueueRedraw();
     }
 
-    /// <summary>把当前 ECS 数据交给共享素材批量渲染器，不为单个实体创建节点。</summary>
+    /// <summary>每个渲染帧请求重绘，使高刷新率画面可以取样两个固定物理状态之间的位置。</summary>
+    public override void _Process(double delta) => QueueRedraw();
+
+    /// <summary>把当前 ECS 数据按物理插值比例交给批量渲染器，不为单个实体创建节点。</summary>
     public override void _Draw() =>
-        _renderer.Draw(this, _enemies, _pickups, _spirits, _projectiles, _elapsedSeconds);
+        _renderer.Draw(this, _enemies, _pickups, _spirits, _projectiles,
+            _elapsedSeconds, (float)Engine.GetPhysicsInterpolationFraction());
 
     /// <summary>遍历投射物并在首次命中时消费数据。</summary>
     private void ResolveProjectileHits()

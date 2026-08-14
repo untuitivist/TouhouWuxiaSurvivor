@@ -16,6 +16,7 @@ public sealed class SpiritSystem
         for (int index = items.Count - 1; index >= 0; index--)
         {
             SpiritComponent spirit = items[index];
+            spirit.BeginPhysicsStep();
             spirit.PulseTime += delta;
             float distance = spirit.Position.DistanceTo(playerPosition);
             if (distance <= 11.0f)

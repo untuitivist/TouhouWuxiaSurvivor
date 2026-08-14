@@ -12,6 +12,7 @@ public partial class VideoSettingsPanel : VBoxContainer
     private OptionButton? _resolution;
     private OptionButton? _fpsLimit;
     private CheckButton? _vsync;
+    private Label? _effectiveState;
 
     /// <summary>
     /// 填充选项列表、选择当前值，再连接变化信号以避免初始化时重复应用设置。
@@ -23,6 +24,7 @@ public partial class VideoSettingsPanel : VBoxContainer
         _resolution = GetNode<OptionButton>("Resolution/Option");
         _fpsLimit = GetNode<OptionButton>("FpsLimit/Option");
         _vsync = GetNode<CheckButton>("Vsync/Toggle");
+        _effectiveState = GetNode<Label>("EffectiveState");
 
         FillOptions();
         SelectCurrentValues();
@@ -31,6 +33,7 @@ public partial class VideoSettingsPanel : VBoxContainer
         _resolution.ItemSelected += OnResolutionSelected;
         _fpsLimit.ItemSelected += OnFpsLimitSelected;
         _vsync.Toggled += OnVsyncToggled;
+        RefreshEffectiveState();
     }
 
     /// <summary>
@@ -118,9 +121,31 @@ public partial class VideoSettingsPanel : VBoxContainer
     /// <summary>
     /// 统一应用并保存视频设置，确保界面状态与运行时状态同步。
     /// </summary>
-    private static void ApplyAndSave()
+    private void ApplyAndSave()
     {
         GameSettingsService.ApplyVideo();
         GameSettingsService.Save();
+        RefreshEffectiveState();
+    }
+
+    /// <summary>
+    /// 显示引擎当前的软件限帧与垂直同步状态，避免把“软件不限制”误认为不会受刷新率约束。
+    /// </summary>
+    private void RefreshEffectiveState()
+    {
+        if (_effectiveState is null)
+        {
+            return;
+        }
+
+        string limit = Engine.MaxFps <= 0
+            ? "软件上限：关闭"
+            : $"软件上限：{Engine.MaxFps} FPS";
+        bool vsyncEnabled = DisplayServer.WindowGetVsyncMode() !=
+            DisplayServer.VSyncMode.Disabled;
+        string vsync = vsyncEnabled
+            ? "VSync：开启（受刷新率限制）"
+            : "VSync：关闭";
+        _effectiveState.Text = $"当前生效  {limit} · {vsync}";
     }
 }

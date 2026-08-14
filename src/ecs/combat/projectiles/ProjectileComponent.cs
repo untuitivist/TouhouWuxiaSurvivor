@@ -25,7 +25,7 @@ public struct ProjectileComponent
         float hitDamageDecay = ProjectileDamageBudget.SecondaryHitMultiplier)
     {
         Entity = entity;
-        Position = position;
+        _position = new InterpolatedPosition2D(position);
         Velocity = velocity;
         Damage = damage;
         Lifetime = lifetime;
@@ -47,8 +47,23 @@ public struct ProjectileComponent
     /// <summary>获取投射物对应的实体句柄。</summary>
     public EcsEntity Entity;
 
-    /// <summary>获取或设置投射物的局部世界位置。</summary>
-    public Vector2 Position;
+    private InterpolatedPosition2D _position;
+
+    /// <summary>获取或设置投射物碰撞与生命周期使用的权威局部世界位置。</summary>
+    public Vector2 Position
+    {
+        get => _position.Current;
+        set => _position.Current = value;
+    }
+
+    /// <summary>在固定步移动前保存上一物理位置。</summary>
+    public void BeginPhysicsStep() => _position.BeginPhysicsStep();
+
+    /// <summary>同步平移前后物理位置，供无限世界原点重定位使用。</summary>
+    public void Translate(Vector2 offset) => _position.Translate(offset);
+
+    /// <summary>按当前渲染帧比例读取平滑位置，不影响命中判定。</summary>
+    public readonly Vector2 GetRenderPosition(float fraction) => _position.Sample(fraction);
 
     /// <summary>获取或设置每秒位移向量。</summary>
     public Vector2 Velocity;

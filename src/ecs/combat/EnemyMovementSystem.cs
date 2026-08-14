@@ -31,6 +31,7 @@ public sealed class EnemyMovementSystem
         for (int index = pool.Count - 1; index >= 0; index--)
         {
             EnemyComponent enemy = pool.Get(index);
+            enemy.BeginPhysicsStep();
             enemy.HurtTime = Math.Max(0.0f, enemy.HurtTime - delta);
             if (!enemy.Alive)
             {

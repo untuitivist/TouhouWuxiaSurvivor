@@ -121,6 +121,7 @@ script = ExtResource("15_health")
 script = ExtResource("10_auto_shooter")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+process_callback = 0
 position_smoothing_enabled = false
 
 [node name="CombatEntities" type="Node2D" parent="."]

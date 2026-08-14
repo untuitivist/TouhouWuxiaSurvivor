@@ -62,6 +62,7 @@ public partial class WorldDemo : Node2D
     private RunFailureCoordinator? _runFailure;
     private BossEncounterDirector? _bossEncounters;
     private WorldDemoMapRuntime? _mapRuntime;
+    private WorldOriginRebaseCoordinator? _originRebase;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private RunContentContext? _runContext;
 
@@ -160,6 +161,8 @@ public partial class WorldDemo : Node2D
         _player.ConfigureRunModifiers(_progression.Modifiers);
         _pickupSpawner.Configure(pickups);
         _ecsCombatWorld.Configure(_player, _health, _buffs, _progression.Modifiers);
+        _originRebase = new WorldOriginRebaseCoordinator(
+            _streamer, _player, _combatEntities, _ecsCombatWorld);
         _bossEncounters = new BossEncounterDirector { Name = "BossEncounterDirector" };
         AddChild(_bossEncounters);
         _bossEncounters.Configure(_ecsCombatWorld, _runContext, () => _player.Position);
@@ -201,26 +204,15 @@ public partial class WorldDemo : Node2D
                 _ecsCombatWorld!, _progression!));
     }
 
-    /// <summary>
-    /// 每帧检查本地原点重定位、更新区块流送，并刷新绝对坐标信息。
-    /// </summary>
+    /// <summary>在固定物理步委托原点重定位，避免渲染帧直接移动玩家碰撞体。</summary>
+    public override void _PhysicsProcess(double delta) => _originRebase?.Update();
+
+    /// <summary>每个渲染帧更新区块流送、地图发现和低频 HUD，运动显示由物理插值负责。</summary>
     public override void _Process(double delta)
     {
         if (_streamer is null || _player is null)
         {
             return;
-        }
-
-        ChunkCoordinate localChunk = GridMath.LocalPositionToChunk(_player.Position);
-        if (Math.Abs(localChunk.X) >= WorldMetrics.RebaseDistanceChunks ||
-            Math.Abs(localChunk.Y) >= WorldMetrics.RebaseDistanceChunks)
-        {
-            var rebaseOffset = new Vector2(
-                localChunk.X * WorldMetrics.ChunkPixels,
-                localChunk.Y * WorldMetrics.ChunkPixels);
-            _player.Position -= rebaseOffset;
-            RebaseCombatEntities(rebaseOffset);
-            _streamer.Rebase(localChunk);
         }
 
         _streamer.Update(_player.Position);
@@ -232,35 +224,6 @@ public partial class WorldDemo : Node2D
     /// 世界离开场景树时解除诊断委托，防止常驻节点在场景切换期间读取已释放节点。
     /// </summary>
     public override void _ExitTree() => PerformanceDiagnosticsHost.DetachWorld(this);
-
-    /// <summary>
-    /// 原点重定位时同步平移所有存活敌人、子弹和掉落物，维持它们与玩家的局部距离。
-    /// </summary>
-    private void RebaseCombatEntities(Vector2 offset)
-    {
-        if (_combatEntities is null)
-        {
-            return;
-        }
-
-        foreach (Node category in _combatEntities.GetChildren())
-        {
-            if (category == _ecsCombatWorld)
-            {
-                continue;
-            }
-
-            foreach (Node child in category.GetChildren())
-            {
-                if (child is Node2D entity)
-                {
-                    entity.Position -= offset;
-                }
-            }
-        }
-
-        _ecsCombatWorld?.Rebase(offset);
-    }
 
     /// <summary>
     /// 把任意本地像素位置转换成绝对 Tile 并查询群系，供刷怪器选择地区生态而不依赖世界实现。

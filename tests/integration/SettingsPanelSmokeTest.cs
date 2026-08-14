@@ -107,6 +107,13 @@ public partial class SettingsPanelSmokeTest : Node
         Require(fpsChoices.SequenceEqual(new[]
             { "30 FPS", "60 FPS", "120 FPS", "144 FPS", "不限制" }),
             "FPS options diverged from the shared video catalog.");
+        Require(VideoSettingsCatalog.GetFpsLimit(fps.ItemCount - 1) == 0,
+            "The visible unlimited option does not map to Engine.MaxFps zero.");
+        Label effectiveState = settings.GetNode<Label>(
+            "Padding/Layout/Tabs/视频/Video/EffectiveState");
+        Require(!string.IsNullOrWhiteSpace(effectiveState.Text) &&
+            effectiveState.Text.Contains("软件上限") && effectiveState.Text.Contains("VSync"),
+            "Video settings do not expose the effective frame-pacing state.");
     }
 
     /// <summary>

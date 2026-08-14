@@ -13,6 +13,7 @@ public sealed class ProjectileMovementSystem
         for (int index = pool.Count - 1; index >= 0; index--)
         {
             var projectile = pool.Get(index);
+            projectile.BeginPhysicsStep();
             projectile.Position += projectile.Velocity * delta;
             projectile.Lifetime -= delta;
             if (projectile.Lifetime <= 0.0f)

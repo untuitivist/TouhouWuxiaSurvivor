@@ -31,7 +31,9 @@ public static class WorldHudTextFormatter
     /// 生成仅在调试层打开时显示的世界坐标、生成状态、内容包和性能信息。
     /// </summary>
     public static string FormatDebug(WorldHudSnapshot snapshot) =>
-        $"FPS  {Engine.GetFramesPerSecond()}\n" +
+        $"FPS  {Engine.GetFramesPerSecond()} · " +
+        $"Limit {(Engine.MaxFps <= 0 ? "Off" : Engine.MaxFps)} · " +
+        $"VSync {(DisplayServer.WindowGetVsyncMode() == DisplayServer.VSyncMode.Disabled ? "Off" : "On")}\n" +
         $"Seed  {snapshot.Seed}\n" +
         $"Tile  {snapshot.TileX}, {snapshot.TileY}\n" +
         $"Chunk  {snapshot.Chunk}\n" +

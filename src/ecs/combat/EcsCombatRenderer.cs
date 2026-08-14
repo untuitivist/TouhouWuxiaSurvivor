@@ -45,7 +45,8 @@ public sealed class EcsCombatRenderer
         IReadOnlyList<PickupComponent> pickups,
         IReadOnlyList<SpiritComponent> spirits,
         ProjectilePool projectiles,
-        double animationTime)
+        double animationTime,
+        float interpolationFraction = 1.0f)
     {
         LastMappedEnemyCount = LastFallbackEnemyCount = 0;
         LastMappedBossCount = LastFallbackBossCount = 0;
@@ -58,18 +59,22 @@ public sealed class EcsCombatRenderer
             else LastCulledEntityCount++;
         }
 
-        enemies.ForEach(enemy => DrawEnemyIfVisible(canvas, enemy, animationTime, visibility));
+        enemies.ForEach(enemy => DrawEnemyIfVisible(
+            canvas, enemy, animationTime, interpolationFraction, visibility));
         foreach (SpiritComponent spirit in spirits)
         {
-            if (visibility.Intersects(spirit.Position, 12.0f)) _items.DrawSpirit(canvas, spirit);
+            Vector2 position = spirit.GetRenderPosition(interpolationFraction);
+            if (visibility.Intersects(position, 12.0f))
+                _items.DrawSpirit(canvas, spirit, position);
             else LastCulledEntityCount++;
         }
 
         projectiles.ForEach(projectile =>
         {
-            if (visibility.Intersects(projectile.Position, projectile.Radius))
+            Vector2 position = projectile.GetRenderPosition(interpolationFraction);
+            if (visibility.Intersects(position, projectile.Radius))
             {
-                _items.DrawProjectile(canvas, projectile);
+                _items.DrawProjectile(canvas, projectile, position);
                 LastVisibleProjectileCount++;
             }
             else LastCulledEntityCount++;
@@ -83,20 +88,22 @@ public sealed class EcsCombatRenderer
         Node2D canvas,
         EnemyComponent enemy,
         double animationTime,
+        float interpolationFraction,
         CombatVisibilityBounds visibility)
     {
         CountEnemyVisual(enemy);
+        Vector2 position = enemy.GetRenderPosition(interpolationFraction);
         float radius = enemy.Definition.IsBoss
             ? enemy.Definition.CollisionRadius + 24.0f
             : enemy.Definition.CollisionRadius + 12.0f;
-        if (!visibility.Intersects(enemy.Position, radius))
+        if (!visibility.Intersects(position, radius))
         {
             LastCulledEntityCount++;
             return;
         }
 
         LastVisibleEnemyCount++;
-        DrawEnemy(canvas, enemy, animationTime);
+        DrawEnemy(canvas, enemy, position, animationTime);
     }
 
     /// <summary>
@@ -128,17 +135,21 @@ public sealed class EcsCombatRenderer
     /// <summary>
     /// 使用图鉴共享映射切换四帧敌人动画，受击时以红色调制，死亡时显示消散文字。
     /// </summary>
-    private void DrawEnemy(Node2D canvas, EnemyComponent enemy, double animationTime)
+    private void DrawEnemy(
+        Node2D canvas,
+        EnemyComponent enemy,
+        Vector2 position,
+        double animationTime)
     {
         if (!enemy.Alive)
         {
-            DrawText(canvas, enemy.Position, "消散", new Color("c5c5bf"));
+            DrawText(canvas, position, "消散", new Color("c5c5bf"));
             return;
         }
 
         if (enemy.Definition.IsBoss)
         {
-            DrawBoss(canvas, enemy, animationTime);
+            DrawBoss(canvas, enemy, position, animationTime);
             return;
         }
 
@@ -148,7 +159,7 @@ public sealed class EcsCombatRenderer
             visual.Kind != InternalVisualKind.ActorStrip ||
             !_visuals.TryGetTexture(visual, out Texture2D texture))
         {
-            DrawText(canvas, enemy.Position, enemy.Definition.DisplayName,
+            DrawText(canvas, position, enemy.Definition.DisplayName,
                 new Color("c8e7ff"));
             return;
         }
@@ -159,7 +170,7 @@ public sealed class EcsCombatRenderer
         var source = new Rect2(frame * frameWidth, 0.0f, frameWidth, textureSize.Y);
         float drawSize = enemy.Definition.CollisionRadius >= 10.0f ? 36.0f : 24.0f;
         var destination = new Rect2(
-            (enemy.Position - Vector2.One * drawSize * 0.5f).Round(),
+            (position - Vector2.One * drawSize * 0.5f).Round(),
             Vector2.One * drawSize);
         Color modulate = enemy.HurtTime > 0.0f
             ? new Color(1.0f, 0.42f, 0.42f)
@@ -170,20 +181,24 @@ public sealed class EcsCombatRenderer
     /// <summary>
     /// 使用角色分类映射绘制 Boss；支持四帧 ActorStrip 与完整 Portrait，两者缺失时回退中文名并始终绘制紧凑血条。
     /// </summary>
-    private void DrawBoss(Node2D canvas, EnemyComponent enemy, double animationTime)
+    private void DrawBoss(
+        Node2D canvas,
+        EnemyComponent enemy,
+        Vector2 position,
+        double animationTime)
     {
         if (!TryResolveBossVisual(enemy.Definition, out InternalVisualDefinition visual) ||
             !_visuals.TryGetTexture(visual, out Texture2D texture))
         {
-            DrawText(canvas, enemy.Position, enemy.Definition.DisplayName,
+            DrawText(canvas, position, enemy.Definition.DisplayName,
                 new Color("ffd6e6"), 11, 72.0f);
-            DrawBossHealth(canvas, enemy);
+            DrawBossHealth(canvas, enemy, position);
             return;
         }
 
         const float drawSize = 48.0f;
         var destination = new Rect2(
-            (enemy.Position - Vector2.One * drawSize * 0.5f).Round(),
+            (position - Vector2.One * drawSize * 0.5f).Round(),
             Vector2.One * drawSize);
         Color modulate = enemy.HurtTime > 0.0f
             ? new Color(1.0f, 0.45f, 0.45f)
@@ -198,11 +213,11 @@ public sealed class EcsCombatRenderer
         }
         else
         {
-            canvas.DrawTextureRect(texture, GetAspectFitRect(texture, enemy.Position, drawSize),
+            canvas.DrawTextureRect(texture, GetAspectFitRect(texture, position, drawSize),
                 false, modulate);
         }
 
-        DrawBossHealth(canvas, enemy);
+        DrawBossHealth(canvas, enemy, position);
     }
 
     /// <summary>查询角色 Boss 的共享视觉定义，只接受适合运行时绘制的立绘或四帧角色条。</summary>
@@ -219,13 +234,16 @@ public sealed class EcsCombatRenderer
     }
 
     /// <summary>在 Boss 头顶绘制固定宽度生命条，血量变化不会挤占 HUD 或改变实体版式。</summary>
-    private static void DrawBossHealth(Node2D canvas, EnemyComponent enemy)
+    private static void DrawBossHealth(
+        Node2D canvas,
+        EnemyComponent enemy,
+        Vector2 position)
     {
         const float width = 48.0f;
         const float height = 4.0f;
         float ratio = Mathf.Clamp(enemy.Health /
             (float)Math.Max(1, enemy.Definition.MaxHealth), 0.0f, 1.0f);
-        Vector2 origin = (enemy.Position + new Vector2(-width * 0.5f,
+        Vector2 origin = (position + new Vector2(-width * 0.5f,
             -enemy.Definition.CollisionRadius - 12.0f)).Round();
         canvas.DrawRect(new Rect2(origin, new Vector2(width, height)),
             new Color("151719"));

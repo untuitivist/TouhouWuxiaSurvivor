@@ -67,33 +67,39 @@ public sealed class EcsCombatItemRenderer
     }
 
     /// <summary>用道具图集中的青色季节点表示经验，合并价值大于一时附加数字。</summary>
-    public void DrawSpirit(Node2D canvas, SpiritComponent spirit)
+    public void DrawSpirit(
+        Node2D canvas,
+        SpiritComponent spirit,
+        Vector2 position)
     {
         if (_itemAtlas is not null)
         {
             var destination = new Rect2(
-                (spirit.Position - Vector2.One * 5.0f).Round(), Vector2.One * 10.0f);
+                (position - Vector2.One * 5.0f).Round(), Vector2.One * 10.0f);
             canvas.DrawTextureRectRegion(
                 _itemAtlas, destination, new Rect2(128.0f, 0.0f, 32.0f, 32.0f));
             LastSpiritIconCount++;
         }
         else
         {
-            DrawText(canvas, spirit.Position, "灵息", new Color("b8efcf"));
+            DrawText(canvas, position, "灵息", new Color("b8efcf"));
         }
 
         if (spirit.Value > 1)
         {
-            DrawText(canvas, spirit.Position + new Vector2(7.0f, 5.0f),
+            DrawText(canvas, position + new Vector2(7.0f, 5.0f),
                 spirit.Value.ToString(), new Color("b8efcf"), 8, 18.0f);
         }
     }
 
     /// <summary>从共享弹幕图集选择阵营与变体对应的灵弹，并固定为八像素显示尺寸。</summary>
-    public void DrawProjectile(Node2D canvas, ProjectileComponent projectile)
+    public void DrawProjectile(
+        Node2D canvas,
+        ProjectileComponent projectile,
+        Vector2 position)
     {
         var destination = new Rect2(
-            (projectile.Position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
+            (position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
         if (_bulletAtlas is not null)
         {
             int column = projectile.Faction == ProjectileFaction.Player
