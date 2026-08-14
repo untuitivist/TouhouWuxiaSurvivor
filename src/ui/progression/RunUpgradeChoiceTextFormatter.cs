@@ -19,7 +19,7 @@ public static class RunUpgradeChoiceTextFormatter
         ArgumentNullException.ThrowIfNull(choice);
         ArgumentNullException.ThrowIfNull(build);
         string affinity = RunUpgradeAffinityFormatter.FormatMany(choice.Affinities);
-        string route = choice.IsExploration ? "另辟 · " : string.Empty;
+        string route = FormatRole(choice.OfferRole);
         if (choice.Specialization is not null)
         {
             return $"{route}特化 · {choice.Specialization.DisplayName}    [{affinity}]\n" +
@@ -52,4 +52,15 @@ public static class RunUpgradeChoiceTextFormatter
             $"{SpellCardActivationText.GetShortName(card.ActivationKind)} · " +
             $"{SpellCardGeometryText.GetName(card.GeometryKind)} · {slot}";
     }
+
+    /// <summary>
+    /// 将本轮候选职责同步到纯文本表示，供无障碍提示和兼容测试保留完整语义。
+    /// </summary>
+    private static string FormatRole(RunUpgradeOfferRole role) => role switch
+    {
+        RunUpgradeOfferRole.Momentum => "顺势 · ",
+        RunUpgradeOfferRole.Complement => "补全 · ",
+        RunUpgradeOfferRole.Exploration => "另辟 · ",
+        _ => string.Empty,
+    };
 }

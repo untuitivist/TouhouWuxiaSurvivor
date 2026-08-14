@@ -7,7 +7,8 @@ public sealed class RunUpgradeChoice
 {
     public RunUpgradeDefinition Definition { get; }
     public RunUpgradeSpecialization? Specialization { get; }
-    public bool IsExploration { get; }
+    public RunUpgradeOfferRole OfferRole { get; }
+    public bool IsExploration => OfferRole == RunUpgradeOfferRole.Exploration;
     public bool IsSpecialization => Specialization is not null;
     public string Id => Specialization?.Id ?? Definition.Id;
     public IReadOnlyList<RunUpgradeAffinity> Affinities =>
@@ -20,6 +21,22 @@ public sealed class RunUpgradeChoice
         RunUpgradeDefinition definition,
         RunUpgradeSpecialization? specialization = null,
         bool isExploration = false)
+        : this(
+            definition,
+            specialization,
+            isExploration
+                ? RunUpgradeOfferRole.Exploration
+                : RunUpgradeOfferRole.Opportunity)
+    {
+    }
+
+    /// <summary>
+    /// 建立带明确构筑职责的候选；仅由生成器复制已有合法候选时调用。
+    /// </summary>
+    private RunUpgradeChoice(
+        RunUpgradeDefinition definition,
+        RunUpgradeSpecialization? specialization,
+        RunUpgradeOfferRole offerRole)
     {
         Definition = definition ?? throw new ArgumentNullException(nameof(definition));
         if (specialization is not null && !definition.Specializations.Contains(specialization))
@@ -29,13 +46,21 @@ public sealed class RunUpgradeChoice
         }
 
         Specialization = specialization;
-        IsExploration = isExploration;
+        OfferRole = offerRole;
     }
 
     /// <summary>
     /// 复制当前候选并替换探索标记，生成器可保持其他不可变元数据不变。
     /// </summary>
     public RunUpgradeChoice WithExploration(bool isExploration) =>
-        new(Definition, Specialization, isExploration);
+        WithRole(isExploration
+            ? RunUpgradeOfferRole.Exploration
+            : RunUpgradeOfferRole.Opportunity);
+
+    /// <summary>
+    /// 复制当前候选并附加本轮展示职责，定义、特化与亲和信息保持不变。
+    /// </summary>
+    public RunUpgradeChoice WithRole(RunUpgradeOfferRole offerRole) =>
+        new(Definition, Specialization, offerRole);
 
 }

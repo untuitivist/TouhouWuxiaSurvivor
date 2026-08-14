@@ -12,10 +12,11 @@ namespace TouhouWuxiaSurvivor.Ui.Progression;
 /// </summary>
 public partial class LevelUpOverlay : CanvasLayer
 {
-    private readonly List<Button> _buttons = [];
+    private readonly List<RunUpgradeChoiceCard> _cards = [];
     private IReadOnlyList<RunUpgradeChoice> _choices = [];
     private Control? _root;
     private Label? _levelLabel;
+    private Label? _routeLabel;
     private WorldMapOverlay? _map;
     private PauseMenuOverlay? _pauseMenu;
     private CharacterStatsOverlay? _stats;
@@ -33,12 +34,14 @@ public partial class LevelUpOverlay : CanvasLayer
         ProcessMode = ProcessModeEnum.Always;
         _root = GetNode<Control>("Root");
         _levelLabel = GetNode<Label>("Root/Panel/Padding/Layout/Level");
+        _routeLabel = GetNode<Label>("Root/Panel/Padding/Layout/Route");
         for (int index = 0; index < 3; index++)
         {
             int capturedIndex = index;
-            Button button = GetNode<Button>($"Root/Panel/Padding/Layout/Choices/Choice{index}");
-            button.Pressed += () => SelectChoice(capturedIndex);
-            _buttons.Add(button);
+            RunUpgradeChoiceCard card = GetNode<RunUpgradeChoiceCard>(
+                $"Root/Panel/Padding/Layout/Choices/Choice{index}");
+            card.Pressed += () => SelectChoice(capturedIndex);
+            _cards.Add(card);
         }
 
         _root.Hide();
@@ -74,19 +77,19 @@ public partial class LevelUpOverlay : CanvasLayer
 
         _choices = choices;
         _levelLabel!.Text = $"境界 {level}";
-        for (int index = 0; index < _buttons.Count; index++)
+        _routeLabel!.Text = RunUpgradeChoicePresentationFactory.FormatCurrentRoute(build);
+        for (int index = 0; index < _cards.Count; index++)
         {
             bool available = index < choices.Count;
-            _buttons[index].Visible = available;
+            _cards[index].Visible = available;
             if (available)
             {
-                _buttons[index].Text = RunUpgradeChoiceTextFormatter.Format(
-                    choices[index], build);
+                _cards[index].Present(choices[index], build);
             }
         }
 
         _root!.Show();
-        _buttons.FirstOrDefault(button => button.Visible)?.GrabFocus();
+        _cards.FirstOrDefault(card => card.Visible)?.GrabFocus();
     }
 
     /// <summary>

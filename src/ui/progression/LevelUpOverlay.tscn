@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/ui/progression/LevelUpOverlay.cs" id="1_overlay"]
 [ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="2_theme"]
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="3_scroll"]
+[ext_resource type="PackedScene" path="res://src/ui/progression/RunUpgradeChoiceCard.tscn" id="4_card"]
 
 [sub_resource type="StyleBoxTexture" id="StylePanel"]
 texture = ExtResource("3_scroll")
@@ -47,10 +48,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -230.0
-offset_top = -125.0
-offset_right = 230.0
-offset_bottom = 125.0
+offset_left = -268.0
+offset_top = -142.0
+offset_right = 268.0
+offset_bottom = 142.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StylePanel")
@@ -58,18 +59,18 @@ theme_override_styles/panel = SubResource("StylePanel")
 [node name="Padding" type="MarginContainer" parent="Root/Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 14
+theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_bottom = 12
 
 [node name="Layout" type="VBoxContainer" parent="Root/Panel/Padding"]
 layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 3
 
 [node name="Title" type="Label" parent="Root/Panel/Padding/Layout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.9, 0.68, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 17
 text = "修行突破"
 horizontal_alignment = 1
 
@@ -79,25 +80,23 @@ theme_override_colors/font_color = Color(0.7, 0.78, 0.67, 1)
 text = "境界 2"
 horizontal_alignment = 1
 
+[node name="Route" type="Label" parent="Root/Panel/Padding/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.57, 0.65, 0.56, 1)
+theme_override_font_sizes/font_size = 11
+text = "尚未定势"
+horizontal_alignment = 1
+
 [node name="Choices" type="VBoxContainer" parent="Root/Panel/Padding/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 5
 
-[node name="Choice0" type="Button" parent="Root/Panel/Padding/Layout/Choices"]
-custom_minimum_size = Vector2(0, 52)
+[node name="Choice0" parent="Root/Panel/Padding/Layout/Choices" instance=ExtResource("4_card")]
 layout_mode = 2
-text = "武学 · 封魔针法    1/5\n弹丸伤害 +1"
-alignment = 0
 
-[node name="Choice1" type="Button" parent="Root/Panel/Padding/Layout/Choices"]
-custom_minimum_size = Vector2(0, 52)
+[node name="Choice1" parent="Root/Panel/Padding/Layout/Choices" instance=ExtResource("4_card")]
 layout_mode = 2
-text = "心法 · 博丽呼吸法    1/5\n射击速度 +12%"
-alignment = 0
 
-[node name="Choice2" type="Button" parent="Root/Panel/Padding/Layout/Choices"]
-custom_minimum_size = Vector2(0, 52)
+[node name="Choice2" parent="Root/Panel/Padding/Layout/Choices" instance=ExtResource("4_card")]
 layout_mode = 2
-text = "心法 · 天狗步    1/5\n移动速度 +8%"
-alignment = 0

@@ -21,7 +21,12 @@ public partial class LevelUpVisualAcceptanceTest : Node
         {
             GetWindow().Size = new Vector2I(1280, 720);
             var build = new RunBuildState();
-            RunUpgradeChoice[] choices = CreateLongestChoices(build);
+            RunUpgradeDefinition needle = RunUpgradeCatalog.FindById("needle_damage")!;
+            for (int rank = 0; rank < 3; rank++)
+            {
+                build.Apply(needle);
+            }
+            RunUpgradeChoice[] choices = CreateRepresentativeChoices(build, needle);
             overlay = GD.Load<PackedScene>("res://src/ui/progression/LevelUpOverlay.tscn")
                 .Instantiate<LevelUpOverlay>();
             AddChild(overlay);
@@ -46,17 +51,26 @@ public partial class LevelUpVisualAcceptanceTest : Node
     }
 
     /// <summary>
-    /// 同时枚举普通升重与特化，全部标为探索项后按正式格式长度选出不重复的前三项。
+    /// 组合普通升重、特化与最长奥义，并分别赋予三种正式职责以覆盖全部卡片字段。
     /// </summary>
-    private static RunUpgradeChoice[] CreateLongestChoices(RunBuildState build) =>
-        RunUpgradeCatalog.All.SelectMany(definition =>
-                new[] { new RunUpgradeChoice(definition, isExploration: true) }
-                    .Concat(definition.Specializations.Select(specialization =>
-                        new RunUpgradeChoice(definition, specialization, true))))
+    private static RunUpgradeChoice[] CreateRepresentativeChoices(
+        RunBuildState build,
+        RunUpgradeDefinition needle)
+    {
+        RunUpgradeChoice longestSpell = RunUpgradeCatalog.All
+            .Where(definition => definition.Category == RunUpgradeCategory.SpellCard)
+            .Select(definition => new RunUpgradeChoice(definition))
             .OrderByDescending(choice =>
                 RunUpgradeChoiceTextFormatter.Format(choice, build).Length)
-            .Take(3)
-            .ToArray();
+            .First();
+        return
+        [
+            new RunUpgradeChoice(needle).WithRole(RunUpgradeOfferRole.Momentum),
+            new RunUpgradeChoice(needle, needle.Specializations[0])
+                .WithRole(RunUpgradeOfferRole.Complement),
+            longestSpell.WithRole(RunUpgradeOfferRole.Exploration),
+        ];
+    }
 
     /// <summary>
     /// 检查卷轴与三个按钮均留在逻辑视口，且每行文字宽度小于按钮可用宽度，防止静默裁切。
@@ -66,16 +80,24 @@ public partial class LevelUpVisualAcceptanceTest : Node
         var viewport = new Rect2(Vector2.Zero, new Vector2(640.0f, 360.0f));
         Control panel = overlay.GetNode<Control>("Root/Panel");
         Rect2 panelRect = panel.GetGlobalRect();
+        string[] expectedRoles = ["顺势", "补全", "另辟"];
+        int[] expectedTrackLengths = [5, 1, 1];
         float widestLine = 0.0f;
         string widestText = string.Empty;
         for (int index = 0; index < 3; index++)
         {
-            Button measured = overlay.GetNode<Button>(
+            RunUpgradeChoiceCard measured = overlay.GetNode<RunUpgradeChoiceCard>(
                 $"Root/Panel/Padding/Layout/Choices/Choice{index}");
-            Font font = measured.GetThemeFont("font");
-            int fontSize = measured.GetThemeFontSize("font_size");
-            foreach (string line in measured.Text.Split('\n'))
+            Require(measured.GetNode<Label>("Content/Row/Role/RoleName").Text ==
+                    expectedRoles[index] &&
+                measured.GetNode<HBoxContainer>("Content/Row/Meta/Track").GetChildCount() ==
+                    expectedTrackLengths[index],
+                $"Level-up choice {index} did not render its role or rank track.");
+            foreach (Label label in measured.GetVisibleTextLabels())
             {
+                Font font = label.GetThemeFont("font");
+                int fontSize = label.GetThemeFontSize("font_size");
+                string line = label.Text;
                 float width = font.GetStringSize(
                     line, HorizontalAlignment.Left, -1, fontSize).X;
                 if (width > widestLine)
@@ -90,17 +112,18 @@ public partial class LevelUpVisualAcceptanceTest : Node
             $"{widestLine:0.#}px: {widestText}");
         for (int index = 0; index < 3; index++)
         {
-            Button button = overlay.GetNode<Button>(
+            RunUpgradeChoiceCard card = overlay.GetNode<RunUpgradeChoiceCard>(
                 $"Root/Panel/Padding/Layout/Choices/Choice{index}");
-            Require(button.Visible && panel.GetGlobalRect().Encloses(button.GetGlobalRect()),
+            Require(card.Visible && panel.GetGlobalRect().Encloses(card.GetGlobalRect()),
                 $"Level-up choice {index} escaped the scroll panel.");
-            Font font = button.GetThemeFont("font");
-            int fontSize = button.GetThemeFontSize("font_size");
-            float availableWidth = button.Size.X - 20.0f;
-            foreach (string line in button.Text.Split('\n'))
+            foreach (Label label in card.GetVisibleTextLabels())
             {
-                Require(font.GetStringSize(line, HorizontalAlignment.Left, -1, fontSize).X <=
-                    availableWidth, $"Level-up choice {index} clipped its line: {line}");
+                Font font = label.GetThemeFont("font");
+                int fontSize = label.GetThemeFontSize("font_size");
+                float width = font.GetStringSize(
+                    label.Text, HorizontalAlignment.Left, -1, fontSize).X;
+                Require(width <= label.Size.X + 0.5f,
+                    $"Level-up choice {index} clipped its field: {label.Text}");
             }
         }
     }

@@ -94,8 +94,13 @@ public partial class RunAffinityOfferTest : Node
             focused.Apply(needle);
         }
 
-        int neutralAppearances = 0;
-        int focusedAppearances = 0;
+        var dominant = new HashSet<RunUpgradeAffinity>
+        {
+            RunUpgradeAffinity.Force,
+            RunUpgradeAffinity.Precision,
+        };
+        int neutralAlignedChoices = 0;
+        int focusedAlignedChoices = 0;
         for (ulong seed = 1; seed <= trials; seed++)
         {
             var neutralRandom = new RandomNumberGenerator { Seed = seed };
@@ -104,16 +109,36 @@ public partial class RunAffinityOfferTest : Node
                 neutralRandom, neutral, ContentPackSelection.BaseOnly, 1, 3);
             IReadOnlyList<RunUpgradeChoice> focusedOffer = _generator.CreateOffer(
                 focusedRandom, focused, ContentPackSelection.BaseOnly, 1, 3);
-            neutralAppearances += neutralOffer.Any(item => item.Id == needle.Id) ? 1 : 0;
-            focusedAppearances += focusedOffer.Any(item => item.Id == needle.Id) ? 1 : 0;
-            Require(focusedOffer.Count(item => item.IsExploration) == 1,
-                "An established build did not receive exactly one exploration option.");
+            neutralAlignedChoices += neutralOffer.Count(item =>
+                item.Affinities.Any(dominant.Contains));
+            focusedAlignedChoices += focusedOffer.Count(item =>
+                item.Affinities.Any(dominant.Contains));
+            Require(focusedOffer.Count(item =>
+                    item.OfferRole == RunUpgradeOfferRole.Momentum) == 1 &&
+                focusedOffer.Count(item =>
+                    item.OfferRole == RunUpgradeOfferRole.Complement) == 1 &&
+                focusedOffer.Count(item => item.IsExploration) == 1,
+                "An established build did not receive one momentum, complement, and exploration option.");
+            RunUpgradeChoice momentum = focusedOffer.Single(item =>
+                item.OfferRole == RunUpgradeOfferRole.Momentum);
+            RunUpgradeChoice complement = focusedOffer.Single(item =>
+                item.OfferRole == RunUpgradeOfferRole.Complement);
+            RunUpgradeChoice exploration = focusedOffer.Single(item => item.IsExploration);
+            Require(momentum.Affinities.Any(dominant.Contains) &&
+                complement.Affinities.Any(dominant.Contains) &&
+                complement.Affinities.Any(affinity => !dominant.Contains(affinity)) &&
+                !exploration.Affinities.Any(dominant.Contains),
+                "An offer role did not match its affinity composition.");
         }
 
-        Require(focusedAppearances > neutralAppearances + trials / 8,
-            "Affinity did not significantly improve a matching upgrade's appearance rate.");
-        Require(focusedAppearances < trials,
-            "Affinity reached a forbidden one-hundred-percent monopoly.");
+        Require(focusedAlignedChoices > neutralAlignedChoices + trials / 8,
+            "Affinity did not significantly improve its complete route's appearance rate.");
+        Require(focusedAlignedChoices < trials * 3,
+            "Affinity occupied every choice and removed the alternate route.");
+        Require(_generator.CreateOffer(new RandomNumberGenerator { Seed = 11 }, neutral,
+                ContentPackSelection.BaseOnly, 1, 3).All(choice =>
+                choice.OfferRole == RunUpgradeOfferRole.Opportunity),
+            "A neutral opening was assigned a fabricated route bias.");
     }
 
     /// <summary>
@@ -236,11 +261,12 @@ public partial class RunAffinityOfferTest : Node
             "res://src/ui/progression/LevelUpOverlay.tscn").Instantiate<LevelUpOverlay>();
         AddChild(overlay);
         overlay.Present([new RunUpgradeChoice(spell)], new RunBuildState(), 2);
-        string text = overlay.GetNode<Button>(
-            "Root/Panel/Padding/Layout/Choices/Choice0").Text;
+        RunUpgradeChoiceCard rendered = overlay.GetNode<RunUpgradeChoiceCard>(
+            "Root/Panel/Padding/Layout/Choices/Choice0");
         SpellCardDefinition card = SpellCardCatalog.FindById(spell.SpellCardId!) ??
             throw new InvalidOperationException($"Unknown spell card: {spell.SpellCardId}.");
-        Require(overlay.IsOpen && text.Contains(card.ShortName, StringComparison.Ordinal),
+        Require(overlay.IsOpen && rendered.DisplayTitle.Contains(
+                card.ShortName, StringComparison.Ordinal),
             "Spell-card choice did not render through the real level-up UI.");
         overlay.CloseAndRestore();
         overlay.Free();
@@ -257,7 +283,7 @@ public partial class RunAffinityOfferTest : Node
     /// 将候选身份与探索标记合并为稳定字符串，便于固定种子逐项比较。
     /// </summary>
     private static string DescribeChoice(RunUpgradeChoice choice) =>
-        $"{choice.Id}:{choice.IsExploration}";
+        $"{choice.Id}:{choice.OfferRole}";
 
     /// <summary>
     /// 将任一策划契约失败转换为包含具体原因的测试异常。

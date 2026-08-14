@@ -36,8 +36,24 @@ public sealed class RunOfferGenerator
             RunUpgradeChoice? exploration = SelectExploration(random, build, candidates);
             if (exploration is not null)
             {
-                result.Add(exploration.WithExploration(true));
+                result.Add(exploration.WithRole(RunUpgradeOfferRole.Exploration));
                 candidates.Remove(exploration);
+                RemoveAdditionalSpellCards(result, candidates);
+            }
+
+            RunUpgradeChoice? momentum = SelectMomentum(random, build, candidates);
+            if (momentum is not null)
+            {
+                result.Add(momentum.WithRole(RunUpgradeOfferRole.Momentum));
+                candidates.Remove(momentum);
+                RemoveAdditionalSpellCards(result, candidates);
+            }
+
+            RunUpgradeChoice? complement = SelectComplement(random, build, candidates);
+            if (complement is not null)
+            {
+                result.Add(complement.WithRole(RunUpgradeOfferRole.Complement));
+                candidates.Remove(complement);
                 RemoveAdditionalSpellCards(result, candidates);
             }
         }
@@ -116,11 +132,7 @@ public sealed class RunOfferGenerator
         RunBuildState build,
         List<RunUpgradeChoice> candidates)
     {
-        int maximum = Enum.GetValues<RunUpgradeAffinity>()
-            .Max(build.GetAffinity);
-        var dominant = Enum.GetValues<RunUpgradeAffinity>()
-            .Where(affinity => build.GetAffinity(affinity) == maximum)
-            .ToHashSet();
+        HashSet<RunUpgradeAffinity> dominant = GetDominantAffinities(build);
         RunUpgradeChoice[] alternatives = candidates.Where(choice =>
             build.GetRank(choice.Definition.Id) == 0 &&
             !choice.Affinities.Any(dominant.Contains)).ToArray();
@@ -134,6 +146,51 @@ public sealed class RunOfferGenerator
         RunUpgradeChoice[] lowest = candidates.Where(choice =>
             choice.Affinities.Sum(build.GetAffinity) == minimumAffinity).ToArray();
         return SelectWeighted(random, build, lowest);
+    }
+
+    /// <summary>
+    /// 从与最高亲和重叠的候选中加权抽取顺势项，保证方向相关但不锁死某个已持有技能。
+    /// </summary>
+    private static RunUpgradeChoice? SelectMomentum(
+        RandomNumberGenerator random,
+        RunBuildState build,
+        IReadOnlyList<RunUpgradeChoice> candidates)
+    {
+        HashSet<RunUpgradeAffinity> dominant = GetDominantAffinities(build);
+        RunUpgradeChoice[] matching = candidates.Where(choice =>
+            choice.Affinities.Any(dominant.Contains)).ToArray();
+        if (matching.Length == 0)
+        {
+            return null;
+        }
+
+        return SelectWeighted(random, build, matching);
+    }
+
+    /// <summary>
+    /// 选择同时连接当前主亲和与一个未成亲和的候选，使横向发展来自标签组合而非强制流派。
+    /// </summary>
+    private static RunUpgradeChoice? SelectComplement(
+        RandomNumberGenerator random,
+        RunBuildState build,
+        IReadOnlyList<RunUpgradeChoice> candidates)
+    {
+        HashSet<RunUpgradeAffinity> dominant = GetDominantAffinities(build);
+        RunUpgradeChoice[] bridges = candidates.Where(choice =>
+            choice.Affinities.Any(dominant.Contains) &&
+            choice.Affinities.Any(affinity => !dominant.Contains(affinity))).ToArray();
+        return bridges.Length == 0 ? null : SelectWeighted(random, build, bridges);
+    }
+
+    /// <summary>
+    /// 返回本局并列最高的亲和集合；调用方只会在至少一点亲和形成后使用。
+    /// </summary>
+    private static HashSet<RunUpgradeAffinity> GetDominantAffinities(RunBuildState build)
+    {
+        int maximum = Enum.GetValues<RunUpgradeAffinity>().Max(build.GetAffinity);
+        return Enum.GetValues<RunUpgradeAffinity>()
+            .Where(affinity => build.GetAffinity(affinity) == maximum)
+            .ToHashSet();
     }
 
     /// <summary>
