@@ -40,6 +40,7 @@ public static class WorldHudTextFormatter
         $"Biome  {BiomeNames.GetChinese(snapshot.Biome)}\n" +
         $"Streaming  {snapshot.ActiveChunks} active / {snapshot.PendingChunks} pending\n" +
         $"Content  {snapshot.ActiveContent}\n" +
+        $"Pacing  {snapshot.Pacing.PhaseName} · {snapshot.Pacing.TotalProgress:P0}\n" +
         $"Spell  {FormatSpellDetail(snapshot.SpellCards)}";
 
     /// <summary>

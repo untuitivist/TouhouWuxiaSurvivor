@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Official;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Actors.Enemies;
 
@@ -24,23 +25,30 @@ public static class EnemyCatalog
                 projectileProfile: EnemyProjectileProfile.Aimed),
             new(EnemyArchetype.Kedama, "毛玉", 24, 42.0f, 6.0f, 34.0f, 0.0f, 0.022f,
                 [BiomeId.Common, BiomeId.HakureiShrine, BiomeId.HumanVillage]),
-            new(EnemyArchetype.Insect, "妖虫", 26, 46.0f, 6.0f, 30.0f, 15.0f, 0.026f,
+            new(EnemyArchetype.Insect, "妖虫", 26, 46.0f, 6.0f, 30.0f,
+                (float)RunPacingTimeline.RisingSeconds, 0.026f,
                 [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
-            new(EnemyArchetype.YinYangOrb, "阴阳玉", 42, 68.0f, 7.0f, 18.0f, 45.0f, 0.030f,
+            new(EnemyArchetype.YinYangOrb, "阴阳玉", 42, 68.0f, 7.0f, 18.0f,
+                (float)RunPacingTimeline.SwarmingSeconds, 0.030f,
                 [BiomeId.Common, BiomeId.YoukaiMountain],
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Fan),
-            new(EnemyArchetype.ForestSpirit, "森林精怪", 58, 34.0f, 9.0f, 18.0f, 60.0f, 0.034f,
+            new(EnemyArchetype.ForestSpirit, "森林精怪", 58, 34.0f, 9.0f, 18.0f,
+                (float)RunPacingTimeline.SwarmingSeconds, 0.034f,
                 [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
-            new(EnemyArchetype.MountainSpirit, "山精", 82, 30.0f, 10.0f, 20.0f, 90.0f, 0.040f,
+            new(EnemyArchetype.MountainSpirit, "山精", 82, 30.0f, 10.0f, 20.0f,
+                (float)RunPacingTimeline.BarrageSeconds, 0.040f,
                 [BiomeId.YoukaiMountain]),
-            new(EnemyArchetype.VillageOutlaw, "流窜妖怪", 68, 48.0f, 8.0f, 14.0f, 105.0f, 0.038f,
+            new(EnemyArchetype.VillageOutlaw, "流窜妖怪", 68, 48.0f, 8.0f, 14.0f,
+                (float)RunPacingTimeline.BarrageSeconds, 0.038f,
                 [BiomeId.HumanVillage, BiomeId.Common],
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Aimed),
-            new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 98, 42.0f, 9.0f, 10.0f, 150.0f, 0.048f, [],
+            new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 98, 42.0f, 9.0f, 10.0f,
+                (float)RunPacingTimeline.CrisisSeconds, 0.048f, [],
                 aiProfile: EnemyAiProfile.Charger),
-            new(EnemyArchetype.GreatYoukai, "大妖怪", 240, 36.0f, 12.0f, 3.0f, 240.0f, 0.080f, [],
+            new(EnemyArchetype.GreatYoukai, "大妖怪", 240, 36.0f, 12.0f, 3.0f,
+                (float)RunPacingTimeline.CrisisSeconds, 0.080f, [],
                 contactDamage: 2,
                 aiProfile: EnemyAiProfile.OrbitShooter,
                 projectileProfile: EnemyProjectileProfile.Fan),

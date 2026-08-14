@@ -1,5 +1,7 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
+
 /// <summary>
 /// 根据生存时间、齐射序号和弹丸池余量规划自动弹幕，保证玩法进阶和性能降级都可独立测试。
 /// </summary>
@@ -10,7 +12,7 @@ public static class PlayerBarrageCurve
     public const double SaturatedRetryIntervalSeconds = 0.05;
 
     /// <summary>
-    /// 生成一次齐射计划：零至二分钟单发，随后依次进入三、五、七发并在后期交错扇形与旋转环。
+    /// 生成一次齐射计划：前三分钟单发，随后按统一阶段进入三、五发并在后期交错扇形与旋转环。
     /// </summary>
     public static PlayerBarrageSnapshot EvaluateSeconds(
         double elapsedSeconds,
@@ -36,18 +38,18 @@ public static class PlayerBarrageCurve
     }
 
     /// <summary>
-    /// 按分钟返回奇数扇形阶梯；螺旋强化在开局至少保留原有正反双发，后续共享三五七发成长。
+    /// 按阶段返回奇数扇形阶梯；额外弹特化可把五发扩展到七发，螺旋强化至少保留正反双发。
     /// </summary>
     private static int GetRequestedProjectileCount(
         double minutes,
         bool spiralActive,
         int bonusProjectiles)
     {
-        int timedCount = minutes switch
+        double elapsedSeconds = minutes * 60.0;
+        int timedCount = elapsedSeconds switch
         {
-            < 2.0 => 1,
-            < 5.0 => 3,
-            < 10.0 => 5,
+            < RunPacingTimeline.RisingSeconds => 1,
+            < RunPacingTimeline.BarrageSeconds => 3,
             _ => 5,
         };
         int builtCount = Math.Min(MaximumProjectilesPerVolley, timedCount + bonusProjectiles);
@@ -67,12 +69,14 @@ public static class PlayerBarrageCurve
             return PlayerBarrageMode.RotatingRing;
         }
 
-        if (minutes < 2.0)
+        double elapsedSeconds = minutes * 60.0;
+        if (elapsedSeconds < RunPacingTimeline.RisingSeconds)
         {
             return PlayerBarrageMode.TargetedSingle;
         }
 
-        return minutes >= 10.0 && (volleySequence & 1L) == 1L
+        return elapsedSeconds >= RunPacingTimeline.CrisisSeconds &&
+            (volleySequence & 1L) == 1L
             ? PlayerBarrageMode.RotatingRing
             : PlayerBarrageMode.AlternatingFan;
     }

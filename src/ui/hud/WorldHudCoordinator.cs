@@ -4,6 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.World.Biomes;
@@ -29,6 +30,7 @@ public sealed class WorldHudCoordinator
     private readonly RunProgressionCoordinator _progression;
     private readonly ContentPackSelection _content;
     private readonly SpellCardCoordinator _spellCards;
+    private readonly RunPacingCoordinator _pacing;
     private readonly EcsCombatWorld? _ecsWorld;
 
     /// <summary>
@@ -46,6 +48,7 @@ public sealed class WorldHudCoordinator
         RunProgressionCoordinator progression,
         ContentPackSelection content,
         SpellCardCoordinator spellCards,
+        RunPacingCoordinator pacing,
         EcsCombatWorld? ecsWorld = null)
     {
         _generator = generator;
@@ -59,6 +62,7 @@ public sealed class WorldHudCoordinator
         _progression = progression;
         _content = content;
         _spellCards = spellCards;
+        _pacing = pacing;
         _ecsWorld = ecsWorld;
     }
 
@@ -93,6 +97,7 @@ public sealed class WorldHudCoordinator
             _progression.State.Level,
             _progression.State.Experience,
             _progression.State.ExperienceToNext,
+            _pacing.CreateSnapshot(),
             _spellCards.CreateSnapshot()), deltaSeconds);
     }
 }

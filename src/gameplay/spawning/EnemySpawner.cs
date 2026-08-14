@@ -85,13 +85,18 @@ public partial class EnemySpawner : Node
             return;
         }
 
-        _elapsedSeconds += delta;
+        if (_ecsWorld is null)
+        {
+            _elapsedSeconds += delta;
+        }
+
+        double elapsedSeconds = ElapsedSeconds;
         _spawnCooldown -= delta;
         _cleanupCooldown -= delta;
         if (_spawnCooldown <= 0.0)
         {
-            SpawnBatch();
-            _spawnCooldown = EnemySpawnPacing.GetSpawnInterval(_elapsedSeconds);
+            SpawnBatch(elapsedSeconds);
+            _spawnCooldown = EnemySpawnPacing.GetSpawnInterval(elapsedSeconds);
         }
 
         if (_cleanupCooldown <= 0.0)
@@ -104,22 +109,23 @@ public partial class EnemySpawner : Node
     /// <summary>
     /// 按集中节奏曲线提高单批数量，并同时遵守动态存活上限和场景硬上限。
     /// </summary>
-    private void SpawnBatch()
+    private void SpawnBatch(double elapsedSeconds)
     {
-        int batchSize = EnemySpawnPacing.GetBatchSize(_elapsedSeconds);
-        int aliveLimit = EnemySpawnPacing.GetAliveLimit(_elapsedSeconds, MaximumAlive);
+        int batchSize = EnemySpawnPacing.GetBatchSize(elapsedSeconds);
+        int aliveLimit = EnemySpawnPacing.GetAliveLimit(elapsedSeconds, MaximumAlive);
         for (int index = 0; index < batchSize && AliveCount < aliveLimit; index++)
         {
-            SpawnOne();
+            SpawnOne(elapsedSeconds);
         }
     }
 
     /// <summary>
     /// 选择当前时间已解锁的敌人，并把它放在随机镜头边缘之外而非玩家脚下。
     /// </summary>
-    private void SpawnOne()
+    private void SpawnOne(double? elapsedOverride = null)
     {
-        int aliveLimit = EnemySpawnPacing.GetAliveLimit(_elapsedSeconds, MaximumAlive);
+        double elapsedSeconds = elapsedOverride ?? ElapsedSeconds;
+        int aliveLimit = EnemySpawnPacing.GetAliveLimit(elapsedSeconds, MaximumAlive);
         if (_player is null || AliveCount >= aliveLimit)
         {
             return;
@@ -128,8 +134,8 @@ public partial class EnemySpawner : Node
         Vector2 spawnPosition = ChooseSpawnPosition();
         BiomeId biome = _biomeAtPosition?.Invoke(spawnPosition) ?? BiomeId.Common;
         EnemyDefinition baseDefinition = EnemyCatalog.Choose(
-            _random, _elapsedSeconds, biome, _content);
-        EnemyDefinition definition = GetScaledDefinition(baseDefinition);
+            _random, elapsedSeconds, biome, _content);
+        EnemyDefinition definition = GetScaledDefinition(baseDefinition, elapsedSeconds);
         if (_ecsWorld is not null)
         {
             _ecsWorld.SpawnEnemy(spawnPosition, definition);
@@ -153,9 +159,9 @@ public partial class EnemySpawner : Node
     /// <summary>
     /// 在同一十秒档位复用缩放定义；进入新档位时丢弃旧缓存，使无尽数值持续增长且不累积缓存。
     /// </summary>
-    private EnemyDefinition GetScaledDefinition(EnemyDefinition definition)
+    private EnemyDefinition GetScaledDefinition(EnemyDefinition definition, double elapsedSeconds)
     {
-        long tier = EnemyDifficultyScaler.GetTier(_elapsedSeconds);
+        long tier = EnemyDifficultyScaler.GetTier(elapsedSeconds);
         if (tier != _difficultyTier)
         {
             _difficultyTier = tier;

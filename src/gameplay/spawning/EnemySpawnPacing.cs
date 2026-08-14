@@ -13,7 +13,7 @@ public static class EnemySpawnPacing
     public const int DefaultAliveHardLimit = 140;
 
     /// <summary>
-    /// 从无尽难度快照读取批量；早期仍在 120、240、420 秒跳档，长局最终受单批性能上限保护。
+    /// 从无尽难度快照读取批量；有限流程按统一阶段跳档，长局最终受单批性能上限保护。
     /// </summary>
     public static int GetBatchSize(double elapsedSeconds) =>
         EndlessDifficultyCurve.EvaluateSeconds(elapsedSeconds, int.MaxValue).SpawnBatchSize;

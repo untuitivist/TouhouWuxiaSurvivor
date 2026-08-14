@@ -1,6 +1,7 @@
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.World.Coordinates;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Ui.Hud;
 
@@ -26,6 +27,7 @@ public sealed class WorldHudSnapshot
     public int Level { get; }
     public long Experience { get; }
     public long ExperienceToNext { get; }
+    public RunPacingSnapshot Pacing { get; }
     public SpellCardRuntimeSnapshot SpellCards { get; }
 
     /// <summary>
@@ -49,6 +51,7 @@ public sealed class WorldHudSnapshot
         int level,
         long experience,
         long experienceToNext,
+        RunPacingSnapshot pacing,
         SpellCardRuntimeSnapshot spellCards)
     {
         Seed = seed;
@@ -68,6 +71,7 @@ public sealed class WorldHudSnapshot
         Level = level;
         Experience = experience;
         ExperienceToNext = experienceToNext;
+        Pacing = pacing;
         SpellCards = spellCards;
     }
 }

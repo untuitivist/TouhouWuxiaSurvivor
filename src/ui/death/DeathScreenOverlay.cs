@@ -9,7 +9,7 @@ namespace TouhouWuxiaSurvivor.Ui.Death;
 public partial class DeathScreenOverlay : CanvasLayer
 {
     private Control? _root;
-    private Control? _deathPopup;
+    private PanelContainer? _deathPopup;
     private Control? _summaryPanel;
     private Label? _outcomeTitle;
     private Label? _outcomeMessage;
@@ -39,7 +39,7 @@ public partial class DeathScreenOverlay : CanvasLayer
     {
         ProcessMode = ProcessModeEnum.Always;
         _root = GetNode<Control>("Root");
-        _deathPopup = GetNode<Control>("Root/DeathPopup");
+        _deathPopup = GetNode<PanelContainer>("Root/DeathPopup");
         _summaryPanel = GetNode<Control>("Root/SummaryPanel");
         _outcomeTitle = GetNode<Label>("Root/DeathPopup/Padding/Layout/Title");
         _outcomeMessage = GetNode<Label>("Root/DeathPopup/Padding/Layout/Message");
@@ -69,7 +69,12 @@ public partial class DeathScreenOverlay : CanvasLayer
     public void Present(RunSummary summary)
     {
         CurrentSummary = summary;
-        _outcomeTitle!.Text = RunSummaryTextFormatter.FormatOutcomeTitle(summary.EndReason);
+        ApplyOutcomeStyle(summary.EndReason);
+        _outcomeTitle!.AddThemeColorOverride("font_color",
+            summary.EndReason == RunEndReason.Cleared
+                ? new Color(0.94f, 0.82f, 0.48f)
+                : new Color(0.95f, 0.67f, 0.66f));
+        _outcomeTitle.Text = RunSummaryTextFormatter.FormatOutcomeTitle(summary.EndReason);
         _outcomeMessage!.Text = RunSummaryTextFormatter.FormatOutcomeMessage(summary.EndReason);
         _quickStats!.Text = RunSummaryTextFormatter.FormatQuickStats(summary);
         _survivalValue!.Text = RunSummaryTextFormatter.FormatDuration(summary.SurvivalSeconds);
@@ -88,6 +93,23 @@ public partial class DeathScreenOverlay : CanvasLayer
         _root!.Show();
         GetTree().Paused = true;
         _viewSummaryButton!.GrabFocus();
+    }
+
+    /// <summary>
+    /// 为成功结算复制一份金色边框样式，为失败保留朱砂边框，避免修改场景共享子资源。
+    /// </summary>
+    private void ApplyOutcomeStyle(RunEndReason reason)
+    {
+        if (_deathPopup!.GetThemeStylebox("panel") is not StyleBoxFlat source)
+        {
+            return;
+        }
+
+        var style = (StyleBoxFlat)source.Duplicate();
+        style.BorderColor = reason == RunEndReason.Cleared
+            ? new Color(0.72f, 0.58f, 0.25f)
+            : new Color(0.62f, 0.18f, 0.2f);
+        _deathPopup.AddThemeStyleboxOverride("panel", style);
     }
 
     /// <summary>

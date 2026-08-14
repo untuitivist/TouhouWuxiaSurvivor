@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 using TouhouWuxiaSurvivor.World.Official;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
@@ -111,9 +112,11 @@ public partial class EnemyBalanceSmokeTest : Node
     private static void VerifySpawnPacing()
     {
         Require(EnemySpawnPacing.GetBatchSize(0) == 1 &&
-            EnemySpawnPacing.GetBatchSize(120) == 2 &&
-            EnemySpawnPacing.GetBatchSize(240) == 3 &&
-            EnemySpawnPacing.GetBatchSize(420) == 4,
+            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.RisingSeconds) == 2 &&
+            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.SwarmingSeconds) == 3 &&
+            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.BarrageSeconds) == 4 &&
+            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.CrisisSeconds) == 5 &&
+            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.FinalEncounterSeconds) == 6,
             "Spawn batch milestones are incorrect.");
         Require(EnemySpawnPacing.GetSpawnInterval(0) >
             EnemySpawnPacing.GetSpawnInterval(300) &&

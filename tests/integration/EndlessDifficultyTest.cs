@@ -81,8 +81,9 @@ public partial class EndlessDifficultyTest : Node
             double.IsFinite(extreme.ScheduledSpawnsPerSecond) &&
             double.IsFinite(extreme.EnemyHealthMultiplier) &&
             double.IsFinite(extreme.EnemyDamageMultiplier) &&
-            double.IsFinite(extreme.RewardMultiplier),
-            "Extreme elapsed time produced a non-finite endless multiplier.");
+            double.IsFinite(extreme.RewardMultiplier) &&
+            extreme.SpawnBatchSize == EndlessDifficultyCurve.MaximumSpawnBatchSize,
+            "Extreme elapsed time produced invalid endless difficulty values.");
     }
 
     /// <summary>
@@ -145,15 +146,17 @@ public partial class EndlessDifficultyTest : Node
     private static void VerifyPlayerBarrageStages()
     {
         PlayerBarrageSnapshot opening = PlayerBarrageCurve.EvaluateSeconds(0.0, false, 0, 0);
-        PlayerBarrageSnapshot three = PlayerBarrageCurve.EvaluateSeconds(120.0, false, 0, 0);
-        PlayerBarrageSnapshot five = PlayerBarrageCurve.EvaluateSeconds(300.0, false, 0, 0);
+        PlayerBarrageSnapshot three = PlayerBarrageCurve.EvaluateSeconds(180.0, false, 0, 0);
+        PlayerBarrageSnapshot threeLate = PlayerBarrageCurve.EvaluateSeconds(300.0, false, 0, 0);
+        PlayerBarrageSnapshot five = PlayerBarrageCurve.EvaluateSeconds(480.0, false, 0, 0);
         PlayerBarrageSnapshot fiveLate = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0);
         PlayerBarrageSnapshot seven = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 0, 0, 2);
         PlayerBarrageSnapshot rotating = PlayerBarrageCurve.EvaluateSeconds(600.0, false, 1, 0);
         PlayerBarrageSnapshot sixtyMinutes = PlayerBarrageCurve.EvaluateSeconds(3600.0, false, 1, 0);
         PlayerBarrageSnapshot thousandMinutes = PlayerBarrageCurve.EvaluateSeconds(60000.0, false, 1, 0);
         Require(opening.ProjectileCount == 1 && three.ProjectileCount == 3 &&
-            five.ProjectileCount == 5 && fiveLate.ProjectileCount == 5 &&
+            threeLate.ProjectileCount == 3 && five.ProjectileCount == 5 &&
+            fiveLate.ProjectileCount == 5 &&
             seven.ProjectileCount == 7 &&
             opening.VolleyDamageBudget == three.VolleyDamageBudget &&
             three.VolleyDamageBudget == fiveLate.VolleyDamageBudget &&

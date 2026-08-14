@@ -9,6 +9,7 @@ using TouhouWuxiaSurvivor.Demo.Diagnostics;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.Session;
 using TouhouWuxiaSurvivor.Gameplay.Encounters;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 using TouhouWuxiaSurvivor.Gameplay.Meta.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Meta.Persistence;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
@@ -18,6 +19,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Settings;
 using TouhouWuxiaSurvivor.Ui.Debug;
 using TouhouWuxiaSurvivor.Ui.Death;
+using TouhouWuxiaSurvivor.Ui.Completion;
 using TouhouWuxiaSurvivor.Ui.Hud;
 using TouhouWuxiaSurvivor.Ui.Map;
 using TouhouWuxiaSurvivor.Ui.Pause;
@@ -44,6 +46,7 @@ public partial class WorldDemo : Node2D
     private WorldMapOverlay? _map;
     private PauseMenuOverlay? _pauseMenu;
     private DeathScreenOverlay? _deathScreen;
+    private RunCompletionOverlay? _completionScreen;
     private Node2D? _combatEntities;
     private EnemySpawner? _enemySpawner;
     private PickupSpawner? _pickupSpawner;
@@ -61,6 +64,7 @@ public partial class WorldDemo : Node2D
     private SpellCardEffectAssets? _spellAssets;
     private RunFailureCoordinator? _runFailure;
     private BossEncounterDirector? _bossEncounters;
+    private RunPacingCoordinator? _runPacing;
     private WorldDemoMapRuntime? _mapRuntime;
     private WorldOriginRebaseCoordinator? _originRebase;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
@@ -71,6 +75,9 @@ public partial class WorldDemo : Node2D
 
     public BossEncounterDirector BossEncounters => _bossEncounters ?? throw new InvalidOperationException(
         "Boss encounter director is not ready.");
+
+    public RunPacingCoordinator RunPacing => _runPacing ?? throw new InvalidOperationException(
+        "Run pacing coordinator is not ready.");
 
     [Export]
     public long WorldSeed { get; set; } = 20260728;
@@ -95,6 +102,7 @@ public partial class WorldDemo : Node2D
         _map = GetNode<WorldMapOverlay>("MapLayer/WorldMapOverlay");
         _pauseMenu = GetNode<PauseMenuOverlay>("PauseMenuOverlay");
         _deathScreen = GetNode<DeathScreenOverlay>("DeathScreenOverlay");
+        _completionScreen = GetNode<RunCompletionOverlay>("RunCompletionOverlay");
         _combatEntities = GetNode<Node2D>("CombatEntities");
         _enemySpawner = GetNode<EnemySpawner>("EnemySpawner");
         _pickupSpawner = GetNode<PickupSpawner>("PickupSpawner");
@@ -187,12 +195,18 @@ public partial class WorldDemo : Node2D
         _enemySpawner.EnemyDefeated += _spiritSpawner.SpawnForEnemy;
         _enemySpawner.Configure(_player, enemies, _content, GetBiomeAtLocalPosition);
         _autoShooter.Configure(enemies, projectiles, _buffs, _health, _progression.Modifiers, null, _ecsCombatWorld);
-        _hudCoordinator = new WorldHudCoordinator(
-            _generator, _streamer, _player, hud, _map, _enemySpawner,
-            _buffs, _health, _progression, _content, _spellCards, _ecsCombatWorld);
         _runFailure = new RunFailureCoordinator(
             _streamer, _generator, _player, _map, _pauseMenu, _deathScreen,
             _enemySpawner, _progression, _metaRun, _stats, _spellCards, _content, _ecsCombatWorld);
+        _runPacing = new RunPacingCoordinator(
+            _bossEncounters, _completionScreen, _map, _pauseMenu, _stats, _progression,
+            () => _ecsCombatWorld.ElapsedSeconds,
+            () => _runFailure.IsFinalized,
+            _runFailure.TryFinalize);
+        _hudCoordinator = new WorldHudCoordinator(
+            _generator, _streamer, _player, hud, _map, _enemySpawner,
+            _buffs, _health, _progression, _content, _spellCards, _runPacing,
+            _ecsCombatWorld);
         _health.Died += OnPlayerDied;
         _pauseMenu.RunAbandonRequested += OnRunAbandoned;
         _deathScreen.RestartRequested += RestartRun;
@@ -223,7 +237,11 @@ public partial class WorldDemo : Node2D
     /// <summary>
     /// 世界离开场景树时解除诊断委托，防止常驻节点在场景切换期间读取已释放节点。
     /// </summary>
-    public override void _ExitTree() => PerformanceDiagnosticsHost.DetachWorld(this);
+    public override void _ExitTree()
+    {
+        _runPacing?.Dispose();
+        PerformanceDiagnosticsHost.DetachWorld(this);
+    }
 
     /// <summary>
     /// 把任意本地像素位置转换成绝对 Tile 并查询群系，供刷怪器选择地区生态而不依赖世界实现。

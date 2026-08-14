@@ -1,5 +1,7 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
+
 /// <summary>
 /// 以无状态纯函数生成无尽难度；战斗倍率持续增长，刷新率与实体参数按性能边界允许封顶。
 /// </summary>
@@ -47,14 +49,21 @@ public static class EndlessDifficultyCurve
     }
 
     /// <summary>
-    /// 每两分钟增加一只同批敌人并在二十四只封顶，保留长局性能预算且兼容早期里程碑。
+    /// 有限流程在五个阶段逐步增加同批敌人；进入无尽后每三分钟增长并在二十四只封顶。
     /// </summary>
     private static int CalculateBatchSize(double minutes)
     {
-        double maximumMilestone = (MaximumSpawnBatchSize - 1) * 2.0;
-        return minutes >= maximumMilestone
+        double seconds = minutes * 60.0;
+        if (seconds < RunPacingTimeline.RisingSeconds) return 1;
+        if (seconds < RunPacingTimeline.SwarmingSeconds) return 2;
+        if (seconds < RunPacingTimeline.BarrageSeconds) return 3;
+        if (seconds < RunPacingTimeline.CrisisSeconds) return 4;
+        if (seconds < RunPacingTimeline.FinalEncounterSeconds) return 5;
+        double endlessMinutes = minutes - RunPacingTimeline.FinalEncounterSeconds / 60.0;
+        double tiersToMaximum = MaximumSpawnBatchSize - 6;
+        return endlessMinutes / 3.0 >= tiersToMaximum
             ? MaximumSpawnBatchSize
-            : 1 + (int)Math.Floor(minutes / 2.0);
+            : 6 + (int)Math.Floor(endlessMinutes / 3.0);
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Encounters;
 
@@ -18,8 +19,9 @@ public partial class BossEncounterDirector : Node
     private double _activeEncounterStartedSeconds;
     private bool _encounterActive;
 
-    [Export(PropertyHint.Range, "10,600,1")]
-    public double FirstEncounterSeconds { get; set; } = 120.0;
+    [Export(PropertyHint.Range, "10,1800,1")]
+    public double FirstEncounterSeconds { get; set; } =
+        RunPacingTimeline.FinalEncounterSeconds;
 
     [Export(PropertyHint.Range, "30,900,1")]
     public double EncounterIntervalSeconds { get; set; } = 180.0;
@@ -28,6 +30,7 @@ public partial class BossEncounterDirector : Node
     public int DefeatedCount { get; private set; }
     public CharacterDefinition? LastSpawnedCharacter { get; private set; }
     public double NextEncounterSeconds => _nextEncounterSeconds;
+    public event Action<CharacterDefinition>? EncounterDefeated;
 
     /// <summary>
     /// 绑定 ECS 世界、冻结的局内内容和玩家位置查询，并从首个里程碑开始安排遭遇。
@@ -136,6 +139,10 @@ public partial class BossEncounterDirector : Node
         if (ResolveActiveEncounter(_world?.ElapsedSeconds ?? _activeEncounterStartedSeconds))
         {
             DefeatedCount++;
+            if (LastSpawnedCharacter is not null)
+            {
+                EncounterDefeated?.Invoke(LastSpawnedCharacter);
+            }
         }
     }
 

@@ -18,10 +18,12 @@ public partial class RunProgressionCoordinator : Node
     private LevelUpOverlay? _overlay;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private bool _runEndBlocked;
+    private bool _choicePresentationSuspended;
 
     public RunProgressionState State { get; } = new();
     public RunBuildState Build { get; } = new();
     public RunModifierState Modifiers { get; } = new();
+    public bool IsChoicePresentationSuspended => _choicePresentationSuspended;
 
     /// <summary>
     /// 注入升级层及其互斥界面，连接状态与选择事件并初始化独立随机源。
@@ -51,11 +53,31 @@ public partial class RunProgressionCoordinator : Node
     }
 
     /// <summary>
+    /// 临时阻止新升级层出现但保留待选次数，供通关选择等更高优先级模态界面安全接管暂停。
+    /// </summary>
+    public void SuspendChoicePresentation() => _choicePresentationSuspended = true;
+
+    /// <summary>
+    /// 解除临时挂起并立即检查积压选择；终局封锁后调用不会重新打开已经结束的玩法界面。
+    /// </summary>
+    public void ResumeChoicePresentation()
+    {
+        if (_runEndBlocked)
+        {
+            return;
+        }
+
+        _choicePresentationSuspended = false;
+        OnProgressChanged();
+    }
+
+    /// <summary>
     /// 经验状态变化后仅在确有待选升级且没有其他升级层时展示下一组三选一。
     /// </summary>
     private void OnProgressChanged()
     {
-        if (_runEndBlocked || State.PendingChoices <= 0 || _overlay?.IsOpen == true)
+        if (_runEndBlocked || _choicePresentationSuspended ||
+            State.PendingChoices <= 0 || _overlay?.IsOpen == true)
         {
             return;
         }

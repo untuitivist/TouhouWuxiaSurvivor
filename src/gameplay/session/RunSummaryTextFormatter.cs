@@ -10,6 +10,7 @@ public static class RunSummaryTextFormatter
     /// </summary>
     public static string FormatOutcomeTitle(RunEndReason reason) => reason switch
     {
+        RunEndReason.Cleared => "异变平定",
         RunEndReason.Abandoned => "主动结束",
         _ => "符力耗尽",
     };
@@ -19,6 +20,7 @@ public static class RunSummaryTextFormatter
     /// </summary>
     public static string FormatOutcomeMessage(RunEndReason reason) => reason switch
     {
+        RunEndReason.Cleared => "幻想乡暂归平静，本局已经按成功结算",
         RunEndReason.Abandoned => "本局探索已主动结束，并按失败结算",
         _ => "这次幻想乡之行已经结束",
     };

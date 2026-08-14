@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3]
+[gd_scene load_steps=41 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -32,6 +32,8 @@
 [ext_resource type="PackedScene" path="res://src/gameplay/spellcards/effects/FantasySealOrb.tscn" id="32_fantasy_orb"]
 [ext_resource type="PackedScene" path="res://src/gameplay/spellcards/effects/SealingCircleEffect.tscn" id="33_sealing_circle"]
 [ext_resource type="Script" path="res://src/ecs/combat/EcsCombatWorld.cs" id="35_combat_world"]
+[ext_resource type="PackedScene" path="res://src/ui/completion/RunCompletionOverlay.tscn" id="37_completion"]
+[ext_resource type="Script" path="res://src/ui/hud/RunPacingBar.cs" id="38_pacing_bar"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -85,6 +87,18 @@ corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StylePacingPanel"]
+bg_color = Color(0.025, 0.031, 0.027, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.52, 0.49, 0.38, 0.88)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
 
 [node name="WorldDemo" type="Node2D"]
 script = ExtResource("1_demo")
@@ -218,6 +232,73 @@ bus = &"SFX"
 layer = 10
 script = ExtResource("4_hud")
 
+[node name="PacingMargin" type="MarginContainer" parent="WorldDebugHud"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 148.0
+offset_top = 5.0
+offset_right = -148.0
+offset_bottom = 31.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="WorldDebugHud/PacingMargin"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePacingPanel")
+
+[node name="Padding" type="MarginContainer" parent="WorldDebugHud/PacingMargin/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 3
+
+[node name="Layout" type="HBoxContainer" parent="WorldDebugHud/PacingMargin/Panel/Padding"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PhaseName" type="Label" parent="WorldDebugHud/PacingMargin/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(68, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.7, 1)
+theme_override_font_sizes/font_size = 10
+text = "异变初兆"
+vertical_alignment = 1
+
+[node name="PacingBar" type="Control" parent="WorldDebugHud/PacingMargin/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(146, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("38_pacing_bar")
+
+[node name="Remaining" type="Label" parent="WorldDebugHud/PacingMargin/Panel/Padding/Layout"]
+custom_minimum_size = Vector2(34, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 9
+text = "03:00"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="PhaseNotice" type="Label" parent="WorldDebugHud"]
+visible = false
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 140.0
+offset_top = 37.0
+offset_right = -140.0
+offset_bottom = 57.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
+theme_override_colors/font_outline_color = Color(0.015, 0.02, 0.016, 0.96)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 12
+text = "异变初兆 · 追击敌群开始活动"
+horizontal_alignment = 1
+
 [node name="InternalAssetNotice" type="Label" parent="WorldDebugHud"]
 anchors_preset = 1
 anchor_left = 1.0
@@ -323,9 +404,9 @@ vertical_alignment = 1
 [node name="DebugMargin" type="MarginContainer" parent="WorldDebugHud"]
 visible = false
 offset_left = 10.0
-offset_top = 8.0
+offset_top = 36.0
 offset_right = 470.0
-offset_bottom = 162.0
+offset_bottom = 190.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="WorldDebugHud/DebugMargin"]
@@ -363,6 +444,8 @@ script = ExtResource("7_labels")
 [node name="PauseMenuOverlay" parent="." instance=ExtResource("6_pause")]
 
 [node name="DeathScreenOverlay" parent="." instance=ExtResource("25_death_screen")]
+
+[node name="RunCompletionOverlay" parent="." instance=ExtResource("37_completion")]
 
 [node name="LevelUpOverlay" parent="." instance=ExtResource("29_level_up")]
 

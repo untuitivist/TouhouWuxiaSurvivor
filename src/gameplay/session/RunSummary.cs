@@ -1,7 +1,7 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Session;
 
 /// <summary>
-/// 保存一局失败时的不可变统计快照，使结算界面不依赖世界、刷怪器或玩家节点。
+/// 保存一局结束时的不可变统计快照，使结算界面不依赖世界、刷怪器或玩家节点。
 /// </summary>
 public sealed class RunSummary
 {

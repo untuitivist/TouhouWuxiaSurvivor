@@ -17,7 +17,7 @@ using TouhouWuxiaSurvivor.World.Streaming;
 namespace TouhouWuxiaSurvivor.Gameplay.Session;
 
 /// <summary>
-/// 统一处理失败终局的输入封锁、世界快照、幂等奖励结算和总结展示，使场景根只负责依赖装配。
+/// 统一处理成功与失败终局的输入封锁、世界快照、幂等奖励结算和总结展示。
 /// </summary>
 public sealed class RunFailureCoordinator
 {
@@ -26,7 +26,7 @@ public sealed class RunFailureCoordinator
     private readonly PlayerController _player;
     private readonly WorldMapOverlay _map;
     private readonly PauseMenuOverlay _pauseMenu;
-    private readonly DeathScreenOverlay _failureScreen;
+    private readonly DeathScreenOverlay _resultScreen;
     private readonly EnemySpawner _enemySpawner;
     private readonly RunProgressionCoordinator _progression;
     private readonly MetaRunSession _metaRun;
@@ -46,7 +46,7 @@ public sealed class RunFailureCoordinator
         PlayerController player,
         WorldMapOverlay map,
         PauseMenuOverlay pauseMenu,
-        DeathScreenOverlay failureScreen,
+        DeathScreenOverlay resultScreen,
         EnemySpawner enemySpawner,
         RunProgressionCoordinator progression,
         MetaRunSession metaRun,
@@ -60,7 +60,7 @@ public sealed class RunFailureCoordinator
         _player = player;
         _map = map;
         _pauseMenu = pauseMenu;
-        _failureScreen = failureScreen;
+        _resultScreen = resultScreen;
         _enemySpawner = enemySpawner;
         _progression = progression;
         _metaRun = metaRun;
@@ -92,13 +92,14 @@ public sealed class RunFailureCoordinator
         _progression.BlockForRunEnd();
         _spellCards?.BlockForRunEnd();
 
+        double elapsedSeconds = _ecsWorld?.ElapsedSeconds ?? _enemySpawner.ElapsedSeconds;
         RunSettlementResult settlement = _metaRun.Settle(
-            _ecsWorld?.ElapsedSeconds ?? _enemySpawner.ElapsedSeconds,
+            elapsedSeconds,
             _ecsWorld?.DefeatedCount ?? _enemySpawner.DefeatedCount,
             _progression.State.Level);
-        _failureScreen.Present(new RunSummary(
+        _resultScreen.Present(new RunSummary(
             endReason,
-            _enemySpawner.ElapsedSeconds,
+            elapsedSeconds,
             _ecsWorld?.DefeatedCount ?? _enemySpawner.DefeatedCount,
             tileX,
             tileY,
