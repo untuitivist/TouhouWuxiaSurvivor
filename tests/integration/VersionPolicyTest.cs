@@ -8,8 +8,8 @@ namespace TouhouWuxiaSurvivor.Tests.Integration;
 /// </summary>
 public partial class VersionPolicyTest : Node
 {
-    private const string ExpectedVersion = "alpha-0.0.2";
-    private const string ExpectedWindowsVersion = "0.0.2.0";
+    private const string ExpectedVersion = "alpha-0.0.3";
+    private const string ExpectedWindowsVersion = "0.0.3.0";
 
     /// <summary>
     /// 依次执行版本来源、格式样例和文档镜像检查；任一策略违约都以非零状态退出。
@@ -35,7 +35,7 @@ public partial class VersionPolicyTest : Node
     }
 
     /// <summary>
-    /// 确认版本设置存在、读取器直接反映原始设置，并锁定当前开发版本为 alpha-0.0.2。
+    /// 确认版本设置存在、读取器直接反映原始设置，并锁定当前开发版本为 alpha-0.0.3。
     /// </summary>
     private static void VerifyRuntimeSource()
     {
@@ -89,7 +89,7 @@ public partial class VersionPolicyTest : Node
         GameVersionDescriptor descriptor = GameVersion.Parse(ExpectedVersion);
         Require(descriptor.Stage == GameReleaseStage.Alpha &&
             descriptor.Major == 0 && descriptor.Release == 0 &&
-            descriptor.Optimization == 2,
+            descriptor.Optimization == 3,
             "Version parser assigned a stage or numeric field to the wrong dimension.");
         Require(descriptor.ToString() == ExpectedVersion &&
             descriptor.ToWindowsNumericVersion() == ExpectedWindowsVersion,
@@ -107,10 +107,11 @@ public partial class VersionPolicyTest : Node
             .FirstOrDefault(line => line.StartsWith("## ", StringComparison.Ordinal));
         Require(latestTitle == $"## {GameVersion.Current}",
             $"Latest changelog title does not match {GameVersion.Current}: {latestTitle}.");
-        string[] migratedHistory = ["alpha-0.0.0", "alpha-0.0.1", "alpha-0.0.2"];
+        string[] migratedHistory =
+            ["alpha-0.0.0", "alpha-0.0.1", "alpha-0.0.2", "alpha-0.0.3"];
         Require(migratedHistory.All(version => changelog.Contains(
                 $"## {version}", StringComparison.Ordinal)),
-            "Changelog does not preserve all three stage-first historical versions.");
+            "Changelog does not preserve the complete stage-first version history.");
         string[] legacyHistory = ["0.0.0-alpha", "0.0.0-beta", "0.0.0-gamma"];
         Require(legacyHistory.All(version => !changelog.Contains(
                 $"## {version}", StringComparison.Ordinal)),

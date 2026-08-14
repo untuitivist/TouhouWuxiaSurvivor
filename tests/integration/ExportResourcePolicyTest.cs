@@ -59,6 +59,7 @@ public partial class ExportResourcePolicyTest : Node
             VerifyRootDiagnosticResiduesExcluded(exclusions);
             VerifyFormalResourcesDoNotReferenceLegacyAssets();
             VerifyInternalOriginalAssetsRemainIncluded(exclusions);
+            VerifyChangelogIncluded();
             VerifyReleaseCompilationBoundary();
             GD.Print("Export resource policy test passed.");
             GetTree().Quit();
@@ -180,6 +181,16 @@ public partial class ExportResourcePolicyTest : Node
         const string representative = "assets/internal_original/base/audio/shot.wav";
         Require(!exclusions.Any(pattern => MatchesExportPattern(representative, pattern)),
             "Export exclusions unexpectedly remove internal original assets.");
+    }
+
+    /// <summary>确认正式预设显式收录运行时日志源，避免非资源 Markdown 在内嵌 PCK 中丢失。</summary>
+    private static void VerifyChangelogIncluded()
+    {
+        var preset = new ConfigFile();
+        Error error = preset.Load(PresetPath);
+        Require(error == Error.Ok, $"Unable to load export preset: {error}.");
+        Require(preset.GetValue("preset.0", "include_filter").AsString() == "CHANGELOG.md",
+            "Formal export must explicitly include CHANGELOG.md for the in-game viewer.");
     }
 
     /// <summary>

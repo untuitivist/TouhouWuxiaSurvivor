@@ -6,6 +6,7 @@ using TouhouWuxiaSurvivor.Ui.Content;
 using TouhouWuxiaSurvivor.Ui.Settings;
 using TouhouWuxiaSurvivor.Ui.Meta;
 using TouhouWuxiaSurvivor.Content.Characters;
+using TouhouWuxiaSurvivor.Ui.Changelog;
 
 namespace TouhouWuxiaSurvivor.Ui.Menu;
 
@@ -19,6 +20,7 @@ public partial class MainMenu : Control
     private ContentPackSelectionPanel? _contentSelection;
     private CompendiumPanel? _compendium;
     private CultivationPanel? _cultivation;
+    private ChangelogPanel? _changelog;
 
     /// <summary>
     /// 初始化持久化设置并连接主菜单按钮与设置返回信号。
@@ -32,17 +34,20 @@ public partial class MainMenu : Control
         _contentSelection = GetNode<ContentPackSelectionPanel>("ContentPackSelectionPanel");
         _compendium = GetNode<CompendiumPanel>("CompendiumPanel");
         _cultivation = GetNode<CultivationPanel>("CultivationPanel");
+        _changelog = GetNode<ChangelogPanel>("ChangelogPanel");
         _cultivation.Configure(ProgressionProfileManager.CreateDefault());
         GetNode<Button>("Menu/Panel/Padding/Layout/Start").Pressed += ShowContentSelection;
         GetNode<Button>("Menu/Panel/Padding/Layout/Compendium").Pressed += ShowCompendium;
         GetNode<Button>("Menu/Panel/Padding/Layout/Cultivation").Pressed += ShowCultivation;
         GetNode<Button>("Menu/Panel/Padding/Layout/Settings").Pressed += ShowSettings;
+        GetNode<Button>("Menu/Panel/Padding/Layout/Changelog").Pressed += ShowChangelog;
         GetNode<Button>("Menu/Panel/Padding/Layout/Quit").Pressed += Quit;
         _contentSelection.StartRequested += StartGame;
         _contentSelection.BackRequested += HideContentSelection;
         _compendium.BackRequested += HideCompendium;
         _cultivation.BackRequested += HideCultivation;
         _settings.BackRequested += HideSettings;
+        _changelog.BackRequested += HideChangelog;
         _settings.Hide();
         RefreshRoleBlock();
     }
@@ -111,6 +116,18 @@ public partial class MainMenu : Control
         _settings!.Hide();
         _menu!.Show();
     }
+
+    /// <summary>
+    /// 隐藏主菜单命令并打开从仓库唯一 CHANGELOG.md 构建的版本日志页。
+    /// </summary>
+    private void ShowChangelog()
+    {
+        _menu!.Hide();
+        _changelog!.Present();
+    }
+
+    /// <summary>从版本日志返回时恢复主菜单命令区域。</summary>
+    private void HideChangelog() => _menu!.Show();
 
     /// <summary>
     /// 请求 Godot 正常结束游戏进程。
