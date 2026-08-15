@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -139,7 +140,8 @@ public partial class SpellCardTrackingTest : Node
     {
         FantasySealOrb orb = OrbScene.Instantiate<FantasySealOrb>();
         orb.ConfigureImpact(backend, targetPosition, damage, 100.0f, 5.0f,
-            5.0f, 0, "base", "追踪测试", 0.0f, target);
+            5.0f, 0, "base", "追踪测试",
+            SpellCardGeometryKind.Orbit, 0.0f, target);
         AddChild(orb);
         orb.SetPhysicsProcess(false);
         orb.GlobalPosition = Vector2.Zero;

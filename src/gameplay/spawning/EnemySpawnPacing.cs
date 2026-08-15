@@ -19,7 +19,7 @@ public static class EnemySpawnPacing
         EndlessDifficultyCurve.EvaluateSeconds(elapsedSeconds, int.MaxValue).SpawnBatchSize;
 
     /// <summary>
-    /// 从无尽难度快照读取连续下降的刷新间隔，并保留防止同帧刷怪风暴的性能下限。
+    /// 从无尽难度快照读取阶段波次间隔，并保留防止同帧刷怪风暴的性能下限。
     /// </summary>
     public static double GetSpawnInterval(double elapsedSeconds) =>
         EndlessDifficultyCurve.EvaluateSeconds(elapsedSeconds, int.MaxValue).SpawnIntervalSeconds;

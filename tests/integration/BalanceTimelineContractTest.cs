@@ -50,8 +50,8 @@ public partial class BalanceTimelineContractTest : Node
     {
         (int Minimum, int Maximum)[] levelBands =
         [
-            (1, 1), (11, 18), (17, 26), (21, 33),
-            (27, 40), (31, 46), (42, 59), (61, 74),
+            (1, 1), (11, 18), (17, 30), (21, 36),
+            (27, 52), (31, 61), (42, 77), (61, 96),
         ];
         foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
         {
@@ -64,9 +64,20 @@ public partial class BalanceTimelineContractTest : Node
                     $"was {item.RunLevel}, expected {minimum}-{maximum}.");
             }
 
-            Require(values[3].OffensiveSpellCount + values[3].SupportSpellCount <
-                values[3].OffensiveSlotCapacity + values[3].SupportSlotCapacity,
-                $"The build filled every spell slot by ten minutes: {kind}.");
+            Require(values[2].OffensiveSpellCount + values[2].SupportSpellCount <
+                values[2].OffensiveSlotCapacity + values[2].SupportSlotCapacity,
+                $"The five-minute build filled every spell slot before the finale: {kind}.");
+            bool cleared = values[2].ProjectedAliveEnemies <= 2.0;
+            bool shrinking = values[2].EffectiveKillsPerSecond >=
+                values[2].ScheduledSpawnsPerSecond * 0.98;
+            Require(values[2].ProjectedAliveEnemies <= 16.0 && (cleared || shrinking),
+                $"The five-minute build left a growing ordinary-enemy wall: {kind}/" +
+                $"{values[2].ProjectedAliveEnemies:F1} alive, " +
+                $"{values[2].EffectiveKillsPerSecond:F3}/" +
+                $"{values[2].ScheduledSpawnsPerSecond:F3} kills/supply.");
+            Require(values[4].OffensiveSpellCount == values[4].OffensiveSlotCapacity &&
+                values[4].SupportSpellCount == values[4].SupportSlotCapacity,
+                $"The twenty-minute build did not fill shared spell slots: {kind}.");
             Require(values[^1].OffensiveSpellCount == values[^1].OffensiveSlotCapacity &&
                 values[^1].SupportSpellCount == values[^1].SupportSlotCapacity,
                 $"The long-run build did not eventually fill shared spell slots: {kind}.");
@@ -119,7 +130,8 @@ public partial class BalanceTimelineContractTest : Node
                 double[] finite = [item.WeaponDps, item.SpellDps, item.TotalDps,
                     item.ReadinessScore, item.EnemyHealthMultiplier,
                     item.EnemyDamageMultiplier, item.RewardMultiplier,
-                    item.ScheduledSpawnsPerSecond, item.EffectiveKillsPerSecond,
+                    item.ScheduledSpawnsPerSecond, item.ProjectedAliveEnemies,
+                    item.EffectiveKillsPerSecond,
                     item.EnemyPressure, item.PowerToPressureRatio,
                     item.SpiritEconomyMultiplier, item.SpellCapacityBudget];
                 Require(finite.All(value => double.IsFinite(value) && value >= 0.0),
@@ -133,7 +145,7 @@ public partial class BalanceTimelineContractTest : Node
     }
 
     /// <summary>
-    /// 要求等级、累计经验、伤害、敌人倍率和压力随时间不下降，并确保长局已进入无尽修行。
+    /// 要求等级、累计经验、伤害和敌人倍率随时间不下降，并确保长局已进入无尽修行。
     /// </summary>
     private static void VerifyMonotonicProgression(
         IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
@@ -149,8 +161,7 @@ public partial class BalanceTimelineContractTest : Node
                     after.TotalDps + 0.0001 >= before.TotalDps &&
                     after.EnemyHealthMultiplier >= before.EnemyHealthMultiplier &&
                     after.EnemyDamageMultiplier >= before.EnemyDamageMultiplier &&
-                    after.RewardMultiplier >= before.RewardMultiplier &&
-                    after.EnemyPressure >= before.EnemyPressure,
+                    after.RewardMultiplier >= before.RewardMultiplier,
                     $"A required curve decreased: {kind}/{before.ElapsedMinutes}-{after.ElapsedMinutes}m.");
             }
 

@@ -19,10 +19,6 @@ public partial class BossEncounterDirector : Node
     private double _activeEncounterStartedSeconds;
     private bool _encounterActive;
 
-    [Export(PropertyHint.Range, "10,1800,1")]
-    public double FirstEncounterSeconds { get; set; } =
-        RunPacingTimeline.FinalEncounterSeconds;
-
     [Export(PropertyHint.Range, "30,900,1")]
     public double EncounterIntervalSeconds { get; set; } = 180.0;
 
@@ -30,10 +26,11 @@ public partial class BossEncounterDirector : Node
     public int DefeatedCount { get; private set; }
     public CharacterDefinition? LastSpawnedCharacter { get; private set; }
     public double NextEncounterSeconds => _nextEncounterSeconds;
+    public bool IsFirstEncounterArmed { get; private set; }
     public event Action<CharacterDefinition>? EncounterDefeated;
 
     /// <summary>
-    /// 绑定 ECS 世界、冻结的局内内容和玩家位置查询，并从首个里程碑开始安排遭遇。
+    /// 绑定 ECS 世界、冻结的局内内容和玩家位置查询；首次遭遇等待动态阶段导演显式武装。
     /// </summary>
     public void Configure(
         EcsCombatWorld world,
@@ -47,18 +44,36 @@ public partial class BossEncounterDirector : Node
         _world = world;
         _context = context;
         _playerPosition = playerPosition;
-        _nextEncounterSeconds = Math.Max(0.0, FirstEncounterSeconds);
+        _nextEncounterSeconds = double.PositiveInfinity;
         _activeEncounterStartedSeconds = 0.0;
         _encounterActive = false;
+        IsFirstEncounterArmed = false;
         _random.Randomize();
         world.BossDefeated += OnBossDefeated;
+    }
+
+    /// <summary>
+    /// 由动态阶段导演显式开放首次最终遭遇；重复调用不会延后已经到期的 Boss。
+    /// </summary>
+    public void ArmFirstEncounter(double elapsedSeconds)
+    {
+        if (IsFirstEncounterArmed)
+        {
+            return;
+        }
+
+        IsFirstEncounterArmed = true;
+        _nextEncounterSeconds = double.IsFinite(elapsedSeconds)
+            ? Math.Max(0.0, elapsedSeconds)
+            : 0.0;
     }
 
     /// <summary>每帧只检查到期条件；已有存活 Boss 或候选为空时不会叠加生成。</summary>
     public override void _Process(double delta)
     {
         if (_world is null || _context is null || _playerPosition is null ||
-            _encounterActive || _world.ElapsedSeconds < _nextEncounterSeconds ||
+            !IsFirstEncounterArmed || _encounterActive ||
+            _world.ElapsedSeconds < _nextEncounterSeconds ||
             _world.AliveBossCount > 0)
         {
             return;

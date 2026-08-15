@@ -79,7 +79,7 @@ public partial class RunPacingTimelineTest : Node
             PlayerBarrageCurve.EvaluateSeconds(45.0, false, 0, 0).ProjectileCount == 3 &&
             PlayerBarrageCurve.EvaluateSeconds(150.0, false, 0, 0).ProjectileCount == 5 &&
             PlayerBarrageCurve.EvaluateSeconds(210.0, false, 1, 0).Mode ==
-                PlayerBarrageMode.RotatingRing,
+                PlayerBarrageMode.ConvergingOrbit,
             "Player barrage did not follow the shared phase milestones.");
     }
 
@@ -102,8 +102,11 @@ public partial class RunPacingTimelineTest : Node
     private static void VerifyBossMilestone()
     {
         var director = new BossEncounterDirector();
-        Require(director.FirstEncounterSeconds == RunPacingTimeline.FinalEncounterSeconds,
-            "First character boss is not aligned to the fifteen-minute finale.");
+        Require(!director.IsFirstEncounterArmed,
+            "Boss director was armed before the adaptive final phase.");
+        director.ArmFirstEncounter(240.0);
+        Require(director.IsFirstEncounterArmed && director.NextEncounterSeconds == 240.0,
+            "Adaptive final phase did not arm the first boss at its actual transition time.");
         director.Free();
     }
 

@@ -1,5 +1,34 @@
 # Findings and Decisions
 
+## Five-Minute Core Loop Audit - 2026-08-16
+
+- The user replaced fixed time-only phase jumps with combat-capability progression: once the
+  current pressure becomes mowable, the run should advance to a harder phase.
+- A pure instantaneous difficulty response would punish every power gain and could trap weak
+  builds. The accepted design is sustained dominance plus a minimum showcase duration and maximum
+  timeout; the phase HUD exposes this progress instead of applying hidden rubber-banding.
+- The user clarified that Boss starvation is primarily a five-minute DPS/throughput failure, not
+  merely a nearest-target policy defect. By four minutes thirty seconds, every valid base route
+  must already mow ordinary enemies faster than the runtime supplies them.
+- The first deterministic timeline exposed the gap: Utility still carried 37.7 ordinary enemies
+  at five minutes while the other three routes had cleared. After separating finite ordinary-enemy
+  durability from the unchanged Boss health curve, projected five-minute ordinary counts are
+  Baseline/Assault/Rapid `0` and Utility `15.3`; Utility defeats `0.83/s` against `0.35/s` supply,
+  so even its remaining crowd keeps shrinking.
+- The user explicitly rejected Boss-only projectiles, pass-through collision, and reserved fire
+  shares. Boss access must emerge from sufficient ordinary-enemy clearing under the unchanged
+  nearest-target rule.
+- Spell-card visual diversity must come from atlas-region data. Reusing one yin-yang-orb identity
+  across effects wastes the installed original bullet sheets and makes forty-six cards look alike.
+- A rotating formation that does not acquire or intersect enemies is decorative output and cannot
+  count toward barrage progression; trajectory tests must measure eventual target intersection.
+- The dynamic final gate now requires at most one quarter of the current ordinary-enemy limit or a
+  five-minute timeout. An already empty field counts as dominance, preventing strong builds from
+  stalling merely because there is nothing left to kill.
+- Codex-launched Godot inherited a write restriction on `%APPDATA%`; default log rotation failed and
+  Godot 4.7.1 then crashed natively at the same address shown by the user. Redirecting `--log-file`
+  to project `.godot/codex-playtest.log` made the identical balance test pass with exit code zero.
+
 ## Combat Balance Audit - 2026-08-12
 
 - Character player and Boss values are currently derived from SHA-256 bytes of `CharacterId`; this is stable but not designable, explainable, or tied to Touhou identity.

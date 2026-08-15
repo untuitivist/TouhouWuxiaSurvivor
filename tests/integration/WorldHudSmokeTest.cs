@@ -59,7 +59,7 @@ public partial class WorldHudSmokeTest : Node
                 "Empty spell-card strip was visible or escaped the compact HUD bounds.");
             Require(!hud.IsDebugVisible, "Debug overlay must be hidden by default.");
             Require(pacingMargin.Visible && pacingMargin.Size.Y <= 28.0f &&
-                hud.PhaseText == "异变初兆" && phaseRemaining.Text == "00:45" &&
+                hud.PhaseText == "异变初兆" && phaseRemaining.Text == "蓄势 00:30" &&
                 pacingBar.ProgressRatio >= 0.0 && pacingBar.ProgressRatio < 0.01,
                 "Compact five-minute pacing bar did not initialize at the opening phase.");
             Require(hud.IsPhaseNoticeVisible,

@@ -38,7 +38,7 @@ public partial class RunPacingFlowTest : Node
         var fixture = new RunPacingRuntimeFixture(this);
         try
         {
-            fixture.DefeatBoss(RunPacingTimeline.FinalEncounterSeconds);
+            fixture.DefeatBoss(RunPacingTimeline.TargetClearSeconds);
             Require(fixture.Overlay.IsOpen && GetTree().Paused &&
                 fixture.Pacing.IsCompletionPending && !fixture.Pacing.IsEndless,
                 "Final boss defeat did not open the paused completion choice.");
@@ -74,7 +74,7 @@ public partial class RunPacingFlowTest : Node
         var fixture = new RunPacingRuntimeFixture(this);
         try
         {
-            fixture.DefeatBoss(RunPacingTimeline.FinalEncounterSeconds);
+            fixture.DefeatBoss(RunPacingTimeline.TargetClearSeconds);
             fixture.Overlay.GetNode<Button>(
                 "Root/Panel/Padding/Layout/Buttons/Settle").EmitSignal(Button.SignalName.Pressed);
             Require(fixture.FinalizedReason == RunEndReason.Cleared &&

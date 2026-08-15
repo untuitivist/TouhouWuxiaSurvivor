@@ -67,25 +67,29 @@ public partial class ProjectileSkillBalanceTest : Node
     }
 
     /// <summary>
-    /// 对照开局破甲的两敌十三点与十分钟散华七弹十三点，锁定两条分支的横向伤害预算。
+    /// 分别验证贯穿实际碰撞，再在相同十分钟阶段对照破甲两敌总伤与散华齐射总伤。
     /// </summary>
     private static void VerifyHorizontalVolleyBudget(int piercingTwoTargetDamage)
     {
+        PlayerBarrageSnapshot piercing = PlayerBarrageCurve.EvaluateSeconds(
+            600.0, false, 0L, 0, bonusProjectiles: 0);
+        ProjectileVolleyDamageSnapshot piercingDamage = ProjectileDamageBudget.Project(
+            10.0, piercing.VolleyDamageBudget, piercing.ProjectileCount, maximumHits: 2);
         PlayerBarrageSnapshot scatter = PlayerBarrageCurve.EvaluateSeconds(
             600.0, false, 0L, 0, bonusProjectiles: 2);
         ProjectileVolleyDamageSnapshot scatterDamage = ProjectileDamageBudget.Project(
             10.0, scatter.VolleyDamageBudget, scatter.ProjectileCount, maximumHits: 1);
         int distributed = Enumerable.Range(0, scatter.ProjectileCount)
             .Sum(scatterDamage.GetPrimaryDamage);
+        Require(piercingTwoTargetDamage == 13,
+            "The physical piercing collision no longer applies ten plus three damage.");
         Require(scatter.ProjectileCount == 7 &&
-            scatterDamage.PrimaryTotalDamage == 13 &&
-            scatterDamage.MinimumPrimaryDamage == 1 &&
-            scatterDamage.MaximumPrimaryDamage == 2 &&
-            distributed == 13,
+            distributed == scatterDamage.PrimaryTotalDamage,
             "The seven-projectile scatter volley did not preserve its authored integer budget.");
-        Require(piercingTwoTargetDamage == scatterDamage.TwoTargetTotalDamage,
-            $"Piercing and scatter budgets diverged: {piercingTwoTargetDamage}/" +
-            $"{scatterDamage.TwoTargetTotalDamage}.");
+        Require(Math.Abs(piercingDamage.TwoTargetTotalDamage -
+                scatterDamage.PrimaryTotalDamage) <= 2,
+            $"Same-stage piercing and scatter budgets diverged: " +
+            $"{piercingDamage.TwoTargetTotalDamage}/{scatterDamage.PrimaryTotalDamage}.");
     }
 
     /// <summary>

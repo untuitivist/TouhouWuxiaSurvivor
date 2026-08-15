@@ -122,7 +122,9 @@ public partial class WorldDebugHud : CanvasLayer
             ? "无尽"
             : pacing.IsFinalEncounter
                 ? "决战"
-                : FormatRemaining(pacing.SecondsToNextPhase);
+                : pacing.CanAdvanceByDominance
+                    ? $"压制 {pacing.DominanceProgress:P0}"
+                    : $"蓄势 {FormatRemaining(pacing.SecondsToNextPhase)}";
         _pacingBar!.SetSnapshot(pacing);
         if (_lastPhase != pacing.PhaseId)
         {

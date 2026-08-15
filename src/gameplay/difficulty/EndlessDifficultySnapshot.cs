@@ -11,6 +11,7 @@ public readonly record struct EndlessDifficultySnapshot(
     double SpawnIntervalSeconds,
     int AliveLimit,
     double EnemyHealthMultiplier,
+    double BossHealthMultiplier,
     double EnemyDamageMultiplier,
     double RewardMultiplier,
     double EnemySpeedMultiplier);

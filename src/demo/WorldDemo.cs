@@ -201,8 +201,19 @@ public partial class WorldDemo : Node2D
         _runPacing = new RunPacingCoordinator(
             _bossEncounters, _completionScreen, _map, _pauseMenu, _stats, _progression,
             () => _ecsCombatWorld.ElapsedSeconds,
+            () =>
+            {
+                double difficulty = _runPacing?.CreateSnapshot().DifficultySeconds ?? 0.0;
+                return new RunCombatTelemetry(
+                    _ecsCombatWorld.AliveEnemyCount,
+                    _ecsCombatWorld.DefeatedCount,
+                    EnemySpawnPacing.GetAliveLimit(difficulty, _enemySpawner.MaximumAlive),
+                    EnemySpawnPacing.GetScheduledSpawnsPerSecond(difficulty));
+            },
             () => _runFailure.IsFinalized,
             _runFailure.TryFinalize);
+        _enemySpawner.ConfigurePacing(() => _runPacing.CreateSnapshot().DifficultySeconds);
+        _autoShooter.ConfigurePacing(() => _runPacing.CreateSnapshot().DifficultySeconds);
         _hudCoordinator = new WorldHudCoordinator(
             _generator, _streamer, _player, hud, _map, _enemySpawner,
             _buffs, _health, _progression, _content, _spellCards, _runPacing,
@@ -229,6 +240,7 @@ public partial class WorldDemo : Node2D
             return;
         }
 
+        _runPacing?.Advance();
         _streamer.Update(_player.Position);
         _mapRuntime?.Update();
         _hudCoordinator?.Refresh(delta);

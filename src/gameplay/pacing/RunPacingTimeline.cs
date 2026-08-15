@@ -25,8 +25,17 @@ public static class RunPacingTimeline
             SwarmingSeconds, BarrageSeconds),
         new(RunPhaseId.Barrage, "弹幕成形", "远程弹幕形成交叉火力",
             BarrageSeconds, CrisisSeconds),
-        new(RunPhaseId.Crisis, "结界震荡", "大妖怪与密集弹幕逼近",
+        new(RunPhaseId.Crisis, "结界震荡", "击穿残阵，准备迎战异变核心",
             CrisisSeconds, FinalEncounterSeconds),
+    ];
+
+    public static IReadOnlyList<RunPhaseRule> AdaptiveRules { get; } =
+    [
+        new(RunPhaseId.Opening, 30.0, 45.0, 0.35, 0.50, 5.0),
+        new(RunPhaseId.Rising, 35.0, 45.0, 0.50, 0.55, 5.0),
+        new(RunPhaseId.Swarming, 45.0, 60.0, 0.65, 0.60, 5.0),
+        new(RunPhaseId.Barrage, 50.0, 60.0, 0.80, 0.65, 5.0),
+        new(RunPhaseId.Crisis, 45.0, 90.0, 0.45, 0.25, 5.0),
     ];
 
     /// <summary>
@@ -65,13 +74,16 @@ public static class RunPacingTimeline
             Math.Clamp((elapsed - phase.StartSeconds) / duration, 0.0, 1.0),
             Math.Max(0.0, phase.EndSeconds - elapsed),
             false,
-            false);
+            false,
+            elapsed,
+            Math.Clamp((elapsed - phase.StartSeconds) / duration, 0.0, 1.0),
+            true);
     }
 
     /// <summary>
     /// 为已经填满有限进度条的最终遭遇或无尽状态建立快照，避免用无穷结束时间污染UI。
     /// </summary>
-    private static RunPacingSnapshot CreateTerminalSnapshot(
+    internal static RunPacingSnapshot CreateTerminalSnapshot(
         RunPhaseId id,
         string name,
         string cue,
@@ -88,7 +100,10 @@ public static class RunPacingTimeline
             1.0,
             0.0,
             !isEndless,
-            isEndless);
+            isEndless,
+            FinalEncounterSeconds,
+            1.0,
+            false);
 
     /// <summary>
     /// 将非法、负数与正无穷运行时间整理为可显示的有限非负秒数。

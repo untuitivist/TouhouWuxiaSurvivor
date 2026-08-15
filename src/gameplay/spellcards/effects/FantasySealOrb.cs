@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
@@ -19,6 +20,7 @@ public partial class FantasySealOrb : Node2D
     private bool _lostTrackingTarget;
     private string _sourcePackId = "th06_eosd";
     private string _spellCardName = "灵符「梦想封印」";
+    private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Orbit;
     private InternalSpellBulletVisual? _visual;
     private Label? _fallbackLabel;
 
@@ -35,6 +37,7 @@ public partial class FantasySealOrb : Node2D
         int visualVariant,
         string sourcePackId,
         string spellCardName,
+        SpellCardGeometryKind geometryKind,
         float curvature,
         SpellCardTargetReference? trackingTarget = null)
     {
@@ -47,6 +50,7 @@ public partial class FantasySealOrb : Node2D
         _visualVariant = visualVariant;
         _sourcePackId = sourcePackId;
         _spellCardName = spellCardName;
+        _geometryKind = geometryKind;
         _curvature = curvature;
         _trackingTarget = trackingTarget;
         _lostTrackingTarget = false;
@@ -59,7 +63,7 @@ public partial class FantasySealOrb : Node2D
     {
         _visual = GetNode<InternalSpellBulletVisual>("Visual");
         _fallbackLabel = GetNode<Label>("FallbackLabel");
-        _visual.Configure(_sourcePackId, _spellCardName, _visualVariant);
+        _visual.Configure(_sourcePackId, _spellCardName, _geometryKind, _visualVariant);
         _fallbackLabel.Visible = !_visual.Visible;
     }
 

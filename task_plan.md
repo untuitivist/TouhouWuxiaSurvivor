@@ -1,4 +1,57 @@
-# Task Plan: Combat Balance and Skill Design
+# Task Plan: Adaptive Mowing Pacing and Boss Access
+
+## Current Goal - 2026-08-16
+
+Make the base-only five-minute combat curve acknowledge actual clearing power. Ordinary enemies
+must become mowable before the final encounter so nearest-target fire naturally reaches the Boss,
+without adding Boss-only targeting or projectile rules. Spell-card projectiles must use the mapped
+original bullet atlases, and every automatic barrage formation must converge on a useful predicted
+target. Finite phases advance from sustained visible dominance with bounded timing guardrails.
+
+## Current Phase
+
+Phase 4 - frozen verification and repository cleanup.
+
+## Acceptance Criteria
+
+- Boss combat keeps nearest-target collision semantics; no Boss-only projectile, pass-through, or
+  reserved fire share may replace the required late-run mowing power.
+- At the five-minute checkpoint every legal base build has no more than sixteen ordinary enemies,
+  defeats at least the formal spawn supply, and therefore cannot accumulate a permanent meat wall.
+- Phase advancement consumes a sustained dominance signal (kill throughput, spawn supply, and
+  crowd trend), grants a minimum mowing window, and retains a maximum timeout so strong builds are
+  acknowledged without weak builds stalling forever.
+- Spell cards select distinct atlas regions through data-driven visual variants; no gameplay
+  system hard-codes one spell-card texture identity as the universal projectile.
+- Spiral/rotating upgrades either acquire targets or create an intercepting formation; decorative
+  projectiles that routinely expire without threatening an enemy are rejected by tests.
+- Build, source policy, focused combat/pacing tests, visual acceptance, and full regression pass;
+  every repository change is committed once the frozen suite is green.
+
+## Active Phases
+
+- [x] Audit targeting, projectile visuals, enemy supply, finite durability, and test seams.
+- [x] Preserve nearest-target combat and implement useful target-converging formation trajectories.
+- [x] Implement visible data-driven spell-card atlas regions for all installed spell cards.
+- [x] Add sustained dynamic phases and a low-supply pre-Boss mowing window.
+- [x] Separate finite ordinary durability from the unchanged Boss health curve.
+- [x] Add focused tests, update intent notes, and inspect all Windows visual scenes.
+- [x] Run frozen regression, source/encoding audits, and commit the accepted gameplay scope.
+- [ ] Remove the two rejected untracked Boss-exception files after explicit approval; they remain
+  excluded from source control and the runtime dependency graph.
+
+## Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Boss access comes from mowing power | Nearest-target combat stays intact; lower add supply and higher effective output naturally remove the meat wall. |
+| Bullet identity is data, not effect-class branching | Forty-six spell cards must reuse the atlas without forty-six rendering implementations. |
+| Five-minute balance is the primary contract | Long endless convergence cannot excuse a threefold power gap at the normal ending. |
+| Dynamic pacing uses guarded dominance gates | Pure rubber-banding erases growth; minimum/maximum phase bounds preserve power fantasy and run duration. |
+
+---
+
+# Historical Plan: Combat Balance and Skill Design
 
 ## Current Goal - 2026-08-12
 

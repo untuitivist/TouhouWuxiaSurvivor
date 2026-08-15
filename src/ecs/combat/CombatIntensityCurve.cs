@@ -7,9 +7,9 @@ using TouhouWuxiaSurvivor.Gameplay.Difficulty;
 /// </summary>
 public static class CombatIntensityCurve
 {
-    /// <summary>直接读取共享快照的无界敌人生命倍率，使 Boss 与普通难度使用同一时间轴。</summary>
+    /// <summary>读取共享时间轴上的 Boss 原生命曲线，不受有限流程普通怪清场缓冲影响。</summary>
     public static float GetBossHealthMultiplier(double elapsedSeconds) =>
-        ToFiniteFloat(Evaluate(elapsedSeconds).EnemyHealthMultiplier);
+        ToFiniteFloat(Evaluate(elapsedSeconds).BossHealthMultiplier);
 
     /// <summary>直接读取共享快照中受性能约束的敌人速度倍率，避免极长局穿越碰撞体。</summary>
     public static float GetMoveSpeedMultiplier(double elapsedSeconds) =>

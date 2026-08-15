@@ -21,6 +21,7 @@ public partial class AutoShooter : Node2D
     private RunModifierState? _runModifiers;
     private ProjectileEcsRuntime? _ecsProjectiles;
     private EcsCombatWorld? _ecsWorld;
+    private Func<double>? _difficultySeconds;
     private PassiveSpecializationState? _passiveSpecializations;
     private double _cooldownLeft;
     private double _localElapsedSeconds;
@@ -87,6 +88,13 @@ public partial class AutoShooter : Node2D
         LastVolleyProjectileCount = 0;
     }
 
+    /// <summary>注入阶段导演映射后的难度时间，使弹幕形态和刷怪阶段使用同一进度源。</summary>
+    public void ConfigurePacing(Func<double> difficultySeconds)
+    {
+        ArgumentNullException.ThrowIfNull(difficultySeconds);
+        _difficultySeconds = difficultySeconds;
+    }
+
     /// <summary>
     /// 读取 ECS 生存时间和现有强化推进冷却，自动选择单发、扇形或旋转弹幕，全程不读取操作输入。
     /// </summary>
@@ -125,7 +133,9 @@ public partial class AutoShooter : Node2D
         }
 
         double elapsedSeconds = _ecsWorld?.ElapsedSeconds ?? _localElapsedSeconds;
-        CurrentBarrage = PlayerBarrageCurve.EvaluateSeconds(elapsedSeconds,
+        double pacingSeconds = _difficultySeconds?.Invoke() ?? elapsedSeconds;
+        if (!double.IsFinite(pacingSeconds)) pacingSeconds = elapsedSeconds;
+        CurrentBarrage = PlayerBarrageCurve.EvaluateSeconds(pacingSeconds,
             spiralActive, _volleySequence, GetActiveProjectileCount(),
             _runModifiers?.ExtraProjectiles ?? 0);
         LastVolleyProjectileCount = 0;
@@ -136,15 +146,9 @@ public partial class AutoShooter : Node2D
         }
 
         float effectiveRange = TargetRange * (_runModifiers?.TargetRangeMultiplier ?? 1.0f);
-        TargetMotion targetMotion = default;
-        bool hasTarget = _ecsWorld?.TryFindNearestTarget(
-            GlobalPosition, effectiveRange, out targetMotion) == true;
-        var target = hasTarget ? null : _targetFinder.FindNearest(GlobalPosition, effectiveRange);
-        if (!hasTarget && target is not null)
-        {
-            targetMotion = new TargetMotion(target.GlobalPosition, target.Velocity);
-            hasTarget = true;
-        }
+        bool hasTarget = AutoTargetSelector.TrySelect(
+            _ecsWorld, _targetFinder, GlobalPosition, effectiveRange,
+            out TargetMotion targetMotion);
 
         if (!hasTarget && CurrentBarrage.RequiresTarget)
         {
@@ -153,12 +157,23 @@ public partial class AutoShooter : Node2D
             return;
         }
 
-        Vector2 baseDirection = hasTarget
-            ? InterceptAimSolver.ResolveDirection(GlobalPosition, targetMotion,
-                GetEffectiveProjectileSpeed(), SpawnDistance,
-                ProjectileKinematicsPolicy.PlayerLifetimeSeconds)
-            : Vector2.Right;
-        LastVolleyProjectileCount = FireVolley(baseDirection, CurrentBarrage);
+        float projectileSpeed = GetEffectiveProjectileSpeed();
+        bool solved = InterceptAimSolver.TrySolve(
+            GlobalPosition, targetMotion, projectileSpeed, SpawnDistance,
+            ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
+            out Vector2 baseDirection, out float flightSeconds);
+        if (!solved)
+        {
+            baseDirection = InterceptAimSolver.ResolveDirection(
+                GlobalPosition, targetMotion, projectileSpeed, SpawnDistance,
+                ProjectileKinematicsPolicy.PlayerLifetimeSeconds);
+        }
+
+        Vector2 interceptPoint = solved
+            ? targetMotion.Position + targetMotion.Velocity * flightSeconds
+            : targetMotion.Position;
+        LastVolleyProjectileCount = FireVolley(
+            baseDirection, interceptPoint, CurrentBarrage);
         _volleySequence++;
         if (LastVolleyProjectileCount > 0)
         {
@@ -195,35 +210,22 @@ public partial class AutoShooter : Node2D
     }
 
     /// <summary>
-    /// 按计划生成面向目标的单发或扇形，或者均分整圆的旋转环，并返回实际成功生成数量。
+    /// 按计划生成面向目标的单发、扇形或收束阵，并返回实际成功生成数量。
     /// </summary>
-    private int FireVolley(Vector2 baseDirection, PlayerBarrageSnapshot barrage)
+    private int FireVolley(
+        Vector2 baseDirection,
+        Vector2 interceptPoint,
+        PlayerBarrageSnapshot barrage)
     {
-        Vector2 aimedDirection = baseDirection.IsZeroApprox() ? Vector2.Right : baseDirection.Normalized();
         CurrentVolleyDamage = ProjectVolleyDamage(barrage);
         int spawned = 0;
-        if (barrage.Mode == PlayerBarrageMode.RotatingRing)
-        {
-            double step = Math.Tau / barrage.ProjectileCount;
-            for (int index = 0; index < barrage.ProjectileCount; index++)
-            {
-                float angle = (float)(barrage.RotationRadians + step * index);
-                spawned += SpawnProjectile(
-                    Vector2.Right.Rotated(angle),
-                    CurrentVolleyDamage.GetPrimaryDamage(index),
-                    CurrentVolleyDamage.GetSecondaryDamage(index)) ? 1 : 0;
-            }
-
-            return spawned;
-        }
-
-        double center = (barrage.ProjectileCount - 1) * 0.5;
         for (int index = 0; index < barrage.ProjectileCount; index++)
         {
-            float angle = (float)(barrage.RotationRadians +
-                (index - center) * barrage.AngularStepRadians);
+            ProjectileLaunchPlan launch = PlayerVolleyPattern.Resolve(
+                GlobalPosition, baseDirection, interceptPoint, SpawnDistance, barrage, index);
             spawned += SpawnProjectile(
-                aimedDirection.Rotated(angle),
+                launch.Position,
+                launch.Direction,
                 CurrentVolleyDamage.GetPrimaryDamage(index),
                 CurrentVolleyDamage.GetSecondaryDamage(index)) ? 1 : 0;
         }
@@ -234,7 +236,11 @@ public partial class AutoShooter : Node2D
     /// <summary>
     /// 向当前兼容后端写入单颗子弹，钳制极端速度与伤害溢出，并返回是否确实完成生成。
     /// </summary>
-    private bool SpawnProjectile(Vector2 direction, int damage, int secondaryHitDamage)
+    private bool SpawnProjectile(
+        Vector2 spawnPosition,
+        Vector2 direction,
+        int damage,
+        int secondaryHitDamage)
     {
         if (_ecsWorld is null && _ecsProjectiles is null && (ProjectileScene is null || _projectileContainer is null))
         {
@@ -242,7 +248,6 @@ public partial class AutoShooter : Node2D
         }
 
         float speed = GetEffectiveProjectileSpeed();
-        Vector2 spawnPosition = GlobalPosition + direction.Normalized() * SpawnDistance;
         int maximumHits = secondaryHitDamage > 0
             ? 1 + (_runModifiers?.ProjectilePierceCount ?? 0)
             : 1;

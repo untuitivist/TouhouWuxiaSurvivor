@@ -107,7 +107,7 @@ public partial class EnemyBalanceSmokeTest : Node
     }
 
     /// <summary>
-    /// 验证刷怪批次只在策划节点跳档，间隔单调下降且存活上限受硬限制。
+    /// 验证刷怪批次只在策划节点跳档，平均供给可被阶段构筑处理且存活上限受硬限制。
     /// </summary>
     private static void VerifySpawnPacing()
     {
@@ -118,11 +118,13 @@ public partial class EnemyBalanceSmokeTest : Node
             EnemySpawnPacing.GetBatchSize(RunPacingTimeline.CrisisSeconds) == 5 &&
             EnemySpawnPacing.GetBatchSize(RunPacingTimeline.FinalEncounterSeconds) == 6,
             "Spawn batch milestones are incorrect.");
-        Require(EnemySpawnPacing.GetSpawnInterval(0) >
-            EnemySpawnPacing.GetSpawnInterval(300) &&
-            EnemySpawnPacing.GetSpawnInterval(300) >
-            EnemySpawnPacing.GetSpawnInterval(600),
-            "Spawn interval is not decreasing.");
+        Require(Math.Abs(EnemySpawnPacing.GetScheduledSpawnsPerSecond(0) - 0.80) < 0.001 &&
+            Math.Abs(EnemySpawnPacing.GetScheduledSpawnsPerSecond(210) - 0.25) < 0.001 &&
+            EnemySpawnPacing.GetScheduledSpawnsPerSecond(270) <
+                EnemySpawnPacing.GetScheduledSpawnsPerSecond(150) &&
+            EnemySpawnPacing.GetScheduledSpawnsPerSecond(600) >
+                EnemySpawnPacing.GetScheduledSpawnsPerSecond(270),
+            "Pre-Boss mowing relief or endless supply growth is incorrect.");
         Require(EnemySpawnPacing.GetAliveLimit(0, 140) == 36 &&
             EnemySpawnPacing.GetAliveLimit(1200, 140) == 140,
             "Dynamic alive limit is incorrect.");

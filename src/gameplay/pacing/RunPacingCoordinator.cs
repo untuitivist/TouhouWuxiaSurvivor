@@ -21,8 +21,10 @@ public sealed class RunPacingCoordinator : IDisposable
     private readonly CharacterStatsOverlay _stats;
     private readonly RunProgressionCoordinator _progression;
     private readonly Func<double> _elapsedSeconds;
+    private readonly Func<RunCombatTelemetry> _combatTelemetry;
     private readonly Func<bool> _isFinalized;
     private readonly Func<RunEndReason, bool> _finalize;
+    private readonly AdaptiveRunPacingState _adaptiveState = new();
     private bool _disposed;
 
     public bool IsEndless { get; private set; }
@@ -39,6 +41,7 @@ public sealed class RunPacingCoordinator : IDisposable
         CharacterStatsOverlay stats,
         RunProgressionCoordinator progression,
         Func<double> elapsedSeconds,
+        Func<RunCombatTelemetry> combatTelemetry,
         Func<bool> isFinalized,
         Func<RunEndReason, bool> finalize)
     {
@@ -49,6 +52,7 @@ public sealed class RunPacingCoordinator : IDisposable
         ArgumentNullException.ThrowIfNull(stats);
         ArgumentNullException.ThrowIfNull(progression);
         ArgumentNullException.ThrowIfNull(elapsedSeconds);
+        ArgumentNullException.ThrowIfNull(combatTelemetry);
         ArgumentNullException.ThrowIfNull(isFinalized);
         ArgumentNullException.ThrowIfNull(finalize);
         _bosses = bosses;
@@ -58,6 +62,7 @@ public sealed class RunPacingCoordinator : IDisposable
         _stats = stats;
         _progression = progression;
         _elapsedSeconds = elapsedSeconds;
+        _combatTelemetry = combatTelemetry;
         _isFinalized = isFinalized;
         _finalize = finalize;
         bosses.EncounterDefeated += OnEncounterDefeated;
@@ -65,9 +70,27 @@ public sealed class RunPacingCoordinator : IDisposable
         completion.ContinueEndlessRequested += OnContinueEndlessRequested;
     }
 
-    /// <summary>以当前唯一战斗时钟创建HUD快照，四分半后保持最终遭遇直至玩家作出选择。</summary>
+    /// <summary>
+    /// 每帧消费战斗遥测并推进动态阶段；首次进入最终遭遇时只武装一次角色 Boss。
+    /// </summary>
+    public void Advance()
+    {
+        if (_disposed || IsEndless)
+        {
+            return;
+        }
+
+        bool wasFinal = _adaptiveState.IsFinalEncounter;
+        _adaptiveState.Advance(_elapsedSeconds(), _combatTelemetry());
+        if (!wasFinal && _adaptiveState.IsFinalEncounter)
+        {
+            _bosses.ArmFirstEncounter(_elapsedSeconds());
+        }
+    }
+
+    /// <summary>以动态阶段状态创建 HUD 快照，真实时间与难度时间保持显式分离。</summary>
     public RunPacingSnapshot CreateSnapshot() =>
-        RunPacingTimeline.Evaluate(_elapsedSeconds(), IsEndless);
+        _adaptiveState.CreateSnapshot(_elapsedSeconds(), IsEndless);
 
     /// <summary>
     /// 解除全部事件连接；重复释放安全返回，防止重开场景后旧协调器继续接收Boss事件。
@@ -91,7 +114,7 @@ public sealed class RunPacingCoordinator : IDisposable
     private void OnEncounterDefeated(CharacterDefinition character)
     {
         if (IsEndless || IsCompletionPending || _isFinalized() ||
-            _elapsedSeconds() < RunPacingTimeline.FinalEncounterSeconds)
+            !_adaptiveState.IsFinalEncounter)
         {
             return;
         }

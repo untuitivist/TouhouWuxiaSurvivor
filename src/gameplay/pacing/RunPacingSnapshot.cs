@@ -15,4 +15,7 @@ public readonly record struct RunPacingSnapshot(
     double PhaseProgress,
     double SecondsToNextPhase,
     bool IsFinalEncounter,
-    bool IsEndless);
+    bool IsEndless,
+    double DifficultySeconds,
+    double DominanceProgress,
+    bool CanAdvanceByDominance);

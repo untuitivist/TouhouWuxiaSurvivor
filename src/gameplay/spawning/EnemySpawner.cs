@@ -19,6 +19,7 @@ public partial class EnemySpawner : Node
     private Node2D? _enemyContainer;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private Func<Vector2, BiomeId>? _biomeAtPosition;
+    private Func<double>? _difficultySeconds;
     private EcsCombatWorld? _ecsWorld;
     private double _elapsedSeconds;
     private double _spawnCooldown;
@@ -40,6 +41,15 @@ public partial class EnemySpawner : Node
     public event Action<Vector2, EnemyDefinition>? EnemyDefeated;
     public event Action? EnemyDamaged;
     public event Action? EnemyExploded;
+
+    /// <summary>
+    /// 注入动态难度时间；未配置时保留真实时间兼容语义，便于独立测试与旧场景继续运行。
+    /// </summary>
+    public void ConfigurePacing(Func<double> difficultySeconds)
+    {
+        ArgumentNullException.ThrowIfNull(difficultySeconds);
+        _difficultySeconds = difficultySeconds;
+    }
 
     /// <summary>
     /// 绑定玩家、敌人容器和群系查询，重置节奏并在屏幕四周创建首批地区敌人。
@@ -91,12 +101,13 @@ public partial class EnemySpawner : Node
         }
 
         double elapsedSeconds = ElapsedSeconds;
+        double pacingSeconds = GetDifficultySeconds(elapsedSeconds);
         _spawnCooldown -= delta;
         _cleanupCooldown -= delta;
         if (_spawnCooldown <= 0.0)
         {
-            SpawnBatch(elapsedSeconds);
-            _spawnCooldown = EnemySpawnPacing.GetSpawnInterval(elapsedSeconds);
+            SpawnBatch(elapsedSeconds, pacingSeconds);
+            _spawnCooldown = EnemySpawnPacing.GetSpawnInterval(pacingSeconds);
         }
 
         if (_cleanupCooldown <= 0.0)
@@ -109,23 +120,26 @@ public partial class EnemySpawner : Node
     /// <summary>
     /// 按集中节奏曲线提高单批数量，并同时遵守动态存活上限和场景硬上限。
     /// </summary>
-    private void SpawnBatch(double elapsedSeconds)
+    private void SpawnBatch(double elapsedSeconds, double pacingSeconds)
     {
-        int batchSize = EnemySpawnPacing.GetBatchSize(elapsedSeconds);
-        int aliveLimit = EnemySpawnPacing.GetAliveLimit(elapsedSeconds, MaximumAlive);
+        int batchSize = EnemySpawnPacing.GetBatchSize(pacingSeconds);
+        int aliveLimit = EnemySpawnPacing.GetAliveLimit(pacingSeconds, MaximumAlive);
         for (int index = 0; index < batchSize && AliveCount < aliveLimit; index++)
         {
-            SpawnOne(elapsedSeconds);
+            SpawnOne(elapsedSeconds, pacingSeconds);
         }
     }
 
     /// <summary>
     /// 选择当前时间已解锁的敌人，并把它放在随机镜头边缘之外而非玩家脚下。
     /// </summary>
-    private void SpawnOne(double? elapsedOverride = null)
+    private void SpawnOne(
+        double? elapsedOverride = null,
+        double? pacingOverride = null)
     {
         double elapsedSeconds = elapsedOverride ?? ElapsedSeconds;
-        int aliveLimit = EnemySpawnPacing.GetAliveLimit(elapsedSeconds, MaximumAlive);
+        double pacingSeconds = pacingOverride ?? GetDifficultySeconds(elapsedSeconds);
+        int aliveLimit = EnemySpawnPacing.GetAliveLimit(pacingSeconds, MaximumAlive);
         if (_player is null || AliveCount >= aliveLimit)
         {
             return;
@@ -134,7 +148,7 @@ public partial class EnemySpawner : Node
         Vector2 spawnPosition = ChooseSpawnPosition();
         BiomeId biome = _biomeAtPosition?.Invoke(spawnPosition) ?? BiomeId.Common;
         EnemyDefinition baseDefinition = EnemyCatalog.Choose(
-            _random, elapsedSeconds, biome, _content);
+            _random, pacingSeconds, biome, _content);
         EnemyDefinition definition = GetScaledDefinition(baseDefinition, elapsedSeconds);
         if (_ecsWorld is not null)
         {
@@ -154,6 +168,13 @@ public partial class EnemySpawner : Node
         enemy.Exploded += OnEnemyExploded;
         _enemyContainer.AddChild(enemy);
         enemy.GlobalPosition = spawnPosition;
+    }
+
+    /// <summary>读取阶段导演映射后的难度时钟，并把非法结果安全回退到真实生存时间。</summary>
+    private double GetDifficultySeconds(double elapsedSeconds)
+    {
+        double value = _difficultySeconds?.Invoke() ?? elapsedSeconds;
+        return double.IsFinite(value) ? Math.Max(0.0, value) : Math.Max(0.0, elapsedSeconds);
     }
 
     /// <summary>

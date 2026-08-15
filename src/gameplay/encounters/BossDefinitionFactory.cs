@@ -21,7 +21,7 @@ public static class BossDefinitionFactory
         EndlessDifficultySnapshot difficulty = EndlessDifficultyCurve.EvaluateSeconds(
             elapsedSeconds, int.MaxValue);
         int health = SaturatingPositiveInt(profile.MaxHealth *
-            difficulty.EnemyHealthMultiplier);
+            difficulty.BossHealthMultiplier);
         int contactDamage = EnemyDifficultyScaler.ScaleContactDamage(
             profile.ContactDamage, difficulty.EnemyDamageMultiplier);
         return new EnemyDefinition(

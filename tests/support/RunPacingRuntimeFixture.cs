@@ -18,7 +18,7 @@ namespace TouhouWuxiaSurvivor.Tests.Support;
 /// </summary>
 public sealed class RunPacingRuntimeFixture
 {
-    private double _elapsedSeconds = RunPacingTimeline.FinalEncounterSeconds;
+    private double _elapsedSeconds = RunPacingTimeline.TargetClearSeconds;
     public RunCompletionOverlay Overlay { get; }
     public EcsCombatWorld World { get; }
     public BossEncounterDirector Director { get; }
@@ -48,6 +48,7 @@ public sealed class RunPacingRuntimeFixture
         Pacing = new RunPacingCoordinator(
             Director, Overlay, Map, Pause, Stats, Progression,
             () => _elapsedSeconds,
+            () => new RunCombatTelemetry(0, 0, 36),
             () => FinalizedReason is not null,
             reason =>
             {
@@ -60,6 +61,7 @@ public sealed class RunPacingRuntimeFixture
     public void DefeatBoss(double elapsedSeconds)
     {
         _elapsedSeconds = elapsedSeconds;
+        Pacing.Advance();
         if (!Director.TrySpawn(new Vector2(200.0f, 0.0f), elapsedSeconds, 0))
         {
             throw new InvalidOperationException("Test boss could not enter the encounter director.");

@@ -24,6 +24,7 @@ public partial class EndlessDifficultyTest : Node
             VerifyEndlessDifficulty();
             VerifyEntitySafetyLimits();
             VerifyEnemyRuntimeScaling();
+            VerifyFiniteMowingDoesNotNerfBoss();
             VerifyLevelCurve();
             VerifyPlayerBarrageStages();
             VerifyNoActiveFireInput();
@@ -69,6 +70,7 @@ public partial class EndlessDifficultyTest : Node
             EndlessDifficultySnapshot current = snapshots[index];
             Require(current.Intensity > previous.Intensity &&
                 current.EnemyHealthMultiplier > previous.EnemyHealthMultiplier &&
+                current.BossHealthMultiplier > previous.BossHealthMultiplier &&
                 current.EnemyDamageMultiplier > previous.EnemyDamageMultiplier &&
                 current.RewardMultiplier > previous.RewardMultiplier,
                 $"Endless pressure stopped growing at {current.ElapsedMinutes} minutes.");
@@ -81,10 +83,24 @@ public partial class EndlessDifficultyTest : Node
         Require(double.IsFinite(extreme.Intensity) &&
             double.IsFinite(extreme.ScheduledSpawnsPerSecond) &&
             double.IsFinite(extreme.EnemyHealthMultiplier) &&
+            double.IsFinite(extreme.BossHealthMultiplier) &&
             double.IsFinite(extreme.EnemyDamageMultiplier) &&
             double.IsFinite(extreme.RewardMultiplier) &&
             extreme.SpawnBatchSize == EndlessDifficultyCurve.MaximumSpawnBatchSize,
             "Extreme elapsed time produced invalid endless difficulty values.");
+    }
+
+    /// <summary>锁定有限流程只放缓普通怪耐久，Boss 继续使用改动前的原始无界生命公式。</summary>
+    private static void VerifyFiniteMowingDoesNotNerfBoss()
+    {
+        double seconds = RunPacingTimeline.TargetClearSeconds;
+        double minutes = seconds / 60.0;
+        double logarithm = Math.Log(1.0 + minutes);
+        double expectedBoss = 1.0 + 0.12 * minutes + 0.04 * logarithm * logarithm;
+        EndlessDifficultySnapshot snapshot = EndlessDifficultyCurve.EvaluateSeconds(seconds, 140);
+        Require(snapshot.EnemyHealthMultiplier < snapshot.BossHealthMultiplier &&
+            Math.Abs(snapshot.BossHealthMultiplier - expectedBoss) < 0.000001,
+            "Finite mowing relief changed the authored boss health curve.");
     }
 
     /// <summary>
@@ -142,7 +158,7 @@ public partial class EndlessDifficultyTest : Node
     }
 
     /// <summary>
-    /// 验证时间只提高弹幕密度不白送总伤，并由特化把五发阶段扩展为七发。
+    /// 验证阶段同时提高弹幕密度与清场预算，并由特化把五发阶段扩展为七发。
     /// </summary>
     private static void VerifyPlayerBarrageStages()
     {
@@ -165,17 +181,18 @@ public partial class EndlessDifficultyTest : Node
             threeLate.ProjectileCount == 3 && five.ProjectileCount == 5 &&
             fiveLate.ProjectileCount == 5 &&
             seven.ProjectileCount == 7 &&
-            opening.VolleyDamageBudget == three.VolleyDamageBudget &&
-            three.VolleyDamageBudget == fiveLate.VolleyDamageBudget &&
+            opening.VolleyDamageBudget < three.VolleyDamageBudget &&
+            three.VolleyDamageBudget < five.VolleyDamageBudget &&
+            five.VolleyDamageBudget < fiveLate.VolleyDamageBudget &&
             seven.VolleyDamageBudget > fiveLate.VolleyDamageBudget,
-            "Timed density or build-driven volley budget is incorrect.");
+            "Dynamic-stage density or mowing damage budget is incorrect.");
         Require(fiveLate.Mode == PlayerBarrageMode.AlternatingFan &&
-            rotating.Mode == PlayerBarrageMode.RotatingRing && !rotating.RequiresTarget,
-            "Late volleys do not alternate fan and rotating patterns.");
+            rotating.Mode == PlayerBarrageMode.ConvergingOrbit && rotating.RequiresTarget,
+            "Late volleys do not alternate fan and target-converging patterns.");
         Require(sixtyMinutes.ProjectileCount == 5 &&
             thousandMinutes.ProjectileCount == 5 &&
-            sixtyMinutes.Mode == PlayerBarrageMode.RotatingRing &&
-            thousandMinutes.Mode == PlayerBarrageMode.RotatingRing,
+            sixtyMinutes.Mode == PlayerBarrageMode.ConvergingOrbit &&
+            thousandMinutes.Mode == PlayerBarrageMode.ConvergingOrbit,
             "Sixty- or thousand-minute barrage escaped its stable late-game stage.");
 
         PlayerBarrageSnapshot spiral = PlayerBarrageCurve.EvaluateSeconds(0.0, true, 0, 0);
@@ -185,8 +202,9 @@ public partial class EndlessDifficultyTest : Node
         PlayerBarrageSnapshot saturated = PlayerBarrageCurve.EvaluateSeconds(
             RunPacingTimeline.CrisisSeconds,
             false, 1, PlayerBarrageCurve.ProjectileSoftLimit);
-        Require(spiral.ProjectileCount == 2 && spiral.Mode == PlayerBarrageMode.RotatingRing,
-            "Existing opposite spiral pair was not preserved.");
+        Require(spiral.ProjectileCount == 2 &&
+            spiral.Mode == PlayerBarrageMode.ConvergingOrbit && spiral.RequiresTarget,
+            "Spiral specialization did not become a target-converging pair.");
         Require(degraded.ProjectileCount == 1 && saturated.ProjectileCount == 0 &&
             saturated.RetryIntervalSeconds > 0.0,
             "Projectile saturation did not degrade to one shot and a bounded retry.");

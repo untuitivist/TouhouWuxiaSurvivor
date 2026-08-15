@@ -63,7 +63,8 @@ public partial class SealingCircleEffect : Node2D
         {
             var bullet = new InternalSpellBulletVisual();
             AddChild(bullet);
-            bullet.Configure(_sourcePackId, _spellCardName, index + 5);
+            bullet.Configure(
+                _sourcePackId, _spellCardName, _geometryKind, index + 5);
             bullet.Position = ResolveBulletPosition(index);
             bullet.Scale = Vector2.One * 0.8f;
             available |= bullet.Visible;

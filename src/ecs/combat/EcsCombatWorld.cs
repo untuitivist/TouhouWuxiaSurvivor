@@ -200,12 +200,9 @@ public partial class EcsCombatWorld : Node2D
     public bool TryFindNearest(Vector2 origin, float range, out Vector2 position)
         => _enemyTargets.TryFindNearest(_enemies, origin, range, out position);
 
-    /// <summary>返回最近存活敌人的当前位置与权威速度，供自动武器计算弹道拦截提前量。</summary>
-    public bool TryFindNearestTarget(
-        Vector2 origin,
-        float range,
-        out TargetMotion motion)
-        => _enemyTargets.TryFindNearestMotion(_enemies, origin, range, out motion);
+    /// <summary>返回射程内最近存活敌人的当前位置与速度，供通用预判索敌消费。</summary>
+    public bool TryFindNearestTarget(Vector2 origin, float range, out TargetMotion motion) =>
+        _enemyTargets.TryFindNearestMotion(_enemies, origin, range, out motion);
 
     /// <summary>返回范围内存活敌人的位置，供符卡范围效果复用。</summary>
     public IReadOnlyList<Vector2> SelectEnemies(Vector2 origin, float range, int maximum = int.MaxValue)

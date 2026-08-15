@@ -16,6 +16,7 @@ public sealed record BalanceTimelineSnapshot(
     double EnemyDamageMultiplier,
     double RewardMultiplier,
     double ScheduledSpawnsPerSecond,
+    double ProjectedAliveEnemies,
     double EffectiveKillsPerSecond,
     double EnemyPressure,
     double PowerToPressureRatio,
@@ -34,7 +35,7 @@ public sealed record BalanceTimelineSnapshot(
     public string FormatReport() =>
         $"{ElapsedMinutes,3}分 {GetBuildName(),-4} 等级{RunLevel,4} " +
         $"普攻{WeaponDps,8:F1} 奥义{SpellDps,8:F1} 总伤{TotalDps,8:F1}/秒 " +
-        $"击破{EffectiveKillsPerSecond,6:F2}/秒 " +
+        $"击破{EffectiveKillsPerSecond,6:F2}/秒 存量{ProjectedAliveEnemies,5:F1} " +
         $"压力{EnemyPressure,8:F1} 准备度{ReadinessScore,6:F2} " +
         $"奥义{OffensiveSpellCount}+{SupportSpellCount} 无尽{EndlessRankCount}";
 

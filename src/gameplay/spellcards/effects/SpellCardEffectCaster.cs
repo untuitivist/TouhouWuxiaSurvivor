@@ -98,7 +98,7 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
                 resolved.Damage,
                 resolved.ProjectileSpeed,
                 resolved.ImpactRange, resolved.TravelDurationSeconds, index,
-                card.SourcePackId, card.FullName, trajectory.Curvature,
+                card.SourcePackId, card.FullName, card.GeometryKind, trajectory.Curvature,
                 SpellCardCombatBackend.MatchTarget(
                     trajectory.TargetPosition, candidates, assignedTargets));
             _effects.AddChild(orb);

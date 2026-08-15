@@ -1,5 +1,25 @@
 # Progress Log
 
+## 2026-08-16 - Five-Minute Core Loop and Boss Combat
+
+- Reframed finite pacing as guarded dynamic progression: sustained clearing dominance may advance
+  a phase after its minimum duration, while a maximum timeout prevents weak builds from stalling.
+- Implemented guarded dynamic phases driven by smoothed kills, ordinary-enemy ratio, current spawn
+  supply, minimum showcase time, and a maximum five-minute fallback.
+- Confirmed the user-visible native crash was caused by Codex's denied AppData log rotation rather
+  than the tested gameplay scene; the same Godot test passed after redirecting its log to the
+  writable project `.godot` directory.
+- Split finite ordinary-enemy durability from the unchanged Boss health curve. At five minutes the
+  projected ordinary counts are 0/0/0/15.3 for Baseline/Assault/Rapid/Utility; every route defeats
+  at least the current spawn supply, so the final crowd cannot grow into a permanent wall.
+- Preserved nearest-target selection and ordinary collision semantics. Predictive aim and
+  target-converging formations improve useful hits without reserving fire or pass-through for Bosses.
+- Added per-atlas visible-cell selection so all 46 spell cards draw distinct non-transparent shapes
+  from their mapped original bullet sheets rather than one universal yin-yang-orb row.
+- Completed frozen verification after the final durability and pacing changes: Debug build 0
+  warnings/errors, 64/64 headless integration scenes, 8/8 Windows visual scenes, and SourcePolicy
+  all passed.
+
 ## 2026-08-12 - Combat Balance and Skill Design
 
 - Started a complete runtime balance audit across characters, upgrades, spell cards, enemies, Bosses, progression, and endless curves.

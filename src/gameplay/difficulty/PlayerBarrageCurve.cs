@@ -3,7 +3,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 /// <summary>
-/// 根据生存时间、齐射序号和弹丸池余量规划自动弹幕，保证玩法进阶和性能降级都可独立测试。
+/// 根据动态难度时间、齐射序号和弹丸池余量规划有效弹幕，保证所有弹型都围绕可命中目标展开。
 /// </summary>
 public static class PlayerBarrageCurve
 {
@@ -12,7 +12,7 @@ public static class PlayerBarrageCurve
     public const double SaturatedRetryIntervalSeconds = 0.05;
 
     /// <summary>
-    /// 生成一次齐射计划：开局保持单发，随后按统一阶段进入三、五发并在后期交错扇形与旋转环。
+    /// 生成一次齐射计划：开局保持单发，随后进入三、五发并在后期交错扇形与目标收束阵。
     /// </summary>
     public static PlayerBarrageSnapshot EvaluateSeconds(
         double elapsedSeconds,
@@ -29,10 +29,11 @@ public static class PlayerBarrageCurve
         int allowedCount = ApplyProjectileBudget(requestedCount, mode, activeProjectileCount);
         double angularStep = GetAngularStep(requestedCount, mode);
         double rotation = GetRotation(mode, volleySequence, angularStep);
-        bool requiresTarget = mode != PlayerBarrageMode.RotatingRing;
+        const bool requiresTarget = true;
         double retry = allowedCount == 0 ? SaturatedRetryIntervalSeconds : 0.0;
-        double damageBudget = 1.0 + normalizedBonus * 0.125 +
-            (spiralActive ? 0.20 : 0.0);
+        double stageBudget = GetStageDamageBudget(minutes * 60.0);
+        double damageBudget = stageBudget * (1.0 + normalizedBonus * 0.125 +
+            (spiralActive ? 0.20 : 0.0));
         return new PlayerBarrageSnapshot(minutes, mode, requestedCount, allowedCount,
             angularStep, rotation, requiresTarget, retry, damageBudget);
     }
@@ -57,7 +58,7 @@ public static class PlayerBarrageCurve
     }
 
     /// <summary>
-    /// 普通攻击由单发过渡到交错扇形，危机阶段每隔一轮插入旋转环；螺旋强化始终使用旋转环。
+    /// 普通攻击由单发过渡到交错扇形，危机阶段每隔一轮插入收束阵；螺旋强化始终使用收束阵。
     /// </summary>
     private static PlayerBarrageMode GetMode(
         double minutes,
@@ -66,7 +67,7 @@ public static class PlayerBarrageCurve
     {
         if (spiralActive)
         {
-            return PlayerBarrageMode.RotatingRing;
+            return PlayerBarrageMode.ConvergingOrbit;
         }
 
         double elapsedSeconds = minutes * 60.0;
@@ -77,7 +78,7 @@ public static class PlayerBarrageCurve
 
         return elapsedSeconds >= RunPacingTimeline.CrisisSeconds &&
             (volleySequence & 1L) == 1L
-            ? PlayerBarrageMode.RotatingRing
+            ? PlayerBarrageMode.ConvergingOrbit
             : PlayerBarrageMode.AlternatingFan;
     }
 
@@ -105,7 +106,7 @@ public static class PlayerBarrageCurve
     /// </summary>
     private static double GetAngularStep(int requestedCount, PlayerBarrageMode mode)
     {
-        if (mode == PlayerBarrageMode.RotatingRing)
+        if (mode == PlayerBarrageMode.ConvergingOrbit)
         {
             return Math.Tau / requestedCount;
         }
@@ -141,4 +142,17 @@ public static class PlayerBarrageCurve
         double phase = volleySequence % 36L * Math.PI / 18.0;
         return phase < 0.0 ? phase + Math.Tau : phase;
     }
+
+    /// <summary>
+    /// 阶段进阶同步提高整轮有效输出，使最终战前形成割草能力；构筑倍率仍决定路线间差异。
+    /// </summary>
+    private static double GetStageDamageBudget(double difficultySeconds) => difficultySeconds switch
+    {
+        < RunPacingTimeline.RisingSeconds => 1.00,
+        < RunPacingTimeline.SwarmingSeconds => 1.20,
+        < RunPacingTimeline.BarrageSeconds => 1.50,
+        < RunPacingTimeline.CrisisSeconds => 1.85,
+        < RunPacingTimeline.FinalEncounterSeconds => 2.25,
+        _ => 2.50,
+    };
 }
