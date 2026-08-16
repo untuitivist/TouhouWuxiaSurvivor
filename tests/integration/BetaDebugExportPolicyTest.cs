@@ -11,10 +11,10 @@ public partial class BetaDebugExportPolicyTest : Node
     private const string PresetPath = "res://export_presets.cfg";
     private const string DebugSection = "preset.1";
     private const string DebugOptions = "preset.1.options";
-    private const string ExpectedVersion = "alpha-0.0.4";
-    private const string ExpectedWindowsVersion = "0.0.4.0";
+    private const string ExpectedVersion = "alpha-0.0.5";
+    private const string ExpectedWindowsVersion = "0.0.5.0";
     private const string ExpectedArtifact =
-        "release/diagnostics/TouhouWuxiaSurvivor_alpha-0.0.4_windows-x86_64-debug.exe";
+        "release/diagnostics/TouhouWuxiaSurvivor_alpha-0.0.5_windows-x86_64-debug.exe";
 
     /// <summary>
     /// 读取导出与随包脚本契约；任一违约均输出明确原因并以非零状态退出。
@@ -57,7 +57,7 @@ public partial class BetaDebugExportPolicyTest : Node
                 ExpectedWindowsVersion &&
             Value(preset, DebugOptions, "application/product_version") ==
                 ExpectedWindowsVersion,
-            "Diagnostic Windows metadata does not map alpha-0.0.4 to 0.0.4.0.");
+            "Diagnostic Windows metadata does not map alpha-0.0.5 to 0.0.5.0.");
     }
 
     /// <summary>确认正式预设不启用诊断，而专用预设具有稳定身份和阶段无关路径。</summary>

@@ -30,7 +30,7 @@ public partial class ChangelogPanelSmokeTest : Node
             ChangelogPanel panel = menu.GetNode<ChangelogPanel>("ChangelogPanel");
             VerifyCurrentEntry(menu, panel);
             VerifyLayout(menu, panel);
-            SaveScreenshot("visual-changelog-alpha-0.0.4-1280x720.png");
+            SaveScreenshot("visual-changelog-alpha-0.0.5-1280x720.png");
             VerifyHistoricalSelection(panel);
             panel.GetNode<Button>("Panel/Padding/Layout/Header/Back")
                 .EmitSignal(Button.SignalName.Pressed);
@@ -55,13 +55,13 @@ public partial class ChangelogPanelSmokeTest : Node
     private static void VerifyCatalog()
     {
         GameChangelogCatalog catalog = GameChangelogCatalog.LoadDefault();
-        Require(catalog.Entries.Count >= 5 && catalog.Entries[0].Version == GameVersion.Current,
+        Require(catalog.Entries.Count >= 6 && catalog.Entries[0].Version == GameVersion.Current,
             "Changelog catalog does not begin with the current version.");
         Require(catalog.Entries.Select(entry => entry.Version).SequenceEqual(
-                new[] { "alpha-0.0.4", "alpha-0.0.3", "alpha-0.0.2", "alpha-0.0.1", "alpha-0.0.0" }),
+                new[] { "alpha-0.0.5", "alpha-0.0.4", "alpha-0.0.3", "alpha-0.0.2", "alpha-0.0.1", "alpha-0.0.0" }),
             "Changelog version index is incomplete or not ordered newest first.");
-        Require(catalog.Entries[0].Sections.Any(section => section.Heading == "自动战斗") &&
-                catalog.Entries[0].ItemCount >= 7,
+        Require(catalog.Entries[0].Sections.Any(section => section.Heading == "动态难度与敌群") &&
+                catalog.Entries[0].ItemCount >= 12,
             "Current changelog entry lost its structured sections or release details.");
     }
 
@@ -70,10 +70,10 @@ public partial class ChangelogPanelSmokeTest : Node
     {
         Require(panel.Visible && !menu.GetNode<Control>("Menu").Visible,
             "Main menu did not switch exclusively to the changelog panel.");
-        Require(panel.EntryCount == 5 && panel.SelectedVersion == "alpha-0.0.4",
-            "Changelog panel did not select the latest of five versions.");
-        Require(panel.CurrentBodyText.Contains("最早拦截方向", StringComparison.Ordinal) &&
-                panel.CurrentBodyText.Contains("回退直瞄", StringComparison.Ordinal),
+        Require(panel.EntryCount == 6 && panel.SelectedVersion == "alpha-0.0.5",
+            "Changelog panel did not select the latest of six versions.");
+        Require(panel.CurrentBodyText.Contains("三十秒滑动窗口", StringComparison.Ordinal) &&
+                panel.CurrentBodyText.Contains("中心弹幕", StringComparison.Ordinal),
             "Current changelog body is not sourced from the latest Markdown entry.");
     }
 

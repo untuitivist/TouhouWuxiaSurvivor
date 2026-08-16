@@ -1,6 +1,6 @@
 # Touhou Wuxia Survivor
 
-当前版本：`alpha-0.0.4`。运行时版本的唯一来源是 `project.godot` 中的
+当前版本：`alpha-0.0.5`。运行时版本的唯一来源是 `project.godot` 中的
 `application/config/version`；版本规则与变更记录见 [CHANGELOG.md](CHANGELOG.md)。
 
 当前阶段是无限幻想乡生存者玩法 Alpha 内部开发版。幻想乡本体与 TH01 至 TH20 均可按包启用，
