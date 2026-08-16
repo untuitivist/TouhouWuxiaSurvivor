@@ -67,33 +67,36 @@ public sealed class RunModifierState
             build, RunSpecializationEffect.SpiritAttraction);
         DamageBonus = _baseDamageBonus;
         AttackPowerMultiplier = (1.0f +
-            build.GetRank(RunUpgradeKind.NeedleDamage) * 0.10f + specializationDamage) *
+            build.GetRank(RunUpgradeKind.NeedleDamage) * 0.25f + specializationDamage) *
             SqrtGrowth(endlessDamage, 0.06f);
-        FireRateMultiplier = (1.0f + build.GetRank(RunUpgradeKind.FireRate) * 0.09f +
+        FireRateMultiplier = (1.0f + build.GetRank(RunUpgradeKind.FireRate) * 0.18f +
             specializationFireRate) *
             SqrtGrowth(endlessFireRate, 0.06f);
         MoveSpeedMultiplier = _baseMoveSpeedMultiplier *
-            (1.0f + build.GetRank(RunUpgradeKind.MoveSpeed) * 0.07f +
+            (1.0f + build.GetRank(RunUpgradeKind.MoveSpeed) * 0.15f +
                 specializationMoveSpeed) *
             SqrtGrowth(endlessMoveSpeed, 0.04f);
         TargetRangeMultiplier = (1.0f +
-            build.GetRank(RunUpgradeKind.TargetRange) * 0.08f +
+            build.GetRank(RunUpgradeKind.TargetRange) * 0.25f +
             specializationTargetRange) * SqrtGrowth(endlessRange, 0.04f);
         ProjectileSpeedMultiplier = 1.0f +
-            build.GetRank(RunUpgradeKind.ProjectileSpeed) * 0.08f +
+            build.GetRank(RunUpgradeKind.ProjectileSpeed) * 0.25f +
             specializationProjectileSpeed;
         ProjectileSpeedMultiplier *= SqrtGrowth(endlessProjectileSpeed, 0.04f);
         SpiritAttractionMultiplier = _baseSpiritAttractionMultiplier *
-            (1.0f + build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.18f +
+            (1.0f + build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.50f +
                 specializationAttraction) * SqrtGrowth(endlessAttraction, 0.08f);
-        ExtraProjectiles = (int)MathF.Round(GetSpecializationBonus(
-            build, RunSpecializationEffect.ExtraProjectiles));
+        float explicitProjectiles = GetSpecializationBonus(
+            build, RunSpecializationEffect.ExtraProjectiles);
         ProjectilePierceCount = (int)MathF.Round(GetSpecializationBonus(
             build, RunSpecializationEffect.ProjectilePierce));
         UsesSpiralPattern = GetSpecializationBonus(
             build, RunSpecializationEffect.SpiralPattern) > 0.0f;
-        SpiritYieldMultiplier = 1.0f + GetSpecializationBonus(
-            build, RunSpecializationEffect.SpiritYield);
+        ExtraProjectiles = (int)MathF.Round(explicitProjectiles) +
+            (UsesSpiralPattern ? 2 : 0);
+        SpiritYieldMultiplier = 1.0f +
+            build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.10f +
+            GetSpecializationBonus(build, RunSpecializationEffect.SpiritYield);
         UsesContinuousFireMomentum = HasSpecializationEffect(
             build, RunSpecializationEffect.ContinuousFireMomentum);
         UsesStationaryFocus = HasSpecializationEffect(

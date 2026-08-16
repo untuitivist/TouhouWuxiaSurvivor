@@ -76,7 +76,7 @@ public sealed class RunUpgradeDefinition
     public string FormatChoice(int currentRank)
     {
         string rankText = Category == RunUpgradeCategory.SpellCard
-            ? "悟得"
+            ? currentRank <= 0 ? $"1/{MaxRank} · 悟得" : $"{currentRank + 1}/{MaxRank} · 化境"
             : IsRepeatable ? $"第 {currentRank + 1} 重" : $"{currentRank + 1}/{MaxRank}";
         return $"{GetCategoryName()} · {DisplayName}    {rankText}\n{EffectText}";
     }

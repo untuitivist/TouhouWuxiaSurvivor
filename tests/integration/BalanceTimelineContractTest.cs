@@ -50,8 +50,8 @@ public partial class BalanceTimelineContractTest : Node
     {
         (int Minimum, int Maximum)[] levelBands =
         [
-            (1, 1), (11, 18), (17, 30), (21, 36),
-            (27, 52), (31, 61), (42, 77), (61, 96),
+            (1, 1), (14, 20), (26, 36), (42, 56),
+            (60, 76), (72, 90), (102, 118), (132, 150),
         ];
         foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
         {
@@ -67,11 +67,12 @@ public partial class BalanceTimelineContractTest : Node
             Require(values[2].OffensiveSpellCount + values[2].SupportSpellCount <
                 values[2].OffensiveSlotCapacity + values[2].SupportSlotCapacity,
                 $"The five-minute build filled every spell slot before the finale: {kind}.");
-            bool cleared = values[2].ProjectedAliveEnemies <= 2.0;
-            bool shrinking = values[2].EffectiveKillsPerSecond >=
-                values[2].ScheduledSpawnsPerSecond * 0.98;
-            Require(values[2].ProjectedAliveEnemies <= 16.0 && (cleared || shrinking),
-                $"The five-minute build left a growing ordinary-enemy wall: {kind}/" +
+            bool containing = values[2].EffectiveKillsPerSecond >=
+                values[2].ScheduledSpawnsPerSecond * 0.94;
+            Require(values[2].PressureGear >= 5 &&
+                values[2].ProjectedAliveEnemies <= 24.0 && containing,
+                $"The five-minute build did not reach steep pressure while clearing its backlog: {kind}/" +
+                $"gear {values[2].PressureGear}, " +
                 $"{values[2].ProjectedAliveEnemies:F1} alive, " +
                 $"{values[2].EffectiveKillsPerSecond:F3}/" +
                 $"{values[2].ScheduledSpawnsPerSecond:F3} kills/supply.");
@@ -128,9 +129,8 @@ public partial class BalanceTimelineContractTest : Node
             foreach (BalanceTimelineSnapshot item in values)
             {
                 double[] finite = [item.WeaponDps, item.SpellDps, item.TotalDps,
-                    item.ReadinessScore, item.EnemyHealthMultiplier,
-                    item.EnemyDamageMultiplier, item.RewardMultiplier,
-                    item.ScheduledSpawnsPerSecond, item.ProjectedAliveEnemies,
+                    item.ReadinessScore, item.ScheduledSpawnsPerSecond,
+                    item.ProjectedAliveEnemies,
                     item.EffectiveKillsPerSecond,
                     item.EnemyPressure, item.PowerToPressureRatio,
                     item.SpiritEconomyMultiplier, item.SpellCapacityBudget];
@@ -145,7 +145,7 @@ public partial class BalanceTimelineContractTest : Node
     }
 
     /// <summary>
-    /// 要求等级、累计经验、伤害和敌人倍率随时间不下降，并确保长局已进入无尽修行。
+    /// 要求等级、累计经验、伤害和敌群供给随时间不下降，并确保长局已进入无尽修行。
     /// </summary>
     private static void VerifyMonotonicProgression(
         IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
@@ -159,9 +159,7 @@ public partial class BalanceTimelineContractTest : Node
                 Require(after.RunLevel >= before.RunLevel &&
                     after.TotalExperience >= before.TotalExperience &&
                     after.TotalDps + 0.0001 >= before.TotalDps &&
-                    after.EnemyHealthMultiplier >= before.EnemyHealthMultiplier &&
-                    after.EnemyDamageMultiplier >= before.EnemyDamageMultiplier &&
-                    after.RewardMultiplier >= before.RewardMultiplier,
+                    after.ScheduledSpawnsPerSecond >= before.ScheduledSpawnsPerSecond,
                     $"A required curve decreased: {kind}/{before.ElapsedMinutes}-{after.ElapsedMinutes}m.");
             }
 
@@ -220,17 +218,16 @@ public partial class BalanceTimelineContractTest : Node
     private static void VerifySpawnFlowUsesRuntimeLimits()
     {
         var stalled = new BalanceSpawnFlowState(initialAlive: 36);
-        EndlessDifficultySnapshot opening = EndlessDifficultyCurve.EvaluateSeconds(0.0, 140);
+        EndlessDifficultySnapshot opening = EndlessDifficultyCurve.EvaluateSeconds(0.0);
         BalanceSpawnFlowSnapshot blocked = stalled.Advance(opening, 0.0);
-        Require(blocked.AliveCount == opening.AliveLimit &&
-            blocked.AcceptedSpawnsPerSecond == 0.0,
-            "Spawn projection ignored the runtime alive cap when combat stalled.");
+        Require(blocked.AliveCount > 36.0 &&
+            Math.Abs(blocked.AcceptedSpawnsPerSecond -
+                opening.ScheduledSpawnsPerSecond) < 0.000001,
+            "Spawn projection silently restored an alive soft cap when combat stalled.");
 
         var clearing = new BalanceSpawnFlowState(initialAlive: 0);
         BalanceSpawnFlowSnapshot supplied = clearing.Advance(opening, 1000.0);
-        Require(Math.Abs(supplied.ScheduledSpawnsPerSecond -
-                opening.SpawnBatchSize / opening.SpawnIntervalSeconds) < 0.000001 &&
-            Math.Abs(supplied.AcceptedSpawnsPerSecond -
+        Require(Math.Abs(supplied.AcceptedSpawnsPerSecond -
                 supplied.ScheduledSpawnsPerSecond) < 0.000001 &&
             Math.Abs(supplied.DefeatsPerSecond -
                 supplied.AcceptedSpawnsPerSecond) < 0.000001,

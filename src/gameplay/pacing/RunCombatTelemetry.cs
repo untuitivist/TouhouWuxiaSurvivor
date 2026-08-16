@@ -1,20 +1,14 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 /// <summary>
-/// 保存动态阶段判定所需的最小战斗遥测；不携带实体、节点或内容包引用。
+/// 保存三十秒验证窗所需的累计普通敌人生成与击破数；不读取场上存量或理论刷新率。
 /// </summary>
 public readonly record struct RunCombatTelemetry(
-    int AliveEnemies,
-    int DefeatedEnemies,
-    int AliveLimit,
-    double ScheduledSpawnsPerSecond = 0.0)
+    int SpawnedEnemies,
+    int DefeatedEnemies)
 {
-    /// <summary>把外部计数整理为非负值，并保证存活上限至少为一。</summary>
+    /// <summary>把外部累计计数整理为非负值，倒退计数由阶段状态按窗口基线再行保护。</summary>
     public RunCombatTelemetry Normalize() => new(
-        Math.Max(0, AliveEnemies),
-        Math.Max(0, DefeatedEnemies),
-        Math.Max(1, AliveLimit),
-        double.IsFinite(ScheduledSpawnsPerSecond)
-            ? Math.Max(0.0, ScheduledSpawnsPerSecond)
-            : 0.0);
+        Math.Max(0, SpawnedEnemies),
+        Math.Max(0, DefeatedEnemies));
 }

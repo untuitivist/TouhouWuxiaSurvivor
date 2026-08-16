@@ -28,7 +28,8 @@ public static class RunUpgradeChoiceTextFormatter
 
         if (choice.Definition.SpellCardId is not null)
         {
-            return FormatSpellCard(choice.Definition, route, affinity);
+            return FormatSpellCard(choice.Definition, route, affinity,
+                build.GetRank(choice.Definition.Id));
         }
 
         return $"{route}{choice.Definition.FormatChoice(build.GetRank(choice.Definition.Id))}" +
@@ -41,14 +42,16 @@ public static class RunUpgradeChoiceTextFormatter
     private static string FormatSpellCard(
         RunUpgradeDefinition definition,
         string route,
-        string affinity)
+        string affinity,
+        int currentRank)
     {
         SpellCardDefinition card = SpellCardCatalog.FindById(definition.SpellCardId!) ??
             throw new InvalidOperationException($"Unknown spell card: {definition.SpellCardId}.");
         string slot = SpellCardSlotPolicy.Classify(card) == SpellCardSlotKind.Offensive
             ? "主攻"
             : "护持";
-        return $"{route}奥义 · {card.ShortName}    悟得    [{affinity}]\n" +
+        string rankText = currentRank <= 0 ? "1/2 · 悟得" : "2/2 · 化境";
+        return $"{route}奥义 · {card.ShortName}    {rankText}    [{affinity}]\n" +
             $"{SpellCardActivationText.GetShortName(card.ActivationKind)} · " +
             $"{SpellCardGeometryText.GetName(card.GeometryKind)} · {slot}";
     }
@@ -58,9 +61,9 @@ public static class RunUpgradeChoiceTextFormatter
     /// </summary>
     private static string FormatRole(RunUpgradeOfferRole role) => role switch
     {
-        RunUpgradeOfferRole.Momentum => "顺势 · ",
-        RunUpgradeOfferRole.Complement => "补全 · ",
-        RunUpgradeOfferRole.Exploration => "另辟 · ",
+        RunUpgradeOfferRole.Momentum => "精进 · ",
+        RunUpgradeOfferRole.Complement => "成势 · ",
+        RunUpgradeOfferRole.Exploration => "补缺 · ",
         _ => string.Empty,
     };
 }

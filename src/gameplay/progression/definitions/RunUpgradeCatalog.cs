@@ -105,8 +105,8 @@ public static class RunUpgradeCatalog
         card.FullName,
         RunUpgradeKind.SpellCard,
         RunUpgradeCategory.SpellCard,
-        1,
-        $"自动施展：{card.EffectDescription}",
+        2,
+        $"自动施展；二重化境使伤害与护持 +35%：{card.EffectDescription}",
         new RunUpgradeRequirement(card.PrerequisiteUpgradeId, card.MinimumRank),
         string.Equals(card.SourcePackId, ContentPackCatalog.Base.Id, StringComparison.Ordinal)
             ? null

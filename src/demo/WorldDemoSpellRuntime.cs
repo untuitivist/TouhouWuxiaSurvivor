@@ -35,7 +35,7 @@ public static class WorldDemoSpellRuntime
         var executor = new SpellCardEffectCaster(
             player, health, enemies, effects,
             assets.RequireFantasySealOrb(), assets.RequireSealingCircle(),
-            attributes, ecsWorld);
+            attributes, ecsWorld, progression.Build);
         coordinator.Configure(
             executor,
             new RunBuildSpellCardUnlockSource(progression.Build, content),

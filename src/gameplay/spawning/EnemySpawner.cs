@@ -3,18 +3,18 @@ using TouhouWuxiaSurvivor.Actors.Enemies;
 using TouhouWuxiaSurvivor.Actors.Player;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Ecs.Combat;
-using TouhouWuxiaSurvivor.Gameplay.Difficulty;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 using TouhouWuxiaSurvivor.World.Biomes;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Spawning;
 
 /// <summary>
-/// 参考生存者玩法在镜头外沿持续生成追踪敌人，并随时间提高生成频率和单批数量。
+/// 在镜头外沿按连续生成信用刷新普通敌人；总供给不受场上存活数阻断，强度档由统一配比调度。
 /// </summary>
 public partial class EnemySpawner : Node
 {
     private readonly RandomNumberGenerator _random = new();
-    private readonly Dictionary<EnemyDefinition, EnemyDefinition> _scaledDefinitions = new();
+    private readonly EnemyTierScheduler _tierScheduler = new();
     private PlayerController? _player;
     private Node2D? _enemyContainer;
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
@@ -22,9 +22,8 @@ public partial class EnemySpawner : Node
     private Func<double>? _difficultySeconds;
     private EcsCombatWorld? _ecsWorld;
     private double _elapsedSeconds;
-    private double _spawnCooldown;
+    private double _spawnCredit;
     private double _cleanupCooldown;
-    private long _difficultyTier = -1L;
 
     [Export]
     public PackedScene? EnemyScene { get; set; }
@@ -32,10 +31,8 @@ public partial class EnemySpawner : Node
     [Export(PropertyHint.Range, "0,100,1")]
     public int InitialSpawnCount { get; set; } = EnemySpawnPacing.DefaultInitialSpawnCount;
 
-    [Export(PropertyHint.Range, "10,500,1")]
-    public int MaximumAlive { get; set; } = EnemySpawnPacing.DefaultAliveHardLimit;
-
     public int AliveCount => _ecsWorld?.EnemyCount ?? _enemyContainer?.GetChildCount() ?? 0;
+    public int SpawnedCount { get; private set; }
     public int DefeatedCount { get; private set; }
     public double ElapsedSeconds => _ecsWorld?.ElapsedSeconds ?? _elapsedSeconds;
     public event Action<Vector2, EnemyDefinition>? EnemyDefeated;
@@ -66,12 +63,12 @@ public partial class EnemySpawner : Node
         _biomeAtPosition = biomeAtPosition;
         _random.Randomize();
         _elapsedSeconds = 0.0;
-        _spawnCooldown = 0.8;
-        _difficultyTier = -1L;
-        _scaledDefinitions.Clear();
+        _spawnCredit = 0.0;
+        SpawnedCount = 0;
+        DefeatedCount = 0;
         for (int index = 0; index < InitialSpawnCount; index++)
         {
-            SpawnOne();
+            SpawnOne(EnemyStrengthTier.Common, 0.0, true);
         }
     }
 
@@ -102,12 +99,21 @@ public partial class EnemySpawner : Node
 
         double elapsedSeconds = ElapsedSeconds;
         double pacingSeconds = GetDifficultySeconds(elapsedSeconds);
-        _spawnCooldown -= delta;
+        EnemyPressureSnapshot pressure = EnemySpawnPacing.GetPressure(pacingSeconds);
+        _spawnCredit += Math.Max(0.0, delta) * pressure.SpawnRatePerSecond;
         _cleanupCooldown -= delta;
-        if (_spawnCooldown <= 0.0)
+        int spawnedThisFrame = 0;
+        while (_spawnCredit >= 1.0 && spawnedThisFrame < 32)
         {
-            SpawnBatch(elapsedSeconds, pacingSeconds);
-            _spawnCooldown = EnemySpawnPacing.GetSpawnInterval(pacingSeconds);
+            EnemyStrengthTier tier = _tierScheduler.Select(
+                pressure.GearIndex, pressure.TierMix);
+            if (!SpawnOne(tier, elapsedSeconds, true, pacingSeconds))
+            {
+                break;
+            }
+
+            _spawnCredit -= 1.0;
+            spawnedThisFrame++;
         }
 
         if (_cleanupCooldown <= 0.0)
@@ -118,47 +124,35 @@ public partial class EnemySpawner : Node
     }
 
     /// <summary>
-    /// 按集中节奏曲线提高单批数量，并同时遵守动态存活上限和场景硬上限。
+    /// 按指定强度选择当前地区敌人并放在镜头外；返回值只表示本次实体是否真正进入世界。
     /// </summary>
-    private void SpawnBatch(double elapsedSeconds, double pacingSeconds)
-    {
-        int batchSize = EnemySpawnPacing.GetBatchSize(pacingSeconds);
-        int aliveLimit = EnemySpawnPacing.GetAliveLimit(pacingSeconds, MaximumAlive);
-        for (int index = 0; index < batchSize && AliveCount < aliveLimit; index++)
-        {
-            SpawnOne(elapsedSeconds, pacingSeconds);
-        }
-    }
-
-    /// <summary>
-    /// 选择当前时间已解锁的敌人，并把它放在随机镜头边缘之外而非玩家脚下。
-    /// </summary>
-    private void SpawnOne(
-        double? elapsedOverride = null,
+    private bool SpawnOne(
+        EnemyStrengthTier tier,
+        double elapsedSeconds,
+        bool countsTowardsPacing,
         double? pacingOverride = null)
     {
-        double elapsedSeconds = elapsedOverride ?? ElapsedSeconds;
         double pacingSeconds = pacingOverride ?? GetDifficultySeconds(elapsedSeconds);
-        int aliveLimit = EnemySpawnPacing.GetAliveLimit(pacingSeconds, MaximumAlive);
-        if (_player is null || AliveCount >= aliveLimit)
+        if (_player is null)
         {
-            return;
+            return false;
         }
 
         Vector2 spawnPosition = ChooseSpawnPosition();
         BiomeId biome = _biomeAtPosition?.Invoke(spawnPosition) ?? BiomeId.Common;
         EnemyDefinition baseDefinition = EnemyCatalog.Choose(
-            _random, pacingSeconds, biome, _content);
-        EnemyDefinition definition = GetScaledDefinition(baseDefinition, elapsedSeconds);
+            _random, pacingSeconds, biome, _content, tier);
+        EnemyDefinition definition = baseDefinition;
         if (_ecsWorld is not null)
         {
             _ecsWorld.SpawnEnemy(spawnPosition, definition);
-            return;
+            if (countsTowardsPacing) SpawnedCount++;
+            return true;
         }
 
         if (_enemyContainer is null || EnemyScene is null)
         {
-            return;
+            return false;
         }
 
         var enemy = EnemyScene.Instantiate<EnemyActor>();
@@ -168,6 +162,8 @@ public partial class EnemySpawner : Node
         enemy.Exploded += OnEnemyExploded;
         _enemyContainer.AddChild(enemy);
         enemy.GlobalPosition = spawnPosition;
+        if (countsTowardsPacing) SpawnedCount++;
+        return true;
     }
 
     /// <summary>读取阶段导演映射后的难度时钟，并把非法结果安全回退到真实生存时间。</summary>
@@ -175,27 +171,6 @@ public partial class EnemySpawner : Node
     {
         double value = _difficultySeconds?.Invoke() ?? elapsedSeconds;
         return double.IsFinite(value) ? Math.Max(0.0, value) : Math.Max(0.0, elapsedSeconds);
-    }
-
-    /// <summary>
-    /// 在同一十秒档位复用缩放定义；进入新档位时丢弃旧缓存，使无尽数值持续增长且不累积缓存。
-    /// </summary>
-    private EnemyDefinition GetScaledDefinition(EnemyDefinition definition, double elapsedSeconds)
-    {
-        long tier = EnemyDifficultyScaler.GetTier(elapsedSeconds);
-        if (tier != _difficultyTier)
-        {
-            _difficultyTier = tier;
-            _scaledDefinitions.Clear();
-        }
-
-        if (!_scaledDefinitions.TryGetValue(definition, out EnemyDefinition? scaled))
-        {
-            scaled = EnemyDifficultyScaler.Scale(definition, tier);
-            _scaledDefinitions.Add(definition, scaled);
-        }
-
-        return scaled;
     }
 
     /// <summary>
@@ -253,7 +228,10 @@ public partial class EnemySpawner : Node
     /// </summary>
     private void OnEnemyDefeated(Vector2 position, EnemyDefinition definition)
     {
-        DefeatedCount++;
+        if (!definition.IsBoss)
+        {
+            DefeatedCount++;
+        }
         EnemyDefeated?.Invoke(position, definition);
     }
 

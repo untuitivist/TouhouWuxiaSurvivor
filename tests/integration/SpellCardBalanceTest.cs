@@ -112,7 +112,7 @@ public partial class SpellCardBalanceTest : Node
     }
 
     /// <summary>
-    /// 确认数据驱动符卡在前置重数前不可选，达到要求后可且只能悟得一次。
+    /// 确认数据驱动奥义在前置重数前不可选，达到要求后依次悟得、化境并在二重圆满。
     /// </summary>
     private static void VerifyBuildRequirements()
     {
@@ -127,8 +127,12 @@ public partial class SpellCardBalanceTest : Node
             Require(build.Apply(prerequisite), "Could not apply a spell prerequisite.");
         }
 
-        Require(build.Apply(spell) && !build.CanUpgrade(spell),
-            "Spell card did not obey its one-rank cap.");
+        Require(build.Apply(spell) && build.GetRank(spell.Id) == 1 &&
+            build.CanUpgrade(spell),
+            "A newly learned spell card could not reach mastery rank.");
+        Require(build.Apply(spell) && build.GetRank(spell.Id) == 2 &&
+            !build.CanUpgrade(spell),
+            "A mastered spell card did not stop at its two-rank cap.");
     }
 
     /// <summary>

@@ -4,7 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.Spawning;
 namespace TouhouWuxiaSurvivor.Gameplay.Balance;
 
 /// <summary>
-/// 以正式批次、间隔和动态存活上限推进策划敌群，不引入运行时不存在的刷怪利用率或额外压力。
+/// 以正式连续刷新率推进策划敌群；所有计划生成均被接纳，不虚构运行时不存在的存活软上限。
 /// </summary>
 public sealed class BalanceSpawnFlowState
 {
@@ -17,7 +17,7 @@ public sealed class BalanceSpawnFlowState
         AliveCount = Math.Max(0, initialAlive);
 
     /// <summary>
-    /// 在一个有限时间窗内先用现有敌人释放容量，再接纳正式计划生成量，并把击破限制在可用敌人数内。
+    /// 在有限时间窗内完整接纳计划生成量，并把击破限制在现有敌群与本窗新增敌人的总量内。
     /// </summary>
     public BalanceSpawnFlowSnapshot Advance(
         EndlessDifficultySnapshot difficulty,
@@ -31,19 +31,13 @@ public sealed class BalanceSpawnFlowState
             ? Math.Max(0.0, defeatCapacityPerSecond)
             : 0.0;
         double scheduledRate = difficulty.ScheduledSpawnsPerSecond;
-        double initialDefeatRate = Math.Min(capacity, AliveCount / duration);
-        double freeRoomRate = Math.Max(0.0,
-            (difficulty.AliveLimit - AliveCount) / duration);
-        double acceptedRate = Math.Min(scheduledRate,
-            freeRoomRate + initialDefeatRate);
+        double acceptedRate = scheduledRate;
         double availableRate = AliveCount / duration + acceptedRate;
         double defeatRate = Math.Min(capacity, availableRate);
-        AliveCount = Math.Clamp(
-            AliveCount + (acceptedRate - defeatRate) * duration,
-            0.0,
-            difficulty.AliveLimit);
+        AliveCount = Math.Max(0.0,
+            AliveCount + (acceptedRate - defeatRate) * duration);
         LastAcceptedSpawnsPerSecond = acceptedRate;
         return new BalanceSpawnFlowSnapshot(scheduledRate, acceptedRate,
-            defeatRate, AliveCount, difficulty.AliveLimit);
+            defeatRate, AliveCount);
     }
 }

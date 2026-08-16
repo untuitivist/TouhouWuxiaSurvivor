@@ -89,9 +89,9 @@ public static class RunUpgradeChoicePresentationFactory
     /// </summary>
     private static string FormatRole(RunUpgradeOfferRole role) => role switch
     {
-        RunUpgradeOfferRole.Momentum => "顺势",
-        RunUpgradeOfferRole.Complement => "补全",
-        RunUpgradeOfferRole.Exploration => "另辟",
+        RunUpgradeOfferRole.Momentum => "精进",
+        RunUpgradeOfferRole.Complement => "成势",
+        RunUpgradeOfferRole.Exploration => "补缺",
         _ => "机缘",
     };
 }

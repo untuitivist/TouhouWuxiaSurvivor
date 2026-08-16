@@ -7,6 +7,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Scaling;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Geometry;
+using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
@@ -22,6 +23,7 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
     private readonly PackedScene _orbScene;
     private readonly PackedScene _circleScene;
     private readonly ISpellCardAttributeProvider _attributes;
+    private readonly RunBuildState? _build;
 
     /// <summary>
     /// 注入施法者、生命、敌人和效果容器，以及两类可实例化视觉场景。
@@ -34,7 +36,8 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
         PackedScene orbScene,
         PackedScene circleScene,
         ISpellCardAttributeProvider attributes,
-        EcsCombatWorld? ecsWorld = null)
+        EcsCombatWorld? ecsWorld = null,
+        RunBuildState? build = null)
     {
         _player = player;
         _health = health;
@@ -43,13 +46,19 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
         _orbScene = orbScene;
         _circleScene = circleScene;
         _attributes = attributes ?? throw new ArgumentNullException(nameof(attributes));
+        _build = build;
     }
 
     /// <summary>
     /// 使用当前角色与构筑属性解析一次不可变战斗参数，确保下一次施展会自然响应升级。
     /// </summary>
-    public ResolvedSpellCardCombat Resolve(SpellCardDefinition card) =>
-        SpellCardScalingResolver.Resolve(card.Combat, _attributes.Capture());
+    public ResolvedSpellCardCombat Resolve(SpellCardDefinition card)
+    {
+        ResolvedSpellCardCombat resolved = SpellCardScalingResolver.Resolve(
+            card.Combat, _attributes.Capture());
+        int rank = _build?.GetRank(card.UnlockUpgradeId) ?? 1;
+        return SpellCardMasteryScaler.Apply(resolved, rank);
+    }
 
     /// <summary>
     /// 按效果类型选择攻势载体，再把选敌、起手与轨迹完整委托给卡牌声明的几何策略。

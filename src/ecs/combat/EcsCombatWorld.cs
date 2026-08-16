@@ -298,9 +298,9 @@ public partial class EcsCombatWorld : Node2D
         if (_player is null || _health is null || _buffs is null || _modifiers is null) return;
         _elapsedSeconds += delta;
         _enemyMovement.Step(_enemies, _player.GlobalPosition, (float)delta,
-            _elapsedSeconds, amount => _health.ApplyDamage(amount));
+            amount => _health.ApplyDamage(amount));
         _enemyProjectiles.Step(_enemies, _player.GlobalPosition, (float)delta,
-            _elapsedSeconds, SpawnEnemyProjectile);
+            SpawnEnemyProjectile);
         _projectileMovement.Step(_projectiles, (float)delta);
         ResolveProjectileHits();
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());

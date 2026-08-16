@@ -4,23 +4,20 @@ using TouhouWuxiaSurvivor.Gameplay.Pacing;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证动态阶段只响应持续割草能力，并以最短展示和最长兜底保护五分钟主流程。
+/// 验证动态阶段只比较最近三十秒滑动窗口的实际生成与击破数，不读取存活量或时间兜底。
 /// </summary>
 public partial class AdaptiveRunPacingTest : Node
 {
-    /// <summary>执行强势、爆发和弱势三种遥测轨迹，任一阶段误跳均以非零退出码报告。</summary>
+    /// <summary>执行合格、失败、空供给与大跨度窗口，任一换挡误判均以非零退出码报告。</summary>
     public override void _Ready()
     {
         try
         {
-            VerifySustainedDominanceAdvancesEarly();
-            VerifyBurstDoesNotSkipShowcase();
-            VerifyCrowdPressureBlocksAdvance();
-            VerifySpawnSupplyBlocksFalseMowing();
-            VerifyClearedBattlefieldCountsAsDominance();
-            VerifyPreBossMowingAdvancesBeforeTimeout();
+            VerifyQualifiedWindowAdvancesOnce();
+            VerifySlidingWindowRechecksContinuously();
+            VerifyEmptyWindowCannotAdvance();
+            VerifySevenQualifiedWindowsReachBoss();
             VerifyClockCannotMoveBackwards();
-            VerifyTimeoutPreventsDeadlock();
             GD.Print("Adaptive run pacing test passed.");
             GetTree().Quit();
         }
@@ -31,130 +28,72 @@ public partial class AdaptiveRunPacingTest : Node
         }
     }
 
-    /// <summary>持续低存量与每秒击破应在最短展示后提前进阶，且难度时间保持单调。</summary>
-    private static void VerifySustainedDominanceAdvancesEarly()
+    /// <summary>三十秒内击破数等于实际生成数时提高一档，提前一帧与单次巨量击破都不能跳多档。</summary>
+    private static void VerifyQualifiedWindowAdvancesOnce()
     {
         var state = new AdaptiveRunPacingState();
-        int defeated = 0;
-        double previousDifficulty = 0.0;
-        for (int second = 0; second <= 40; second++)
-        {
-            if (second > 0) defeated += 2;
-            state.Advance(second, new RunCombatTelemetry(6, defeated, 36));
-            RunPacingSnapshot snapshot = state.CreateSnapshot(second);
-            Require(snapshot.DifficultySeconds >= previousDifficulty,
-                "Adaptive difficulty time moved backwards.");
-            previousDifficulty = snapshot.DifficultySeconds;
-            if (second < 30)
-            {
-                Require(snapshot.PhaseId == RunPhaseId.Opening,
-                    "Opening phase skipped its minimum showcase duration.");
-            }
-        }
-
+        state.Advance(0.0, new RunCombatTelemetry(0, 0));
+        state.Advance(29.9, new RunCombatTelemetry(23, 23));
+        Require(state.PhaseId == RunPhaseId.Opening,
+            "A window advanced before thirty seconds elapsed.");
+        state.Advance(30.0, new RunCombatTelemetry(23, 230));
         Require(state.PhaseId == RunPhaseId.Rising,
-            "Sustained mowing did not advance before the opening timeout.");
+            "A qualified window did not advance exactly one gear.");
     }
 
-    /// <summary>单次高击破后停止输出不得凑满持续压制时间，也不能越过固定兜底时点。</summary>
-    private static void VerifyBurstDoesNotSkipShowcase()
+    /// <summary>整三十秒未达标后，下一秒滑动出的新窗口可以立即重新判定，不等待下一个分箱。</summary>
+    private static void VerifySlidingWindowRechecksContinuously()
     {
         var state = new AdaptiveRunPacingState();
-        state.Advance(29.0, new RunCombatTelemetry(4, 0, 36));
-        state.Advance(30.0, new RunCombatTelemetry(4, 30, 36));
-        for (int second = 31; second < 45; second++)
-        {
-            state.Advance(second, new RunCombatTelemetry(4, 30, 36));
-        }
-
+        state.Advance(0.0, new RunCombatTelemetry(0, 0));
+        state.Advance(1.0, new RunCombatTelemetry(1, 0));
+        state.Advance(30.0, new RunCombatTelemetry(30, 29));
         Require(state.PhaseId == RunPhaseId.Opening,
-            "A single burst was mistaken for sustained mowing capability.");
-    }
-
-    /// <summary>持续击破但敌群仍接近上限时不算割草，防止只看击杀数字而忽略积压。</summary>
-    private static void VerifyCrowdPressureBlocksAdvance()
-    {
-        var state = new AdaptiveRunPacingState();
-        int defeated = 0;
-        for (int second = 0; second < 45; second++)
-        {
-            if (second > 0) defeated += 2;
-            state.Advance(second, new RunCombatTelemetry(34, defeated, 36));
-        }
-
-        Require(state.PhaseId == RunPhaseId.Opening,
-            "High kills with a saturated crowd were mistaken for mowing dominance.");
-    }
-
-    /// <summary>击破率低于当前刷新供给时，即使敌群暂时较少也不能提前跳到下一阶段。</summary>
-    private static void VerifySpawnSupplyBlocksFalseMowing()
-    {
-        var state = new AdaptiveRunPacingState();
-        int defeated = 0;
-        for (int second = 0; second < 45; second++)
-        {
-            if (second > 0 && second % 2 == 0) defeated++;
-            state.Advance(second, new RunCombatTelemetry(6, defeated, 36, 0.80));
-        }
-
-        Require(state.PhaseId == RunPhaseId.Opening,
-            "Kill throughput below spawn supply was mistaken for mowing dominance.");
-    }
-
-    /// <summary>场上只剩零星敌人时不强求持续击杀，避免强构筑因没有目标反而卡住阶段。</summary>
-    private static void VerifyClearedBattlefieldCountsAsDominance()
-    {
-        var state = new AdaptiveRunPacingState();
-        for (int second = 0; second <= 36; second++)
-        {
-            state.Advance(second, new RunCombatTelemetry(1, 0, 36, 0.80));
-        }
-
+            "An underperforming rolling window advanced the pressure gear.");
+        state.Advance(31.0, new RunCombatTelemetry(31, 31));
         Require(state.PhaseId == RunPhaseId.Rising,
-            "An already-cleared battlefield could not advance after the minimum showcase.");
+            "The rolling window waited for a second fixed thirty-second bucket.");
     }
 
-    /// <summary>前四阶段兜底后，持续清理残阵应在四分半硬时限前武装最终遭遇。</summary>
-    private static void VerifyPreBossMowingAdvancesBeforeTimeout()
+    /// <summary>没有实际生成敌人的空窗口不能用零等于零误判为割草能力。</summary>
+    private static void VerifyEmptyWindowCannotAdvance()
     {
         var state = new AdaptiveRunPacingState();
-        state.Advance(RunPacingTimeline.CrisisSeconds,
-            new RunCombatTelemetry(36, 0, 36));
-        int defeated = 0;
-        for (int second = 211; second < 270 && !state.IsFinalEncounter; second++)
+        state.Advance(0.0, new RunCombatTelemetry(0, 0));
+        state.Advance(30.0, new RunCombatTelemetry(0, 0));
+        Require(state.PhaseId == RunPhaseId.Opening,
+            "An empty telemetry window advanced the pressure gear.");
+    }
+
+    /// <summary>连续七个合格窗口在最快三分半进入Boss，且每窗快照记录真实S与K。</summary>
+    private static void VerifySevenQualifiedWindowsReachBoss()
+    {
+        var state = new AdaptiveRunPacingState();
+        state.Advance(0.0, new RunCombatTelemetry(0, 0));
+        int total = 0;
+        for (int window = 1; window <= 7; window++)
         {
-            defeated++;
-            state.Advance(second, new RunCombatTelemetry(12, defeated, 76));
+            total += 24 + window;
+            state.Advance(window * 30.0, new RunCombatTelemetry(total, total));
         }
 
-        Require(state.IsFinalEncounter,
-            "A sustained pre-Boss mowing window did not arm the encounter before timeout.");
+        RunPacingSnapshot final = state.CreateSnapshot(210.0);
+        Require(final.IsFinalEncounter && final.PressureGear == 7,
+            "Seven qualified windows did not reach the final encounter.");
     }
 
     /// <summary>异常倒退的外部时钟不得让阶段、真实显示时间或难度进度回退。</summary>
     private static void VerifyClockCannotMoveBackwards()
     {
         var state = new AdaptiveRunPacingState();
-        state.Advance(20.0, new RunCombatTelemetry(8, 4, 36));
+        state.Advance(0.0, new RunCombatTelemetry(0, 0));
+        state.Advance(20.0, new RunCombatTelemetry(8, 4));
         RunPacingSnapshot before = state.CreateSnapshot(20.0);
-        state.Advance(10.0, new RunCombatTelemetry(8, 4, 36));
+        state.Advance(10.0, new RunCombatTelemetry(8, 4));
         RunPacingSnapshot after = state.CreateSnapshot(10.0);
         Require(after.ElapsedSeconds >= before.ElapsedSeconds &&
             after.DifficultySeconds >= before.DifficultySeconds,
             "Adaptive pacing moved backwards with a regressed external clock.");
-    }
-
-    /// <summary>完全没有击破时仍应依次经过所有最长时限，并在五分钟武装最终遭遇。</summary>
-    private static void VerifyTimeoutPreventsDeadlock()
-    {
-        var state = new AdaptiveRunPacingState();
-        state.Advance(RunPacingTimeline.TargetClearSeconds,
-            new RunCombatTelemetry(36, 0, 36));
-        RunPacingSnapshot final = state.CreateSnapshot(
-            RunPacingTimeline.TargetClearSeconds);
-        Require(final.IsFinalEncounter && final.PhaseId == RunPhaseId.FinalEncounter &&
-            final.DifficultySeconds == RunPacingTimeline.FinalEncounterSeconds,
-            "Weak build did not reach the final encounter through the hard timeout.");
     }
 
     /// <summary>把任一契约失败转换为带明确原因的测试异常。</summary>

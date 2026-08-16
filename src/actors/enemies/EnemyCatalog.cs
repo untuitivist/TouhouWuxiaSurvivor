@@ -22,36 +22,44 @@ public static class EnemyCatalog
         {
             new(EnemyArchetype.Fairy, "野妖精", 18, 52.0f, 5.0f, 38.0f, 0.0f, 0.018f, [],
                 aiProfile: EnemyAiProfile.OrbitShooter,
-                projectileProfile: EnemyProjectileProfile.Aimed),
+                projectileProfile: EnemyProjectileProfile.Aimed,
+                strengthTier: EnemyStrengthTier.Common),
             new(EnemyArchetype.Kedama, "毛玉", 24, 42.0f, 6.0f, 34.0f, 0.0f, 0.022f,
-                [BiomeId.Common, BiomeId.HakureiShrine, BiomeId.HumanVillage]),
+                [BiomeId.Common, BiomeId.HakureiShrine, BiomeId.HumanVillage],
+                strengthTier: EnemyStrengthTier.Common),
             new(EnemyArchetype.Insect, "妖虫", 26, 46.0f, 6.0f, 30.0f,
                 (float)RunPacingTimeline.RisingSeconds, 0.026f,
-                [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
+                [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger,
+                strengthTier: EnemyStrengthTier.Common),
             new(EnemyArchetype.YinYangOrb, "阴阳玉", 42, 68.0f, 7.0f, 18.0f,
-                (float)RunPacingTimeline.SwarmingSeconds, 0.030f,
+                (float)RunPacingTimeline.RisingSeconds, 0.030f,
                 [BiomeId.Common, BiomeId.YoukaiMountain],
                 aiProfile: EnemyAiProfile.OrbitShooter,
-                projectileProfile: EnemyProjectileProfile.Fan),
+                projectileProfile: EnemyProjectileProfile.Fan,
+                strengthTier: EnemyStrengthTier.Veteran),
             new(EnemyArchetype.ForestSpirit, "森林精怪", 58, 34.0f, 9.0f, 18.0f,
-                (float)RunPacingTimeline.SwarmingSeconds, 0.034f,
-                [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger),
+                (float)RunPacingTimeline.RisingSeconds, 0.034f,
+                [BiomeId.MagicForest], aiProfile: EnemyAiProfile.Charger,
+                strengthTier: EnemyStrengthTier.Veteran),
             new(EnemyArchetype.MountainSpirit, "山精", 82, 30.0f, 10.0f, 20.0f,
                 (float)RunPacingTimeline.BarrageSeconds, 0.040f,
-                [BiomeId.YoukaiMountain]),
+                [BiomeId.YoukaiMountain], strengthTier: EnemyStrengthTier.Elite),
             new(EnemyArchetype.VillageOutlaw, "流窜妖怪", 68, 48.0f, 8.0f, 14.0f,
-                (float)RunPacingTimeline.BarrageSeconds, 0.038f,
+                (float)RunPacingTimeline.RisingSeconds, 0.038f,
                 [BiomeId.HumanVillage, BiomeId.Common],
                 aiProfile: EnemyAiProfile.OrbitShooter,
-                projectileProfile: EnemyProjectileProfile.Aimed),
+                projectileProfile: EnemyProjectileProfile.Aimed,
+                strengthTier: EnemyStrengthTier.Veteran),
             new(EnemyArchetype.WanderingYoukai, "夜行妖怪", 98, 42.0f, 9.0f, 10.0f,
-                (float)RunPacingTimeline.CrisisSeconds, 0.048f, [],
-                aiProfile: EnemyAiProfile.Charger),
+                (float)RunPacingTimeline.SwarmingSeconds, 0.048f, [],
+                aiProfile: EnemyAiProfile.Charger,
+                strengthTier: EnemyStrengthTier.Elite),
             new(EnemyArchetype.GreatYoukai, "大妖怪", 240, 36.0f, 12.0f, 3.0f,
                 (float)RunPacingTimeline.CrisisSeconds, 0.080f, [],
                 contactDamage: 2,
                 aiProfile: EnemyAiProfile.OrbitShooter,
-                projectileProfile: EnemyProjectileProfile.Fan),
+                projectileProfile: EnemyProjectileProfile.Fan,
+                strengthTier: EnemyStrengthTier.Champion),
         };
 
         foreach (OfficialWorldContentDefinition content in OfficialWorldContentCatalog.All)
@@ -90,7 +98,13 @@ public static class EnemyCatalog
             aiProfile: GetOfficialAiProfile(content.RegionIndex),
             projectileProfile: content.RegionIndex == 1
                 ? EnemyProjectileProfile.Aimed
-                : EnemyProjectileProfile.None);
+                : EnemyProjectileProfile.None,
+            strengthTier: content.RegionIndex switch
+            {
+                0 => EnemyStrengthTier.Common,
+                1 => EnemyStrengthTier.Veteran,
+                _ => EnemyStrengthTier.Champion,
+            });
     }
 
     /// <summary>
@@ -112,11 +126,11 @@ public static class EnemyCatalog
         return regionIndex switch
         {
             0 => new OfficialEnemyStats(
-                38, 60.0f, 6.0f, 18.0f, 18.0f, 0.022f),
+                38, 60.0f, 6.0f, 18.0f, 0.0f, 0.022f),
             1 => new OfficialEnemyStats(
-                92, 48.0f, 8.0f, 9.0f, 96.0f, 0.038f),
+                92, 48.0f, 8.0f, 9.0f, 30.0f, 0.038f),
             _ => new OfficialEnemyStats(
-                216, 38.0f, 11.0f, 3.2f, 220.0f, 0.065f),
+                216, 38.0f, 11.0f, 3.2f, 120.0f, 0.065f),
         };
     }
 
@@ -165,6 +179,42 @@ public static class EnemyCatalog
         }
 
         return All[0];
+    }
+
+    /// <summary>
+    /// 在当前地区和内容池内优先选择指定强度档；该档没有候选时只回退到距离最近的可用档。
+    /// </summary>
+    public static EnemyDefinition Choose(
+        RandomNumberGenerator random,
+        double elapsedSeconds,
+        BiomeId biome,
+        ContentPackSelection content,
+        EnemyStrengthTier requestedTier)
+    {
+        EnemyDefinition[] available = All.Where(definition =>
+            IsAvailable(definition, elapsedSeconds, biome, content)).ToArray();
+        if (available.Length == 0)
+        {
+            return All[0];
+        }
+
+        int minimumDistance = available.Min(definition =>
+            Math.Abs((int)definition.StrengthTier - (int)requestedTier));
+        EnemyDefinition[] tier = available.Where(definition =>
+            Math.Abs((int)definition.StrengthTier - (int)requestedTier) == minimumDistance)
+            .ToArray();
+        float totalWeight = tier.Sum(definition => definition.SpawnWeight);
+        float roll = random.RandfRange(0.0f, totalWeight);
+        foreach (EnemyDefinition definition in tier)
+        {
+            roll -= definition.SpawnWeight;
+            if (roll <= 0.0f)
+            {
+                return definition;
+            }
+        }
+
+        return tier[^1];
     }
 
     /// <summary>

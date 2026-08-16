@@ -5,7 +5,7 @@ using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 namespace TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 
 /// <summary>
-/// 从统一横向内容池生成可复现的无放回候选；亲和仅由本局已选构筑产生并保留一个探索位。
+/// 从统一横向池生成“继续精进、形成路线、补足短板”三类候选；亲和只影响概率而不建立锁定。
 /// </summary>
 public sealed class RunOfferGenerator
 {
@@ -14,33 +14,26 @@ public sealed class RunOfferGenerator
     private const float MaximumAffinityMultiplier = 3.4f;
 
     /// <summary>
-    /// 先过滤内容、前置、互斥和重数，再从低亲和项目抽一个探索项并加权抽取其余项目。
+    /// 先过滤内容、前置和重数，再按精进、成势与补缺职责组装最多三项无放回候选。
     /// </summary>
     public IReadOnlyList<RunUpgradeChoice> CreateOffer(
         RandomNumberGenerator random,
         RunBuildState build,
         ContentPackSelection content,
         int runLevel,
-        int choiceCount = 3)
+        int choiceCount = 3,
+        bool allowRepeatable = false)
     {
         int requested = Math.Max(0, choiceCount);
-        var candidates = CreateCandidates(build, content, runLevel);
+        var candidates = CreateCandidates(build, content, runLevel, allowRepeatable);
         if (requested == 0 || candidates.Count == 0)
         {
             return [];
         }
 
         var result = new List<RunUpgradeChoice>(requested);
-        if (requested >= 3 && HasEstablishedAffinity(build))
+        if (requested >= 3)
         {
-            RunUpgradeChoice? exploration = SelectExploration(random, build, candidates);
-            if (exploration is not null)
-            {
-                result.Add(exploration.WithRole(RunUpgradeOfferRole.Exploration));
-                candidates.Remove(exploration);
-                RemoveAdditionalSpellCards(result, candidates);
-            }
-
             RunUpgradeChoice? momentum = SelectMomentum(random, build, candidates);
             if (momentum is not null)
             {
@@ -54,6 +47,14 @@ public sealed class RunOfferGenerator
             {
                 result.Add(complement.WithRole(RunUpgradeOfferRole.Complement));
                 candidates.Remove(complement);
+                RemoveAdditionalSpellCards(result, candidates);
+            }
+
+            RunUpgradeChoice? supplement = SelectExploration(random, build, candidates);
+            if (supplement is not null)
+            {
+                result.Add(supplement.WithRole(RunUpgradeOfferRole.Exploration));
+                candidates.Remove(supplement);
                 RemoveAdditionalSpellCards(result, candidates);
             }
         }
@@ -93,14 +94,15 @@ public sealed class RunOfferGenerator
     private static List<RunUpgradeChoice> CreateCandidates(
         RunBuildState build,
         ContentPackSelection content,
-        int runLevel)
+        int runLevel,
+        bool allowRepeatable)
     {
         var candidates = new List<RunUpgradeChoice>();
         foreach (RunUpgradeDefinition definition in RunUpgradeCatalog.All)
         {
             bool enabled = definition.RequiredContentPack is null ||
                 content.IsEnabled(definition.RequiredContentPack);
-            if (!enabled)
+            if (!enabled || definition.IsRepeatable && !allowRepeatable)
             {
                 continue;
             }
@@ -119,23 +121,22 @@ public sealed class RunOfferGenerator
     }
 
     /// <summary>
-    /// 判断玩家是否已通过选择形成任意亲和，开局不人为定义所谓低亲和路线。
-    /// </summary>
-    private static bool HasEstablishedAffinity(RunBuildState build) =>
-        Enum.GetValues<RunUpgradeAffinity>().Any(affinity => build.GetAffinity(affinity) > 0);
-
-    /// <summary>
-    /// 从与当前最高亲和不重叠且未持有的项目中等概率抽取探索项，避免同路线百分之百垄断。
+    /// 从未持有且与主亲和不重叠的项目中抽取补足项；没有主亲和时优先效用或奥义。
     /// </summary>
     private static RunUpgradeChoice? SelectExploration(
         RandomNumberGenerator random,
         RunBuildState build,
         List<RunUpgradeChoice> candidates)
     {
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
         HashSet<RunUpgradeAffinity> dominant = GetDominantAffinities(build);
         RunUpgradeChoice[] alternatives = candidates.Where(choice =>
             build.GetRank(choice.Definition.Id) == 0 &&
-            !choice.Affinities.Any(dominant.Contains)).ToArray();
+            (!choice.Affinities.Any(dominant.Contains) || dominant.Count == 0)).ToArray();
         if (alternatives.Length > 0)
         {
             return SelectWeighted(random, build, alternatives);
@@ -149,16 +150,16 @@ public sealed class RunOfferGenerator
     }
 
     /// <summary>
-    /// 从与最高亲和重叠的候选中加权抽取顺势项，保证方向相关但不锁死某个已持有技能。
+    /// 从已经取得且尚未满级的普通升级中抽取精进项，确保 A/B 有机会连续成长而非随机失踪。
     /// </summary>
     private static RunUpgradeChoice? SelectMomentum(
         RandomNumberGenerator random,
         RunBuildState build,
         IReadOnlyList<RunUpgradeChoice> candidates)
     {
-        HashSet<RunUpgradeAffinity> dominant = GetDominantAffinities(build);
         RunUpgradeChoice[] matching = candidates.Where(choice =>
-            choice.Affinities.Any(dominant.Contains)).ToArray();
+            choice.Specialization is null &&
+            build.GetRank(choice.Definition.Id) > 0).ToArray();
         if (matching.Length == 0)
         {
             return null;
@@ -168,7 +169,7 @@ public sealed class RunOfferGenerator
     }
 
     /// <summary>
-    /// 选择同时连接当前主亲和与一个未成亲和的候选，使横向发展来自标签组合而非强制流派。
+    /// 选择与当前最高亲和或已练前置相连的新节点，使第二张牌自然形成路线但不强制流派。
     /// </summary>
     private static RunUpgradeChoice? SelectComplement(
         RandomNumberGenerator random,
@@ -177,8 +178,10 @@ public sealed class RunOfferGenerator
     {
         HashSet<RunUpgradeAffinity> dominant = GetDominantAffinities(build);
         RunUpgradeChoice[] bridges = candidates.Where(choice =>
-            choice.Affinities.Any(dominant.Contains) &&
-            choice.Affinities.Any(affinity => !dominant.Contains(affinity))).ToArray();
+            build.GetRank(choice.Definition.Id) == 0 &&
+            (choice.Affinities.Any(dominant.Contains) ||
+                choice.Definition.Requirements.Any(requirement =>
+                    build.GetRank(requirement.RequiredUpgradeId) > 0))).ToArray();
         return bridges.Length == 0 ? null : SelectWeighted(random, build, bridges);
     }
 
@@ -188,6 +191,10 @@ public sealed class RunOfferGenerator
     private static HashSet<RunUpgradeAffinity> GetDominantAffinities(RunBuildState build)
     {
         int maximum = Enum.GetValues<RunUpgradeAffinity>().Max(build.GetAffinity);
+        if (maximum <= 0)
+        {
+            return [];
+        }
         return Enum.GetValues<RunUpgradeAffinity>()
             .Where(affinity => build.GetAffinity(affinity) == maximum)
             .ToHashSet();

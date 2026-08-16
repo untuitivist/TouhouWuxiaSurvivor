@@ -19,6 +19,7 @@ public partial class RunProgressionCoordinator : Node
     private ContentPackSelection _content = ContentPackSelection.BaseOnly;
     private bool _runEndBlocked;
     private bool _choicePresentationSuspended;
+    private Func<bool> _allowRepeatableUpgrades = static () => false;
 
     public RunProgressionState State { get; } = new();
     public RunBuildState Build { get; } = new();
@@ -71,6 +72,13 @@ public partial class RunProgressionCoordinator : Node
         OnProgressChanged();
     }
 
+    /// <summary>注入无尽状态查询；有限五分钟流程始终过滤无限升重项目。</summary>
+    public void ConfigureRepeatableUpgrades(Func<bool> allowRepeatableUpgrades)
+    {
+        ArgumentNullException.ThrowIfNull(allowRepeatableUpgrades);
+        _allowRepeatableUpgrades = allowRepeatableUpgrades;
+    }
+
     /// <summary>
     /// 经验状态变化后仅在确有待选升级且没有其他升级层时展示下一组三选一。
     /// </summary>
@@ -92,8 +100,9 @@ public partial class RunProgressionCoordinator : Node
     {
         while (State.PendingChoices > 0)
         {
-            IReadOnlyList<RunUpgradeChoice> choices =
-                _offerGenerator.CreateOffer(_random, Build, _content, State.Level, 3);
+            IReadOnlyList<RunUpgradeChoice> choices = _offerGenerator.CreateOffer(
+                _random, Build, _content, State.Level, 3,
+                _allowRepeatableUpgrades());
             if (choices.Count > 0)
             {
                 _overlay!.Present(choices, Build, State.Level);

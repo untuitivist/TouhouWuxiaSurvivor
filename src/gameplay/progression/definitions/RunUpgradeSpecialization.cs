@@ -1,7 +1,7 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 
 /// <summary>
-/// 描述达到境界和重数后可选择的一条永久局内分支；同一基础修行的分支天然互斥。
+/// 描述达到境界和重数后可选择的一条永久局内分支；只有显式声明的身份才互相排斥。
 /// </summary>
 public sealed class RunUpgradeSpecialization
 {

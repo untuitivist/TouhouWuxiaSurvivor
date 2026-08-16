@@ -12,9 +12,7 @@ public sealed record BalanceTimelineSnapshot(
     double SpellDps,
     double TotalDps,
     double ReadinessScore,
-    double EnemyHealthMultiplier,
-    double EnemyDamageMultiplier,
-    double RewardMultiplier,
+    int PressureGear,
     double ScheduledSpawnsPerSecond,
     double ProjectedAliveEnemies,
     double EffectiveKillsPerSecond,
@@ -36,7 +34,7 @@ public sealed record BalanceTimelineSnapshot(
         $"{ElapsedMinutes,3}分 {GetBuildName(),-4} 等级{RunLevel,4} " +
         $"普攻{WeaponDps,8:F1} 奥义{SpellDps,8:F1} 总伤{TotalDps,8:F1}/秒 " +
         $"击破{EffectiveKillsPerSecond,6:F2}/秒 存量{ProjectedAliveEnemies,5:F1} " +
-        $"压力{EnemyPressure,8:F1} 准备度{ReadinessScore,6:F2} " +
+        $"档{PressureGear} 压力{EnemyPressure,8:F1} 准备度{ReadinessScore,6:F2} " +
         $"奥义{OffensiveSpellCount}+{SupportSpellCount} 无尽{EndlessRankCount}";
 
     /// <summary>把内部构筑枚举转换为策划日志使用的中文短名。</summary>

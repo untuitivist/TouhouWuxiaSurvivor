@@ -46,7 +46,7 @@ public partial class AutoCombatTargetingTest : Node
         EnemyDefinition ordinary = EnemyCatalog.All.First(item => !item.IsBoss);
         world.SpawnEnemy(new Vector2(20.0f, 0.0f), ordinary);
         world.SpawnBoss(new Vector2(100.0f, 0.0f),
-            BossDefinitionFactory.Create(CharacterCatalog.Default, 0.0));
+            BossDefinitionFactory.Create(CharacterCatalog.Default));
         var fallback = new NearestEnemyTargetFinder(fallbackContainer);
         bool found = AutoTargetSelector.TrySelect(
             world, fallback, Vector2.Zero, 200.0f, out TargetMotion motion);

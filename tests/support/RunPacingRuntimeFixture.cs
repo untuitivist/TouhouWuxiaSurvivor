@@ -19,6 +19,7 @@ namespace TouhouWuxiaSurvivor.Tests.Support;
 public sealed class RunPacingRuntimeFixture
 {
     private double _elapsedSeconds = RunPacingTimeline.TargetClearSeconds;
+    private int _spawnedEnemies;
     public RunCompletionOverlay Overlay { get; }
     public EcsCombatWorld World { get; }
     public BossEncounterDirector Director { get; }
@@ -48,7 +49,7 @@ public sealed class RunPacingRuntimeFixture
         Pacing = new RunPacingCoordinator(
             Director, Overlay, Map, Pause, Stats, Progression,
             () => _elapsedSeconds,
-            () => new RunCombatTelemetry(0, 0, 36),
+            () => new RunCombatTelemetry(_spawnedEnemies, _spawnedEnemies),
             () => FinalizedReason is not null,
             reason =>
             {
@@ -60,8 +61,8 @@ public sealed class RunPacingRuntimeFixture
     /// <summary>在指定时刻生成并击破合法Boss，把正式事件顺序交给节奏协调器处理。</summary>
     public void DefeatBoss(double elapsedSeconds)
     {
-        _elapsedSeconds = elapsedSeconds;
-        Pacing.Advance();
+        EnsureFinalEncounter();
+        _elapsedSeconds = Math.Max(_elapsedSeconds, elapsedSeconds);
         if (!Director.TrySpawn(new Vector2(200.0f, 0.0f), elapsedSeconds, 0))
         {
             throw new InvalidOperationException("Test boss could not enter the encounter director.");
@@ -71,6 +72,19 @@ public sealed class RunPacingRuntimeFixture
         if (World.AliveBossCount != 0)
         {
             throw new InvalidOperationException("Test damage did not defeat the spawned boss.");
+        }
+    }
+
+    /// <summary>用七个真实供给等于击破的窗口进入决战，测试不再依赖被删除的时间兜底。</summary>
+    private void EnsureFinalEncounter()
+    {
+        _elapsedSeconds = 0.0;
+        Pacing.Advance();
+        for (int gear = 1; gear <= RunPacingTimeline.AdaptiveRules.Count; gear++)
+        {
+            _elapsedSeconds = gear * RunPacingTimeline.EvaluationWindowSeconds;
+            _spawnedEnemies += 30;
+            Pacing.Advance();
         }
     }
 

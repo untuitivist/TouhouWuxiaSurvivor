@@ -50,7 +50,7 @@ public sealed class RunBuildState
         => GetUpgradeBlockReason(definition) is null;
 
     /// <summary>
-    /// 返回升级不可选的明确原因；空值表示重数、前置、互斥与奥义槽位均允许本次选择。
+    /// 返回升级不可选的明确原因；空值表示重数、前置与奥义槽位均允许本次选择。
     /// </summary>
     public string? GetUpgradeBlockReason(RunUpgradeDefinition definition)
     {
@@ -63,11 +63,6 @@ public sealed class RunBuildState
             GetRank(requirement.RequiredUpgradeId) < requirement.MinimumRank))
         {
             return "尚未满足前置修炼";
-        }
-
-        if (definition.ExcludedUpgradeIds.Any(id => GetRank(id) > 0))
-        {
-            return "与已选修炼互斥";
         }
 
         SpellCardDefinition? card = SpellCardSlotPolicy.Resolve(definition);
@@ -94,7 +89,7 @@ public sealed class RunBuildState
     }
 
     /// <summary>
-    /// 判断特化是否达到境界、基础重数、前置和互斥要求，且同一分支不可重复取得。
+    /// 判断特化是否达到境界和基础重数且尚未取得；当前版本不在同组分支之间建立互斥。
     /// </summary>
     public bool CanSpecialize(
         RunUpgradeDefinition definition,
@@ -109,12 +104,11 @@ public sealed class RunBuildState
             return false;
         }
 
-        return !specialization.ExcludedSpecializationIds.Any(HasSpecialization) &&
-            !definition.Specializations.Any(item => HasSpecialization(item.Id));
+        return true;
     }
 
     /// <summary>
-    /// 应用一项已解锁特化；失败不会改变构筑，成功后同组与显式互斥分支均被阻断。
+    /// 应用一项已解锁特化；失败不会改变构筑，成功后仅阻止同一特化重复取得。
     /// </summary>
     public bool ApplySpecialization(
         RunUpgradeDefinition definition,

@@ -9,23 +9,12 @@ namespace TouhouWuxiaSurvivor.Ecs.Combat;
 public sealed class EnemyMovementSystem
 {
     /// <summary>
-    /// 保留旧调用入口，以零生存时间推进 AI；正式世界应传入累计时间以启用无尽速度曲线。
+    /// 按定义中的固定速度推进 AI；阶段只改变敌群构成，不改变同种怪物的移动属性。
     /// </summary>
     public void Step(
         EnemyPool pool,
         Vector2 playerPosition,
         float delta,
-        Action<int> damagePlayer) =>
-        Step(pool, playerPosition, delta, 0.0, damagePlayer);
-
-    /// <summary>
-    /// 按定义中的 AI 档案推进全部存活敌人，死亡反馈结束后才从连续数组移除。
-    /// </summary>
-    public void Step(
-        EnemyPool pool,
-        Vector2 playerPosition,
-        float delta,
-        double elapsedSeconds,
         Action<int> damagePlayer)
     {
         for (int index = pool.Count - 1; index >= 0; index--)
@@ -44,10 +33,7 @@ public sealed class EnemyMovementSystem
                 continue;
             }
 
-            float speedScale = enemy.Definition.IsBoss
-                ? CombatIntensityCurve.GetMoveSpeedMultiplier(elapsedSeconds)
-                : 1.0f;
-            Move(ref enemy, playerPosition, delta, speedScale);
+            Move(ref enemy, playerPosition, delta);
             ResolveContact(ref enemy, playerPosition, delta, damagePlayer);
             pool.Set(index, enemy);
         }
@@ -79,22 +65,21 @@ public sealed class EnemyMovementSystem
     private static void Move(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
-        float delta,
-        float speedScale)
+        float delta)
     {
         switch (enemy.Definition.AiProfile.Kind)
         {
             case EnemyAiKind.OrbitShooter:
-                MoveOrbit(ref enemy, playerPosition, delta, speedScale);
+                MoveOrbit(ref enemy, playerPosition, delta);
                 break;
             case EnemyAiKind.Charger:
-                MoveCharger(ref enemy, playerPosition, delta, speedScale);
+                MoveCharger(ref enemy, playerPosition, delta);
                 break;
             case EnemyAiKind.BossPhased:
-                MoveBoss(ref enemy, playerPosition, delta, speedScale);
+                MoveBoss(ref enemy, playerPosition, delta);
                 break;
             default:
-                MoveChase(ref enemy, playerPosition, delta, speedScale);
+                MoveChase(ref enemy, playerPosition, delta);
                 break;
         }
     }
@@ -103,11 +88,10 @@ public sealed class EnemyMovementSystem
     private static void MoveChase(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
-        float delta,
-        float speedScale)
+        float delta)
     {
         enemy.Velocity = enemy.Position.DirectionTo(playerPosition) *
-            enemy.Definition.MoveSpeed * speedScale;
+            enemy.Definition.MoveSpeed;
         enemy.Position += enemy.Velocity * delta;
     }
 
@@ -115,8 +99,7 @@ public sealed class EnemyMovementSystem
     private static void MoveOrbit(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
-        float delta,
-        float speedScale)
+        float delta)
     {
         EnemyAiProfile profile = enemy.Definition.AiProfile;
         Vector2 toPlayer = enemy.Position.DirectionTo(playerPosition);
@@ -126,7 +109,7 @@ public sealed class EnemyMovementSystem
             : distance < profile.PreferredRange - 18.0f ? -0.75f : 0.0f;
         var tangent = new Vector2(-toPlayer.Y, toPlayer.X) * enemy.OrbitDirection;
         Vector2 direction = (toPlayer * radial + tangent * profile.TangentialWeight).Normalized();
-        enemy.Velocity = direction * enemy.Definition.MoveSpeed * speedScale;
+        enemy.Velocity = direction * enemy.Definition.MoveSpeed;
         enemy.Position += enemy.Velocity * delta;
     }
 
@@ -134,8 +117,7 @@ public sealed class EnemyMovementSystem
     private static void MoveCharger(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
-        float delta,
-        float speedScale)
+        float delta)
     {
         EnemyAiProfile profile = enemy.Definition.AiProfile;
         if (enemy.ChargeTimeLeft > 0.0f)
@@ -149,7 +131,7 @@ public sealed class EnemyMovementSystem
         if (enemy.AiTimer <= 0.0f)
         {
             enemy.Velocity = enemy.Position.DirectionTo(playerPosition) *
-                enemy.Definition.MoveSpeed * speedScale * 3.2f;
+                enemy.Definition.MoveSpeed * 3.2f;
             enemy.ChargeTimeLeft = profile.ChargeDuration;
             enemy.AiTimer = profile.ChargeInterval;
             enemy.Position += enemy.Velocity * delta;
@@ -157,7 +139,7 @@ public sealed class EnemyMovementSystem
         }
 
         enemy.Velocity = enemy.Position.DirectionTo(playerPosition) *
-            enemy.Definition.MoveSpeed * speedScale * profile.TangentialWeight;
+            enemy.Definition.MoveSpeed * profile.TangentialWeight;
         enemy.Position += enemy.Velocity * delta;
     }
 
@@ -165,8 +147,7 @@ public sealed class EnemyMovementSystem
     private static void MoveBoss(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
-        float delta,
-        float speedScale)
+        float delta)
     {
         EnemyAiProfile profile = enemy.Definition.AiProfile;
         Vector2 toPlayer = enemy.Position.DirectionTo(playerPosition);
@@ -174,7 +155,7 @@ public sealed class EnemyMovementSystem
         float radial = Mathf.Clamp((distance - profile.PreferredRange) / 80.0f, -0.65f, 0.65f);
         var tangent = new Vector2(-toPlayer.Y, toPlayer.X) * enemy.OrbitDirection;
         Vector2 direction = (toPlayer * radial + tangent * profile.TangentialWeight).Normalized();
-        enemy.Velocity = direction * enemy.Definition.MoveSpeed * speedScale;
+        enemy.Velocity = direction * enemy.Definition.MoveSpeed;
         enemy.Position += enemy.Velocity * delta;
     }
 

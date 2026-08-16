@@ -75,11 +75,10 @@ public partial class SpiritDropSpawner : Node
     /// </summary>
     public void SpawnForEnemy(Vector2 position, EnemyDefinition enemy)
     {
-        double elapsedSeconds = _ecsWorld?.ElapsedSeconds ?? 0.0;
-        int timedValue = SpiritValueCalculator.CalculateForElapsedTime(enemy, elapsedSeconds);
+        int baseValue = SpiritValueCalculator.Calculate(enemy);
         double yieldMultiplier = _modifiers?.SpiritYieldMultiplier ?? 1.0f;
         int value = (int)Math.Clamp(
-            Math.Floor(timedValue * Math.Max(1.0, yieldMultiplier)),
+            Math.Floor(baseValue * Math.Max(1.0, yieldMultiplier)),
             1.0,
             int.MaxValue / 2.0);
         Callable.From(() => Spawn(position, value)).CallDeferred();

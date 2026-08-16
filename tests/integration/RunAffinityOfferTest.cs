@@ -124,21 +124,22 @@ public partial class RunAffinityOfferTest : Node
             RunUpgradeChoice complement = focusedOffer.Single(item =>
                 item.OfferRole == RunUpgradeOfferRole.Complement);
             RunUpgradeChoice exploration = focusedOffer.Single(item => item.IsExploration);
-            Require(momentum.Affinities.Any(dominant.Contains) &&
+            Require(focused.GetRank(momentum.Definition.Id) > 0 &&
                 complement.Affinities.Any(dominant.Contains) &&
-                complement.Affinities.Any(affinity => !dominant.Contains(affinity)) &&
-                !exploration.Affinities.Any(dominant.Contains),
-                "An offer role did not match its affinity composition.");
+                focused.GetRank(exploration.Definition.Id) == 0,
+                "Continuation, formation, or supplement role did not match its build duty.");
         }
 
         Require(focusedAlignedChoices > neutralAlignedChoices + trials / 8,
             "Affinity did not significantly improve its complete route's appearance rate.");
         Require(focusedAlignedChoices < trials * 3,
             "Affinity occupied every choice and removed the alternate route.");
-        Require(_generator.CreateOffer(new RandomNumberGenerator { Seed = 11 }, neutral,
-                ContentPackSelection.BaseOnly, 1, 3).All(choice =>
-                choice.OfferRole == RunUpgradeOfferRole.Opportunity),
-            "A neutral opening was assigned a fabricated route bias.");
+        IReadOnlyList<RunUpgradeChoice> opening = _generator.CreateOffer(
+            new RandomNumberGenerator { Seed = 11 }, neutral,
+            ContentPackSelection.BaseOnly, 1, 3);
+        Require(opening.Count(choice => choice.IsExploration) == 1 &&
+            opening.Count(choice => choice.OfferRole == RunUpgradeOfferRole.Opportunity) == 2,
+            "A neutral opening did not preserve one supplement and two open choices.");
     }
 
     /// <summary>
@@ -163,8 +164,8 @@ public partial class RunAffinityOfferTest : Node
         Require(!build.CanUpgrade(gated), "Multiple prerequisites were ignored.");
         build.Apply(first);
         build.Apply(second);
-        Require(!build.CanUpgrade(gated) && !build.CanUpgrade(excluded),
-            "Partial prerequisites or explicit exclusion were accepted.");
+        Require(!build.CanUpgrade(gated) && build.CanUpgrade(excluded),
+            "Partial prerequisites passed or the temporary no-exclusion rule was ignored.");
         build.Apply(second);
         Require(build.CanUpgrade(gated), "All prerequisite ranks did not unlock the option.");
     }
@@ -176,24 +177,24 @@ public partial class RunAffinityOfferTest : Node
     {
         var build = new RunBuildState();
         RunUpgradeDefinition needle = RunUpgradeCatalog.FindById("needle_damage")!;
-        for (int rank = 0; rank < 3; rank++)
+        for (int rank = 0; rank < 2; rank++)
         {
             build.Apply(needle);
         }
 
         RunUpgradeSpecialization first = needle.Specializations[0];
         RunUpgradeSpecialization second = needle.Specializations[1];
-        Require(!build.CanSpecialize(needle, first, 7) &&
-            build.CanSpecialize(needle, first, 8),
+        Require(!build.CanSpecialize(needle, first, 3) &&
+            build.CanSpecialize(needle, first, 4),
             "Specialization level or rank gate is incorrect.");
-        Require(build.ApplySpecialization(needle, first, 8) &&
-            !build.ApplySpecialization(needle, second, 8),
-            "Sibling specializations were not mutually exclusive.");
+        Require(build.ApplySpecialization(needle, first, 4) &&
+            build.ApplySpecialization(needle, second, 4),
+            "Temporarily parallel specializations blocked each other.");
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
         Require(modifiers.DamageBonus == 0 &&
-            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.30f) &&
-            modifiers.ProjectilePierceCount == 1,
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.50f) &&
+            modifiers.ProjectilePierceCount == 1 && modifiers.ExtraProjectiles == 2,
             "Chosen specialization did not enter the runtime modifier projection.");
     }
 

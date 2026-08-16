@@ -113,7 +113,7 @@ public partial class BossEncounterDirector : Node
             ? Math.Clamp(candidateIndex, 0, candidates.Count - 1)
             : _random.RandiRange(0, candidates.Count - 1);
         CharacterDefinition character = candidates[index];
-        _world.SpawnBoss(position, BossDefinitionFactory.Create(character, elapsedSeconds));
+        _world.SpawnBoss(position, BossDefinitionFactory.Create(character));
         LastSpawnedCharacter = character;
         SpawnedCount++;
         _activeEncounterStartedSeconds = Math.Max(0.0, elapsedSeconds);

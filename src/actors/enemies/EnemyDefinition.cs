@@ -25,6 +25,7 @@ public sealed class EnemyDefinition
     public EnemyProjectileProfile ProjectileProfile { get; }
     public bool IsBoss { get; }
     public string? CharacterId { get; }
+    public EnemyStrengthTier StrengthTier { get; }
 
     /// <summary>
     /// 构造一份经过目录集中管理的敌人定义，避免运行实体自行决定平衡参数。
@@ -46,7 +47,8 @@ public sealed class EnemyDefinition
         EnemyProjectileProfile? projectileProfile = null,
         bool isBoss = false,
         string? characterId = null,
-        int? baseMaxHealth = null)
+        int? baseMaxHealth = null,
+        EnemyStrengthTier strengthTier = EnemyStrengthTier.Common)
     {
         Archetype = archetype;
         DisplayName = displayName;
@@ -65,6 +67,7 @@ public sealed class EnemyDefinition
         ProjectileProfile = projectileProfile ?? EnemyProjectileProfile.None;
         IsBoss = isBoss;
         CharacterId = characterId;
+        StrengthTier = strengthTier;
     }
 
     /// <summary>

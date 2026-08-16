@@ -67,7 +67,7 @@ public partial class ProjectileSkillBalanceTest : Node
     }
 
     /// <summary>
-    /// 分别验证贯穿实际碰撞，再在相同十分钟阶段对照破甲两敌总伤与散华齐射总伤。
+    /// 分别验证贯穿实际碰撞，再对照单项破甲两敌总伤与单项散华三弹齐射总伤。
     /// </summary>
     private static void VerifyHorizontalVolleyBudget(int piercingTwoTargetDamage)
     {
@@ -83,9 +83,9 @@ public partial class ProjectileSkillBalanceTest : Node
             .Sum(scatterDamage.GetPrimaryDamage);
         Require(piercingTwoTargetDamage == 13,
             "The physical piercing collision no longer applies ten plus three damage.");
-        Require(scatter.ProjectileCount == 7 &&
+        Require(scatter.ProjectileCount == 3 &&
             distributed == scatterDamage.PrimaryTotalDamage,
-            "The seven-projectile scatter volley did not preserve its authored integer budget.");
+            "The three-projectile scatter volley did not preserve its authored integer budget.");
         Require(Math.Abs(piercingDamage.TwoTargetTotalDamage -
                 scatterDamage.PrimaryTotalDamage) <= 2,
             $"Same-stage piercing and scatter budgets diverged: " +

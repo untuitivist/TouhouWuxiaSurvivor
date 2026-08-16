@@ -10,6 +10,8 @@ public enum RunPhaseId
     Swarming,
     Barrage,
     Crisis,
+    Dominance,
+    Breakthrough,
     FinalEncounter,
     Endless,
 }

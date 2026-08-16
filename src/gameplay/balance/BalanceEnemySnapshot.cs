@@ -5,8 +5,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Balance;
 /// </summary>
 public readonly record struct BalanceEnemySnapshot(
     int AvailableDefinitionCount,
-    double AverageBaseHealth,
-    double AverageScaledHealth,
+    double AverageHealth,
     double AverageSpiritValue,
     double AverageThreat,
     double SpawnSupplyPerSecond,

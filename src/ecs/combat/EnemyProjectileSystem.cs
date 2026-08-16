@@ -11,13 +11,12 @@ public sealed class EnemyProjectileSystem
 {
     public const int MaximumShotsPerVolley = 96;
     /// <summary>
-    /// 为存活敌人递减射击冷却，并按普通档案或 Boss 血量阶段生成带无尽强度缩放的敌弹。
+    /// 为存活敌人递减射击冷却，并严格按怪物档案或 Boss 血量阶段生成固定属性敌弹。
     /// </summary>
     public void Step(
         EnemyPool enemies,
         Vector2 playerPosition,
         float delta,
-        double elapsedSeconds,
         Func<Vector2, Vector2, float, int, int, bool> emitProjectile)
     {
         for (int index = 0; index < enemies.Count; index++)
@@ -37,8 +36,8 @@ public sealed class EnemyProjectileSystem
             if (enemy.FireCooldown <= 0.0f)
             {
                 enemy.FireCooldown = enemy.Definition.IsBoss
-                    ? EmitBossPattern(ref enemy, playerPosition, elapsedSeconds, emitProjectile)
-                    : EmitOrdinaryVolley(enemy, playerPosition, elapsedSeconds, emitProjectile);
+                    ? EmitBossPattern(ref enemy, playerPosition, emitProjectile)
+                    : EmitOrdinaryVolley(enemy, playerPosition, emitProjectile);
             }
 
             enemies.Set(index, enemy);
@@ -60,26 +59,21 @@ public sealed class EnemyProjectileSystem
     }
 
     /// <summary>
-    /// 生成以玩家方向为中心的普通扇形；后期逐渐增加弹数、弹速和伤害，将单发敌人演化为弹幕敌人。
+    /// 生成以玩家方向为中心的普通扇形；弹数、速度、伤害和间隔全部来自该种类档案。
     /// </summary>
     private static float EmitOrdinaryVolley(
         EnemyComponent enemy,
         Vector2 playerPosition,
-        double elapsedSeconds,
         Func<Vector2, Vector2, float, int, int, bool> emitProjectile)
     {
         EnemyProjectileProfile profile = enemy.Definition.ProjectileProfile;
-        int waveBonus = CombatIntensityCurve.GetWaveBonus(elapsedSeconds);
-        int count = CapVolley((long)profile.ShotCount + waveBonus);
-        float spread = profile.SpreadDegrees > 0.0f
-            ? profile.SpreadDegrees
-            : Math.Min(24.0f, waveBonus * 3.0f);
+        int count = CapVolley(profile.ShotCount);
+        float spread = Math.Max(0.0f, profile.SpreadDegrees);
         Vector2 aimed = enemy.Position.DirectionTo(playerPosition);
         EmitFan(enemy.Position, aimed, count, spread,
-            profile.ProjectileSpeed * CombatIntensityCurve.GetBulletSpeedMultiplier(elapsedSeconds),
-            profile.Damage + CombatIntensityCurve.GetDamageBonus(elapsedSeconds), 0,
+            profile.ProjectileSpeed, profile.Damage, 0,
             emitProjectile);
-        return profile.FireInterval * CombatIntensityCurve.GetFireIntervalMultiplier(elapsedSeconds);
+        return profile.FireInterval;
     }
 
     /// <summary>
@@ -88,37 +82,34 @@ public sealed class EnemyProjectileSystem
     private static float EmitBossPattern(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
-        double elapsedSeconds,
         Func<Vector2, Vector2, float, int, int, bool> emitProjectile)
     {
         EnemyProjectileProfile profile = enemy.Definition.ProjectileProfile;
-        int waveBonus = CombatIntensityCurve.GetWaveBonus(elapsedSeconds);
-        float speed = profile.ProjectileSpeed *
-            CombatIntensityCurve.GetBulletSpeedMultiplier(elapsedSeconds);
-        int damage = profile.Damage + CombatIntensityCurve.GetDamageBonus(elapsedSeconds);
+        float speed = profile.ProjectileSpeed;
+        int damage = profile.Damage;
         float interval;
         switch (enemy.BossPhase)
         {
             case BossBulletPhase.Ring:
-                EmitRing(enemy.Position, CapVolley(14L + waveBonus * 2L), enemy.PatternAngle,
+                EmitRing(enemy.Position, CapVolley(14L), enemy.PatternAngle,
                     speed * 0.88f, damage, 1, emitProjectile);
                 enemy.PatternAngle += 0.11f;
                 interval = 0.92f;
                 break;
             case BossBulletPhase.AlternatingSpiral:
-                EmitSpiral(ref enemy, CapVolley(2L + waveBonus), speed * 1.08f,
+                EmitSpiral(ref enemy, CapVolley(2L), speed * 1.08f,
                     damage, emitProjectile);
                 interval = 0.20f;
                 break;
             default:
                 EmitFan(enemy.Position, enemy.Position.DirectionTo(playerPosition),
-                    CapVolley(5L + waveBonus * 2L),
+                    CapVolley(5L),
                     12.0f, speed, damage, 2, emitProjectile);
                 interval = 1.12f;
                 break;
         }
 
-        return interval * CombatIntensityCurve.GetFireIntervalMultiplier(elapsedSeconds);
+        return interval;
     }
 
     /// <summary>围绕中心方向均匀展开奇偶兼容的扇形，所有角度以度数档案转换为弧度。</summary>
@@ -178,7 +169,7 @@ public sealed class EnemyProjectileSystem
         enemy.PatternDirection *= -1.0f;
     }
 
-    /// <summary>把任意长局的期望单波弹数限制在固定发射预算内，余下强度交给共享伤害与弹速倍率。</summary>
+    /// <summary>把怪物档案中的单波弹数限制在固定性能预算内，避免错误内容生成过量实体。</summary>
     private static int CapVolley(long desired) =>
         (int)Math.Clamp(desired, 1L, MaximumShotsPerVolley);
 }

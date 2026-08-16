@@ -7,5 +7,4 @@ public readonly record struct BalanceSpawnFlowSnapshot(
     double ScheduledSpawnsPerSecond,
     double AcceptedSpawnsPerSecond,
     double DefeatsPerSecond,
-    double AliveCount,
-    int AliveLimit);
+    double AliveCount);

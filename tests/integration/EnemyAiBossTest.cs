@@ -43,7 +43,7 @@ public partial class EnemyAiBossTest : Node
             EnemyAiProfile.OrbitShooter, EnemyProjectileProfile.Aimed));
         pool.Add(new Vector2(-120.0f, 0.0f), CreateEnemy("突进", EnemyAiProfile.Charger));
         var movement = new EnemyMovementSystem();
-        movement.Step(pool, Vector2.Zero, 2.0f, 0.0, _ => { });
+        movement.Step(pool, Vector2.Zero, 2.0f, _ => { });
         Vector2 chase = pool.Get(0).Position;
         Vector2 orbit = pool.Get(1).Position;
         Vector2 charger = pool.Get(2).Position;
@@ -51,7 +51,7 @@ public partial class EnemyAiBossTest : Node
             !orbit.IsEqualApprox(charger), "Three enemy AI profiles collapsed to the same movement.");
         int shots = 0;
         var projectiles = new EnemyProjectileSystem();
-        projectiles.Step(pool, Vector2.Zero, 3.0f, 0.0,
+        projectiles.Step(pool, Vector2.Zero, 3.0f,
             (_, _, _, _, _) => { shots++; return true; });
         Require(shots == 1, $"Only the orbit shooter should fire in the opening profile: {shots}");
     }
@@ -114,7 +114,7 @@ public partial class EnemyAiBossTest : Node
         var renderer = new EcsCombatRenderer();
         renderer.Configure();
         bool visualFound = candidates.Any(character => renderer.TryResolveBossVisual(
-            BossDefinitionFactory.Create(character, 0.0), out _));
+            BossDefinitionFactory.Create(character), out _));
         Require(visualFound, "No registered boss character resolved to Portrait or ActorStrip visuals.");
         var world = new EcsCombatWorld();
         var director = new BossEncounterDirector();
@@ -178,7 +178,7 @@ public partial class EnemyAiBossTest : Node
         boss.FireCooldown = 0.0f;
         pool.Set(0, boss);
         int shots = 0;
-        system.Step(pool, Vector2.Zero, 0.01f, 0.0,
+        system.Step(pool, Vector2.Zero, 0.01f,
             (_, _, _, _, _) => { shots++; return true; });
         return shots;
     }

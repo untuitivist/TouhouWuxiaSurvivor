@@ -60,6 +60,10 @@ public partial class EnemyBalanceSmokeTest : Node
         Require(enemies[0].DropChance < enemies[1].DropChance &&
             enemies[1].DropChance < enemies[2].DropChance,
             $"Drop tiers are not increasing: {pack.Id}");
+        Require(enemies[0].StrengthTier == EnemyStrengthTier.Common &&
+            enemies[1].StrengthTier == EnemyStrengthTier.Veteran &&
+            enemies[2].StrengthTier == EnemyStrengthTier.Champion,
+            $"Package enemies do not preserve horizontal strength roles: {pack.Id}");
     }
 
     /// <summary>
@@ -107,27 +111,30 @@ public partial class EnemyBalanceSmokeTest : Node
     }
 
     /// <summary>
-    /// 验证刷怪批次只在策划节点跳档，平均供给可被阶段构筑处理且存活上限受硬限制。
+    /// 验证总刷新率逐档上升，四档占比从全普通敌人平滑演进，且不存在存活软上限入口。
     /// </summary>
     private static void VerifySpawnPacing()
     {
-        Require(EnemySpawnPacing.GetBatchSize(0) == 1 &&
-            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.RisingSeconds) == 2 &&
-            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.SwarmingSeconds) == 3 &&
-            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.BarrageSeconds) == 4 &&
-            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.CrisisSeconds) == 5 &&
-            EnemySpawnPacing.GetBatchSize(RunPacingTimeline.FinalEncounterSeconds) == 6,
-            "Spawn batch milestones are incorrect.");
-        Require(Math.Abs(EnemySpawnPacing.GetScheduledSpawnsPerSecond(0) - 0.80) < 0.001 &&
-            Math.Abs(EnemySpawnPacing.GetScheduledSpawnsPerSecond(210) - 0.25) < 0.001 &&
-            EnemySpawnPacing.GetScheduledSpawnsPerSecond(270) <
-                EnemySpawnPacing.GetScheduledSpawnsPerSecond(150) &&
-            EnemySpawnPacing.GetScheduledSpawnsPerSecond(600) >
-                EnemySpawnPacing.GetScheduledSpawnsPerSecond(270),
-            "Pre-Boss mowing relief or endless supply growth is incorrect.");
-        Require(EnemySpawnPacing.GetAliveLimit(0, 140) == 36 &&
-            EnemySpawnPacing.GetAliveLimit(1200, 140) == 140,
-            "Dynamic alive limit is incorrect.");
+        double[] seconds = [0, 30, 60, 90, 120, 150, 180, 210];
+        double[] rates = [0.80, 1.05, 1.35, 1.70, 2.05, 2.40, 2.75, 3.10];
+        for (int index = 0; index < seconds.Length; index++)
+        {
+            EnemyPressureSnapshot pressure = EnemySpawnPacing.GetPressure(seconds[index]);
+            Require(Math.Abs(pressure.SpawnRatePerSecond - rates[index]) < 0.001,
+                $"Spawn rate drifted at pressure gear {index}.");
+            if (index > 0)
+            {
+                Require(rates[index] > rates[index - 1],
+                    "Total spawn rate did not strictly rise between gears.");
+            }
+        }
+
+        EnemyPressureSnapshot opening = EnemySpawnPacing.GetPressure(0.0);
+        EnemyPressureSnapshot final = EnemySpawnPacing.GetPressure(210.0);
+        Require(opening.TierMix.Common == 1.0 && opening.TierMix.Veteran == 0.0 &&
+            final.TierMix.Common >= 0.40 && final.TierMix.Champion <= 0.08 &&
+            final.TierMix.Veteran > 0.0 && final.TierMix.Elite > 0.0,
+            "Enemy tier mix stopped preserving a large common-enemy share.");
     }
 
     /// <summary>

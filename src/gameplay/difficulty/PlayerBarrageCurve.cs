@@ -1,9 +1,7 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
-using TouhouWuxiaSurvivor.Gameplay.Pacing;
-
 /// <summary>
-/// 根据动态难度时间、齐射序号和弹丸池余量规划有效弹幕，保证所有弹型都围绕可命中目标展开。
+/// 根据本局构筑、齐射序号和弹丸池余量规划有效弹幕；敌人压力阶段绝不自动强化玩家。
 /// </summary>
 public static class PlayerBarrageCurve
 {
@@ -12,73 +10,63 @@ public static class PlayerBarrageCurve
     public const double SaturatedRetryIntervalSeconds = 0.05;
 
     /// <summary>
-    /// 生成一次齐射计划：开局保持单发，随后进入三、五发并在后期交错扇形与目标收束阵。
+    /// 生成一次构筑齐射：额外弹丸决定一、三、五、七发，螺旋效果才会启用目标收束阵。
     /// </summary>
-    public static PlayerBarrageSnapshot EvaluateSeconds(
-        double elapsedSeconds,
+    public static PlayerBarrageSnapshot Evaluate(
         bool spiralActive,
         long volleySequence,
         int activeProjectileCount,
         int bonusProjectiles = 0)
     {
-        double minutes = EndlessDifficultyCurve.NormalizeMinutes(elapsedSeconds);
-        int normalizedBonus = Math.Clamp(bonusProjectiles, 0, 2);
-        int requestedCount = GetRequestedProjectileCount(
-            minutes, spiralActive, normalizedBonus);
-        PlayerBarrageMode mode = GetMode(minutes, spiralActive, volleySequence);
+        int normalizedBonus = Math.Clamp(bonusProjectiles, 0,
+            MaximumProjectilesPerVolley - 1);
+        int requestedCount = GetRequestedProjectileCount(spiralActive, normalizedBonus);
+        PlayerBarrageMode mode = GetMode(requestedCount, spiralActive);
         int allowedCount = ApplyProjectileBudget(requestedCount, mode, activeProjectileCount);
         double angularStep = GetAngularStep(requestedCount, mode);
         double rotation = GetRotation(mode, volleySequence, angularStep);
         const bool requiresTarget = true;
         double retry = allowedCount == 0 ? SaturatedRetryIntervalSeconds : 0.0;
-        double stageBudget = GetStageDamageBudget(minutes * 60.0);
-        double damageBudget = stageBudget * (1.0 + normalizedBonus * 0.125 +
-            (spiralActive ? 0.20 : 0.0));
-        return new PlayerBarrageSnapshot(minutes, mode, requestedCount, allowedCount,
+        double damageBudget = 1.0 + normalizedBonus / 2.0 * 0.25 +
+            (spiralActive ? 0.20 : 0.0);
+        return new PlayerBarrageSnapshot(0.0, mode, requestedCount, allowedCount,
             angularStep, rotation, requiresTarget, retry, damageBudget);
     }
 
+    /// <summary>兼容旧纯函数调用形状；时间参数被明确忽略，测试可据此锁定阶段不会赠送火力。</summary>
+    public static PlayerBarrageSnapshot EvaluateSeconds(
+        double ignoredElapsedSeconds,
+        bool spiralActive,
+        long volleySequence,
+        int activeProjectileCount,
+        int bonusProjectiles = 0) => Evaluate(
+            spiralActive, volleySequence, activeProjectileCount, bonusProjectiles);
+
     /// <summary>
-    /// 按阶段返回奇数扇形阶梯；额外弹特化可把五发扩展到七发，螺旋强化至少保留正反双发。
+    /// 把构筑提供的偶数额外弹叠加到中心弹；螺旋强化至少保留正反双发。
     /// </summary>
     private static int GetRequestedProjectileCount(
-        double minutes,
         bool spiralActive,
         int bonusProjectiles)
     {
-        double elapsedSeconds = minutes * 60.0;
-        int timedCount = elapsedSeconds switch
-        {
-            < RunPacingTimeline.RisingSeconds => 1,
-            < RunPacingTimeline.BarrageSeconds => 3,
-            _ => 5,
-        };
-        int builtCount = Math.Min(MaximumProjectilesPerVolley, timedCount + bonusProjectiles);
+        int builtCount = Math.Min(MaximumProjectilesPerVolley, 1 + bonusProjectiles);
         return spiralActive ? Math.Max(2, builtCount) : builtCount;
     }
 
     /// <summary>
-    /// 普通攻击由单发过渡到交错扇形，危机阶段每隔一轮插入收束阵；螺旋强化始终使用收束阵。
+    /// 单发使用预测直射，多发使用目标扇形；只有明确取得的螺旋效果使用收束阵。
     /// </summary>
     private static PlayerBarrageMode GetMode(
-        double minutes,
-        bool spiralActive,
-        long volleySequence)
+        int requestedCount,
+        bool spiralActive)
     {
         if (spiralActive)
         {
             return PlayerBarrageMode.ConvergingOrbit;
         }
 
-        double elapsedSeconds = minutes * 60.0;
-        if (elapsedSeconds < RunPacingTimeline.RisingSeconds)
-        {
-            return PlayerBarrageMode.TargetedSingle;
-        }
-
-        return elapsedSeconds >= RunPacingTimeline.CrisisSeconds &&
-            (volleySequence & 1L) == 1L
-            ? PlayerBarrageMode.ConvergingOrbit
+        return requestedCount <= 1
+            ? PlayerBarrageMode.TargetedSingle
             : PlayerBarrageMode.AlternatingFan;
     }
 
@@ -143,16 +131,4 @@ public static class PlayerBarrageCurve
         return phase < 0.0 ? phase + Math.Tau : phase;
     }
 
-    /// <summary>
-    /// 阶段进阶同步提高整轮有效输出，使最终战前形成割草能力；构筑倍率仍决定路线间差异。
-    /// </summary>
-    private static double GetStageDamageBudget(double difficultySeconds) => difficultySeconds switch
-    {
-        < RunPacingTimeline.RisingSeconds => 1.00,
-        < RunPacingTimeline.SwarmingSeconds => 1.20,
-        < RunPacingTimeline.BarrageSeconds => 1.50,
-        < RunPacingTimeline.CrisisSeconds => 1.85,
-        < RunPacingTimeline.FinalEncounterSeconds => 2.25,
-        _ => 2.50,
-    };
 }

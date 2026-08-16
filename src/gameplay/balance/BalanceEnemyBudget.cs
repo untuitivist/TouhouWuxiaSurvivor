@@ -32,13 +32,12 @@ internal static class BalanceEnemyBudget
         double totalWeight = available.Sum(enemy => Math.Max(0.01f, enemy.SpawnWeight));
         double baseHealth = WeightedAverage(available, totalWeight, enemy => enemy.MaxHealth);
         double spirit = WeightedAverage(available, totalWeight,
-            enemy => SpiritValueCalculator.CalculateForElapsedTime(enemy, elapsedSeconds));
+            enemy => SpiritValueCalculator.Calculate(enemy));
         double threat = WeightedAverage(available, totalWeight, CalculateThreat);
-        double scaledHealth = baseHealth * difficulty.EnemyHealthMultiplier;
         double spawnSupply = Math.Max(0.0, acceptedSpawnsPerSecond);
         double pressure = difficulty.Intensity * Math.Sqrt(1.0 + Math.Max(0.0, aliveCount)) *
-            (1.0 + threat * 0.35) * difficulty.EnemyDamageMultiplier;
-        return new BalanceEnemySnapshot(available.Length, baseHealth, scaledHealth,
+            (1.0 + threat * 0.35);
+        return new BalanceEnemySnapshot(available.Length, baseHealth,
             spirit, threat, spawnSupply, Math.Max(0.0, aliveCount), pressure);
     }
 

@@ -21,7 +21,6 @@ public partial class AutoShooter : Node2D
     private RunModifierState? _runModifiers;
     private ProjectileEcsRuntime? _ecsProjectiles;
     private EcsCombatWorld? _ecsWorld;
-    private Func<double>? _difficultySeconds;
     private PassiveSpecializationState? _passiveSpecializations;
     private double _cooldownLeft;
     private double _localElapsedSeconds;
@@ -88,13 +87,6 @@ public partial class AutoShooter : Node2D
         LastVolleyProjectileCount = 0;
     }
 
-    /// <summary>注入阶段导演映射后的难度时间，使弹幕形态和刷怪阶段使用同一进度源。</summary>
-    public void ConfigurePacing(Func<double> difficultySeconds)
-    {
-        ArgumentNullException.ThrowIfNull(difficultySeconds);
-        _difficultySeconds = difficultySeconds;
-    }
-
     /// <summary>
     /// 读取 ECS 生存时间和现有强化推进冷却，自动选择单发、扇形或旋转弹幕，全程不读取操作输入。
     /// </summary>
@@ -132,10 +124,7 @@ public partial class AutoShooter : Node2D
             return;
         }
 
-        double elapsedSeconds = _ecsWorld?.ElapsedSeconds ?? _localElapsedSeconds;
-        double pacingSeconds = _difficultySeconds?.Invoke() ?? elapsedSeconds;
-        if (!double.IsFinite(pacingSeconds)) pacingSeconds = elapsedSeconds;
-        CurrentBarrage = PlayerBarrageCurve.EvaluateSeconds(pacingSeconds,
+        CurrentBarrage = PlayerBarrageCurve.Evaluate(
             spiralActive, _volleySequence, GetActiveProjectileCount(),
             _runModifiers?.ExtraProjectiles ?? 0);
         LastVolleyProjectileCount = 0;

@@ -1,45 +1,58 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 /// <summary>
-/// 集中定义约五分钟本体流程及其五个有限阶段，禁止HUD、刷怪和弹幕各自维护里程碑。
+/// 集中定义七个三十秒战力验证档位；只有击破本窗实际刷新量才会进入下一档。
 /// </summary>
 public static class RunPacingTimeline
 {
-    public const double RisingSeconds = 45.0;
-    public const double SwarmingSeconds = 90.0;
-    public const double BarrageSeconds = 150.0;
-    public const double CrisisSeconds = 210.0;
-    public const double FinalEncounterSeconds = 270.0;
+    public const double EvaluationWindowSeconds = 30.0;
+    public const double RisingSeconds = 30.0;
+    public const double SwarmingSeconds = 60.0;
+    public const double BarrageSeconds = 90.0;
+    public const double CrisisSeconds = 120.0;
+    public const double DominanceSeconds = 150.0;
+    public const double BreakthroughSeconds = 180.0;
+    public const double FinalEncounterSeconds = 210.0;
     public const double TargetClearSeconds = 300.0;
 
     public static IReadOnlyList<double> MilestoneSeconds { get; } =
-        [RisingSeconds, SwarmingSeconds, BarrageSeconds, CrisisSeconds];
+        [RisingSeconds, SwarmingSeconds, BarrageSeconds, CrisisSeconds,
+            DominanceSeconds, BreakthroughSeconds];
 
     public static IReadOnlyList<RunPhaseDefinition> StructuredPhases { get; } =
     [
-        new(RunPhaseId.Opening, "异变初兆", "追击敌群开始活动",
+        new(RunPhaseId.Opening, "异变初兆", "普通敌群开始活动",
             0.0, RisingSeconds),
-        new(RunPhaseId.Rising, "妖气初现", "突进敌群加入战场",
+        new(RunPhaseId.Rising, "妖气初现", "强敌开始混入敌群",
             RisingSeconds, SwarmingSeconds),
-        new(RunPhaseId.Swarming, "百鬼渐行", "地区敌群开始混编",
+        new(RunPhaseId.Swarming, "百鬼渐行", "精锐敌人开始出现",
             SwarmingSeconds, BarrageSeconds),
-        new(RunPhaseId.Barrage, "弹幕成形", "远程弹幕形成交叉火力",
+        new(RunPhaseId.Barrage, "弹幕成形", "敌群职责形成组合",
             BarrageSeconds, CrisisSeconds),
-        new(RunPhaseId.Crisis, "结界震荡", "击穿残阵，准备迎战异变核心",
-            CrisisSeconds, FinalEncounterSeconds),
+        new(RunPhaseId.Crisis, "结界震荡", "头目级敌人开始混入",
+            CrisisSeconds, DominanceSeconds),
+        new(RunPhaseId.Dominance, "百鬼压境", "高强度敌群持续增援",
+            DominanceSeconds, BreakthroughSeconds),
+        new(RunPhaseId.Breakthrough, "异变临界", "击穿最后敌阵以引出核心",
+            BreakthroughSeconds, FinalEncounterSeconds),
     ];
 
     public static IReadOnlyList<RunPhaseRule> AdaptiveRules { get; } =
     [
-        new(RunPhaseId.Opening, 30.0, 45.0, 0.35, 0.50, 5.0),
-        new(RunPhaseId.Rising, 35.0, 45.0, 0.50, 0.55, 5.0),
-        new(RunPhaseId.Swarming, 45.0, 60.0, 0.65, 0.60, 5.0),
-        new(RunPhaseId.Barrage, 50.0, 60.0, 0.80, 0.65, 5.0),
-        new(RunPhaseId.Crisis, 45.0, 90.0, 0.45, 0.25, 5.0),
+        new(RunPhaseId.Opening, 0.80, new EnemyTierMix(100, 0, 0, 0)),
+        new(RunPhaseId.Rising, 1.05, new EnemyTierMix(92, 8, 0, 0)),
+        new(RunPhaseId.Swarming, 1.35, new EnemyTierMix(84, 14, 2, 0)),
+        new(RunPhaseId.Barrage, 1.70, new EnemyTierMix(75, 20, 5, 0)),
+        new(RunPhaseId.Crisis, 2.05, new EnemyTierMix(66, 23, 9, 2)),
+        new(RunPhaseId.Dominance, 2.40, new EnemyTierMix(57, 26, 13, 4)),
+        new(RunPhaseId.Breakthrough, 2.75, new EnemyTierMix(48, 28, 18, 6)),
     ];
 
+    public static RunPhaseRule FinalEncounterRule { get; } = new(
+        RunPhaseId.FinalEncounter, 3.10, new EnemyTierMix(40, 30, 22, 8));
+
     /// <summary>
-    /// 把任意运行时间投影为唯一阶段；四分半进入决战，目标在五分钟左右完成结算。
+    /// 把名义难度时间投影为唯一档位；正式运行时由 AdaptiveRunPacingState 决定是否前进。
     /// </summary>
     public static RunPacingSnapshot Evaluate(double elapsedSeconds, bool isEndless = false)
     {
@@ -103,7 +116,8 @@ public static class RunPacingTimeline
             isEndless,
             FinalEncounterSeconds,
             1.0,
-            false);
+            false,
+            AdaptiveRules.Count);
 
     /// <summary>
     /// 将非法、负数与正无穷运行时间整理为可显示的有限非负秒数。

@@ -18,4 +18,7 @@ public readonly record struct RunPacingSnapshot(
     bool IsEndless,
     double DifficultySeconds,
     double DominanceProgress,
-    bool CanAdvanceByDominance);
+    bool CanAdvanceByDominance,
+    int PressureGear = 0,
+    int WindowSpawned = 0,
+    int WindowDefeated = 0);

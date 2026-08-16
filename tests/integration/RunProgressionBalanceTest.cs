@@ -90,16 +90,16 @@ public partial class RunProgressionBalanceTest : Node
                 RunUpgradeCatalog.All.Count &&
             finite.Concat(endless).Select(item => item.Kind).Distinct().Count() == 12,
             "Upgrade IDs or cultivation effect kinds are duplicated.");
-        Require(finite.All(item => item.MaxRank == 5) &&
+        Require(finite.Select(item => item.MaxRank).SequenceEqual([4, 4, 3, 3, 3, 3]) &&
             endless.All(item => item.MaxRank == int.MaxValue && item.Requirement is not null) &&
-            spellCards.All(item => item.MaxRank == 1 && item.Requirement is not null &&
+            spellCards.All(item => item.MaxRank == 2 && item.Requirement is not null &&
                 item.SpellCardId is not null) &&
             spellCards.Count(item => item.RequiredContentPack is null) == 6,
             "Upgrade rank, requirement, or content ownership contract is incorrect.");
     }
 
     /// <summary>
-    /// 先确认无尽修行受五重前置约束，再应用六项基础升级核对首重倍率和满重上限。
+    /// 先确认无尽修行受各自满重前置约束，再应用六项基础升级核对强反馈首重和满重上限。
     /// </summary>
     private static void VerifyBuildAndModifiers()
     {
@@ -108,7 +108,7 @@ public partial class RunProgressionBalanceTest : Node
             item => item.IsRepeatable).ToArray();
         Require(endless.All(definition =>
                 !build.CanUpgrade(definition) && !build.Apply(definition)),
-            "Endless cultivation ignored its five-rank prerequisite.");
+            "Endless cultivation ignored its finite-rank prerequisite.");
 
         foreach (RunUpgradeDefinition definition in RunUpgradeCatalog.All.Where(item =>
             item.Category != RunUpgradeCategory.SpellCard && !item.IsRepeatable))
@@ -119,28 +119,29 @@ public partial class RunProgressionBalanceTest : Node
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
         Require(modifiers.DamageBonus == 0 &&
-            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.10f) &&
-            Mathf.IsEqualApprox(modifiers.FireRateMultiplier, 1.09f) &&
-            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.07f) &&
-            Mathf.IsEqualApprox(modifiers.TargetRangeMultiplier, 1.08f) &&
-            Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.08f) &&
-            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.18f),
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.25f) &&
+            Mathf.IsEqualApprox(modifiers.FireRateMultiplier, 1.18f) &&
+            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.15f) &&
+            Mathf.IsEqualApprox(modifiers.TargetRangeMultiplier, 1.25f) &&
+            Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.25f) &&
+            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.50f) &&
+            Mathf.IsEqualApprox(modifiers.SpiritYieldMultiplier, 1.10f),
             "First-rank runtime modifiers are incorrect.");
 
         RunUpgradeDefinition damage = RunUpgradeCatalog.All[0];
         for (int rank = 1; rank < damage.MaxRank; rank++)
         {
-            Require(build.Apply(damage), "Damage upgrade did not reach rank five.");
+            Require(build.Apply(damage), "Damage upgrade did not reach its maximum rank.");
         }
 
-        Require(!build.Apply(damage), "Upgrade exceeded its five-rank maximum.");
+        Require(!build.Apply(damage), "Upgrade exceeded its authored maximum.");
 
         modifiers.ConfigureBase(2, 1.04f, 1.16f);
         modifiers.Refresh(build);
         Require(modifiers.DamageBonus == 2 &&
-            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.50f) &&
-            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.04f * 1.07f) &&
-            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.16f * 1.18f),
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 2.00f) &&
+            Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.04f * 1.15f) &&
+            Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.16f * 1.50f),
             "Permanent and in-run modifiers did not compose from stable bases.");
     }
 

@@ -1,6 +1,7 @@
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Gameplay.Difficulty;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
@@ -36,13 +37,19 @@ public sealed class BalanceTimelineSimulator
         var build = new RunBuildState();
         var experience = new BalanceExperienceLedger();
         var spawnFlow = new BalanceSpawnFlowState();
+        var pacing = new AdaptiveRunPacingState();
         var result = new List<BalanceTimelineSnapshot>(targets.Length);
+        double spawnedEnemies = EnemySpawnPacing.DefaultInitialSpawnCount;
+        double defeatedEnemies = 0.0;
         int targetIndex = 0;
         int maximumSeconds = checked(targets[^1] * 60);
         for (int elapsedSeconds = 0; elapsedSeconds <= maximumSeconds; elapsedSeconds++)
         {
+            pacing.Advance(elapsedSeconds, new RunCombatTelemetry(
+                SaturatingCount(spawnedEnemies), SaturatingCount(defeatedEnemies)));
+            RunPacingSnapshot pacingSnapshot = pacing.CreateSnapshot(elapsedSeconds);
             EndlessDifficultySnapshot difficulty = EndlessDifficultyCurve.EvaluateSeconds(
-                elapsedSeconds, EnemySpawnPacing.DefaultAliveHardLimit);
+                pacingSnapshot.DifficultySeconds);
             BalanceEnemySnapshot enemy = BalanceEnemyBudget.Evaluate(
                 elapsedSeconds, content, difficulty, spawnFlow.AliveCount,
                 spawnFlow.LastAcceptedSpawnsPerSecond);
@@ -51,7 +58,7 @@ public sealed class BalanceTimelineSimulator
             if (targetIndex < targets.Length && elapsedSeconds == targets[targetIndex] * 60)
             {
                 result.Add(CreateSnapshot(targets[targetIndex], buildKind, experience,
-                    combat, enemy, difficulty, content));
+                    combat, enemy, difficulty, pacingSnapshot, content));
                 targetIndex++;
             }
 
@@ -62,6 +69,8 @@ public sealed class BalanceTimelineSimulator
 
             double defeatCapacity = CalculateDefeatCapacity(combat, enemy);
             BalanceSpawnFlowSnapshot flow = spawnFlow.Advance(difficulty, defeatCapacity);
+            spawnedEnemies += flow.AcceptedSpawnsPerSecond;
+            defeatedEnemies += flow.DefeatsPerSecond;
             double killsPerSecond = flow.DefeatsPerSecond;
             double collectionRate = CalculateCollectionRate(combat);
             double experienceGain = killsPerSecond * enemy.AverageSpiritValue *
@@ -71,6 +80,10 @@ public sealed class BalanceTimelineSimulator
 
         return result;
     }
+
+    /// <summary>把连续策划累计量安全投影成正式节奏遥测使用的非负整数计数。</summary>
+    private static int SaturatingCount(double value) =>
+        (int)Math.Clamp(Math.Floor(Math.Max(0.0, value)), 0.0, int.MaxValue);
 
     /// <summary>
     /// 同时模拟四条路线，字典枚举顺序固定为构筑枚举顺序，方便测试输出稳定比较。
@@ -89,7 +102,7 @@ public sealed class BalanceTimelineSimulator
         BalanceEnemySnapshot enemy)
     {
         double combatCapacity = combat.TotalDps /
-            Math.Max(1.0, enemy.AverageScaledHealth) * 0.68;
+            Math.Max(1.0, enemy.AverageHealth) * 0.68;
         return Math.Max(0.0, combatCapacity);
     }
 
@@ -110,6 +123,7 @@ public sealed class BalanceTimelineSimulator
         BalanceCombatMetrics combat,
         BalanceEnemySnapshot enemy,
         EndlessDifficultySnapshot difficulty,
+        RunPacingSnapshot pacing,
         ContentPackSelection content)
     {
         double kills = Math.Min(CalculateDefeatCapacity(combat, enemy),
@@ -121,9 +135,9 @@ public sealed class BalanceTimelineSimulator
             SpellCardSlotPolicy.MaximumSupportSlots * 0.65;
         return new BalanceTimelineSnapshot(elapsedMinutes, buildKind, experience.Level,
             experience.TotalExperience, combat.WeaponDps, combat.SpellDps, combat.TotalDps,
-            combat.ReadinessScore, difficulty.EnemyHealthMultiplier,
-            difficulty.EnemyDamageMultiplier, difficulty.RewardMultiplier,
-            difficulty.ScheduledSpawnsPerSecond, enemy.ProjectedAliveCount,
+            combat.ReadinessScore, pacing.PressureGear,
+            difficulty.ScheduledSpawnsPerSecond,
+            enemy.ProjectedAliveCount,
             kills, enemy.Pressure, ratio,
             spiritEconomy, combat.OffensiveSpellCount, combat.SupportSpellCount,
             combat.EndlessRankCount,

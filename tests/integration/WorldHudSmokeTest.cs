@@ -71,14 +71,19 @@ public partial class WorldHudSmokeTest : Node
             Require(hud.StatusText.Contains("击破", StringComparison.Ordinal) &&
                 hud.StatusText.Contains("敌人", StringComparison.Ordinal),
                 "Status bar is missing combat state.");
-            Require(hud.DebugText.Contains("Seed", StringComparison.Ordinal) &&
-                hud.DebugText.Contains("Tile", StringComparison.Ordinal),
-                "Debug overlay is missing world diagnostics.");
             VerifyDefaultBinding();
 
             using var toggle = new InputEventAction { Action = "toggle_debug", Pressed = true };
             hud._UnhandledInput(toggle);
             Require(hud.IsDebugVisible, "Debug action did not open the overlay.");
+            await ToSignal(GetTree().CreateTimer(0.55), SceneTreeTimer.SignalName.Timeout);
+            Require(hud.DebugText.Contains("Seed", StringComparison.Ordinal) &&
+                hud.DebugText.Contains("Tile", StringComparison.Ordinal) &&
+                hud.DebugText.Contains("难度", StringComparison.Ordinal) &&
+                hud.DebugText.Contains("30秒窗", StringComparison.Ordinal) &&
+                hud.DebugText.Contains("击破", StringComparison.Ordinal) &&
+                hud.DebugText.Contains("刷新", StringComparison.Ordinal),
+                "Visible debug overlay is missing pressure-window diagnostics.");
             hud._UnhandledInput(toggle);
             Require(!hud.IsDebugVisible, "Second debug action did not close the overlay.");
 

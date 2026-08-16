@@ -66,15 +66,18 @@ public partial class CharacterBuildModelTest : Node
     private static void VerifyLearnedAffinityAndAdvance()
     {
         var build = new RunBuildState();
-        build.Apply(Required("needle_damage"));
+        RunUpgradeDefinition definition = Required("needle_damage");
+        build.Apply(definition);
         CharacterBuildViewModel model = CharacterBuildViewModelFactory.Create(
             build, ContentPackSelection.BaseOnly, 2);
         CharacterBuildNodeView needle = Node(model, "needle_damage");
         Require(needle.State == CharacterBuildNodeState.Learned &&
             needle.CurrentRank == 1 && needle.CanAdvance,
             "Learned multi-rank art lost its advancement state.");
-        Require(needle.CurrentEffectText.Contains("1/5 重", StringComparison.Ordinal) &&
-            needle.NextEffectText.Contains("2/5 重", StringComparison.Ordinal),
+        Require(needle.CurrentEffectText.Contains(
+                $"1/{definition.MaxRank} 重", StringComparison.Ordinal) &&
+            needle.NextEffectText.Contains(
+                $"2/{definition.MaxRank} 重", StringComparison.Ordinal),
             "Finite art omitted current-rank or next-rank meaning.");
         Require(model.Affinities.Single(item =>
                 item.Affinity == RunUpgradeAffinity.Force).Value == 1 &&
@@ -90,31 +93,37 @@ public partial class CharacterBuildModelTest : Node
     {
         var build = new RunBuildState();
         RunUpgradeDefinition needle = Required("needle_damage");
-        string firstId = needle.Specializations[0].Id;
-        string secondId = needle.Specializations[1].Id;
+        RunUpgradeSpecialization first = needle.Specializations[0];
+        RunUpgradeSpecialization second = needle.Specializations[1];
         CharacterBuildViewModel early = CharacterBuildViewModelFactory.Create(
             build, ContentPackSelection.BaseOnly, 1);
-        Require(Node(early, firstId).State == CharacterBuildNodeState.LockedPrerequisite,
+        Require(Node(early, first.Id).State == CharacterBuildNodeState.LockedPrerequisite,
             "Untrained specialization did not report its base-rank gate.");
-        for (int rank = 0; rank < 3; rank++)
+        for (int rank = 0; rank < first.RequiredRank; rank++)
         {
             build.Apply(needle);
         }
 
         CharacterBuildViewModel levelGate = CharacterBuildViewModelFactory.Create(
-            build, ContentPackSelection.BaseOnly, 7);
-        Require(Node(levelGate, firstId).State == CharacterBuildNodeState.LockedLevel,
+            build, ContentPackSelection.BaseOnly, first.MinimumRunLevel - 1);
+        Require(Node(levelGate, first.Id).State == CharacterBuildNodeState.LockedLevel,
             "Specialization did not expose its run-level gate.");
         CharacterBuildViewModel available = CharacterBuildViewModelFactory.Create(
-            build, ContentPackSelection.BaseOnly, 8);
-        Require(Node(available, firstId).CanAdvance && Node(available, secondId).CanAdvance,
+            build, ContentPackSelection.BaseOnly, first.MinimumRunLevel);
+        Require(Node(available, first.Id).CanAdvance && Node(available, second.Id).CanAdvance,
             "Eligible specialization branches are not interactive.");
-        build.ApplySpecialization(needle, needle.Specializations[0], 8);
+        build.ApplySpecialization(needle, first, first.MinimumRunLevel);
         CharacterBuildViewModel chosen = CharacterBuildViewModelFactory.Create(
-            build, ContentPackSelection.BaseOnly, 8);
-        Require(Node(chosen, firstId).State == CharacterBuildNodeState.Mastered &&
-            Node(chosen, secondId).State == CharacterBuildNodeState.LockedExclusion,
-            "Chosen and sibling specializations do not expose final branch states.");
+            build, ContentPackSelection.BaseOnly, first.MinimumRunLevel);
+        Require(Node(chosen, first.Id).State == CharacterBuildNodeState.Mastered &&
+            Node(chosen, second.Id).CanAdvance,
+            "A chosen specialization incorrectly blocked its independent sibling.");
+        build.ApplySpecialization(needle, second, second.MinimumRunLevel);
+        CharacterBuildViewModel completed = CharacterBuildViewModelFactory.Create(
+            build, ContentPackSelection.BaseOnly, second.MinimumRunLevel);
+        Require(Node(completed, first.Id).State == CharacterBuildNodeState.Mastered &&
+            Node(completed, second.Id).State == CharacterBuildNodeState.Mastered,
+            "Independent specialization branches could not both reach mastery.");
     }
 
     /// <summary>
@@ -128,8 +137,8 @@ public partial class CharacterBuildModelTest : Node
             build, ContentPackSelection.BaseOnly, 1);
         CharacterBuildNodeView endless = Node(locked, "endless_damage");
         Require(endless.State == CharacterBuildNodeState.LockedPrerequisite &&
-            endless.LockReason.Contains("5重", StringComparison.Ordinal),
-            "Endless art omitted its five-rank prerequisite.");
+            endless.LockReason.Contains($"{needle.MaxRank}重", StringComparison.Ordinal),
+            "Endless art omitted its current finite-rank prerequisite.");
         for (int rank = 0; rank < needle.MaxRank; rank++)
         {
             build.Apply(needle);

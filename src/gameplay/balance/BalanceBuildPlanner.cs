@@ -121,15 +121,16 @@ internal static class BalanceBuildPlanner
     }
 
     /// <summary>
-    /// 基础路线均匀铺开六项修行，其他路线按自身优先级先练满核心项再补齐横向能力。
+    /// 基础与效用路线按最大重数归一后铺开修行；专门输出路线才优先练满核心项。
     /// </summary>
     private static bool TryApplyFiniteUpgrade(RunBuildState build, BalanceBuildKind kind)
     {
         RunUpgradeKind[] order = GetFiniteOrder(kind);
         IEnumerable<RunUpgradeDefinition> candidates = order.Select(
             RunUpgradeCatalog.GetRequiredByKind).Where(build.CanUpgrade);
-        RunUpgradeDefinition? selected = kind == BalanceBuildKind.Baseline
-            ? candidates.OrderBy(item => build.GetRank(item.Id)).FirstOrDefault()
+        RunUpgradeDefinition? selected = kind is BalanceBuildKind.Baseline or BalanceBuildKind.Utility
+            ? candidates.OrderBy(item => build.GetRank(item.Id) /
+                (double)Math.Max(1, item.MaxRank)).FirstOrDefault()
             : candidates.FirstOrDefault();
         return selected is not null && build.Apply(selected);
     }
@@ -164,9 +165,9 @@ internal static class BalanceBuildPlanner
         BalanceBuildKind.Rapid => [RunUpgradeKind.FireRate, RunUpgradeKind.ProjectileSpeed,
             RunUpgradeKind.MoveSpeed, RunUpgradeKind.TargetRange,
             RunUpgradeKind.NeedleDamage, RunUpgradeKind.SpiritAttraction],
-        BalanceBuildKind.Utility => [RunUpgradeKind.SpiritAttraction, RunUpgradeKind.TargetRange,
-            RunUpgradeKind.MoveSpeed, RunUpgradeKind.ProjectileSpeed,
-            RunUpgradeKind.FireRate, RunUpgradeKind.NeedleDamage],
+        BalanceBuildKind.Utility => [RunUpgradeKind.SpiritAttraction, RunUpgradeKind.NeedleDamage,
+            RunUpgradeKind.TargetRange, RunUpgradeKind.FireRate,
+            RunUpgradeKind.MoveSpeed, RunUpgradeKind.ProjectileSpeed],
         _ => [RunUpgradeKind.NeedleDamage, RunUpgradeKind.FireRate,
             RunUpgradeKind.MoveSpeed, RunUpgradeKind.TargetRange,
             RunUpgradeKind.ProjectileSpeed, RunUpgradeKind.SpiritAttraction],

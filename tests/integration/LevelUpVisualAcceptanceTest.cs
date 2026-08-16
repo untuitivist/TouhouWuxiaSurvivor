@@ -80,8 +80,9 @@ public partial class LevelUpVisualAcceptanceTest : Node
         var viewport = new Rect2(Vector2.Zero, new Vector2(640.0f, 360.0f));
         Control panel = overlay.GetNode<Control>("Root/Panel");
         Rect2 panelRect = panel.GetGlobalRect();
-        string[] expectedRoles = ["顺势", "补全", "另辟"];
-        int[] expectedTrackLengths = [5, 1, 1];
+        string[] expectedRoles = ["精进", "成势", "补缺"];
+        int[] expectedTrackLengths =
+            [RunUpgradeCatalog.GetRequiredByKind(RunUpgradeKind.NeedleDamage).MaxRank, 1, 1];
         float widestLine = 0.0f;
         string widestText = string.Empty;
         for (int index = 0; index < 3; index++)

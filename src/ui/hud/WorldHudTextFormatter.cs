@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.World.Biomes;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 namespace TouhouWuxiaSurvivor.Ui.Hud;
 
@@ -40,7 +41,26 @@ public static class WorldHudTextFormatter
         $"Content  {snapshot.ActiveContent}\n" +
         $"Pacing  {snapshot.Pacing.PhaseName} · {snapshot.Pacing.TotalProgress:P0} · " +
         $"压制 {snapshot.Pacing.DominanceProgress:P0}\n" +
+        $"{FormatPressure(snapshot.Pacing)}\n" +
         $"Spell  {FormatSpellDetail(snapshot.SpellCards)}";
+
+    /// <summary>
+    /// 把当前总刷新率、敌群配比和三十秒滑动窗口击破比格式化为 F3 专用诊断文字。
+    /// </summary>
+    private static string FormatPressure(RunPacingSnapshot pacing)
+    {
+        EnemyPressureSnapshot pressure = EnemyPressureCurve.Evaluate(pacing.DifficultySeconds);
+        string ratio = pacing.WindowSpawned > 0
+            ? $"{pacing.WindowDefeated / (double)pacing.WindowSpawned:P0}"
+            : "--";
+        string state = pacing.CanAdvanceByDominance ? "达标" : "观察";
+        EnemyTierMix mix = pressure.TierMix;
+        return $"难度  档{pacing.PressureGear} · 指标{pressure.DifficultyIndex:0.00} · " +
+            $"刷新{pressure.SpawnRatePerSecond:0.00}/秒\n" +
+            $"30秒窗  击破{pacing.WindowDefeated} / 刷新{pacing.WindowSpawned} · {ratio} · {state}\n" +
+            $"敌群  普{mix.Common:P0} / 强{mix.Veteran:P0} / " +
+            $"精{mix.Elite:P0} / 头{mix.Champion:P0}";
+    }
 
     /// <summary>
     /// 把已悟奥义与最近独立倒计时格式化为属性提示与 F3 共用的紧凑诊断文字。
