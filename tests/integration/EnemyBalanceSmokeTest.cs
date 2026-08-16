@@ -116,7 +116,7 @@ public partial class EnemyBalanceSmokeTest : Node
     private static void VerifySpawnPacing()
     {
         double[] seconds = [0, 30, 60, 90, 120, 150, 180, 210];
-        double[] rates = [0.80, 1.05, 1.35, 1.70, 2.05, 2.40, 2.75, 3.10];
+        double[] rates = [1.60, 2.10, 2.70, 3.40, 4.10, 4.80, 5.50, 6.20];
         for (int index = 0; index < seconds.Length; index++)
         {
             EnemyPressureSnapshot pressure = EnemySpawnPacing.GetPressure(seconds[index]);

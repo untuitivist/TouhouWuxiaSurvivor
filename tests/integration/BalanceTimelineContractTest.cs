@@ -43,15 +43,15 @@ public partial class BalanceTimelineContractTest : Node
     }
 
     /// <summary>
-    /// 以宽区间守住前期选择密度和长局无尽节奏，避免局部奖励改动让构筑过早填满或长期停滞。
+    /// 以宽区间守住双倍供给下的成长密度和长局无尽节奏，避免模拟继续沿用旧刷新量的假预期。
     /// </summary>
     private static void VerifyPacingWindows(
         IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
     {
         (int Minimum, int Maximum)[] levelBands =
         [
-            (1, 1), (14, 20), (26, 36), (42, 56),
-            (60, 76), (72, 90), (102, 118), (132, 150),
+            (1, 1), (15, 24), (27, 37), (50, 60),
+            (73, 85), (87, 101), (117, 135), (157, 177),
         ];
         foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
         {
@@ -64,14 +64,17 @@ public partial class BalanceTimelineContractTest : Node
                     $"was {item.RunLevel}, expected {minimum}-{maximum}.");
             }
 
-            Require(values[2].OffensiveSpellCount + values[2].SupportSpellCount <
-                values[2].OffensiveSlotCapacity + values[2].SupportSlotCapacity,
-                $"The five-minute build filled every spell slot before the finale: {kind}.");
+            int learnedSpells = values[2].OffensiveSpellCount + values[2].SupportSpellCount;
+            int spellCapacity = values[2].OffensiveSlotCapacity + values[2].SupportSlotCapacity;
+            Require(learnedSpells >= 5 && learnedSpells <= spellCapacity,
+                $"The five-minute build did not form a nearly complete spell loadout: {kind}/" +
+                $"{learnedSpells}/{spellCapacity}.");
             bool containing = values[2].EffectiveKillsPerSecond >=
-                values[2].ScheduledSpawnsPerSecond * 0.94;
-            Require(values[2].PressureGear >= 5 &&
-                values[2].ProjectedAliveEnemies <= 24.0 && containing,
-                $"The five-minute build did not reach steep pressure while clearing its backlog: {kind}/" +
+                values[2].ScheduledSpawnsPerSecond * 0.90;
+            Require(values[2].PressureGear is >= 2 and <= 3 &&
+                values[2].ProjectedAliveEnemies is >= 40.0 and <= 150.0 &&
+                values[2].EffectiveKillsPerSecond >= 2.50 && containing,
+                $"The doubled five-minute supply left its calibrated high-density band: {kind}/" +
                 $"gear {values[2].PressureGear}, " +
                 $"{values[2].ProjectedAliveEnemies:F1} alive, " +
                 $"{values[2].EffectiveKillsPerSecond:F3}/" +
@@ -208,7 +211,7 @@ public partial class BalanceTimelineContractTest : Node
         double rapidWeaponShare = rapid.WeaponDps / rapid.TotalDps;
         double baselineWeaponShare = baseline.WeaponDps / baseline.TotalDps;
         Require(rapidWeaponShare - baselineWeaponShare > 0.05 &&
-            Math.Abs(rapid.RunLevel - baseline.RunLevel) > 1,
+            rapid.WeaponDps >= baseline.WeaponDps * 1.25,
             "Rapid route collapsed into the baseline route.");
     }
 

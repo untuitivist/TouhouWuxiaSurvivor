@@ -39,17 +39,17 @@ public static class RunPacingTimeline
 
     public static IReadOnlyList<RunPhaseRule> AdaptiveRules { get; } =
     [
-        new(RunPhaseId.Opening, 0.80, new EnemyTierMix(100, 0, 0, 0)),
-        new(RunPhaseId.Rising, 1.05, new EnemyTierMix(92, 8, 0, 0)),
-        new(RunPhaseId.Swarming, 1.35, new EnemyTierMix(84, 14, 2, 0)),
-        new(RunPhaseId.Barrage, 1.70, new EnemyTierMix(75, 20, 5, 0)),
-        new(RunPhaseId.Crisis, 2.05, new EnemyTierMix(66, 23, 9, 2)),
-        new(RunPhaseId.Dominance, 2.40, new EnemyTierMix(57, 26, 13, 4)),
-        new(RunPhaseId.Breakthrough, 2.75, new EnemyTierMix(48, 28, 18, 6)),
+        new(RunPhaseId.Opening, 1.60, new EnemyTierMix(100, 0, 0, 0)),
+        new(RunPhaseId.Rising, 2.10, new EnemyTierMix(92, 8, 0, 0)),
+        new(RunPhaseId.Swarming, 2.70, new EnemyTierMix(84, 14, 2, 0)),
+        new(RunPhaseId.Barrage, 3.40, new EnemyTierMix(75, 20, 5, 0)),
+        new(RunPhaseId.Crisis, 4.10, new EnemyTierMix(66, 23, 9, 2)),
+        new(RunPhaseId.Dominance, 4.80, new EnemyTierMix(57, 26, 13, 4)),
+        new(RunPhaseId.Breakthrough, 5.50, new EnemyTierMix(48, 28, 18, 6)),
     ];
 
     public static RunPhaseRule FinalEncounterRule { get; } = new(
-        RunPhaseId.FinalEncounter, 3.10, new EnemyTierMix(40, 30, 22, 8));
+        RunPhaseId.FinalEncounter, 6.20, new EnemyTierMix(40, 30, 22, 8));
 
     /// <summary>
     /// 把名义难度时间投影为唯一档位；正式运行时由 AdaptiveRunPacingState 决定是否前进。
