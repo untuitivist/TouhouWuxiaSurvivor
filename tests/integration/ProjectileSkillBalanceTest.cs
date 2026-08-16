@@ -1,5 +1,6 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Enemies;
+using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.Difficulty;
@@ -36,7 +37,7 @@ public partial class ProjectileSkillBalanceTest : Node
                 1.0f, (index, damage) => hits.Add((index, damage)), _ => { });
             Require(projectiles.Count == 0 && hits.SequenceEqual([(0, 10), (1, 3)]),
                 "The second hit repeated one enemy or failed to consume the projectile.");
-            VerifyHorizontalVolleyBudget(hits.Sum(item => item.Damage));
+            VerifySharedProjectileStats(hits.Sum(item => item.Damage));
             VerifyProjectileSpeedPolicy();
             GD.Print("Projectile skill balance test passed.");
             GetTree().Quit();
@@ -67,29 +68,30 @@ public partial class ProjectileSkillBalanceTest : Node
     }
 
     /// <summary>
-    /// 分别验证贯穿实际碰撞，再对照单项破甲两敌总伤与单项散华三弹齐射总伤。
+    /// 验证两类弹丸共享单弹伤害，同时允许自瞄数量、弹幕数量与贯穿表现分别成长。
     /// </summary>
-    private static void VerifyHorizontalVolleyBudget(int piercingTwoTargetDamage)
+    private static void VerifySharedProjectileStats(int piercingTwoTargetDamage)
     {
-        PlayerBarrageSnapshot piercing = PlayerBarrageCurve.EvaluateSeconds(
-            600.0, false, 0L, 0, bonusProjectiles: 0);
-        ProjectileVolleyDamageSnapshot piercingDamage = ProjectileDamageBudget.Project(
-            10.0, piercing.VolleyDamageBudget, piercing.ProjectileCount, maximumHits: 2);
-        PlayerBarrageSnapshot scatter = PlayerBarrageCurve.EvaluateSeconds(
-            600.0, false, 0L, 0, bonusProjectiles: 2);
-        ProjectileVolleyDamageSnapshot scatterDamage = ProjectileDamageBudget.Project(
-            10.0, scatter.VolleyDamageBudget, scatter.ProjectileCount, maximumHits: 1);
-        int distributed = Enumerable.Range(0, scatter.ProjectileCount)
-            .Sum(scatterDamage.GetPrimaryDamage);
+        PlayerBarrageSnapshot split = PlayerBarrageCurve.Evaluate(
+            false, 0, aimedProjectileBonus: 1, barrageProjectileBonus: 2);
+        PlayerAttackDamageSnapshot damage = PlayerAttackDamageProjector.Project(
+            10.0, split, sharedDamageMultiplier: 1.35f, aimedMaximumHits: 2);
         Require(piercingTwoTargetDamage == 13,
             "The physical piercing collision no longer applies ten plus three damage.");
-        Require(scatter.ProjectileCount == 3 &&
-            distributed == scatterDamage.PrimaryTotalDamage,
-            "The three-projectile scatter volley did not preserve its authored integer budget.");
-        Require(Math.Abs(piercingDamage.TwoTargetTotalDamage -
-                scatterDamage.PrimaryTotalDamage) <= 2,
-            $"Same-stage piercing and scatter budgets diverged: " +
-            $"{piercingDamage.TwoTargetTotalDamage}/{scatterDamage.PrimaryTotalDamage}.");
+        Require(split.AimedProjectileCount == 2 && split.BarrageProjectileCount == 2 &&
+            damage.PredictiveAim.ProjectileCount == 2 &&
+            damage.Barrage.ProjectileCount == 2,
+            "Independent projectile-count upgrades did not reach both channels.");
+        Require(damage.PredictiveAim.MinimumPrimaryDamage == 14 &&
+            damage.PredictiveAim.MaximumPrimaryDamage == 14 &&
+            damage.Barrage.MinimumPrimaryDamage == 14 &&
+            damage.Barrage.MaximumPrimaryDamage == 14 &&
+            damage.PredictiveAim.PrimaryTotalDamage == 28 &&
+            damage.Barrage.PrimaryTotalDamage == 28,
+            "Aimed and barrage projectiles no longer share the same per-projectile damage.");
+        Require(damage.PredictiveAim.SecondaryTotalDamage > 0 &&
+            damage.Barrage.SecondaryTotalDamage == 0,
+            "Piercing presentation leaked from aimed shots into the barrage channel.");
     }
 
     /// <summary>

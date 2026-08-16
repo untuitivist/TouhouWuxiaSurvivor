@@ -57,14 +57,14 @@ public partial class BossSpellCardAttackTest : Node
         }
     }
 
-    /// <summary>确认 Boss 生命统一翻倍而接触伤害不变，并让其他作品继续使用通用弹幕。</summary>
+    /// <summary>确认 Boss 生命统一提高到六倍而接触伤害不变，并让其他作品继续使用通用弹幕。</summary>
     private static void VerifyBossBalanceAndFallback()
     {
         CharacterDefinition rumia = CharacterCatalog.GetRequiredByDisplayName("露米娅");
         Actors.Enemies.EnemyDefinition boss = BossDefinitionFactory.Create(rumia);
         Require(boss.MaxHealth == BossCombatBalancePolicy.ScaleHealth(
                 rumia.BossProfile.MaxHealth) &&
-            boss.MaxHealth == (int)Math.Ceiling(rumia.BossProfile.MaxHealth * 2.0) &&
+            boss.MaxHealth == (int)Math.Ceiling(rumia.BossProfile.MaxHealth * 6.0) &&
             boss.BaseMaxHealth == (int)Math.Ceiling(rumia.BossProfile.MaxHealth) &&
             boss.ContactDamage == (int)Math.Ceiling(rumia.BossProfile.ContactDamage),
             "Boss health or unchanged contact-damage contract regressed.");

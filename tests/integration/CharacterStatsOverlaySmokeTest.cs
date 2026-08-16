@@ -55,9 +55,9 @@ public partial class CharacterStatsOverlaySmokeTest : Node
                 "Stats panel did not display a positive effective opening damage.");
             string volleyText = stats.GetNode<Label>(
                 "Root/Panel/Padding/Layout/Pages/StatsPage/Combat/VolleyValue").Text;
-            Require(volleyText.Contains("发", StringComparison.Ordinal) &&
-                volleyText.Contains("单弹", StringComparison.Ordinal),
-                "Stats panel did not explain the current volley composition.");
+            Require(volleyText.Contains("自瞄", StringComparison.Ordinal) &&
+                volleyText.Contains("弹幕", StringComparison.Ordinal),
+                "Stats panel did not distinguish aimed and barrage channels.");
             Require(stats.GetNode<Label>(
                     "Root/Panel/Padding/Layout/Pages/StatsPage/Combat/DamageCaption").Text ==
                 "齐射总伤",

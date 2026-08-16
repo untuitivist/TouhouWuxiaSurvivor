@@ -6,22 +6,22 @@ namespace TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 public static class RunLevelCurve
 {
     /// <summary>
-    /// 使用二次主项配合平方根，使前两次选择仍迅速出现，之后逐步压低过密的升级与奥义成型速度。
+    /// 保留前两次八点与十三点需求，从第三级起用更陡二次项吸收多弹清场带来的灵息增长。
     /// </summary>
     public static int GetRequiredExperience(int currentLevel)
     {
         int level = Math.Max(1, currentLevel);
         long offset = (long)level - 1L;
         long linearGrowth = offset * 3L;
-        long quadraticGrowth = SaturatedSquare(offset) / 5L;
         long rootGrowth = (long)Math.Floor(2.0 * Math.Sqrt(offset));
-        long required = 8L + linearGrowth + quadraticGrowth + rootGrowth;
-        return (int)Math.Min(int.MaxValue, required);
-    }
+        long curveOffset = Math.Max(0L, offset - 1L);
+        decimal quadraticGrowth = (decimal)curveOffset * curveOffset * 1.5m;
+        decimal required = 8m + linearGrowth + decimal.Floor(quadraticGrowth) + rootGrowth;
+        if (required >= int.MaxValue)
+        {
+            return int.MaxValue;
+        }
 
-    /// <summary>
-    /// 在长整型边界内计算平方项，极端等级直接饱和而不让乘法溢出为负数。
-    /// </summary>
-    private static long SaturatedSquare(long value) =>
-        value > 3_037_000_499L ? long.MaxValue : value * value;
+        return (int)required;
+    }
 }

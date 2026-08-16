@@ -112,7 +112,7 @@ public sealed class EcsCombatItemRenderer
         else if (_bulletAtlas is not null)
         {
             int column = projectile.Faction == ProjectileFaction.Player
-                ? 1
+                ? 1 + projectile.VisualVariant % 2
                 : 3 + projectile.VisualVariant % 4;
             canvas.DrawTextureRectRegion(
                 _bulletAtlas, destination, new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f));

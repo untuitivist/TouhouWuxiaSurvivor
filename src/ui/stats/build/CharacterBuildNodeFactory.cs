@@ -162,9 +162,9 @@ public static class CharacterBuildNodeFactory
     private static string FormatSpecializationCategory(
         RunUpgradeSpecialization specialization) => specialization.Effect switch
         {
-            RunSpecializationEffect.ExtraProjectiles or
+            RunSpecializationEffect.BarrageProjectiles or
             RunSpecializationEffect.ProjectilePierce or
-            RunSpecializationEffect.SpiralPattern => "弹幕特化",
+            RunSpecializationEffect.ConvergingBarrage => "弹幕特化",
             RunSpecializationEffect.SpiritYield => "收益特化",
             RunSpecializationEffect.ContinuousFireMomentum or
             RunSpecializationEffect.StationaryFocus or

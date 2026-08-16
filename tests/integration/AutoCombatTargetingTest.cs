@@ -10,7 +10,7 @@ using TouhouWuxiaSurvivor.Gameplay.Encounters;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证自动武器保持最近目标规则，同时让后期收束阵围绕真实预判交点造成有效伤害。
+/// 验证自动武器保持最近目标规则，同时让自瞄与收束弹幕都朝真实预判交点飞行。
 /// </summary>
 public partial class AutoCombatTargetingTest : Node
 {
@@ -54,24 +54,31 @@ public partial class AutoCombatTargetingTest : Node
             "Boss presence changed the nearest-target combat rule.");
     }
 
-    /// <summary>环绕出生只改变视觉起点；每个方向都必须与同一预判交点相交而不是向外空转。</summary>
+    /// <summary>自瞄和两翼弹幕使用不同通道；每颗弹都必须指向同一预判交点而不是空转。</summary>
     private static void VerifyConvergingPattern()
     {
         var barrage = new PlayerBarrageSnapshot(
-            4.0, PlayerBarrageMode.ConvergingOrbit, 5, 5,
-            Math.Tau / 5.0, 0.37, true, 0.0, 2.25);
+            PlayerBarrageMode.ConvergingFormation,
+            2, 2, 4, 4, 0.0, true, 0.0);
         Vector2 origin = new(10.0f, -5.0f);
         Vector2 target = new(180.0f, 70.0f);
+        int aimedCount = 0;
+        int barrageCount = 0;
         for (int index = 0; index < barrage.ProjectileCount; index++)
         {
             ProjectileLaunchPlan launch = PlayerVolleyPattern.Resolve(
                 origin, Vector2.Right, target, 18.0f, barrage, index);
+            aimedCount += launch.Channel == PlayerProjectileChannel.PredictiveAim ? 1 : 0;
+            barrageCount += launch.Channel == PlayerProjectileChannel.Barrage ? 1 : 0;
             Vector2 toTarget = (target - launch.Position).Normalized();
             Require(launch.Direction.Dot(toTarget) > 0.9999f,
                 "Converging projectile no longer points at the predicted intercept.");
-            Require(Math.Abs(launch.Position.DistanceTo(origin) - 18.0f) < 0.001f,
-                "Converging projectile did not preserve the rotating spawn ring.");
+            Require(Math.Abs((launch.Position - origin).Dot(Vector2.Right) - 18.0f) < 0.001f,
+                "Projectile form no longer starts on the forward launch line.");
         }
+
+        Require(aimedCount == 2 && barrageCount == 4,
+            "Projectile channels no longer preserve their independent authored counts.");
     }
 
     /// <summary>把任一自动战斗契约失败转换为带明确原因的测试异常。</summary>

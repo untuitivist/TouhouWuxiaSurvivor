@@ -42,12 +42,14 @@ public static class CharacterStatsSnapshotFactory
             modifiers.MoveSpeedMultiplier *
             (player.PassiveSpecializations?.MoveSpeedMultiplier ?? 1.0f);
         PlayerBarrageSnapshot barrage = PlayerBarrageCurve.EvaluateSeconds(
-            shooter.CurrentBarrage.ElapsedMinutes * 60.0,
-            modifiers.UsesSpiralPattern || buffs.IsSpiralActive,
+            0.0,
+            modifiers.UsesConvergingBarrage || buffs.IsSpiralActive,
             0,
             0,
-            modifiers.ExtraProjectiles);
-        ProjectileVolleyDamageSnapshot volley = shooter.ProjectVolleyDamage(barrage);
+            modifiers.BarrageProjectileBonus,
+            modifiers.AimedProjectileBonus);
+        PlayerAttackDamageSnapshot attack = shooter.ProjectAttackDamage(barrage);
+        ProjectileVolleyDamageSnapshot volley = attack.CreateSummary();
         return new CharacterStatsSnapshot(
             characterName,
             combatRole,
@@ -58,6 +60,10 @@ public static class CharacterStatsSnapshotFactory
             progression.State.ExperienceToNext,
             progression.State.TotalExperience,
             volley.PrimaryTotalDamage,
+            barrage.AimedProjectileCount,
+            attack.PredictiveAim.PrimaryTotalDamage,
+            barrage.BarrageProjectileCount,
+            attack.Barrage.PrimaryTotalDamage,
             volley.ProjectileCount,
             volley.MinimumPrimaryDamage,
             volley.MaximumPrimaryDamage,

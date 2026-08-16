@@ -180,17 +180,18 @@ public partial class CharacterStatsOverlay : CanvasLayer
     }
 
     /// <summary>
-    /// 把正式齐射投影压成一行可核对文本，明确弹数、单弹范围以及破甲分支的次击总伤。
+    /// 把正式齐射压成自瞄与弹幕两段，以相同单弹数值展示各自数量和总伤。
     /// </summary>
     private static string FormatVolleyDamage(CharacterStatsSnapshot snapshot)
     {
-        string single = snapshot.MinimumProjectileDamage == snapshot.MaximumProjectileDamage
-            ? snapshot.MinimumProjectileDamage.ToString()
-            : $"{snapshot.MinimumProjectileDamage}-{snapshot.MaximumProjectileDamage}";
+        string barrage = snapshot.BarrageProjectileCount <= 0
+            ? "弹幕 未修习"
+            : $"弹幕 {snapshot.BarrageProjectileCount}×{snapshot.MinimumProjectileDamage}";
         string pierce = snapshot.SecondaryVolleyDamage > 0
             ? $" · 贯穿 +{snapshot.SecondaryVolleyDamage}"
             : string.Empty;
-        return $"{snapshot.ProjectileCount} 发 · 单弹 {single}{pierce}";
+        return $"自瞄 {snapshot.AimedProjectileCount}×{snapshot.MinimumProjectileDamage} · " +
+            $"{barrage}{pierce}";
     }
 
     /// <summary>

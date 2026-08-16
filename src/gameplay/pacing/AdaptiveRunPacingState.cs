@@ -21,7 +21,7 @@ public sealed class AdaptiveRunPacingState
     public bool IsFinalEncounter => PhaseId == RunPhaseId.FinalEncounter;
 
     /// <summary>
-    /// 消费单调战斗时钟和累计遥测；最近三十秒只有 K 大于等于 S 且 S 大于零才提高一档。
+    /// 消费单调战斗时钟和累计遥测；最近三十秒只有 K/S 达到九成且 S 大于零才提高一档。
     /// </summary>
     public bool Advance(double elapsedSeconds, RunCombatTelemetry telemetry)
     {
@@ -52,7 +52,7 @@ public sealed class AdaptiveRunPacingState
         }
 
         (int spawned, int defeated) = GetWindowCounts();
-        bool advances = spawned > 0 && defeated >= spawned;
+        bool advances = RunPacingTimeline.MeetsClearRequirement(spawned, defeated);
         if (!advances)
         {
             return false;
@@ -92,9 +92,10 @@ public sealed class AdaptiveRunPacingState
         double phaseElapsed = Math.Max(0.0, elapsed - _phaseEnteredSeconds);
         double phaseProgress = Math.Clamp(
             phaseElapsed / RunPacingTimeline.EvaluationWindowSeconds, 0.0, 1.0);
-        double dominanceProgress = spawned <= 0
+        int requiredDefeats = RunPacingTimeline.GetRequiredDefeats(spawned);
+        double dominanceProgress = requiredDefeats <= 0
             ? 0.0
-            : Math.Clamp(defeated / (double)spawned, 0.0, 1.0);
+            : Math.Clamp(defeated / (double)requiredDefeats, 0.0, 1.0);
         double transition = _phaseIndex == 0
             ? 1.0
             : Math.Clamp((elapsed - _phaseEnteredSeconds) / TransitionSeconds, 0.0, 1.0);
@@ -113,7 +114,7 @@ public sealed class AdaptiveRunPacingState
             Math.Max(0.0, RunPacingTimeline.EvaluationWindowSeconds - phaseElapsed),
             false, false, difficultySeconds,
             dominanceProgress,
-            spawned > 0 && defeated >= spawned,
+            RunPacingTimeline.MeetsClearRequirement(spawned, defeated),
             _phaseIndex, spawned, defeated);
     }
 

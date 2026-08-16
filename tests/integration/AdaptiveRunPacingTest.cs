@@ -4,7 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.Pacing;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证动态阶段只比较最近三十秒滑动窗口的实际生成与击破数，不读取存活量或时间兜底。
+/// 验证动态阶段以最近三十秒滑动窗口的九成清除率换挡，不读取存活量或时间兜底。
 /// </summary>
 public partial class AdaptiveRunPacingTest : Node
 {
@@ -28,17 +28,20 @@ public partial class AdaptiveRunPacingTest : Node
         }
     }
 
-    /// <summary>三十秒内击破数等于实际生成数时提高一档，提前一帧与单次巨量击破都不能跳多档。</summary>
+    /// <summary>三十秒内八成九仍停留、九成恰好提高一档，提前一帧不能跳档。</summary>
     private static void VerifyQualifiedWindowAdvancesOnce()
     {
         var state = new AdaptiveRunPacingState();
         state.Advance(0.0, new RunCombatTelemetry(0, 0));
-        state.Advance(29.9, new RunCombatTelemetry(23, 23));
+        state.Advance(29.9, new RunCombatTelemetry(100, 89));
         Require(state.PhaseId == RunPhaseId.Opening,
             "A window advanced before thirty seconds elapsed.");
-        state.Advance(30.0, new RunCombatTelemetry(23, 230));
+        state.Advance(30.0, new RunCombatTelemetry(100, 89));
+        Require(state.PhaseId == RunPhaseId.Opening,
+            "An eighty-nine-percent clear window advanced the pressure gear.");
+        state.Advance(30.1, new RunCombatTelemetry(100, 90));
         Require(state.PhaseId == RunPhaseId.Rising,
-            "A qualified window did not advance exactly one gear.");
+            "A ninety-percent clear window did not advance exactly one gear.");
     }
 
     /// <summary>整三十秒未达标后，下一秒滑动出的新窗口可以立即重新判定，不等待下一个分箱。</summary>
@@ -47,10 +50,10 @@ public partial class AdaptiveRunPacingTest : Node
         var state = new AdaptiveRunPacingState();
         state.Advance(0.0, new RunCombatTelemetry(0, 0));
         state.Advance(1.0, new RunCombatTelemetry(1, 0));
-        state.Advance(30.0, new RunCombatTelemetry(30, 29));
+        state.Advance(30.0, new RunCombatTelemetry(30, 26));
         Require(state.PhaseId == RunPhaseId.Opening,
             "An underperforming rolling window advanced the pressure gear.");
-        state.Advance(31.0, new RunCombatTelemetry(31, 31));
+        state.Advance(31.0, new RunCombatTelemetry(31, 28));
         Require(state.PhaseId == RunPhaseId.Rising,
             "The rolling window waited for a second fixed thirty-second bucket.");
     }

@@ -1,11 +1,13 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Pacing;
 
 /// <summary>
-/// 集中定义七个三十秒战力验证档位；只有击破本窗实际刷新量才会进入下一档。
+/// 集中定义七个三十秒战力验证档位；最近窗口清除九成刷新量才会进入下一档。
 /// </summary>
 public static class RunPacingTimeline
 {
     public const double EvaluationWindowSeconds = 30.0;
+    public const int RequiredClearPercent = 90;
+    public const double RequiredClearRatio = RequiredClearPercent / 100.0;
     public const double RisingSeconds = 30.0;
     public const double SwarmingSeconds = 60.0;
     public const double BarrageSeconds = 90.0;
@@ -50,6 +52,20 @@ public static class RunPacingTimeline
 
     public static RunPhaseRule FinalEncounterRule { get; } = new(
         RunPhaseId.FinalEncounter, 9.30, new EnemyTierMix(40, 30, 22, 8));
+
+    /// <summary>
+    /// 以整数百分比计算本窗最低击破数，避免九十比一百在浮点乘法边界被错误向上取整。
+    /// </summary>
+    public static int GetRequiredDefeats(int spawned)
+    {
+        int normalized = Math.Max(0, spawned);
+        long scaled = (long)normalized * RequiredClearPercent;
+        return (int)((scaled + 99L) / 100L);
+    }
+
+    /// <summary>判断非空滑动窗口是否已经清除至少九成实际刷新敌人。</summary>
+    public static bool MeetsClearRequirement(int spawned, int defeated) =>
+        spawned > 0 && Math.Max(0, defeated) >= GetRequiredDefeats(spawned);
 
     /// <summary>
     /// 把名义难度时间投影为唯一档位；正式运行时由 AdaptiveRunPacingState 决定是否前进。

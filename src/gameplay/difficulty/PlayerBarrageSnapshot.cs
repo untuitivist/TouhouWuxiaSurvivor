@@ -1,15 +1,19 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
 /// <summary>
-/// 保存一次自动齐射的纯数据计划，同时记录理想弹数和受性能余量约束后的实际弹数。
+/// 保存一次双通道自动齐射的形态计划，同时记录理想弹数和性能预算后的实际弹数。
 /// </summary>
 public readonly record struct PlayerBarrageSnapshot(
-    double ElapsedMinutes,
     PlayerBarrageMode Mode,
-    int RequestedProjectileCount,
-    int ProjectileCount,
+    int RequestedAimedProjectileCount,
+    int AimedProjectileCount,
+    int RequestedBarrageProjectileCount,
+    int BarrageProjectileCount,
     double AngularStepRadians,
-    double RotationRadians,
     bool RequiresTarget,
-    double RetryIntervalSeconds,
-    double VolleyDamageBudget);
+    double RetryIntervalSeconds)
+{
+    public int RequestedProjectileCount =>
+        RequestedAimedProjectileCount + RequestedBarrageProjectileCount;
+    public int ProjectileCount => AimedProjectileCount + BarrageProjectileCount;
+}

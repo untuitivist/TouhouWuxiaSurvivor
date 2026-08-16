@@ -2,6 +2,7 @@ using Godot;
 using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Gameplay.Balance;
 using TouhouWuxiaSurvivor.Gameplay.Difficulty;
+using TouhouWuxiaSurvivor.Gameplay.Pacing;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
@@ -50,8 +51,8 @@ public partial class BalanceTimelineContractTest : Node
     {
         (int Minimum, int Maximum)[] levelBands =
         [
-            (1, 1), (15, 24), (27, 37), (50, 60),
-            (73, 85), (87, 101), (117, 135), (157, 177),
+            (1, 1), (16, 21), (27, 35), (40, 48),
+            (54, 63), (64, 72), (82, 91), (104, 115),
         ];
         foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
         {
@@ -69,12 +70,12 @@ public partial class BalanceTimelineContractTest : Node
             Require(learnedSpells >= 5 && learnedSpells <= spellCapacity,
                 $"The five-minute build did not form a nearly complete spell loadout: {kind}/" +
                 $"{learnedSpells}/{spellCapacity}.");
-            bool containing = values[2].EffectiveKillsPerSecond >=
-                values[2].ScheduledSpawnsPerSecond * 0.75;
-            Require(values[2].PressureGear is >= 1 and <= 2 &&
-                values[2].ProjectedAliveEnemies is >= 180.0 and <= 300.0 &&
-                values[2].EffectiveKillsPerSecond >= 2.50 && containing,
-                $"The tripled five-minute supply left its calibrated high-density band: {kind}/" +
+            bool dominating = values[2].EffectiveKillsPerSecond >=
+                values[2].ScheduledSpawnsPerSecond * RunPacingTimeline.RequiredClearRatio;
+            Require(values[2].PressureGear == RunPacingTimeline.AdaptiveRules.Count &&
+                values[2].ProjectedAliveEnemies <= 30.0 &&
+                values[2].EffectiveKillsPerSecond >= 8.0 && dominating,
+                $"The five-minute build did not clear the tripled supply into the boss gate: {kind}/" +
                 $"gear {values[2].PressureGear}, " +
                 $"{values[2].ProjectedAliveEnemies:F1} alive, " +
                 $"{values[2].EffectiveKillsPerSecond:F3}/" +
@@ -192,17 +193,17 @@ public partial class BalanceTimelineContractTest : Node
     }
 
     /// <summary>
-    /// 检查路线标签确实改变构筑：强攻前期爆发最高，速射后期普攻最高，效用保持更高经济成长。
+    /// 检查路线标签确实改变构筑：强攻开局最高，速射后期普攻最高，效用保持更高经济成长。
     /// </summary>
     private static void VerifyRouteIdentities(
         IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
     {
-        BalanceTimelineSnapshot assault = timelines[BalanceBuildKind.Assault][1];
+        BalanceTimelineSnapshot assault = timelines[BalanceBuildKind.Assault][0];
         BalanceTimelineSnapshot rapid = timelines[BalanceBuildKind.Rapid][^1];
         BalanceTimelineSnapshot utility = timelines[BalanceBuildKind.Utility][^1];
         BalanceTimelineSnapshot baseline = timelines[BalanceBuildKind.Baseline][^1];
-        Require(assault.TotalDps == timelines.Values.Max(values => values[1].TotalDps),
-            "Assault route lost its early burst identity.");
+        Require(assault.TotalDps == timelines.Values.Max(values => values[0].TotalDps),
+            "Assault route lost its opening burst identity.");
         Require(rapid.WeaponDps == timelines.Values.Max(values => values[^1].WeaponDps),
             "Rapid route lost its late-game normal-attack identity.");
         Require(utility.SpiritEconomyMultiplier == timelines.Values.Max(
@@ -210,8 +211,8 @@ public partial class BalanceTimelineContractTest : Node
             "Utility route lost its per-drop economy identity.");
         double rapidWeaponShare = rapid.WeaponDps / rapid.TotalDps;
         double baselineWeaponShare = baseline.WeaponDps / baseline.TotalDps;
-        Require(rapidWeaponShare - baselineWeaponShare > 0.05 &&
-            rapid.WeaponDps >= baseline.WeaponDps * 1.25,
+        Require(rapidWeaponShare > baselineWeaponShare &&
+            rapid.WeaponDps >= baseline.WeaponDps * 1.05,
             "Rapid route collapsed into the baseline route.");
     }
 

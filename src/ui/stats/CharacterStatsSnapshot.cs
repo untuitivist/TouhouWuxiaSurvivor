@@ -21,6 +21,10 @@ public sealed class CharacterStatsSnapshot
     public long ExperienceToNext { get; }
     public long TotalExperience { get; }
     public int VolleyTotalDamage { get; }
+    public int AimedProjectileCount { get; }
+    public int AimedTotalDamage { get; }
+    public int BarrageProjectileCount { get; }
+    public int BarrageTotalDamage { get; }
     public int ProjectileCount { get; }
     public int MinimumProjectileDamage { get; }
     public int MaximumProjectileDamage { get; }
@@ -47,6 +51,10 @@ public sealed class CharacterStatsSnapshot
         long experienceToNext,
         long totalExperience,
         int volleyTotalDamage,
+        int aimedProjectileCount,
+        int aimedTotalDamage,
+        int barrageProjectileCount,
+        int barrageTotalDamage,
         int projectileCount,
         int minimumProjectileDamage,
         int maximumProjectileDamage,
@@ -69,6 +77,10 @@ public sealed class CharacterStatsSnapshot
         ExperienceToNext = experienceToNext;
         TotalExperience = totalExperience;
         VolleyTotalDamage = volleyTotalDamage;
+        AimedProjectileCount = aimedProjectileCount;
+        AimedTotalDamage = aimedTotalDamage;
+        BarrageProjectileCount = barrageProjectileCount;
+        BarrageTotalDamage = barrageTotalDamage;
         ProjectileCount = projectileCount;
         MinimumProjectileDamage = minimumProjectileDamage;
         MaximumProjectileDamage = maximumProjectileDamage;

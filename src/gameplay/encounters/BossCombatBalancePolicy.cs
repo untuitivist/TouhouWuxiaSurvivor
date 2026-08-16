@@ -5,7 +5,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.Encounters;
 /// </summary>
 public static class BossCombatBalancePolicy
 {
-    public const float HealthMultiplier = 2.0f;
+    public const float HealthMultiplier = 6.0f;
 
     /// <summary>把角色基础耐久提升为正式 Boss 耐久，并在整数边界执行饱和。</summary>
     public static int ScaleHealth(float baseHealth) => (int)Math.Clamp(

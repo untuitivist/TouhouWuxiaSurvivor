@@ -45,11 +45,12 @@ public partial class ProjectileEcsRuntime : Node2D
         float speed,
         int damage,
         int maximumHits = 1,
-        int secondaryHitDamage = -1)
+        int secondaryHitDamage = -1,
+        int visualVariant = 0)
     {
         if (_pool.TryAdd(position, direction, speed, damage,
                 ProjectileFaction.Player, ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
-                4.0f, 0, out _, maximumHits,
+                4.0f, visualVariant, out _, maximumHits,
                 secondaryHitDamage))
         {
             TotalSpawned++;
@@ -91,7 +92,9 @@ public partial class ProjectileEcsRuntime : Node2D
             Rect2 destination = new(projectile.Position - new Vector2(4.0f, 4.0f), new Vector2(8.0f, 8.0f));
             if (_texture is not null)
             {
-                DrawTextureRectRegion(_texture, destination, new Rect2(16.0f, 32.0f, 16.0f, 16.0f));
+                int column = 1 + projectile.VisualVariant % 2;
+                DrawTextureRectRegion(_texture, destination,
+                    new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f));
             }
             else
             {

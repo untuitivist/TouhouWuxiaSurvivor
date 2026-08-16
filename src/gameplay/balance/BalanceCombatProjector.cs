@@ -7,6 +7,7 @@ using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Balance;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Contracts;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+using TouhouWuxiaSurvivor.Combat.Weapons;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Balance;
 
@@ -31,21 +32,26 @@ internal static class BalanceCombatProjector
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
         PlayerBarrageSnapshot barrage = PlayerBarrageCurve.EvaluateSeconds(
-            elapsedSeconds, modifiers.UsesSpiralPattern, 0L, 0, modifiers.ExtraProjectiles);
-        double attackPower = EnemyBalanceProfile.BaseWeaponDamage *
-            character.PlayableProfile.AttackMultiplier * modifiers.AttackPowerMultiplier *
-            GetExpectedAttackMultiplier(modifiers);
+            elapsedSeconds, modifiers.UsesConvergingBarrage, 0L, 0,
+            modifiers.BarrageProjectileBonus, modifiers.AimedProjectileBonus);
+        double baseAttack = EnemyBalanceProfile.BaseWeaponDamage *
+            character.PlayableProfile.AttackMultiplier * GetExpectedAttackMultiplier(modifiers);
+        PlayerAttackDamageSnapshot damage = PlayerAttackDamageProjector.Project(
+            baseAttack, barrage, modifiers.ProjectileDamageMultiplier,
+            1 + modifiers.ProjectilePierceCount);
         double fireRate = modifiers.FireRateMultiplier *
             GetExpectedFireRateMultiplier(modifiers) /
             (EnemyBalanceProfile.BaseWeaponInterval *
                 character.PlayableProfile.AttackIntervalMultiplier);
-        double hitRate = CalculateWeaponHitRate(barrage, buildKind);
-        double pierceUtilization = 1.0 + modifiers.ProjectilePierceCount *
-            ProjectileDamageBudget.SecondaryHitMultiplier;
-        double weaponDps = attackPower * fireRate * barrage.VolleyDamageBudget * hitRate *
-            pierceUtilization;
+        double aimedContribution = damage.PredictiveAim.PrimaryTotalDamage *
+            CalculateAimedHitRate(buildKind) +
+            damage.PredictiveAim.SecondaryTotalDamage * 0.72;
+        double barrageContribution = damage.Barrage.PrimaryTotalDamage *
+            CalculateBarrageHitRate(barrage, buildKind);
+        double weaponDps = (aimedContribution + barrageContribution) * fireRate;
+        double spellAttackPower = baseAttack * modifiers.AttackPowerMultiplier;
         double spellDps = CalculateSpellContribution(
-            character, build, modifiers, attackPower);
+            character, build, modifiers, spellAttackPower);
         int offensive = SpellCardSlotPolicy.CountOccupied(build, SpellCardSlotKind.Offensive);
         int support = SpellCardSlotPolicy.CountOccupied(build, SpellCardSlotKind.Support);
         int endless = RunUpgradeCatalog.All.Where(item => item.IsRepeatable)
@@ -60,21 +66,24 @@ internal static class BalanceCombatProjector
     }
 
     /// <summary>
-    /// 根据弹幕形态与路线估计有效命中率；多弹只提高覆盖，完整伤害仍由齐射预算统一约束。
+    /// 预判弹采用高可靠命中率；路线只提供小幅差异，单弹伤害仍来自共享攻势倍率。
     /// </summary>
-    private static double CalculateWeaponHitRate(
+    private static double CalculateAimedHitRate(BalanceBuildKind buildKind) => buildKind switch
+    {
+        BalanceBuildKind.Assault => 0.94,
+        BalanceBuildKind.Rapid => 0.88,
+        BalanceBuildKind.Utility => 0.92,
+        _ => 0.91,
+    };
+
+    /// <summary>按定向弹幕密度估算覆盖率；弹数既提高覆盖，也按共享单弹伤害增加总输出。</summary>
+    private static double CalculateBarrageHitRate(
         PlayerBarrageSnapshot barrage,
         BalanceBuildKind buildKind)
     {
-        double coverage = Math.Min(0.12, Math.Max(0, barrage.ProjectileCount - 1) * 0.02);
-        double route = buildKind switch
-        {
-            BalanceBuildKind.Assault => 0.03,
-            BalanceBuildKind.Rapid => -0.02,
-            BalanceBuildKind.Utility => 0.02,
-            _ => 0.0,
-        };
-        return Math.Clamp(0.78 + coverage + route, 0.65, 0.94);
+        double coverage = Math.Min(0.20, barrage.BarrageProjectileCount * 0.025);
+        double route = buildKind == BalanceBuildKind.Utility ? 0.03 : 0.0;
+        return Math.Clamp(0.62 + coverage + route, 0.58, 0.88);
     }
 
     /// <summary>

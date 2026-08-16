@@ -12,15 +12,17 @@ public sealed class RunModifierState
     private float _baseSpiritAttractionMultiplier = 1.0f;
     public int DamageBonus { get; private set; }
     public float AttackPowerMultiplier { get; private set; } = 1.0f;
+    public float ProjectileDamageMultiplier => AttackPowerMultiplier;
     public float FireRateMultiplier { get; private set; } = 1.0f;
     public float MoveSpeedMultiplier { get; private set; } = 1.0f;
     public float TargetRangeMultiplier { get; private set; } = 1.0f;
     public float ProjectileSpeedMultiplier { get; private set; } = 1.0f;
     public float SpiritAttractionMultiplier { get; private set; } = 1.0f;
     public float SpiritYieldMultiplier { get; private set; } = 1.0f;
-    public int ExtraProjectiles { get; private set; }
+    public int AimedProjectileBonus { get; private set; }
+    public int BarrageProjectileBonus { get; private set; }
     public int ProjectilePierceCount { get; private set; }
-    public bool UsesSpiralPattern { get; private set; }
+    public bool UsesConvergingBarrage { get; private set; }
     public bool UsesContinuousFireMomentum { get; private set; }
     public bool UsesStationaryFocus { get; private set; }
     public bool UsesMovementMomentum { get; private set; }
@@ -52,6 +54,7 @@ public sealed class RunModifierState
         int endlessMoveSpeed = build.GetRank(RunUpgradeKind.EndlessMoveSpeed);
         int endlessRange = build.GetRank(RunUpgradeKind.EndlessTargetRange);
         int endlessProjectileSpeed = build.GetRank(RunUpgradeKind.EndlessProjectileSpeed);
+        int barrageRank = build.GetRank(RunUpgradeKind.ProjectileSpeed);
         int endlessAttraction = build.GetRank(RunUpgradeKind.EndlessSpiritAttraction);
         float specializationDamage = GetSpecializationBonus(
             build, RunSpecializationEffect.Damage);
@@ -67,7 +70,7 @@ public sealed class RunModifierState
             build, RunSpecializationEffect.SpiritAttraction);
         DamageBonus = _baseDamageBonus;
         AttackPowerMultiplier = (1.0f +
-            build.GetRank(RunUpgradeKind.NeedleDamage) * 0.25f + specializationDamage) *
+            build.GetRank(RunUpgradeKind.NeedleDamage) * 0.35f + specializationDamage) *
             SqrtGrowth(endlessDamage, 0.06f);
         FireRateMultiplier = (1.0f + build.GetRank(RunUpgradeKind.FireRate) * 0.18f +
             specializationFireRate) *
@@ -80,20 +83,21 @@ public sealed class RunModifierState
             build.GetRank(RunUpgradeKind.TargetRange) * 0.25f +
             specializationTargetRange) * SqrtGrowth(endlessRange, 0.04f);
         ProjectileSpeedMultiplier = 1.0f +
-            build.GetRank(RunUpgradeKind.ProjectileSpeed) * 0.25f +
+            barrageRank * 0.12f +
             specializationProjectileSpeed;
-        ProjectileSpeedMultiplier *= SqrtGrowth(endlessProjectileSpeed, 0.04f);
+        ProjectileSpeedMultiplier *= SqrtGrowth(endlessProjectileSpeed, 0.02f);
         SpiritAttractionMultiplier = _baseSpiritAttractionMultiplier *
             (1.0f + build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.50f +
                 specializationAttraction) * SqrtGrowth(endlessAttraction, 0.08f);
         float explicitProjectiles = GetSpecializationBonus(
-            build, RunSpecializationEffect.ExtraProjectiles);
+            build, RunSpecializationEffect.BarrageProjectiles);
         ProjectilePierceCount = (int)MathF.Round(GetSpecializationBonus(
             build, RunSpecializationEffect.ProjectilePierce));
-        UsesSpiralPattern = GetSpecializationBonus(
-            build, RunSpecializationEffect.SpiralPattern) > 0.0f;
-        ExtraProjectiles = (int)MathF.Round(explicitProjectiles) +
-            (UsesSpiralPattern ? 2 : 0);
+        UsesConvergingBarrage = GetSpecializationBonus(
+            build, RunSpecializationEffect.ConvergingBarrage) > 0.0f;
+        BarrageProjectileBonus = barrageRank * 2 +
+            (int)MathF.Round(explicitProjectiles);
+        AimedProjectileBonus = build.GetRank(RunUpgradeKind.TargetRange);
         SpiritYieldMultiplier = 1.0f +
             build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.10f +
             GetSpecializationBonus(build, RunSpecializationEffect.SpiritYield);

@@ -146,11 +146,11 @@ public partial class EcsCombatWorld : Node2D
         Vector2 direction,
         float speed,
         int damage,
-        int maximumHits = 1, int secondaryHitDamage = -1)
+        int maximumHits = 1, int secondaryHitDamage = -1, int visualVariant = 0)
     {
         if (_projectiles.TryAdd(position, direction, speed, damage,
                 ProjectileFaction.Player, ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
-                4.0f, 0, out _, maximumHits, secondaryHitDamage))
+                4.0f, visualVariant, out _, maximumHits, secondaryHitDamage))
         {
             TotalProjectilesSpawned++;
         }

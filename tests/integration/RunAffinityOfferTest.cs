@@ -193,8 +193,9 @@ public partial class RunAffinityOfferTest : Node
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
         Require(modifiers.DamageBonus == 0 &&
-            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.50f) &&
-            modifiers.ProjectilePierceCount == 1 && modifiers.ExtraProjectiles == 2,
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.70f) &&
+            modifiers.ProjectilePierceCount == 1 &&
+            modifiers.BarrageProjectileBonus == 2,
             "Chosen specialization did not enter the runtime modifier projection.");
     }
 

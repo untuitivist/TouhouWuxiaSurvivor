@@ -119,13 +119,15 @@ public partial class RunProgressionBalanceTest : Node
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
         Require(modifiers.DamageBonus == 0 &&
-            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.25f) &&
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 1.35f) &&
             Mathf.IsEqualApprox(modifiers.FireRateMultiplier, 1.18f) &&
             Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.15f) &&
             Mathf.IsEqualApprox(modifiers.TargetRangeMultiplier, 1.25f) &&
-            Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.25f) &&
+            Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.12f) &&
             Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.50f) &&
-            Mathf.IsEqualApprox(modifiers.SpiritYieldMultiplier, 1.10f),
+            Mathf.IsEqualApprox(modifiers.SpiritYieldMultiplier, 1.10f) &&
+            modifiers.AimedProjectileBonus == 1 &&
+            modifiers.BarrageProjectileBonus == 2,
             "First-rank runtime modifiers are incorrect.");
 
         RunUpgradeDefinition damage = RunUpgradeCatalog.All[0];
@@ -139,7 +141,7 @@ public partial class RunProgressionBalanceTest : Node
         modifiers.ConfigureBase(2, 1.04f, 1.16f);
         modifiers.Refresh(build);
         Require(modifiers.DamageBonus == 2 &&
-            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 2.00f) &&
+            Mathf.IsEqualApprox(modifiers.AttackPowerMultiplier, 2.40f) &&
             Mathf.IsEqualApprox(modifiers.MoveSpeedMultiplier, 1.04f * 1.15f) &&
             Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.16f * 1.50f),
             "Permanent and in-run modifiers did not compose from stable bases.");

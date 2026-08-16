@@ -23,9 +23,6 @@ public partial class AutoShooter : Node2D
     private EcsCombatWorld? _ecsWorld;
     private PassiveSpecializationState? _passiveSpecializations;
     private double _cooldownLeft;
-    private double _localElapsedSeconds;
-    private long _volleySequence;
-    private bool _wasSpiralActive;
     private float _lastFireRateMultiplier = 1.0f;
 
     [Export]
@@ -56,6 +53,8 @@ public partial class AutoShooter : Node2D
     public int LastVolleyProjectileCount { get; private set; }
     /// <summary>获取最近一次规划齐射的总伤与单弹范围，供状态面板读取正式整数预算。</summary>
     public ProjectileVolleyDamageSnapshot CurrentVolleyDamage { get; private set; }
+    /// <summary>获取最近一次自瞄与弹幕的分项伤害账目，供面板核对共享数值和独立弹数。</summary>
+    public PlayerAttackDamageSnapshot CurrentAttackDamage { get; private set; }
     /// <summary>获取最近一次纯函数生成的弹幕计划，供调试界面和自动测试读取。</summary>
     public PlayerBarrageSnapshot CurrentBarrage { get; private set; }
     public event Action? VolleyFired;
@@ -82,13 +81,11 @@ public partial class AutoShooter : Node2D
         _passiveSpecializations = (GetParentOrNull<Node>() as PlayerController)?
             .PassiveSpecializations;
         _cooldownLeft = AutoAttackCadence.InitialDelaySeconds;
-        _localElapsedSeconds = 0.0;
-        _volleySequence = 0L;
         LastVolleyProjectileCount = 0;
     }
 
     /// <summary>
-    /// 读取 ECS 生存时间和现有强化推进冷却，自动选择单发、扇形或旋转弹幕，全程不读取操作输入。
+    /// 读取现有强化推进冷却，每轮自动发射预判弹与已修习的定向弹幕，全程不读取操作输入。
     /// </summary>
     public override void _Process(double delta)
     {
@@ -99,16 +96,9 @@ public partial class AutoShooter : Node2D
             return;
         }
 
-        _localElapsedSeconds += Math.Max(0.0, delta);
         _passiveSpecializations?.AdvanceCombat(delta);
-        bool spiralActive = _buffs?.IsSpiralActive == true ||
-            _runModifiers?.UsesSpiralPattern == true;
-        if (spiralActive && !_wasSpiralActive)
-        {
-            _volleySequence = 0L;
-        }
-
-        _wasSpiralActive = spiralActive;
+        bool convergingActive = _buffs?.IsSpiralActive == true ||
+            _runModifiers?.UsesConvergingBarrage == true;
         float fireRate = GetEffectiveFireRate();
         double effectiveInterval = AutoAttackCadence.CalculateInterval(
             BaseFireInterval, CharacterAttackIntervalMultiplier, fireRate);
@@ -125,8 +115,9 @@ public partial class AutoShooter : Node2D
         }
 
         CurrentBarrage = PlayerBarrageCurve.Evaluate(
-            spiralActive, _volleySequence, GetActiveProjectileCount(),
-            _runModifiers?.ExtraProjectiles ?? 0);
+            convergingActive, GetActiveProjectileCount(),
+            _runModifiers?.AimedProjectileBonus ?? 0,
+            _runModifiers?.BarrageProjectileBonus ?? 0);
         LastVolleyProjectileCount = 0;
         if (CurrentBarrage.ProjectileCount == 0)
         {
@@ -141,7 +132,6 @@ public partial class AutoShooter : Node2D
 
         if (!hasTarget && CurrentBarrage.RequiresTarget)
         {
-            _volleySequence++;
             _cooldownLeft = 0.1;
             return;
         }
@@ -163,7 +153,6 @@ public partial class AutoShooter : Node2D
             : targetMotion.Position;
         LastVolleyProjectileCount = FireVolley(
             baseDirection, interceptPoint, CurrentBarrage);
-        _volleySequence++;
         if (LastVolleyProjectileCount > 0)
         {
             _passiveSpecializations?.RegisterVolley();
@@ -199,24 +188,31 @@ public partial class AutoShooter : Node2D
     }
 
     /// <summary>
-    /// 按计划生成面向目标的单发、扇形或收束阵，并返回实际成功生成数量。
+    /// 按计划生成一枚预判弹和成对定向弹幕，并返回两个通道实际成功生成的总数。
     /// </summary>
     private int FireVolley(
         Vector2 baseDirection,
         Vector2 interceptPoint,
         PlayerBarrageSnapshot barrage)
     {
-        CurrentVolleyDamage = ProjectVolleyDamage(barrage);
+        CurrentAttackDamage = ProjectAttackDamage(barrage);
+        CurrentVolleyDamage = CurrentAttackDamage.CreateSummary();
         int spawned = 0;
         for (int index = 0; index < barrage.ProjectileCount; index++)
         {
             ProjectileLaunchPlan launch = PlayerVolleyPattern.Resolve(
                 GlobalPosition, baseDirection, interceptPoint, SpawnDistance, barrage, index);
+            bool aimed = launch.Channel == PlayerProjectileChannel.PredictiveAim;
+            int channelIndex = aimed ? 0 : index - barrage.AimedProjectileCount;
+            ProjectileVolleyDamageSnapshot damage = aimed
+                ? CurrentAttackDamage.PredictiveAim
+                : CurrentAttackDamage.Barrage;
             spawned += SpawnProjectile(
                 launch.Position,
                 launch.Direction,
-                CurrentVolleyDamage.GetPrimaryDamage(index),
-                CurrentVolleyDamage.GetSecondaryDamage(index)) ? 1 : 0;
+                damage.GetPrimaryDamage(channelIndex),
+                damage.GetSecondaryDamage(channelIndex),
+                launch.Channel) ? 1 : 0;
         }
 
         return spawned;
@@ -229,7 +225,8 @@ public partial class AutoShooter : Node2D
         Vector2 spawnPosition,
         Vector2 direction,
         int damage,
-        int secondaryHitDamage)
+        int secondaryHitDamage,
+        PlayerProjectileChannel channel)
     {
         if (_ecsWorld is null && _ecsProjectiles is null && (ProjectileScene is null || _projectileContainer is null))
         {
@@ -237,18 +234,19 @@ public partial class AutoShooter : Node2D
         }
 
         float speed = GetEffectiveProjectileSpeed();
-        int maximumHits = secondaryHitDamage > 0
+        int maximumHits = channel == PlayerProjectileChannel.PredictiveAim &&
+            secondaryHitDamage > 0
             ? 1 + (_runModifiers?.ProjectilePierceCount ?? 0)
             : 1;
         if (_ecsWorld is not null)
         {
             _ecsWorld.SpawnProjectile(spawnPosition, direction, speed, damage,
-                maximumHits, secondaryHitDamage);
+                maximumHits, secondaryHitDamage, (int)channel);
         }
         else if (_ecsProjectiles is not null)
         {
             _ecsProjectiles.Spawn(spawnPosition, direction, speed, damage,
-                maximumHits, secondaryHitDamage);
+                maximumHits, secondaryHitDamage, (int)channel);
         }
         else
         {
@@ -263,19 +261,29 @@ public partial class AutoShooter : Node2D
     }
 
     /// <summary>
-    /// 把整轮伤害预算均匀拆到实际弹丸，余数优先分配给前几发以保持整数总伤稳定。
+    /// 返回两个正式通道的合计摘要；逐弹生成必须使用 ProjectAttackDamage 保持通道独立。
     /// </summary>
     public ProjectileVolleyDamageSnapshot ProjectVolleyDamage(
         PlayerBarrageSnapshot barrage)
     {
+        PlayerAttackDamageSnapshot attack = ProjectAttackDamage(barrage);
+        return attack.CreateSummary();
+    }
+
+    /// <summary>
+    /// 从同一单弹伤害计算两个通道的总预算；自瞄可贯穿，弹幕只改变数量与表现。
+    /// </summary>
+    public PlayerAttackDamageSnapshot ProjectAttackDamage(
+        PlayerBarrageSnapshot barrage)
+    {
         double rawSingle = ((double)Damage + (_runModifiers?.DamageBonus ?? 0)) *
-            (_runModifiers?.AttackPowerMultiplier ?? 1.0f) *
             (_passiveSpecializations?.AttackPowerMultiplier ?? 1.0f) *
             Math.Max(0.01f, CharacterAttackMultiplier);
         int maximumHits = 1 + (_runModifiers?.ProjectilePierceCount ?? 0);
-        return ProjectileDamageBudget.Project(
-            rawSingle, barrage.VolleyDamageBudget,
-            barrage.ProjectileCount, maximumHits);
+        return PlayerAttackDamageProjector.Project(
+            rawSingle, barrage,
+            _runModifiers?.ProjectileDamageMultiplier ?? 1.0f,
+            maximumHits);
     }
 
     /// <summary>

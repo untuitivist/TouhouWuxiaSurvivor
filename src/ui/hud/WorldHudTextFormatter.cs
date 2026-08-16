@@ -57,7 +57,8 @@ public static class WorldHudTextFormatter
         EnemyTierMix mix = pressure.TierMix;
         return $"难度  档{pacing.PressureGear} · 指标{pressure.DifficultyIndex:0.00} · " +
             $"刷新{pressure.SpawnRatePerSecond:0.00}/秒\n" +
-            $"30秒窗  击破{pacing.WindowDefeated} / 刷新{pacing.WindowSpawned} · {ratio} · {state}\n" +
+            $"30秒窗  击破{pacing.WindowDefeated} / 刷新{pacing.WindowSpawned} · " +
+            $"{ratio} · 阈值{RunPacingTimeline.RequiredClearPercent}% · {state}\n" +
             $"敌群  普{mix.Common:P0} / 强{mix.Veteran:P0} / " +
             $"精{mix.Elite:P0} / 头{mix.Champion:P0}";
     }

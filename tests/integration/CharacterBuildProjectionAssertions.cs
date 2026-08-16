@@ -37,9 +37,9 @@ public static class CharacterBuildProjectionAssertions
         IEnumerable<RunUpgradeDefinition> finite)
     {
         string[] ids = finite.SelectMany(item => item.Specializations)
-            .Where(item => item.Effect is RunSpecializationEffect.ExtraProjectiles or
+            .Where(item => item.Effect is RunSpecializationEffect.BarrageProjectiles or
                 RunSpecializationEffect.ProjectilePierce or
-                RunSpecializationEffect.SpiralPattern)
+                RunSpecializationEffect.ConvergingBarrage)
             .Select(item => item.Id).ToArray();
         Require(ids.Length >= 3 && ids.All(id =>
             Node(model, id).CategoryName == "弹幕特化" &&
