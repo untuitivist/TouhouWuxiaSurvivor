@@ -84,7 +84,7 @@ public partial class RunProgressionBalanceTest : Node
             item.IsRepeatable).ToArray();
         RunUpgradeDefinition[] spellCards = RunUpgradeCatalog.All
             .Where(item => item.Category == RunUpgradeCategory.SpellCard).ToArray();
-        Require(finite.Length == 6 && endless.Length == 6 && spellCards.Length == 46,
+        Require(finite.Length == 6 && endless.Length == 6 && spellCards.Length == 51,
             "The pool does not contain the expected finite, endless, and spell upgrades.");
         Require(RunUpgradeCatalog.All.Select(item => item.Id).Distinct().Count() ==
                 RunUpgradeCatalog.All.Count &&

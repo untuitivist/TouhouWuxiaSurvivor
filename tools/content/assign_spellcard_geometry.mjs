@@ -18,6 +18,11 @@ const assignments = new Map([
   ["th04_gengetsu_double_magic_cannon", "fan"],
   ["th05_yumeko_pandemonium_sword_array", "fan"],
   ["th05_shinki_makai_creation", "ring"],
+  ["th06_rumia_night_bird", "fan"],
+  ["th06_cirno_perfect_freeze", "ring"],
+  ["th06_meiling_rainbow_wind_chime", "fan"],
+  ["th06_patchouli_philosophers_stone", "orbit"],
+  ["th06_sakuya_killing_doll", "backstab"],
   ["th06_remilia_scarlet_shoot", "fan"],
   ["th06_flandre_laevatein", "line"],
   ["th07_yuyuko_ink_black_cherry", "ring"],
@@ -99,8 +104,8 @@ async function main() {
     await updateManifest(filePath, writeChanges, seen);
   }
   const missing = [...assignments.keys()].filter((id) => !seen.has(id));
-  if (seen.size !== 46 || missing.length > 0) {
-    throw new Error(`Expected 46 assigned cards, saw ${seen.size}; missing ${missing}.`);
+  if (seen.size !== 51 || missing.length > 0) {
+    throw new Error(`Expected 51 assigned cards, saw ${seen.size}; missing ${missing}.`);
   }
   const counts = [...assignments.values()].reduce((result, geometry) => {
     result[geometry] = (result[geometry] ?? 0) + 1;

@@ -49,6 +49,7 @@ public partial class BossEncounterDirector : Node
         _encounterActive = false;
         IsFirstEncounterArmed = false;
         _random.Randomize();
+        world.ConfigureBossAttacks(new SpellCardBossAttackResolver());
         world.BossDefeated += OnBossDefeated;
     }
 

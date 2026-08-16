@@ -48,13 +48,15 @@ public partial class EnemyRewardBalanceTest : Node
             "A global stage changed fixed monster attributes or rewards.");
     }
 
-    /// <summary>确认 Boss 工厂完整使用角色档案，生命阶段只切换招式而不会放大全局属性。</summary>
+    /// <summary>确认 Boss 只应用显式生命强化，移动、接触伤害和奖励基础仍完整使用角色档案。</summary>
     private static void VerifyBossProfileOwnership()
     {
         CharacterDefinition character = CharacterCatalog.All.First(character =>
             character.SourcePackId != ContentPackCatalog.Base.Id);
         EnemyDefinition boss = BossDefinitionFactory.Create(character);
-        Require(boss.MaxHealth == Mathf.CeilToInt(character.BossProfile.MaxHealth) &&
+        Require(boss.MaxHealth == BossCombatBalancePolicy.ScaleHealth(
+                character.BossProfile.MaxHealth) &&
+            boss.BaseMaxHealth == Mathf.CeilToInt(character.BossProfile.MaxHealth) &&
             Mathf.IsEqualApprox(boss.MoveSpeed, character.BossProfile.MoveSpeed) &&
             boss.ContactDamage == EnemyDifficultyScaler.NormalizeContactDamage(
                 character.BossProfile.ContactDamage),

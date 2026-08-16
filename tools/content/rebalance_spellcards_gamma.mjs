@@ -277,8 +277,8 @@ async function main() {
     cardCount += result.cards;
     entries.push(...result.entries);
   }
-  if (cardCount !== 46) {
-    throw new Error(`Expected 46 spell cards, got ${cardCount}.`);
+  if (cardCount !== 51) {
+    throw new Error(`Expected 51 spell cards, got ${cardCount}.`);
   }
   console.log(`spellcard-balance-v2 ok: 20 packs + base, ${cardCount} cards, ` +
     `budget ${rounded(Math.min(...entries.map((entry) => entry.score)))}..` +

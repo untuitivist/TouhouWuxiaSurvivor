@@ -98,16 +98,17 @@ public partial class CompendiumSmokeTest : Node
                 details.Contains("本局 Boss 候选", StringComparison.Ordinal),
                 "Character detail omitted playable, Boss, or self-exclusion state.");
             tabs.CurrentTab = (int)CompendiumCategory.SpellCard;
-            Require(panel.VisibleEntryCount == 2 &&
+            Require(panel.VisibleEntryCount == 7 &&
                 preview.CurrentCategory == CompendiumCategory.SpellCard,
-                "TH06 spell-card page must expose the Scarlet sisters' representative cards.");
+                "TH06 spell-card page must expose every declared character's representative card.");
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             Require(preview.InternalOriginalActive,
                 "TH06 spell-card preview did not activate the internal bullet atlas.");
             details = panel.CurrentDetailsText;
             Require(details.Contains("所属角色：", StringComparison.Ordinal) &&
-                (details.Contains("蕾米莉亚·斯卡蕾特", StringComparison.Ordinal) ||
-                    details.Contains("芙兰朵露·斯卡蕾特", StringComparison.Ordinal)) &&
+                new[] { "露米娅", "琪露诺", "红美铃", "帕秋莉·诺蕾姬", "十六夜咲夜",
+                    "蕾米莉亚·斯卡蕾特", "芙兰朵露·斯卡蕾特" }.Any(owner =>
+                        details.Contains(owner, StringComparison.Ordinal)) &&
                 details.Contains("设定来源：原作正式符卡", StringComparison.Ordinal) &&
                 details.Contains("前置构筑", StringComparison.Ordinal) &&
                 details.Contains("自动触发", StringComparison.Ordinal) &&

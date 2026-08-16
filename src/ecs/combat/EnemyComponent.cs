@@ -27,6 +27,8 @@ public struct EnemyComponent
         BossPhase = BossBulletPhase.AimedFan;
         PatternAngle = entity.Value % 12 * Mathf.Pi / 6.0f;
         PatternDirection = (entity.Value & 1) == 0 ? 1.0f : -1.0f;
+        ActiveSpellName = string.Empty;
+        SpellAnnouncementTime = 0.0f;
         Alive = true;
     }
 
@@ -89,6 +91,12 @@ public struct EnemyComponent
 
     /// <summary>获取或设置交错旋转方向，每次发射后翻转形成正反双螺旋。</summary>
     public float PatternDirection;
+
+    /// <summary>保存当前血量阶段正在演出的角色符卡简称；通用弹幕保持空字符串。</summary>
+    public string ActiveSpellName;
+
+    /// <summary>获取或设置符卡名演出剩余时间，归零后不再占用世界画面。</summary>
+    public float SpellAnnouncementTime;
 
     /// <summary>获取是否仍然可以移动、受伤和被索敌。</summary>
     public bool Alive;

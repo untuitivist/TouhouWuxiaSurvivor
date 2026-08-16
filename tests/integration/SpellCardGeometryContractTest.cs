@@ -30,8 +30,8 @@ public partial class SpellCardGeometryContractTest : Node
     /// <summary>确认每张卡都解析出已注册机制，五种几何均跨多个内容包且没有孤立样本。</summary>
     private static void VerifyCatalogCoverage()
     {
-        Require(SpellCardCatalog.All.Count == 46,
-            "Geometry audit requires the complete 46-card catalog.");
+        Require(SpellCardCatalog.All.Count == 51,
+            "Geometry audit requires the complete 51-card catalog.");
         Require(SpellCardGeometryCatalog.All.Count ==
             Enum.GetValues<SpellCardGeometryKind>().Length,
             "Every geometry enum must own one executable strategy.");

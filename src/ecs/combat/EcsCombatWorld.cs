@@ -164,7 +164,8 @@ public partial class EcsCombatWorld : Node2D
         Vector2 direction,
         float speed,
         int damage,
-        int visualVariant = 0)
+        int visualVariant = 0,
+        int visualStyleId = 0)
     {
         if (_projectiles.CountFaction(ProjectileFaction.Enemy) >=
                 ProjectilePool.MaximumEnemyActive ||
@@ -174,7 +175,8 @@ public partial class EcsCombatWorld : Node2D
         }
 
         bool spawned = _projectiles.TryAdd(position, direction, speed, damage,
-            ProjectileFaction.Enemy, 7.0f, 3.5f, visualVariant, out _);
+            ProjectileFaction.Enemy, 7.0f, 3.5f, visualVariant, out _,
+            visualStyleId: visualStyleId);
         if (spawned)
         {
             TotalEnemyProjectilesSpawned++;
@@ -300,7 +302,8 @@ public partial class EcsCombatWorld : Node2D
         _enemyMovement.Step(_enemies, _player.GlobalPosition, (float)delta,
             amount => _health.ApplyDamage(amount));
         _enemyProjectiles.Step(_enemies, _player.GlobalPosition, (float)delta,
-            SpawnEnemyProjectile);
+            request => SpawnEnemyProjectile(request.Position, request.Direction,
+                request.Speed, request.Damage, request.VisualVariant, request.VisualStyleId));
         _projectileMovement.Step(_projectiles, (float)delta);
         ResolveProjectileHits();
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());

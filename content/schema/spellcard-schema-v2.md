@@ -31,4 +31,4 @@
 node tools/content/migrate_spellcard_schema_v2.mjs
 ```
 
-检查器会验证本体与 20 个内容包合计 46 张奥义、字段边界、旧字段禁入及 UTF-8 without BOM。
+检查器会验证本体与 20 个内容包合计 51 张奥义、字段边界、旧字段禁入及 UTF-8 without BOM。

@@ -43,7 +43,7 @@ public partial class BalanceTimelineContractTest : Node
     }
 
     /// <summary>
-    /// 以宽区间守住双倍供给下的成长密度和长局无尽节奏，避免模拟继续沿用旧刷新量的假预期。
+    /// 以宽区间守住三倍原始供给下的成长密度和长局无尽节奏，避免模拟继续沿用旧刷新量的假预期。
     /// </summary>
     private static void VerifyPacingWindows(
         IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
@@ -70,11 +70,11 @@ public partial class BalanceTimelineContractTest : Node
                 $"The five-minute build did not form a nearly complete spell loadout: {kind}/" +
                 $"{learnedSpells}/{spellCapacity}.");
             bool containing = values[2].EffectiveKillsPerSecond >=
-                values[2].ScheduledSpawnsPerSecond * 0.90;
-            Require(values[2].PressureGear is >= 2 and <= 3 &&
-                values[2].ProjectedAliveEnemies is >= 40.0 and <= 150.0 &&
+                values[2].ScheduledSpawnsPerSecond * 0.75;
+            Require(values[2].PressureGear is >= 1 and <= 2 &&
+                values[2].ProjectedAliveEnemies is >= 180.0 and <= 300.0 &&
                 values[2].EffectiveKillsPerSecond >= 2.50 && containing,
-                $"The doubled five-minute supply left its calibrated high-density band: {kind}/" +
+                $"The tripled five-minute supply left its calibrated high-density band: {kind}/" +
                 $"gear {values[2].PressureGear}, " +
                 $"{values[2].ProjectedAliveEnemies:F1} alive, " +
                 $"{values[2].EffectiveKillsPerSecond:F3}/" +

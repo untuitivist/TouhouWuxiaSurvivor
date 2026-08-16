@@ -202,7 +202,7 @@ async function processPack(filePath, writeChanges) {
 }
 
 /**
- * 枚举本体和全部官方包并强制 20 包、46 卡契约；`--write` 执行迁移，默认只做仓库一致性检查。
+ * 枚举本体和全部官方包并强制 20 包、51 卡契约；`--write` 执行迁移，默认只做仓库一致性检查。
  */
 async function main() {
   const writeChanges = process.argv.includes("--write");
@@ -222,8 +222,8 @@ async function main() {
   for (const manifestPath of manifestPaths) {
     cardCount += await processPack(manifestPath, writeChanges);
   }
-  if (cardCount !== 46) {
-    throw new Error(`Expected 46 cards across base and 20 packs, got ${cardCount}.`);
+  if (cardCount !== 51) {
+    throw new Error(`Expected 51 cards across base and 20 packs, got ${cardCount}.`);
   }
   console.log(`spellcard-schema-v2 ok: base + ${directories.length} packs, ` +
     `${cardCount} cards`);

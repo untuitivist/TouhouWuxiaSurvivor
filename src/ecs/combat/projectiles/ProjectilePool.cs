@@ -53,7 +53,8 @@ public sealed class ProjectilePool
         out EcsEntity entity,
         int maximumHits = 1,
         int secondaryHitDamage = -1,
-        float hitDamageDecay = ProjectileDamageBudget.SecondaryHitMultiplier)
+        float hitDamageDecay = ProjectileDamageBudget.SecondaryHitMultiplier,
+        int visualStyleId = 0)
     {
         if (_items.Count >= MaximumActive)
         {
@@ -74,7 +75,8 @@ public sealed class ProjectilePool
             visualVariant,
             maximumHits,
             secondaryHitDamage,
-            hitDamageDecay));
+            hitDamageDecay,
+            visualStyleId));
         ChangeFactionCount(faction, 1);
         return true;
     }

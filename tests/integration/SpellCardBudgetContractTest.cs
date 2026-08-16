@@ -75,9 +75,9 @@ public partial class SpellCardBudgetContractTest : Node
     {
         Require(ContentPackCatalog.All.Count == 20,
             "The official content catalog must contain 20 packs.");
-        Require(SpellCardCatalog.All.Count == 46 &&
-            SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 46,
-            "The spell catalog must contain 46 unique cards across base and packs.");
+        Require(SpellCardCatalog.All.Count == 51 &&
+            SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 51,
+            "The spell catalog must contain 51 unique cards across base and packs.");
         SpellCardDefinition[] baseCards = SpellCardCatalog.All.Where(
             card => card.SourcePackId == "base").ToArray();
         Require(baseCards.Length == 6 &&
@@ -90,8 +90,9 @@ public partial class SpellCardBudgetContractTest : Node
             baseCards.Any(card => card.OwnerName == "雾雨魔理沙"),
             "The base spell loadout must represent both permanent playable characters.");
         Require(ContentPackCatalog.All.All(pack =>
-                SpellCardCatalog.All.Count(card => card.SourcePackId == pack.Id) == 2),
-            "Every official pack must contribute exactly two horizontal spell choices.");
+                SpellCardCatalog.All.Count(card => card.SourcePackId == pack.Id) ==
+                    (pack.Number == 6 ? 7 : 2)),
+            "Every official pack must retain its declared horizontal spell choices.");
     }
 
     /// <summary>确认四类投射方式使用各自的伤害、目标与护身区间，不再依赖零目标哨兵。</summary>

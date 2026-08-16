@@ -44,9 +44,9 @@ public partial class SpellCardBalanceTest : Node
     /// </summary>
     private static void VerifyCatalog()
     {
-        Require(SpellCardCatalog.All.Count == 46,
-            "The all-work catalog must contain 46 representative spell cards.");
-        Require(SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 46 &&
+        Require(SpellCardCatalog.All.Count == 51,
+            "The all-work catalog must contain 51 representative spell cards.");
+        Require(SpellCardCatalog.All.Select(card => card.Id).Distinct().Count() == 51 &&
             SpellCardCatalog.All.All(card =>
                 CharacterCatalog.FindById(card.OwnerCharacterId) is not null),
             "Spell card IDs or stable owner identities are invalid.");
@@ -62,7 +62,7 @@ public partial class SpellCardBalanceTest : Node
             "Base must own its complete six-card loadout.");
         foreach (ContentPackDefinition pack in ContentPackCatalog.All)
         {
-            const int expected = 2;
+            int expected = pack.Number == 6 ? 7 : 2;
             SpellCardDefinition[] cards = SpellCardCatalog.All.Where(
                 card => card.SourcePackId == pack.Id).ToArray();
             Require(cards.Length == expected,
@@ -80,10 +80,10 @@ public partial class SpellCardBalanceTest : Node
     {
         var counts = SpellCardCatalog.All.GroupBy(card => card.ActivationKind)
             .ToDictionary(group => group.Key, group => group.Count());
-        Require(counts.GetValueOrDefault(SpellCardActivationKind.Periodic) == 13 &&
-            counts.GetValueOrDefault(SpellCardActivationKind.Crowd) == 23 &&
+        Require(counts.GetValueOrDefault(SpellCardActivationKind.Periodic) == 16 &&
+            counts.GetValueOrDefault(SpellCardActivationKind.Crowd) == 25 &&
             counts.GetValueOrDefault(SpellCardActivationKind.OnDamaged) == 10,
-            "Spell activation migration did not preserve the 13/23/10 design matrix.");
+            "Spell activation catalog did not preserve the 16/25/10 design matrix.");
     }
 
     /// <summary>
@@ -146,10 +146,10 @@ public partial class SpellCardBalanceTest : Node
             "Base-only runs must expose the complete permanent 4+2 spell loadout.");
         ContentPackDefinition th06 = ContentPackCatalog.All.Single(pack => pack.Number == 6);
         var selection = new ContentPackSelection([th06.Id]);
-        Require(SpellCardCatalog.GetEnabled(selection).Count == 8 &&
+        Require(SpellCardCatalog.GetEnabled(selection).Count == 13 &&
             SpellCardCatalog.GetEnabled(selection).Count(card =>
                 card.SourcePackId == ContentPackCatalog.Base.Id) == 6 &&
-            SpellCardCatalog.GetEnabled(selection).Count(card => card.SourcePackId == th06.Id) == 2,
+            SpellCardCatalog.GetEnabled(selection).Count(card => card.SourcePackId == th06.Id) == 7,
             "Single-pack spell filtering is incorrect.");
     }
 

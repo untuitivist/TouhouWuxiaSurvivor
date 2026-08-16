@@ -15,7 +15,7 @@ public static class BossDefinitionFactory
     {
         ArgumentNullException.ThrowIfNull(character);
         BossCharacterProfile profile = character.BossProfile;
-        int health = SaturatingPositiveInt(profile.MaxHealth);
+        int health = BossCombatBalancePolicy.ScaleHealth(profile.MaxHealth);
         int contactDamage = SaturatingPositiveInt(profile.ContactDamage);
         return new EnemyDefinition(
             EnemyArchetype.CharacterBoss,

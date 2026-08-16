@@ -40,7 +40,7 @@ public partial class RunAffinityOfferTest : Node
     }
 
     /// <summary>
-    /// 确认六项基础、六项无尽和四十六张符卡都有标签，且基础修行各有一组双分支特化。
+    /// 确认六项基础、六项无尽和五十一张符卡都有标签，且基础修行各有一组双分支特化。
     /// </summary>
     private static void VerifyCatalogMetadata()
     {
@@ -50,7 +50,7 @@ public partial class RunAffinityOfferTest : Node
             item => item.IsRepeatable).ToArray();
         RunUpgradeDefinition[] spells = RunUpgradeCatalog.All.Where(
             item => item.Category == RunUpgradeCategory.SpellCard).ToArray();
-        Require(finite.Length == 6 && endless.Length == 6 && spells.Length == 46,
+        Require(finite.Length == 6 && endless.Length == 6 && spells.Length == 51,
             "Unexpected upgrade category counts.");
         Require(RunUpgradeCatalog.All.All(item =>
                 item.Affinities.Count is >= 1 and <= 2 &&

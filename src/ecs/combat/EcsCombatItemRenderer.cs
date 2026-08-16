@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Visuals.Internal;
 
 namespace TouhouWuxiaSurvivor.Ecs.Combat;
@@ -14,6 +15,7 @@ public sealed class EcsCombatItemRenderer
     private const string DefaultBulletName = "灵符「梦想封印」";
     private Texture2D? _itemAtlas;
     private Texture2D? _bulletAtlas;
+    private readonly SpellCardProjectileVisualResolver _spellVisuals = new();
     private Font? _font;
 
     public int LastPickupIconCount { get; private set; }
@@ -31,6 +33,7 @@ public sealed class EcsCombatItemRenderer
         _bulletAtlas = LoadTexture(visuals, BaseSourceId,
             InternalVisualCategory.SpellCard, DefaultBulletName,
             InternalVisualKind.BulletAtlas);
+        _spellVisuals.Configure(visuals);
         _font = ThemeDB.FallbackFont;
     }
 
@@ -100,18 +103,20 @@ public sealed class EcsCombatItemRenderer
     {
         var destination = new Rect2(
             (position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
-        if (_bulletAtlas is not null)
+        if (_spellVisuals.TryResolve(projectile.VisualStyleId,
+                projectile.VisualVariant, out Texture2D spellTexture, out Rect2 spellSource))
+        {
+            canvas.DrawTextureRectRegion(spellTexture, destination, spellSource);
+            CountProjectile(projectile);
+        }
+        else if (_bulletAtlas is not null)
         {
             int column = projectile.Faction == ProjectileFaction.Player
                 ? 1
                 : 3 + projectile.VisualVariant % 4;
             canvas.DrawTextureRectRegion(
                 _bulletAtlas, destination, new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f));
-            LastProjectileIconCount++;
-            if (projectile.Faction == ProjectileFaction.Enemy)
-            {
-                LastEnemyProjectileIconCount++;
-            }
+            CountProjectile(projectile);
         }
         else
         {
@@ -119,6 +124,16 @@ public sealed class EcsCombatItemRenderer
                 ? new Color("f4df7d")
                 : new Color("ef7898");
             canvas.DrawRect(destination, fallback);
+        }
+    }
+
+    /// <summary>统一累计通用与符卡弹幕的绘制数量，避免素材分支产生诊断统计差异。</summary>
+    private void CountProjectile(ProjectileComponent projectile)
+    {
+        LastProjectileIconCount++;
+        if (projectile.Faction == ProjectileFaction.Enemy)
+        {
+            LastEnemyProjectileIconCount++;
         }
     }
 

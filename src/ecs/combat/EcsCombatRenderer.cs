@@ -1,5 +1,6 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Pickups;
+using TouhouWuxiaSurvivor.Ecs.Combat.Bosses;
 using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Visuals.Internal;
 
@@ -193,6 +194,7 @@ public sealed class EcsCombatRenderer
             DrawText(canvas, position, enemy.Definition.DisplayName,
                 new Color("ffd6e6"), 11, 72.0f);
             DrawBossHealth(canvas, enemy, position);
+            BossSpellPresentationRenderer.Draw(canvas, _font, enemy, position);
             return;
         }
 
@@ -218,6 +220,7 @@ public sealed class EcsCombatRenderer
         }
 
         DrawBossHealth(canvas, enemy, position);
+        BossSpellPresentationRenderer.Draw(canvas, _font, enemy, position);
     }
 
     /// <summary>查询角色 Boss 的共享视觉定义，只接受适合运行时绘制的立绘或四帧角色条。</summary>

@@ -52,7 +52,7 @@ public partial class EnemyAiBossTest : Node
         int shots = 0;
         var projectiles = new EnemyProjectileSystem();
         projectiles.Step(pool, Vector2.Zero, 3.0f,
-            (_, _, _, _, _) => { shots++; return true; });
+            _ => { shots++; return true; });
         Require(shots == 1, $"Only the orbit shooter should fire in the opening profile: {shots}");
     }
 
@@ -179,7 +179,7 @@ public partial class EnemyAiBossTest : Node
         pool.Set(0, boss);
         int shots = 0;
         system.Step(pool, Vector2.Zero, 0.01f,
-            (_, _, _, _, _) => { shots++; return true; });
+            _ => { shots++; return true; });
         return shots;
     }
 

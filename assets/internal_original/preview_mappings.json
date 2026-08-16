@@ -48,6 +48,11 @@
     {"sourceId":"base","category":"SpellCard","name":"恋符「Master Spark」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":4,"proxySourceWork":"th08_in","reasonZh":"本体常驻奥义源自东方永夜抄；沿用 TH08 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"base","category":"SpellCard","name":"魔符「Stardust Reverie」","asset":"th08/bullet_atlas.png","kind":"BulletAtlas","variant":6,"proxySourceWork":"th08_in","reasonZh":"本体常驻奥义源自东方永夜抄；沿用 TH08 原作弹幕图集。","reviewStatus":"proxy-reviewed"},
     {"sourceId":"th06_eosd","category":"SpellCard","name":"红符「Scarlet Shoot」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":2},
-    {"sourceId":"th06_eosd","category":"SpellCard","name":"禁忌「莱瓦汀」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":3}
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"禁忌「莱瓦汀」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":3},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"夜符「Night Bird」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":4},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"冻符「Perfect Freeze」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":5},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"虹符「彩虹的风铃」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":6},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"火水木金土符「贤者之石」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":7},
+    {"sourceId":"th06_eosd","category":"SpellCard","name":"女仆秘技「杀人玩偶」","asset":"th06/bullet_atlas.png","kind":"BulletAtlas","variant":8}
   ]
 }
