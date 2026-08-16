@@ -37,8 +37,8 @@ Phase 4 - frozen verification and repository cleanup.
 - [x] Separate finite ordinary durability from the unchanged Boss health curve.
 - [x] Add focused tests, update intent notes, and inspect all Windows visual scenes.
 - [x] Run frozen regression, source/encoding audits, and commit the accepted gameplay scope.
-- [ ] Remove the two rejected untracked Boss-exception files after explicit approval; they remain
-  excluded from source control and the runtime dependency graph.
+- [x] Remove the two rejected untracked Boss-exception files after explicit approval; no Boss-only
+  targeting or projectile type remains in the workspace or runtime dependency graph.
 
 ## Decisions
 

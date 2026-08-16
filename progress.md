@@ -19,6 +19,8 @@
 - Completed frozen verification after the final durability and pacing changes: Debug build 0
   warnings/errors, 64/64 headless integration scenes, 8/8 Windows visual scenes, and SourcePolicy
   all passed.
+- Removed the two rejected, untracked Boss-only targeting/projectile experiments after explicit
+  user approval; neither file had entered source control or the runtime dependency graph.
 
 ## 2026-08-12 - Combat Balance and Skill Design
 
