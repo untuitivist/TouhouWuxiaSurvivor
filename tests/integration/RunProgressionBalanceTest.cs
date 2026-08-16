@@ -126,8 +126,8 @@ public partial class RunProgressionBalanceTest : Node
             Mathf.IsEqualApprox(modifiers.ProjectileSpeedMultiplier, 1.12f) &&
             Mathf.IsEqualApprox(modifiers.SpiritAttractionMultiplier, 1.50f) &&
             Mathf.IsEqualApprox(modifiers.SpiritYieldMultiplier, 1.10f) &&
-            modifiers.AimedProjectileBonus == 1 &&
-            modifiers.BarrageProjectileBonus == 2,
+            modifiers.OrdinaryProjectileBonus == 1 &&
+            modifiers.BarrageProjectileBonus == 4,
             "First-rank runtime modifiers are incorrect.");
 
         RunUpgradeDefinition damage = RunUpgradeCatalog.All[0];

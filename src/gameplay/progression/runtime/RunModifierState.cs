@@ -19,10 +19,11 @@ public sealed class RunModifierState
     public float ProjectileSpeedMultiplier { get; private set; } = 1.0f;
     public float SpiritAttractionMultiplier { get; private set; } = 1.0f;
     public float SpiritYieldMultiplier { get; private set; } = 1.0f;
-    public int AimedProjectileBonus { get; private set; }
+    public int OrdinaryProjectileBonus { get; private set; }
     public int BarrageProjectileBonus { get; private set; }
     public int ProjectilePierceCount { get; private set; }
-    public bool UsesConvergingBarrage { get; private set; }
+    public bool UsesConvergingOrdinary { get; private set; }
+    public int BarrageSpiralArmCount { get; private set; }
     public bool UsesContinuousFireMomentum { get; private set; }
     public bool UsesStationaryFocus { get; private set; }
     public bool UsesMovementMomentum { get; private set; }
@@ -89,15 +90,20 @@ public sealed class RunModifierState
         SpiritAttractionMultiplier = _baseSpiritAttractionMultiplier *
             (1.0f + build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.50f +
                 specializationAttraction) * SqrtGrowth(endlessAttraction, 0.08f);
-        float explicitProjectiles = GetSpecializationBonus(
-            build, RunSpecializationEffect.BarrageProjectiles);
+        float explicitOrdinaryProjectiles = GetSpecializationBonus(
+            build, RunSpecializationEffect.OrdinaryProjectiles);
         ProjectilePierceCount = (int)MathF.Round(GetSpecializationBonus(
             build, RunSpecializationEffect.ProjectilePierce));
-        UsesConvergingBarrage = GetSpecializationBonus(
-            build, RunSpecializationEffect.ConvergingBarrage) > 0.0f;
-        BarrageProjectileBonus = barrageRank * 2 +
-            (int)MathF.Round(explicitProjectiles);
-        AimedProjectileBonus = build.GetRank(RunUpgradeKind.TargetRange);
+        UsesConvergingOrdinary = GetSpecializationBonus(
+            build, RunSpecializationEffect.ConvergingOrdinary) > 0.0f;
+        float spiralSteps = GetSpecializationBonus(
+            build, RunSpecializationEffect.BarrageSpiralArms);
+        BarrageSpiralArmCount = spiralSteps > 0.0f
+            ? Math.Clamp(1 + (int)MathF.Round(spiralSteps), 2, 4)
+            : 0;
+        BarrageProjectileBonus = barrageRank * 4;
+        OrdinaryProjectileBonus = build.GetRank(RunUpgradeKind.TargetRange) +
+            (int)MathF.Round(explicitOrdinaryProjectiles);
         SpiritYieldMultiplier = 1.0f +
             build.GetRank(RunUpgradeKind.SpiritAttraction) * 0.10f +
             GetSpecializationBonus(build, RunSpecializationEffect.SpiritYield);

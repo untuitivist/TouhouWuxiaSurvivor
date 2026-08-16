@@ -6,6 +6,7 @@ using TouhouWuxiaSurvivor.Audio.World;
 using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
+using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Ui.Progression;
@@ -55,8 +56,9 @@ public partial class WorldAudioSmokeTest : Node
             pickups.Spawn(PickupKind.SpiralShot, player.GlobalPosition);
             await WaitForPickup();
             Require(audio.PickupSoundCount == 1, "Collected power pickup did not trigger pickup audio.");
-            BlockLevelUpsForAudioTest(
-                demo.GetNode<RunProgressionCoordinator>("RunProgressionCoordinator"));
+            var progression = demo.GetNode<RunProgressionCoordinator>("RunProgressionCoordinator");
+            LearnBarrageQuantityForAudioTest(progression);
+            BlockLevelUpsForAudioTest(progression);
             int projectilesBefore = shooter.ShotsFired;
             int soundsBefore = audio.ShotSoundCount;
             await WaitForNextShotSound(audio, soundsBefore);
@@ -175,6 +177,17 @@ public partial class WorldAudioSmokeTest : Node
     {
         progression.BlockForRunEnd();
         progression.GetTree().Paused = false;
+    }
+
+    /// <summary>
+    /// 通过正式天罗弹阵取得八发中心弹幕，使音频限流测试不依赖阵形状态凭空赠送数量。
+    /// </summary>
+    private static void LearnBarrageQuantityForAudioTest(RunProgressionCoordinator progression)
+    {
+        RunUpgradeDefinition barrage = RunUpgradeCatalog.FindById("wind_riding")!;
+        Require(progression.Build.Apply(barrage) && progression.Build.Apply(barrage),
+            "Audio test could not learn the independent barrage quantity route.");
+        progression.Modifiers.Refresh(progression.Build);
     }
 
     /// <summary>

@@ -180,17 +180,18 @@ public partial class CharacterStatsOverlay : CanvasLayer
     }
 
     /// <summary>
-    /// 把正式齐射压成自瞄与弹幕两段，以相同单弹数值展示各自数量和总伤。
+    /// 把正式齐射压成普通弹与中心弹幕两段，以相同单弹数值展示数量和弹幕阵形。
     /// </summary>
     private static string FormatVolleyDamage(CharacterStatsSnapshot snapshot)
     {
         string barrage = snapshot.BarrageProjectileCount <= 0
             ? "弹幕 未修习"
-            : $"弹幕 {snapshot.BarrageProjectileCount}×{snapshot.MinimumProjectileDamage}";
+            : $"弹幕 {snapshot.BarrageProjectileCount}×{snapshot.MinimumProjectileDamage}" +
+                $" {snapshot.BarragePatternName}";
         string pierce = snapshot.SecondaryVolleyDamage > 0
             ? $" · 贯穿 +{snapshot.SecondaryVolleyDamage}"
             : string.Empty;
-        return $"自瞄 {snapshot.AimedProjectileCount}×{snapshot.MinimumProjectileDamage} · " +
+        return $"普通 {snapshot.OrdinaryProjectileCount}×{snapshot.MinimumProjectileDamage} · " +
             $"{barrage}{pierce}";
     }
 

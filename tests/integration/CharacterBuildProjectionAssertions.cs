@@ -31,15 +31,16 @@ public static class CharacterBuildProjectionAssertions
         VerifyFourVisualStates();
     }
 
-    /// <summary>确认额外弹丸、贯穿和旋阵作为行为特化显示，不会退化为普通数值说明。</summary>
+    /// <summary>确认普通弹数量、贯穿、收束和中心螺旋作为行为特化显示。</summary>
     private static void VerifyBehaviorSpecializations(
         CharacterBuildViewModel model,
         IEnumerable<RunUpgradeDefinition> finite)
     {
         string[] ids = finite.SelectMany(item => item.Specializations)
-            .Where(item => item.Effect is RunSpecializationEffect.BarrageProjectiles or
+            .Where(item => item.Effect is RunSpecializationEffect.OrdinaryProjectiles or
                 RunSpecializationEffect.ProjectilePierce or
-                RunSpecializationEffect.ConvergingBarrage)
+                RunSpecializationEffect.ConvergingOrdinary or
+                RunSpecializationEffect.BarrageSpiralArms)
             .Select(item => item.Id).ToArray();
         Require(ids.Length >= 3 && ids.All(id =>
             Node(model, id).CategoryName == "弹幕特化" &&

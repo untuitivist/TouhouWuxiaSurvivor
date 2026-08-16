@@ -1,121 +1,98 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
 /// <summary>
-/// 根据本局构筑和弹丸池余量规划预判弹组与成对定向弹幕；压力阶段绝不赠送火力。
+/// 根据构筑与弹丸池余量规划定向普通弹和自机中心弹幕；压力阶段绝不赠送火力。
 /// </summary>
 public static class PlayerBarrageCurve
 {
-    public const int MaximumAimedProjectilesPerVolley = 4;
-    public const int MaximumBarrageProjectilesPerVolley = 10;
+    public const int MaximumOrdinaryProjectilesPerVolley = 6;
+    public const int MaximumBarrageProjectilesPerVolley = 12;
     public const int MaximumProjectilesPerVolley =
-        MaximumAimedProjectilesPerVolley + MaximumBarrageProjectilesPerVolley;
+        MaximumOrdinaryProjectilesPerVolley + MaximumBarrageProjectilesPerVolley;
     public const int ProjectileSoftLimit = 1600;
     public const double SaturatedRetryIntervalSeconds = 0.05;
 
     /// <summary>
-    /// 生成一次构筑齐射：至少一发预判弹，额外弹幕成对加入，收束效果只改变有效形态。
+    /// 生成一次构筑齐射；普通弹至少一发，弹幕数量、螺旋形态和旋转相位分别输入。
     /// </summary>
     public static PlayerBarrageSnapshot Evaluate(
-        bool convergingActive,
+        bool convergingOrdinaryActive,
+        int barrageSpiralArmCount,
+        long volleySequence,
         int activeProjectileCount,
-        int aimedProjectileBonus = 0,
+        int ordinaryProjectileBonus = 0,
         int barrageProjectileBonus = 0)
     {
-        int requestedAimed = Math.Clamp(1 + aimedProjectileBonus,
-            1, MaximumAimedProjectilesPerVolley);
-        int requestedBarrage = NormalizeBarrageCount(
-            barrageProjectileBonus, convergingActive);
-        (int aimed, int barrage) = ApplyProjectileBudget(
-            requestedAimed, requestedBarrage, activeProjectileCount);
-        PlayerBarrageMode mode = GetMode(requestedBarrage, convergingActive);
-        double angularStep = GetAngularStep(requestedBarrage, mode);
-        const bool requiresTarget = true;
-        double retry = aimed + barrage == 0 ? SaturatedRetryIntervalSeconds : 0.0;
-        return new PlayerBarrageSnapshot(mode,
-            requestedAimed, aimed, requestedBarrage, barrage,
-            angularStep, requiresTarget, retry);
+        int requestedOrdinary = Math.Clamp(1 + ordinaryProjectileBonus,
+            1, MaximumOrdinaryProjectilesPerVolley);
+        int requestedBarrage = Math.Clamp(barrageProjectileBonus,
+            0, MaximumBarrageProjectilesPerVolley);
+        (int ordinary, int barrage) = ApplyProjectileBudget(
+            requestedOrdinary, requestedBarrage, activeProjectileCount);
+        int spiralArms = requestedBarrage <= 0 || barrageSpiralArmCount < 2
+            ? 0
+            : Math.Clamp(barrageSpiralArmCount, 2, 4);
+        PlayerBarrageMode barrageMode = requestedBarrage <= 0
+            ? PlayerBarrageMode.None
+            : spiralArms >= 2 ? PlayerBarrageMode.Spiral : PlayerBarrageMode.Radial;
+        double retry = ordinary + barrage == 0 ? SaturatedRetryIntervalSeconds : 0.0;
+        return new PlayerBarrageSnapshot(
+            convergingOrdinaryActive
+                ? PlayerOrdinaryShotMode.ConvergingFormation
+                : PlayerOrdinaryShotMode.PredictiveFan,
+            barrageMode,
+            requestedOrdinary, ordinary, requestedBarrage, barrage,
+            spiralArms, GetOrdinaryAngularStep(requestedOrdinary),
+            GetBarrageRotation(volleySequence, barrageMode),
+            ordinary > 0 && barrage <= 0, retry);
     }
 
     /// <summary>兼容旧纯函数调用形状；时间参数被明确忽略，测试可据此锁定阶段不会赠送火力。</summary>
     public static PlayerBarrageSnapshot EvaluateSeconds(
         double ignoredElapsedSeconds,
-        bool convergingActive,
-        long ignoredVolleySequence,
+        bool convergingOrdinaryActive,
+        long volleySequence,
         int activeProjectileCount,
         int barrageProjectileBonus = 0,
-        int aimedProjectileBonus = 0) => Evaluate(
-            convergingActive, activeProjectileCount,
-            aimedProjectileBonus, barrageProjectileBonus);
+        int ordinaryProjectileBonus = 0,
+        int barrageSpiralArmCount = 0) => Evaluate(
+            convergingOrdinaryActive, barrageSpiralArmCount, volleySequence,
+            activeProjectileCount, ordinaryProjectileBonus, barrageProjectileBonus);
 
     /// <summary>
-    /// 把构筑提供的弹幕整理为偶数；收束效果至少保留左右一对弹幕。
+    /// 把单轮弹数压入软上限余量；优先保留负责锁敌的普通弹，再保留中心弹幕。
     /// </summary>
-    private static int NormalizeBarrageCount(
-        int barrageProjectileBonus,
-        bool convergingActive)
-    {
-        int requested = Math.Clamp(barrageProjectileBonus, 0,
-            MaximumBarrageProjectilesPerVolley);
-        if (convergingActive)
-        {
-            requested = Math.Max(2, requested);
-        }
-
-        return requested - requested % 2;
-    }
-
-    /// <summary>
-    /// 单发使用预测直射，多发使用目标扇形；明确取得的阵法效果改为两翼收束。
-    /// </summary>
-    private static PlayerBarrageMode GetMode(
-        int requestedBarrage,
-        bool convergingActive)
-    {
-        if (convergingActive && requestedBarrage > 0)
-        {
-            return PlayerBarrageMode.ConvergingFormation;
-        }
-
-        return requestedBarrage <= 0
-            ? PlayerBarrageMode.TargetedSingle
-            : PlayerBarrageMode.AlternatingFan;
-    }
-
-    /// <summary>
-    /// 把单轮弹数压入软上限余量；优先保留预判弹，弹幕只保留完整的左右成对数量。
-    /// </summary>
-    private static (int Aimed, int Barrage) ApplyProjectileBudget(
-        int requestedAimed,
+    private static (int Ordinary, int Barrage) ApplyProjectileBudget(
+        int requestedOrdinary,
         int requestedBarrage,
         int activeProjectileCount)
     {
         int activeCount = Math.Max(0, activeProjectileCount);
         int available = Math.Max(0, ProjectileSoftLimit - activeCount);
-        int aimed = Math.Min(requestedAimed, available);
-        int remaining = Math.Max(0, available - aimed);
+        int ordinary = Math.Min(requestedOrdinary, available);
+        int remaining = Math.Max(0, available - ordinary);
         int barrage = Math.Min(requestedBarrage, remaining);
-        barrage -= barrage % 2;
-        return (aimed, barrage);
+        return (ordinary, barrage);
     }
 
-    /// <summary>
-    /// 为扇形提供随弹幕数量收紧的相邻夹角；收束阵使用平行出生线而不消费角度。
-    /// </summary>
-    private static double GetAngularStep(int requestedBarrage, PlayerBarrageMode mode)
-    {
-        if (mode == PlayerBarrageMode.ConvergingFormation)
-        {
-            return 0.0;
-        }
-
-        return requestedBarrage switch
+    /// <summary>为定向普通弹提供随数量收紧的相邻夹角，单发保持严格预判直射。</summary>
+    private static double GetOrdinaryAngularStep(int requestedOrdinary) =>
+        requestedOrdinary switch
         {
             2 => Math.PI / 18.0,
-            4 => Math.PI / 24.0,
-            6 => Math.PI / 30.0,
-            8 => Math.PI / 34.0,
-            10 => Math.PI / 38.0,
+            3 => Math.PI / 22.0,
+            4 => Math.PI / 26.0,
+            5 => Math.PI / 30.0,
+            6 => Math.PI / 34.0,
             _ => 0.0,
         };
-    }
+
+    /// <summary>按齐射序号旋转中心弹幕；螺旋比辐射转得更慢以保持可读的连续臂线。</summary>
+    private static double GetBarrageRotation(long volleySequence, PlayerBarrageMode mode) =>
+        mode switch
+        {
+            PlayerBarrageMode.Spiral => volleySequence * Math.PI / 15.0,
+            PlayerBarrageMode.Radial => volleySequence * Math.PI / 10.0,
+            _ => 0.0,
+        };
 }

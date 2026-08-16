@@ -4,6 +4,8 @@ using TouhouWuxiaSurvivor.Combat.Weapons;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.Difficulty;
+using TouhouWuxiaSurvivor.Gameplay.Progression.Definitions;
+using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
@@ -38,6 +40,7 @@ public partial class ProjectileSkillBalanceTest : Node
             Require(projectiles.Count == 0 && hits.SequenceEqual([(0, 10), (1, 3)]),
                 "The second hit repeated one enemy or failed to consume the projectile.");
             VerifySharedProjectileStats(hits.Sum(item => item.Damage));
+            VerifyIndependentBarrageForms();
             VerifyProjectileSpeedPolicy();
             GD.Print("Projectile skill balance test passed.");
             GetTree().Quit();
@@ -68,30 +71,71 @@ public partial class ProjectileSkillBalanceTest : Node
     }
 
     /// <summary>
-    /// 验证两类弹丸共享单弹伤害，同时允许自瞄数量、弹幕数量与贯穿表现分别成长。
+    /// 验证两类弹丸共享单弹伤害，同时允许普通弹数量、弹幕数量与贯穿分别成长。
     /// </summary>
     private static void VerifySharedProjectileStats(int piercingTwoTargetDamage)
     {
         PlayerBarrageSnapshot split = PlayerBarrageCurve.Evaluate(
-            false, 0, aimedProjectileBonus: 1, barrageProjectileBonus: 2);
+            false, 0, 0, 0,
+            ordinaryProjectileBonus: 1, barrageProjectileBonus: 4);
         PlayerAttackDamageSnapshot damage = PlayerAttackDamageProjector.Project(
-            10.0, split, sharedDamageMultiplier: 1.35f, aimedMaximumHits: 2);
+            10.0, split, sharedDamageMultiplier: 1.35f, ordinaryMaximumHits: 2);
         Require(piercingTwoTargetDamage == 13,
             "The physical piercing collision no longer applies ten plus three damage.");
-        Require(split.AimedProjectileCount == 2 && split.BarrageProjectileCount == 2 &&
-            damage.PredictiveAim.ProjectileCount == 2 &&
-            damage.Barrage.ProjectileCount == 2,
+        Require(split.OrdinaryProjectileCount == 2 && split.BarrageProjectileCount == 4 &&
+            damage.Ordinary.ProjectileCount == 2 &&
+            damage.Barrage.ProjectileCount == 4,
             "Independent projectile-count upgrades did not reach both channels.");
-        Require(damage.PredictiveAim.MinimumPrimaryDamage == 14 &&
-            damage.PredictiveAim.MaximumPrimaryDamage == 14 &&
+        Require(damage.Ordinary.MinimumPrimaryDamage == 14 &&
+            damage.Ordinary.MaximumPrimaryDamage == 14 &&
             damage.Barrage.MinimumPrimaryDamage == 14 &&
             damage.Barrage.MaximumPrimaryDamage == 14 &&
-            damage.PredictiveAim.PrimaryTotalDamage == 28 &&
-            damage.Barrage.PrimaryTotalDamage == 28,
-            "Aimed and barrage projectiles no longer share the same per-projectile damage.");
-        Require(damage.PredictiveAim.SecondaryTotalDamage > 0 &&
+            damage.Ordinary.PrimaryTotalDamage == 28 &&
+            damage.Barrage.PrimaryTotalDamage == 56,
+            "Ordinary and barrage projectiles no longer share the same per-projectile damage.");
+        Require(damage.Ordinary.SecondaryTotalDamage > 0 &&
             damage.Barrage.SecondaryTotalDamage == 0,
-            "Piercing presentation leaked from aimed shots into the barrage channel.");
+            "Piercing presentation leaked from ordinary shots into the barrage channel.");
+    }
+
+    /// <summary>
+    /// 从正式构筑取得辐射、二重、三重和四重螺旋，确认阵形选择不改变八发弹幕数量。
+    /// </summary>
+    private static void VerifyIndependentBarrageForms()
+    {
+        RunUpgradeDefinition route = RunUpgradeCatalog.FindById("wind_riding")!;
+        Require(route.Specializations.Count == 2,
+            "Barrage route no longer exposes the two composable form upgrades.");
+        RunModifierState radial = CreateBarrageModifiers(route, []);
+        RunModifierState doubleSpiral = CreateBarrageModifiers(route, [0]);
+        RunModifierState tripleSpiral = CreateBarrageModifiers(route, [1]);
+        RunModifierState quadrupleSpiral = CreateBarrageModifiers(route, [0, 1]);
+        Require(new[] { radial, doubleSpiral, tripleSpiral, quadrupleSpiral }.All(
+                item => item.BarrageProjectileBonus == 8) &&
+            radial.BarrageSpiralArmCount == 0 &&
+            doubleSpiral.BarrageSpiralArmCount == 2 &&
+            tripleSpiral.BarrageSpiralArmCount == 3 &&
+            quadrupleSpiral.BarrageSpiralArmCount == 4,
+            "A barrage form upgrade changed quantity or lost its authored spiral arm count.");
+    }
+
+    /// <summary>建立二重天罗弹阵并应用指定阵式索引，返回正式运行倍率投影。</summary>
+    private static RunModifierState CreateBarrageModifiers(
+        RunUpgradeDefinition route,
+        IReadOnlyList<int> specializationIndices)
+    {
+        var build = new RunBuildState();
+        Require(build.Apply(route) && build.Apply(route),
+            "Could not reach the barrage form prerequisite.");
+        foreach (int index in specializationIndices)
+        {
+            Require(build.ApplySpecialization(route, route.Specializations[index], 4),
+                "Could not apply an authored barrage form specialization.");
+        }
+
+        var modifiers = new RunModifierState();
+        modifiers.Refresh(build);
+        return modifiers;
     }
 
     /// <summary>

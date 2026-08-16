@@ -1,10 +1,10 @@
 namespace TouhouWuxiaSurvivor.Combat.Weapons;
 
 /// <summary>
-/// 区分预判自瞄弹与定向弹幕；两者共享基础数值，只分别成长数量、阵形和视觉。
+/// 区分朝预测目标发射的普通弹与以自机为圆心展开的弹幕弹。
 /// </summary>
 public enum PlayerProjectileChannel
 {
-    PredictiveAim = 0,
+    Ordinary = 0,
     Barrage = 1,
 }

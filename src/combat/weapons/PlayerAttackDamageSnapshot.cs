@@ -3,17 +3,17 @@ using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 namespace TouhouWuxiaSurvivor.Combat.Weapons;
 
 /// <summary>
-/// 保存一轮普通攻击中自瞄弹与弹幕的分项整数账目；两者共享同一单弹数值。
+/// 保存一轮普通弹与中心弹幕的分项整数账目；两者共享同一单弹数值。
 /// </summary>
 public readonly record struct PlayerAttackDamageSnapshot(
-    ProjectileVolleyDamageSnapshot PredictiveAim,
+    ProjectileVolleyDamageSnapshot Ordinary,
     ProjectileVolleyDamageSnapshot Barrage)
 {
-    public int ProjectileCount => GetCount(PredictiveAim) + GetCount(Barrage);
+    public int ProjectileCount => GetCount(Ordinary) + GetCount(Barrage);
     public int PrimaryTotalDamage =>
-        PredictiveAim.PrimaryTotalDamage + Barrage.PrimaryTotalDamage;
+        Ordinary.PrimaryTotalDamage + Barrage.PrimaryTotalDamage;
     public int SecondaryTotalDamage =>
-        PredictiveAim.SecondaryTotalDamage + Barrage.SecondaryTotalDamage;
+        Ordinary.SecondaryTotalDamage + Barrage.SecondaryTotalDamage;
 
     /// <summary>把两个通道压成只用于显示的齐射摘要，不用于逐弹伤害回查。</summary>
     public ProjectileVolleyDamageSnapshot CreateSummary()
@@ -25,17 +25,17 @@ public readonly record struct PlayerAttackDamageSnapshot(
         }
 
         int minimum = MinimumPositive(
-            PredictiveAim.MinimumPrimaryDamage,
+            Ordinary.MinimumPrimaryDamage,
             Barrage.MinimumPrimaryDamage);
         int maximum = Math.Max(
-            PredictiveAim.MaximumPrimaryDamage,
+            Ordinary.MaximumPrimaryDamage,
             Barrage.MaximumPrimaryDamage);
         return new ProjectileVolleyDamageSnapshot(
             count, PrimaryTotalDamage, SecondaryTotalDamage,
             minimum, maximum,
-            MinimumPositive(PredictiveAim.MinimumSecondaryDamage,
+            MinimumPositive(Ordinary.MinimumSecondaryDamage,
                 Barrage.MinimumSecondaryDamage),
-            Math.Max(PredictiveAim.MaximumSecondaryDamage,
+            Math.Max(Ordinary.MaximumSecondaryDamage,
                 Barrage.MaximumSecondaryDamage));
     }
 

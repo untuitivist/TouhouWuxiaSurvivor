@@ -1,11 +1,11 @@
 namespace TouhouWuxiaSurvivor.Gameplay.Difficulty;
 
 /// <summary>
-/// 区分自动武器的方向编排，使预判单发、定向扇面和两翼收束无需写进射击节点。
+/// 区分以自机为圆心的弹幕演出；螺旋臂数由快照独立保存。
 /// </summary>
 public enum PlayerBarrageMode
 {
-    TargetedSingle,
-    AlternatingFan,
-    ConvergingFormation,
+    None,
+    Radial,
+    Spiral,
 }

@@ -126,48 +126,61 @@ public partial class EndlessDifficultyTest : Node
     }
 
     /// <summary>
-    /// 验证时间与压力阶段不赠送火力，只有构筑分别改变自瞄数量、弹幕数量和收束形态。
+    /// 验证时间不赠送火力，并锁定普通弹数量、中心弹幕数量与阵形的独立成长。
     /// </summary>
     private static void VerifyPlayerBarrageStages()
     {
         PlayerBarrageSnapshot opening = PlayerBarrageCurve.EvaluateSeconds(0.0, false, 0, 0);
         PlayerBarrageSnapshot lateWithoutBuild = PlayerBarrageCurve.EvaluateSeconds(
             RunPacingTimeline.FinalEncounterSeconds, false, 0, 0);
-        PlayerBarrageSnapshot three = PlayerBarrageCurve.EvaluateSeconds(
-            0.0, false, 0, 0, 2);
-        PlayerBarrageSnapshot five = PlayerBarrageCurve.EvaluateSeconds(
+        PlayerBarrageSnapshot radialFour = PlayerBarrageCurve.EvaluateSeconds(
             0.0, false, 0, 0, 4);
-        PlayerBarrageSnapshot seven = PlayerBarrageCurve.EvaluateSeconds(
-            0.0, false, 0, 0, 6);
-        PlayerBarrageSnapshot aimed = PlayerBarrageCurve.EvaluateSeconds(
+        PlayerBarrageSnapshot radialEight = PlayerBarrageCurve.EvaluateSeconds(
+            0.0, false, 0, 0, 8);
+        PlayerBarrageSnapshot radialTwelve = PlayerBarrageCurve.EvaluateSeconds(
+            0.0, false, 0, 0, 12);
+        PlayerBarrageSnapshot ordinary = PlayerBarrageCurve.EvaluateSeconds(
             0.0, false, 0, 0, 0, 2);
         PlayerBarrageSnapshot combined = PlayerBarrageCurve.EvaluateSeconds(
-            0.0, false, 0, 0, 4, 1);
+            0.0, false, 0, 0, 8, 1);
         PlayerBarrageSnapshot sixtyMinutes = PlayerBarrageCurve.EvaluateSeconds(3600.0, false, 1, 0);
         PlayerBarrageSnapshot thousandMinutes = PlayerBarrageCurve.EvaluateSeconds(60000.0, false, 1, 0);
         Require(opening.ProjectileCount == 1 && lateWithoutBuild.ProjectileCount == 1 &&
-            three.ProjectileCount == 3 && five.ProjectileCount == 5 &&
-            seven.ProjectileCount == 7 && aimed.AimedProjectileCount == 3 &&
-            aimed.BarrageProjectileCount == 0 &&
-            combined.AimedProjectileCount == 2 && combined.BarrageProjectileCount == 4,
-            "Independent aimed or barrage projectile ranks are incorrect.");
+            radialFour.ProjectileCount == 5 && radialEight.ProjectileCount == 9 &&
+            radialTwelve.ProjectileCount == 13 && ordinary.OrdinaryProjectileCount == 3 &&
+            ordinary.BarrageProjectileCount == 0 &&
+            combined.OrdinaryProjectileCount == 2 && combined.BarrageProjectileCount == 8,
+            "Independent ordinary or barrage projectile ranks are incorrect.");
         Require(sixtyMinutes.ProjectileCount == 1 &&
             thousandMinutes.ProjectileCount == 1 &&
-            sixtyMinutes.Mode == PlayerBarrageMode.TargetedSingle &&
-            thousandMinutes.Mode == PlayerBarrageMode.TargetedSingle,
+            sixtyMinutes.BarrageMode == PlayerBarrageMode.None &&
+            thousandMinutes.BarrageMode == PlayerBarrageMode.None,
             "Elapsed time still grants automatic barrage power.");
 
-        PlayerBarrageSnapshot converging = PlayerBarrageCurve.EvaluateSeconds(
-            0.0, true, 0, 0);
+        PlayerBarrageSnapshot convergingOrdinary = PlayerBarrageCurve.EvaluateSeconds(
+            0.0, true, 0, 0, 0, 2);
+        PlayerBarrageSnapshot doubleSpiral = PlayerBarrageCurve.EvaluateSeconds(
+            0.0, false, 0, 0, 8, 0, 2);
+        PlayerBarrageSnapshot tripleSpiral = PlayerBarrageCurve.EvaluateSeconds(
+            0.0, false, 0, 0, 8, 0, 3);
+        PlayerBarrageSnapshot quadrupleSpiral = PlayerBarrageCurve.EvaluateSeconds(
+            0.0, false, 0, 0, 8, 0, 4);
         PlayerBarrageSnapshot degraded = PlayerBarrageCurve.EvaluateSeconds(
-            0.0, false, 1, PlayerBarrageCurve.ProjectileSoftLimit - 1, 6);
+            0.0, false, 1, PlayerBarrageCurve.ProjectileSoftLimit - 1, 12);
         PlayerBarrageSnapshot saturated = PlayerBarrageCurve.EvaluateSeconds(
-            0.0, false, 1, PlayerBarrageCurve.ProjectileSoftLimit, 6);
-        Require(converging.AimedProjectileCount == 1 &&
-            converging.BarrageProjectileCount == 2 &&
-            converging.Mode == PlayerBarrageMode.ConvergingFormation &&
-            converging.RequiresTarget,
-            "Converging specialization did not retain one aimed shot and a barrage pair.");
+            0.0, false, 1, PlayerBarrageCurve.ProjectileSoftLimit, 12);
+        Require(convergingOrdinary.OrdinaryProjectileCount == 3 &&
+            convergingOrdinary.BarrageProjectileCount == 0 &&
+            convergingOrdinary.OrdinaryMode == PlayerOrdinaryShotMode.ConvergingFormation &&
+            convergingOrdinary.RequiresTarget,
+            "Converging specialization did not remain an ordinary-projectile form.");
+        Require(radialEight.BarrageMode == PlayerBarrageMode.Radial &&
+            doubleSpiral.BarrageSpiralArmCount == 2 &&
+            tripleSpiral.BarrageSpiralArmCount == 3 &&
+            quadrupleSpiral.BarrageSpiralArmCount == 4 &&
+            doubleSpiral.BarrageProjectileCount == radialEight.BarrageProjectileCount &&
+            quadrupleSpiral.BarrageProjectileCount == radialEight.BarrageProjectileCount,
+            "Barrage form upgrades changed projectile quantity or lost a spiral tier.");
         Require(degraded.ProjectileCount == 1 && saturated.ProjectileCount == 0 &&
             saturated.RetryIntervalSeconds > 0.0,
             "Projectile saturation did not degrade to one shot and a bounded retry.");

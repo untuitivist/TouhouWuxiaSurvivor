@@ -43,11 +43,12 @@ public static class CharacterStatsSnapshotFactory
             (player.PassiveSpecializations?.MoveSpeedMultiplier ?? 1.0f);
         PlayerBarrageSnapshot barrage = PlayerBarrageCurve.EvaluateSeconds(
             0.0,
-            modifiers.UsesConvergingBarrage || buffs.IsSpiralActive,
+            modifiers.UsesConvergingOrdinary,
             0,
             0,
             modifiers.BarrageProjectileBonus,
-            modifiers.AimedProjectileBonus);
+            modifiers.OrdinaryProjectileBonus,
+            Math.Max(modifiers.BarrageSpiralArmCount, buffs.IsSpiralActive ? 2 : 0));
         PlayerAttackDamageSnapshot attack = shooter.ProjectAttackDamage(barrage);
         ProjectileVolleyDamageSnapshot volley = attack.CreateSummary();
         return new CharacterStatsSnapshot(
@@ -60,10 +61,11 @@ public static class CharacterStatsSnapshotFactory
             progression.State.ExperienceToNext,
             progression.State.TotalExperience,
             volley.PrimaryTotalDamage,
-            barrage.AimedProjectileCount,
-            attack.PredictiveAim.PrimaryTotalDamage,
+            barrage.OrdinaryProjectileCount,
+            attack.Ordinary.PrimaryTotalDamage,
             barrage.BarrageProjectileCount,
             attack.Barrage.PrimaryTotalDamage,
+            FormatBarragePattern(barrage),
             volley.ProjectileCount,
             volley.MinimumPrimaryDamage,
             volley.MaximumPrimaryDamage,
@@ -81,6 +83,15 @@ public static class CharacterStatsSnapshotFactory
                 progression.Build, content, progression.State.Level, combatRole),
             spellCards.CreateSnapshot());
     }
+
+    /// <summary>把中心弹幕的运行时阵形压成状态页可读名称，数量仍由相邻字段独立显示。</summary>
+    private static string FormatBarragePattern(PlayerBarrageSnapshot barrage) =>
+        barrage.BarrageMode switch
+        {
+            PlayerBarrageMode.Spiral => $"{barrage.BarrageSpiralArmCount}重螺旋",
+            PlayerBarrageMode.Radial => "辐射",
+            _ => "未修习",
+        };
 
     /// <summary>
     /// 把四项博丽神社整备投影为紧凑来源文字，没有加成时明确显示尚未整备。

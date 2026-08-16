@@ -32,8 +32,9 @@ internal static class BalanceCombatProjector
         var modifiers = new RunModifierState();
         modifiers.Refresh(build);
         PlayerBarrageSnapshot barrage = PlayerBarrageCurve.EvaluateSeconds(
-            elapsedSeconds, modifiers.UsesConvergingBarrage, 0L, 0,
-            modifiers.BarrageProjectileBonus, modifiers.AimedProjectileBonus);
+            elapsedSeconds, modifiers.UsesConvergingOrdinary, 0L, 0,
+            modifiers.BarrageProjectileBonus, modifiers.OrdinaryProjectileBonus,
+            modifiers.BarrageSpiralArmCount);
         double baseAttack = EnemyBalanceProfile.BaseWeaponDamage *
             character.PlayableProfile.AttackMultiplier * GetExpectedAttackMultiplier(modifiers);
         PlayerAttackDamageSnapshot damage = PlayerAttackDamageProjector.Project(
@@ -43,12 +44,12 @@ internal static class BalanceCombatProjector
             GetExpectedFireRateMultiplier(modifiers) /
             (EnemyBalanceProfile.BaseWeaponInterval *
                 character.PlayableProfile.AttackIntervalMultiplier);
-        double aimedContribution = damage.PredictiveAim.PrimaryTotalDamage *
-            CalculateAimedHitRate(buildKind) +
-            damage.PredictiveAim.SecondaryTotalDamage * 0.72;
+        double ordinaryContribution = damage.Ordinary.PrimaryTotalDamage *
+            CalculateOrdinaryHitRate(buildKind) +
+            damage.Ordinary.SecondaryTotalDamage * 0.72;
         double barrageContribution = damage.Barrage.PrimaryTotalDamage *
             CalculateBarrageHitRate(barrage, buildKind);
-        double weaponDps = (aimedContribution + barrageContribution) * fireRate;
+        double weaponDps = (ordinaryContribution + barrageContribution) * fireRate;
         double spellAttackPower = baseAttack * modifiers.AttackPowerMultiplier;
         double spellDps = CalculateSpellContribution(
             character, build, modifiers, spellAttackPower);
@@ -68,7 +69,7 @@ internal static class BalanceCombatProjector
     /// <summary>
     /// 预判弹采用高可靠命中率；路线只提供小幅差异，单弹伤害仍来自共享攻势倍率。
     /// </summary>
-    private static double CalculateAimedHitRate(BalanceBuildKind buildKind) => buildKind switch
+    private static double CalculateOrdinaryHitRate(BalanceBuildKind buildKind) => buildKind switch
     {
         BalanceBuildKind.Assault => 0.94,
         BalanceBuildKind.Rapid => 0.88,
@@ -76,14 +77,15 @@ internal static class BalanceCombatProjector
         _ => 0.91,
     };
 
-    /// <summary>按定向弹幕密度估算覆盖率；弹数既提高覆盖，也按共享单弹伤害增加总输出。</summary>
+    /// <summary>按中心弹幕密度与阵形估算割草命中率；共享单弹伤害不在此重复放大。</summary>
     private static double CalculateBarrageHitRate(
         PlayerBarrageSnapshot barrage,
         BalanceBuildKind buildKind)
     {
-        double coverage = Math.Min(0.20, barrage.BarrageProjectileCount * 0.025);
+        double form = barrage.BarrageMode == PlayerBarrageMode.Spiral ? 0.08 : 0.0;
+        double coverage = Math.Min(0.28, barrage.BarrageProjectileCount * 0.025);
         double route = buildKind == BalanceBuildKind.Utility ? 0.03 : 0.0;
-        return Math.Clamp(0.62 + coverage + route, 0.58, 0.88);
+        return Math.Clamp(0.38 + form + coverage + route, 0.35, 0.78);
     }
 
     /// <summary>

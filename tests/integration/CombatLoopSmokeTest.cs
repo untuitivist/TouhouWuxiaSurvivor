@@ -103,8 +103,9 @@ public partial class CombatLoopSmokeTest : Node
             Require(visual.DisplayName == "博丽灵梦" && visual.IsArmedVisible,
                 "Power pickup did not preserve the player name and enable the armed text marker.");
             await ToSignal(GetTree().CreateTimer(0.08), SceneTreeTimer.SignalName.Timeout);
-            Require(shooter.ShotsFired >= shotsBeforeSpiral + 2,
-                "Spiral state did not fire the required opposite projectile pair.");
+            Require(shooter.ShotsFired >= shotsBeforeSpiral + 1 &&
+                shooter.CurrentBarrage.BarrageProjectileCount == 0,
+                "Spiral form invented barrage quantity before its independent upgrade.");
 
             Require(pickupSpawner.SpawnedCount >= 3,
                 "Formal pickup spawner did not route all requested pickups into ECS.");
