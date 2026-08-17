@@ -2,12 +2,13 @@
 
 ## Active Delivery Scope
 
-The product follows a plugin-first contract. `base` is the mandatory bundled plugin and must provide
-a complete run without optional content. `th06_eosd` is the first optional reference plugin used to
-validate world, structure, enemy, character, build, boss, presentation, and isolation extension points.
+The runtime is internally modular, while player-facing Touhou additions are content packs rather than
+DLC or gameplay plugins. `base` is the mandatory bundled content pack and must provide a complete run
+without optional content. `th06_eosd` is the first optional reference content pack used to validate
+world, structure, enemy, character, build, boss, presentation, and isolation extension points.
 All optional packages except `th06_eosd` remain installed catalog and asset inventory while this
 contract is being proven; their existing manifest coverage is not evidence that their runtime
-gameplay is complete.
+gameplay is complete. Content packs may add choices but may not alter global gameplay rules.
 
 The governing product and architecture baseline is documented in
 [`docs/plugin_first_design.md`](../docs/plugin_first_design.md).
