@@ -18,6 +18,7 @@ public sealed class SpellCardDefinition
     public SpellCardEffectKind EffectKind { get; }
     public SpellCardGeometryKind GeometryKind { get; }
     public SpellBulletStyleKind BulletStyleKind { get; }
+    public SpellCardPatternProfile Pattern { get; }
     public SpellCardActivationKind ActivationKind { get; }
     public string UnlockUpgradeId { get; }
     public string PrerequisiteUpgradeId { get; }
@@ -44,7 +45,8 @@ public sealed class SpellCardDefinition
         SpellCardActivationKind activationKind,
         string prerequisiteUpgradeId,
         int minimumRank,
-        SpellCardCombatProfile combat)
+        SpellCardCombatProfile combat,
+        SpellCardPatternProfile? pattern = null)
     {
         Id = Require(id, nameof(id));
         SourcePackId = Require(sourcePackId, nameof(sourcePackId));
@@ -59,6 +61,8 @@ public sealed class SpellCardDefinition
         EffectKind = effectKind;
         GeometryKind = geometryKind;
         BulletStyleKind = bulletStyleKind;
+        Pattern = pattern ?? SpellCardPatternProfile.CreateLegacy(
+            sourceNote, effectDescription);
         ActivationKind = activationKind;
         UnlockUpgradeId = $"spell_{Id}";
         PrerequisiteUpgradeId = Require(prerequisiteUpgradeId, nameof(prerequisiteUpgradeId));

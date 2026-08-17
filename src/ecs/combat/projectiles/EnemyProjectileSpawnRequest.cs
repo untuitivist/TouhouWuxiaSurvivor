@@ -12,4 +12,6 @@ public readonly record struct EnemyProjectileSpawnRequest(
     int Damage,
     int VisualVariant,
     int VisualStyleId = 0,
-    int VisualSourceId = 0);
+    int VisualSourceId = 0,
+    int VisualBulletStyleId = -1,
+    ProjectileMotionProfile Motion = default);

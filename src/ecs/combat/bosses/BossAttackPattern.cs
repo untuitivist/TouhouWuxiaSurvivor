@@ -15,6 +15,11 @@ public sealed class BossAttackPattern
     public float SpreadDegrees { get; }
     public float SpawnDistance { get; }
     public int VisualStyleId { get; }
+    public IReadOnlyList<int> VisualBulletStyleIds { get; }
+    public int WaveCount { get; }
+    public float PhaseRatio { get; }
+    public float HoldRatio { get; }
+    public float TurnRateScale { get; }
 
     /// <summary>
     /// 建立经过边界整理的攻击档案，使损坏内容无法向高频弹幕循环传播零间隔或无效数值。
@@ -29,7 +34,12 @@ public sealed class BossAttackPattern
         int shotCount,
         float spreadDegrees,
         float spawnDistance,
-        int visualStyleId)
+        int visualStyleId,
+        IReadOnlyList<int>? visualBulletStyleIds = null,
+        int waveCount = 1,
+        float phaseRatio = 0.0f,
+        float holdRatio = 0.0f,
+        float turnRateScale = 0.0f)
     {
         SpellCardId = Require(spellCardId, nameof(spellCardId));
         DisplayName = Require(displayName, nameof(displayName));
@@ -41,7 +51,19 @@ public sealed class BossAttackPattern
         SpreadDegrees = Math.Max(0.0f, spreadDegrees);
         SpawnDistance = Math.Max(1.0f, spawnDistance);
         VisualStyleId = Math.Max(0, visualStyleId);
+        VisualBulletStyleIds = (visualBulletStyleIds ?? []).ToArray();
+        WaveCount = Math.Clamp(waveCount, 1, 8);
+        PhaseRatio = Math.Clamp(phaseRatio, 0.0f, 1.0f);
+        HoldRatio = Math.Clamp(holdRatio, 0.0f, 1.0f);
+        TurnRateScale = float.IsFinite(turnRateScale)
+            ? Math.Clamp(turnRateScale, -4.0f, 4.0f)
+            : 0.0f;
     }
+
+    /// <summary>按弹丸序号稳定轮换主辅弹型；旧攻击没有覆盖时返回负数沿用默认样式。</summary>
+    public int ResolveVisualBulletStyleId(int index) => VisualBulletStyleIds.Count == 0
+        ? -1
+        : VisualBulletStyleIds[(int)(Math.Abs((long)index) % VisualBulletStyleIds.Count)];
 
     /// <summary>拒绝空稳定身份或演出名，使 Boss 进入战斗前就暴露错误清单。</summary>
     private static string Require(string value, string parameterName) =>

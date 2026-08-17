@@ -21,6 +21,19 @@ public static class SpellBulletStyleSemantics
         _ => throw new ArgumentOutOfRangeException(nameof(style)),
     };
 
+    /// <summary>以显式跳转表检查高频视觉编号，避免每颗弹调用反射或误收未来枚举空洞。</summary>
+    public static bool IsDefined(int value) => (SpellBulletStyleKind)value is
+        SpellBulletStyleKind.Orb or
+        SpellBulletStyleKind.Amulet or
+        SpellBulletStyleKind.Needle or
+        SpellBulletStyleKind.Knife or
+        SpellBulletStyleKind.Star or
+        SpellBulletStyleKind.Flame or
+        SpellBulletStyleKind.Butterfly or
+        SpellBulletStyleKind.Laser or
+        SpellBulletStyleKind.Shard or
+        SpellBulletStyleKind.LargeOrb;
+
     /// <summary>判断轮廓是否具有明确前后方向，方向型弹丸必须随实时速度转身。</summary>
     public static bool IsDirectional(SpellBulletStyleKind style) => style is
         SpellBulletStyleKind.Amulet or

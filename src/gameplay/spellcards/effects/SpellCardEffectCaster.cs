@@ -7,6 +7,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Scaling;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Geometry;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Patterns;
 using TouhouWuxiaSurvivor.Gameplay.Progression.Runtime;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
@@ -108,9 +109,13 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
                 resolved.ProjectileSpeed,
                 resolved.ImpactRange, resolved.TravelDurationSeconds, index,
                 card.SourcePackId, card.FullName,
-                card.BulletStyleKind, trajectory.Curvature,
+                SpellCardPatternRuntimePolicy.ResolveStyle(card, index),
+                SpellCardPatternRuntimePolicy.ResolveCurvature(
+                    card, index, trajectory.Curvature),
                 SpellCardCombatBackend.MatchTarget(
-                    trajectory.TargetPosition, candidates, assignedTargets));
+                    trajectory.TargetPosition, candidates, assignedTargets),
+                SpellCardPatternRuntimePolicy.CreateMotion(
+                    card, resolved, index, trajectory.TargetPosition));
             _effects.AddChild(orb);
             orb.GlobalPosition = trajectory.SpawnPosition;
         }
@@ -142,7 +147,7 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
 
         var effect = _circleScene.Instantiate<SealingCircleEffect>();
         effect.Configure(card.SourcePackId, card.FullName,
-            card.GeometryKind, card.BulletStyleKind);
+            card.GeometryKind, card.BulletStyleKind, card.Pattern);
         _effects.AddChild(effect);
         effect.GlobalPosition = plan.VisualCenter;
         return true;

@@ -49,8 +49,12 @@ public static class SpellCardCompendiumEntryFactory
         string slot = SpellCardSlotPolicy.Classify(card) == SpellCardSlotKind.Support
             ? $"护持奥义 · 共享 {SpellCardSlotPolicy.MaximumSupportSlots} 槽"
             : $"主攻奥义 · 共享 {SpellCardSlotPolicy.MaximumOffensiveSlots} 槽";
-        string bullet = SpellBulletStyleSemantics.GetDisplayName(card.BulletStyleKind);
-        string pose = SpellBulletStyleSemantics.DescribePose(card.BulletStyleKind);
+        SpellBulletStyleKind[] styles = new[] { card.BulletStyleKind }
+            .Concat(card.Pattern.AccentBulletStyles).Distinct().ToArray();
+        string bullet = string.Join(" / ", styles.Select(
+            SpellBulletStyleSemantics.GetDisplayName));
+        string pose = string.Join("；", styles.Select(
+            SpellBulletStyleSemantics.DescribePose).Distinct());
         return new CompendiumEntry(
             CompendiumCategory.SpellCard,
             card.FullName,
@@ -61,12 +65,15 @@ public static class SpellCardCompendiumEntryFactory
             $"{slot} · {SpellCardActivationText.GetShortName(card.ActivationKind)}",
             [
                 new("所属角色", card.OwnerName),
-                new("设定与素材", (card.CanonLevel == SpellCardCanonLevel.Official
+                new("原作依据", (card.CanonLevel == SpellCardCanonLevel.Official
                     ? "原作正式符卡 · " : "旧作攻击意象的武侠化拟制 · ") +
-                    card.SourceNote.TrimEnd() + " 素材：" +
+                    $"{card.Pattern.OriginalReference} · 原作演出：{card.Pattern.OriginalBehavior} " +
+                    "素材：" +
                     CompendiumVisualProvenanceCatalog.Placeholder, true),
                 new("定位与弹型", $"{card.WuxiaStyle} · {slot} · 阵式 " +
-                    $"{SpellCardGeometryText.GetName(card.GeometryKind)} · 弹型 {bullet} · {pose}", true),
+                    $"{SpellCardGeometryText.GetName(card.GeometryKind)} · 演出 " +
+                    $"{SpellCardPatternText.GetName(card.Pattern.Kind)} · 弹型 {bullet} · " +
+                    $"姿态：{pose}", true),
                 new("前置构筑", prerequisite, true),
                 new("自动触发", SpellCardTriggerTextFormatter.DescribeAutomaticTrigger(card), true),
                 new("周天换算", $"当前角色奥义周天 ×{card.Combat.IntervalScale:0.##}"),

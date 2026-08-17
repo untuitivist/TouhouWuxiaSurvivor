@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Godot;
+using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Content.Characters;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
@@ -29,15 +30,22 @@ public static class SpellCardManifestLoader
                 $"Unsupported spell card schema version: {schemaVersion}");
         }
 
+        bool requiresOriginalPatterns = document.RootElement
+            .GetProperty("capabilities").EnumerateArray()
+            .Any(capability => capability.GetString() ==
+                ContentPackCapabilityIds.BossSpellSequences);
         return cards.EnumerateArray()
-            .Select(card => Parse(card, sourcePackId))
+            .Select(card => Parse(card, sourcePackId, requiresOriginalPatterns))
             .ToArray();
     }
 
     /// <summary>
     /// 把单项 JSON 转成强类型定义，并将中文 owner 立即解析为稳定 CharacterId。
     /// </summary>
-    private static SpellCardDefinition Parse(JsonElement card, string sourcePackId)
+    private static SpellCardDefinition Parse(
+        JsonElement card,
+        string sourcePackId,
+        bool requiresOriginalPattern)
     {
         RejectLegacyFields(card);
         string ownerName = RequiredString(card, "owner");
@@ -69,8 +77,59 @@ public static class SpellCardManifestLoader
                 RequiredFloat(card, "projectile_speed_scale"),
                 RequiredFloat(card, "impact_range_scale"),
                 RequiredFloat(card, "travel_duration_scale"),
-                RequiredFloat(card, "spawn_distance_scale")));
+                RequiredFloat(card, "spawn_distance_scale")),
+            ParsePattern(card, requiresOriginalPattern));
     }
+
+    /// <summary>
+    /// 解析原作时序与复合弹型；声明 Boss 符卡能力的内容包禁止回退为旧通用几何。
+    /// </summary>
+    private static SpellCardPatternProfile ParsePattern(
+        JsonElement card,
+        bool required)
+    {
+        if (!card.TryGetProperty("pattern", out JsonElement pattern))
+        {
+            if (required)
+                throw new InvalidDataException(
+                    $"Spell requires an original pattern: {RequiredString(card, "id")}");
+            return SpellCardPatternProfile.CreateLegacy(
+                RequiredString(card, "source_note"), RequiredString(card, "description"));
+        }
+
+        SpellBulletStyleKind[] accents = pattern.TryGetProperty(
+                "accent_bullet_styles", out JsonElement accentValues)
+            ? accentValues.EnumerateArray()
+                .Select(value => ParseBulletStyle(value.GetString() ?? string.Empty)).ToArray()
+            : [];
+        return new SpellCardPatternProfile(
+            ParsePatternKind(RequiredString(pattern, "kind")),
+            RequiredString(pattern, "original_reference"),
+            RequiredString(pattern, "original_behavior"),
+            RequiredString(pattern, "reference_url"),
+            accents,
+            OptionalInt(pattern, "wave_count", 1),
+            OptionalFloat(pattern, "phase_ratio"),
+            OptionalFloat(pattern, "hold_ratio"),
+            OptionalFloat(pattern, "turn_rate_scale"));
+    }
+
+    /// <summary>把可复用原作演出语法映射为强类型，禁止以具体符卡 ID 驱动通用战斗代码。</summary>
+    private static SpellCardPatternKind ParsePatternKind(string value) => value switch
+    {
+        "homing_orbit" => SpellCardPatternKind.HomingOrbit,
+        "seal_pulse" => SpellCardPatternKind.SealPulse,
+        "straight_beam" => SpellCardPatternKind.StraightBeam,
+        "stardust_fan" => SpellCardPatternKind.StardustFan,
+        "aimed_arc" => SpellCardPatternKind.AimedArc,
+        "freeze_release" => SpellCardPatternKind.FreezeRelease,
+        "rotating_stream" => SpellCardPatternKind.RotatingStream,
+        "elemental_cycle" => SpellCardPatternKind.ElementalCycle,
+        "time_stop_redirect" => SpellCardPatternKind.TimeStopRedirect,
+        "aimed_trail" => SpellCardPatternKind.AimedTrail,
+        "sweeping_beam" => SpellCardPatternKind.SweepingBeam,
+        _ => throw new InvalidDataException($"Unknown spell pattern: {value}"),
+    };
 
     /// <summary>
     /// v2 明确拒绝旧充能、绝对值与战况触发字段，避免新旧语义混合后被 JSON 解析器静默忽略。
@@ -160,4 +219,12 @@ public static class SpellCardManifestLoader
     /// <summary>读取必需浮点数，使整数与小数 JSON 表达都进入同一战斗参数类型。</summary>
     private static float RequiredFloat(JsonElement source, string name) =>
         source.GetProperty(name).GetSingle();
+
+    /// <summary>读取可选整数参数；省略时采用不改变旧内容行为的调用方默认值。</summary>
+    private static int OptionalInt(JsonElement source, string name, int fallback) =>
+        source.TryGetProperty(name, out JsonElement value) ? value.GetInt32() : fallback;
+
+    /// <summary>读取可选时序比例；省略时为零，强类型档案会继续执行有限性与范围校验。</summary>
+    private static float OptionalFloat(JsonElement source, string name) =>
+        source.TryGetProperty(name, out JsonElement value) ? value.GetSingle() : 0.0f;
 }

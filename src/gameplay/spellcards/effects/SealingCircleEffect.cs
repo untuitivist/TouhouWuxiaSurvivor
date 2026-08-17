@@ -9,13 +9,15 @@ namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 /// </summary>
 public partial class SealingCircleEffect : Node2D
 {
-    private const double DurationSeconds = 0.55;
+    private const double BaseDurationSeconds = 0.55;
     private double _elapsed;
     private Label? _fallbackLabel;
     private string _sourcePackId = string.Empty;
     private string _spellCardName = string.Empty;
     private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Ring;
     private SpellBulletStyleKind _bulletStyle = SpellBulletStyleKind.Amulet;
+    private SpellCardPatternProfile _pattern = SpellCardPatternProfile.CreateLegacy(
+        "兼容结界", "沿用通用结界演出。");
     private bool _configured;
 
     /// <summary>
@@ -25,7 +27,8 @@ public partial class SealingCircleEffect : Node2D
         string sourcePackId,
         string spellCardName,
         SpellCardGeometryKind geometryKind,
-        SpellBulletStyleKind bulletStyle)
+        SpellBulletStyleKind bulletStyle,
+        SpellCardPatternProfile? pattern = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sourcePackId);
         ArgumentException.ThrowIfNullOrWhiteSpace(spellCardName);
@@ -33,6 +36,7 @@ public partial class SealingCircleEffect : Node2D
         _spellCardName = spellCardName;
         _geometryKind = geometryKind;
         _bulletStyle = bulletStyle;
+        _pattern = pattern ?? _pattern;
         _configured = true;
     }
 
@@ -58,10 +62,12 @@ public partial class SealingCircleEffect : Node2D
     public override void _Process(double delta)
     {
         _elapsed += delta;
-        float progress = Math.Clamp((float)(_elapsed / DurationSeconds), 0.0f, 1.0f);
+        double duration = ResolveDuration();
+        float progress = Math.Clamp((float)(_elapsed / duration), 0.0f, 1.0f);
+        ApplyPatternMotion(delta, progress);
         Scale = Vector2.One * Mathf.Lerp(0.35f, 1.65f, progress);
         Modulate = new Color(1.0f, 1.0f, 1.0f, 1.0f - progress);
-        if (_elapsed >= DurationSeconds)
+        if (_elapsed >= duration)
         {
             QueueFree();
         }
@@ -78,15 +84,33 @@ public partial class SealingCircleEffect : Node2D
             var bullet = new InternalSpellBulletVisual();
             AddChild(bullet);
             bullet.Configure(
-                _sourcePackId, _spellCardName, _bulletStyle, index + 5);
+                _sourcePackId, _spellCardName,
+                _pattern.ResolveStyle(_bulletStyle, index), index + 5);
             bullet.Position = ResolveBulletPosition(index);
             bullet.Rotation = ProjectileVisualPosePolicy.ResolveRotation(
-                _bulletStyle, bullet.Position);
+                _pattern.ResolveStyle(_bulletStyle, index), bullet.Position);
             bullet.Scale *= 0.8f;
             available |= bullet.Visible;
         }
 
         return available;
+    }
+
+    /// <summary>让已校对多阶段范围演出获得可读停顿，其余结界继续使用原有短促反馈。</summary>
+    private double ResolveDuration() => _pattern.Kind is
+        SpellCardPatternKind.FreezeRelease or SpellCardPatternKind.ElementalCycle
+            ? BaseDurationSeconds + 0.14 * _pattern.WaveCount
+            : BaseDurationSeconds;
+
+    /// <summary>按归一化演出阶段旋转弹阵；冻结窗口内保持完全静止以呈现停止语义。</summary>
+    private void ApplyPatternMotion(double delta, float progress)
+    {
+        bool frozen = _pattern.Kind == SpellCardPatternKind.FreezeRelease &&
+            progress >= _pattern.PhaseRatio &&
+            progress < _pattern.PhaseRatio + _pattern.HoldRatio;
+        if (frozen) return;
+        float direction = _pattern.Kind == SpellCardPatternKind.ElementalCycle ? -1.0f : 1.0f;
+        Rotation += (float)delta * direction * (0.6f + Math.Abs(_pattern.TurnRateScale));
     }
 
     /// <summary>按符卡几何改变结界弹幕轮廓，使范围效果在不增加命中预算时仍有明确辨识度。</summary>

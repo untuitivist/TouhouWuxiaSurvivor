@@ -296,9 +296,7 @@ public partial class EcsCombatWorld : Node2D
         _enemyMovement.Step(_enemies, _player.GlobalPosition, (float)delta,
             amount => _health.ApplyDamage(amount));
         _enemyProjectiles.Step(_enemies, _player.GlobalPosition, (float)delta,
-            request => SpawnEnemyProjectile(request.Position, request.Direction,
-                request.Speed, request.Damage, request.VisualVariant,
-                request.VisualStyleId, request.VisualSourceId));
+            request => SpawnEnemyProjectile(request));
         _projectileMovement.Step(_projectiles, (float)delta);
         ResolveProjectileHits();
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());

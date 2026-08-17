@@ -118,7 +118,9 @@ public partial class CompendiumSmokeTest : Node
                 new[] { "露米娅", "琪露诺", "红美铃", "帕秋莉·诺蕾姬", "十六夜咲夜",
                     "蕾米莉亚·斯卡蕾特", "芙兰朵露·斯卡蕾特" }.Any(owner =>
                         details.Contains(owner, StringComparison.Ordinal)) &&
-                details.Contains("设定与素材：原作正式符卡", StringComparison.Ordinal) &&
+                details.Contains("原作依据：原作正式符卡", StringComparison.Ordinal) &&
+                details.Contains("TH06 SC", StringComparison.Ordinal) &&
+                details.Contains("原作演出", StringComparison.Ordinal) &&
                 details.Contains("前置构筑", StringComparison.Ordinal) &&
                 details.Contains("自动触发", StringComparison.Ordinal) &&
                 details.Contains("定位与弹型", StringComparison.Ordinal) &&

@@ -31,7 +31,14 @@ public static class EcsProjectileSpawner
         int damage,
         int visualVariant,
         int visualStyleId,
-        int visualSourceId)
+        int visualSourceId) => TrySpawnEnemy(projectiles,
+            new EnemyProjectileSpawnRequest(position, direction, speed, damage,
+                visualVariant, visualStyleId, visualSourceId));
+
+    /// <summary>把完整敌弹请求写入连续池，使复合弹型与跨常运动不会在世界编排层丢失。</summary>
+    public static bool TrySpawnEnemy(
+        ProjectilePool projectiles,
+        EnemyProjectileSpawnRequest request)
     {
         if (projectiles.CountFaction(ProjectileFaction.Enemy) >=
                 ProjectilePool.MaximumEnemyActive ||
@@ -40,8 +47,12 @@ public static class EcsProjectileSpawner
             return false;
         }
 
-        return projectiles.TryAdd(position, direction, speed, damage,
-            ProjectileFaction.Enemy, 7.0f, 3.5f, visualVariant, out _,
-            visualStyleId: visualStyleId, visualSourceId: visualSourceId);
+        return projectiles.TryAdd(request.Position, request.Direction,
+            request.Speed, request.Damage, ProjectileFaction.Enemy,
+            7.0f, 3.5f, request.VisualVariant, out _,
+            visualStyleId: request.VisualStyleId,
+            visualSourceId: request.VisualSourceId,
+            visualBulletStyleId: request.VisualBulletStyleId,
+            motion: request.Motion);
     }
 }

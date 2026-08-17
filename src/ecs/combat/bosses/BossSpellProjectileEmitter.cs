@@ -46,6 +46,12 @@ public static class BossSpellProjectileEmitter
         int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
+        if (BossOriginalPatternEmitter.TryEmit(ref enemy, playerPosition,
+                attack, count, visualSourceId, emitProjectile))
+        {
+            return;
+        }
+
         Vector2 aimed = enemy.Position.DirectionTo(playerPosition);
         switch (attack.PatternKind)
         {

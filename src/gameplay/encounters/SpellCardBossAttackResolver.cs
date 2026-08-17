@@ -2,10 +2,7 @@ using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Ecs.Combat;
 using TouhouWuxiaSurvivor.Ecs.Combat.Bosses;
-using TouhouWuxiaSurvivor.Gameplay.SpellCards.Contracts;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
-using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
-using TouhouWuxiaSurvivor.Gameplay.SpellCards.Scaling;
 
 namespace TouhouWuxiaSurvivor.Gameplay.Encounters;
 
@@ -32,7 +29,7 @@ public sealed class SpellCardBossAttackResolver : IBossAttackResolver
             .GroupBy(card => card.OwnerCharacterId, StringComparer.Ordinal)
             .ToDictionary(
                 group => group.Key,
-                group => group.Select(CreatePattern).ToArray(),
+                group => group.Select(BossSpellAttackPatternFactory.Create).ToArray(),
                 StringComparer.Ordinal);
     }
 
@@ -60,35 +57,4 @@ public sealed class SpellCardBossAttackResolver : IBossAttackResolver
         return true;
     }
 
-    /// <summary>用角色基础属性解析一张符卡，并把内容几何映射成 ECS 可执行的纯数据攻击档案。</summary>
-    private static BossAttackPattern CreatePattern(SpellCardDefinition card)
-    {
-        CharacterDefinition character = CharacterCatalog.GetRequired(card.OwnerCharacterId);
-        SpellCardBaseAttributes attributes = BossSpellCardAttributeFactory.Create(character);
-        ResolvedSpellCardCombat combat = SpellCardScalingResolver.Resolve(
-            card.Combat, attributes);
-        return new BossAttackPattern(
-            card.Id,
-            card.ShortName,
-            MapGeometry(card.GeometryKind),
-            combat.IntervalSeconds,
-            combat.ProjectileSpeed,
-            combat.Damage,
-            combat.TargetCount,
-            Math.Clamp(combat.EffectRange / 18.0f, 6.0f, 30.0f),
-            combat.SpawnDistance,
-            SpellCardVisualBindingCatalog.GetBindingId(card.Id));
-    }
-
-    /// <summary>将内容层几何转换为独立 ECS 语法，避免高频系统依赖符卡清单枚举。</summary>
-    private static BossProjectilePatternKind MapGeometry(SpellCardGeometryKind geometry) =>
-        geometry switch
-        {
-            SpellCardGeometryKind.Orbit => BossProjectilePatternKind.Orbit,
-            SpellCardGeometryKind.Fan => BossProjectilePatternKind.Fan,
-            SpellCardGeometryKind.Line => BossProjectilePatternKind.Line,
-            SpellCardGeometryKind.Ring => BossProjectilePatternKind.Ring,
-            SpellCardGeometryKind.Backstab => BossProjectilePatternKind.Backstab,
-            _ => throw new ArgumentOutOfRangeException(nameof(geometry), geometry, null),
-        };
 }

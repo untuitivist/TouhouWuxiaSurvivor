@@ -85,7 +85,13 @@
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
       "geometry": "orbit",
-      "bullet_style": "orb"
+      "bullet_style": "orb",
+      "pattern": {
+        "kind": "homing_orbit",
+        "original_reference": "TH06 Reimu-A Bomb",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Gameplay",
+        "original_behavior": "多枚彩色灵玉从自机周身展开，随后分别追踪目标。"
+      }
     },
     {
       "id": "reimu_evil_sealing_circle",
@@ -111,7 +117,13 @@
       "activation": "on_damaged",
       "activation_threshold_scale": 0.5,
       "geometry": "ring",
-      "bullet_style": "amulet"
+      "bullet_style": "amulet",
+      "pattern": {
+        "kind": "seal_pulse",
+        "original_reference": "TH06 Reimu-B Bomb",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Gameplay",
+        "original_behavior": "封魔阵以自机为中心展开，并随扩张的结界轮廓清扫近身弹幕。"
+      }
     },
     {
       "id": "reimu_duplex_barrier",
@@ -137,7 +149,14 @@
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
       "geometry": "ring",
-      "bullet_style": "amulet"
+      "bullet_style": "amulet",
+      "pattern": {
+        "kind": "seal_pulse",
+        "original_reference": "TH08 SC055/056",
+        "reference_url": "https://en.touhouwiki.net/wiki/Imperishable_Night/Spell_Cards/Stage_4A",
+        "original_behavior": "直线飞行的符弹被两重结界扭曲路径，视觉上形成彼此错位的双层封锁。",
+        "wave_count": 2
+      }
     },
     {
       "id": "reimu_omnidirectional_oni_binding_circle",
@@ -163,7 +182,14 @@
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
       "geometry": "ring",
-      "bullet_style": "amulet"
+      "bullet_style": "amulet",
+      "pattern": {
+        "kind": "seal_pulse",
+        "original_reference": "TH08 SC065",
+        "reference_url": "https://en.touhouwiki.net/wiki/Imperishable_Night/Spell_Cards/Stage_4A",
+        "original_behavior": "符札从八方结成全周阵势，封住对手的活动空间。",
+        "wave_count": 2
+      }
     },
     {
       "id": "marisa_master_spark",
@@ -189,7 +215,13 @@
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
       "geometry": "line",
-      "bullet_style": "laser"
+      "bullet_style": "laser",
+      "pattern": {
+        "kind": "straight_beam",
+        "original_reference": "TH08 SC090/091",
+        "reference_url": "https://en.touhouwiki.net/wiki/Imperishable_Night/Spell_Cards/Stage_4B",
+        "original_behavior": "高密度魔力汇成一条持续的直线光束，集中贯穿正前方。"
+      }
     },
     {
       "id": "marisa_stardust_reverie",
@@ -215,7 +247,14 @@
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
       "geometry": "fan",
-      "bullet_style": "star"
+      "bullet_style": "star",
+      "pattern": {
+        "kind": "stardust_fan",
+        "original_reference": "TH08 SC082/083",
+        "reference_url": "https://en.touhouwiki.net/wiki/Imperishable_Night/Spell_Cards/Stage_4B",
+        "original_behavior": "星屑组成如万花筒般不断改变形态的星之庭园。",
+        "wave_count": 3
+      }
     }
   ],
   "spellcard_balance_version": 2

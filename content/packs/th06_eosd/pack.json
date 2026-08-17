@@ -54,7 +54,7 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "夜行秘法 · 暗羽追魂",
-      "description": "周天就绪且敌群进入范围时，放出暗色羽弹，沿扇面追击多个目标。",
+      "description": "沿弧列排出暗色圆弹，每列保留一枚瞄准弹；自机奥义将瞄准列导向当前威胁。",
       "effect": "homing_volley",
       "prerequisite": "soul_seeking",
       "minimum_rank": 2,
@@ -70,7 +70,14 @@
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
       "geometry": "fan",
-      "bullet_style": "shard"
+      "bullet_style": "orb",
+      "pattern": {
+        "kind": "aimed_arc",
+        "original_reference": "TH06 SC02",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Stage_1",
+        "original_behavior": "暗色圆弹组成多列弧线，每列夹入一枚朝玩家方向发射的瞄准弹。",
+        "wave_count": 3
+      }
     },
     {
       "id": "th06_cirno_perfect_freeze",
@@ -80,7 +87,7 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "寒冰诀 · 冻气凝弹",
-      "description": "周天一转，以环形冻结弹覆盖近身敌群。",
+      "description": "彩色圆弹扩散后在半途冻结，停顿期间加入瞄准弹，再以错开的方向重新启动。",
       "effect": "area_burst",
       "prerequisite": "wind_riding",
       "minimum_rank": 2,
@@ -96,7 +103,19 @@
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
       "geometry": "ring",
-      "bullet_style": "shard"
+      "bullet_style": "orb",
+      "pattern": {
+        "kind": "freeze_release",
+        "original_reference": "TH06 SC06",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Stage_2",
+        "original_behavior": "散开的彩弹突然停止并变白，新的蓝色瞄准弹穿过其间，冻结弹随后再次启动。",
+        "accent_bullet_styles": [
+          "large_orb"
+        ],
+        "wave_count": 2,
+        "phase_ratio": 0.22,
+        "hold_ratio": 0.28
+      }
     },
     {
       "id": "th06_meiling_rainbow_wind_chime",
@@ -106,7 +125,7 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "虹气拳 · 五彩震铃",
-      "description": "周天就绪且敌群进入范围时，以彩色扇弹连续锁定前方目标。",
+      "description": "以自身为轴连续放出五彩米弹旋流，流束扭转着向外扩散并压迫敌群。",
       "effect": "homing_volley",
       "prerequisite": "needle_damage",
       "minimum_rank": 2,
@@ -122,7 +141,19 @@
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
       "geometry": "fan",
-      "bullet_style": "orb"
+      "bullet_style": "needle",
+      "pattern": {
+        "kind": "rotating_stream",
+        "original_reference": "TH06 SC10",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Stage_3",
+        "original_behavior": "五彩米弹从施术者中心形成复杂旋流，弹列持续扭转并随施术者下移展开。",
+        "accent_bullet_styles": [
+          "shard"
+        ],
+        "wave_count": 4,
+        "phase_ratio": 0.35,
+        "turn_rate_scale": 0.75
+      }
     },
     {
       "id": "th06_patchouli_philosophers_stone",
@@ -132,7 +163,7 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "五行大法 · 贤者石阵",
-      "description": "周天一转，以五行弹阵环绕施术者并覆盖范围内敌群。",
+      "description": "五本魔导书分别运转火水木金土弹式，按颜色轮换瞄准、环射、停转与漂移轨迹。",
       "effect": "area_burst",
       "prerequisite": "spirit_gathering",
       "minimum_rank": 3,
@@ -148,7 +179,21 @@
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
       "geometry": "orbit",
-      "bullet_style": "large_orb"
+      "bullet_style": "orb",
+      "pattern": {
+        "kind": "elemental_cycle",
+        "original_reference": "TH06 SC54",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Extra",
+        "original_behavior": "五本魔导书围绕帕秋莉，各自释放蓝色瞄准散射、灰色瞄准环、黄色停转、绿色漂移与红色交叉环。",
+        "accent_bullet_styles": [
+          "needle",
+          "shard",
+          "large_orb",
+          "flame"
+        ],
+        "wave_count": 5,
+        "phase_ratio": 0.25
+      }
     },
     {
       "id": "th06_sakuya_killing_doll",
@@ -158,7 +203,7 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "银刃秘技 · 时隙杀阵",
-      "description": "周天一转，从目标两侧布下银刃并集中射向最强敌人。",
+      "description": "先展开圆形刀阵与外层刀波，短暂停滞后让整批飞刀统一转向最强敌人。",
       "effect": "focused_volley",
       "prerequisite": "wind_riding",
       "minimum_rank": 2,
@@ -174,7 +219,16 @@
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
       "geometry": "backstab",
-      "bullet_style": "knife"
+      "bullet_style": "knife",
+      "pattern": {
+        "kind": "time_stop_redirect",
+        "original_reference": "TH06 SC40",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Stage_5",
+        "original_behavior": "第一批飞刀组成圆形花阵，第二批形成大型刀波；时间停止结束后飞刀同时改变方向。",
+        "wave_count": 2,
+        "phase_ratio": 0.18,
+        "hold_ratio": 0.22
+      }
     },
     {
       "id": "th06_remilia_scarlet_shoot",
@@ -184,14 +238,14 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "血枪秘技 · 绯红追猎",
-      "description": "周天就绪且敌群进入范围时，敌群成势时放出绯红魔弹，沿命运轨迹追击多个目标。",
-      "effect": "homing_volley",
+      "description": "两轮五向绯红大弹沿途曳出小弹，末段再以三枚大弹瞄准当前最强敌人。",
+      "effect": "focused_volley",
       "prerequisite": "soul_seeking",
       "minimum_rank": 2,
       "interval_scale": 0.952380952,
       "range_scale": 1.130434783,
-      "damage_scale": 0.79,
-      "target_scale": 0.883,
+      "damage_scale": 1.255,
+      "target_scale": 0.5,
       "defense_scale": 0,
       "projectile_speed_scale": 1.222222222,
       "impact_range_scale": 0.023076923,
@@ -200,7 +254,17 @@
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
       "geometry": "fan",
-      "bullet_style": "needle"
+      "bullet_style": "large_orb",
+      "pattern": {
+        "kind": "aimed_trail",
+        "original_reference": "TH06 SC45",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Stage_6",
+        "original_behavior": "两轮五向高速大红弹拖出小弹轨迹，随后追加三枚瞄准大弹，并在下一循环加快。",
+        "accent_bullet_styles": [
+          "orb"
+        ],
+        "wave_count": 2
+      }
     },
     {
       "id": "th06_flandre_laevatein",
@@ -210,7 +274,7 @@
       "canon": "official",
       "source_note": "原作符卡：东方红魔乡。",
       "wuxia_style": "禁忌剑诀 · 灼目魔剑",
-      "description": "周天一转，锁定最强敌人挥出灼热魔剑，以高伤害集中斩击撕开阵线。",
+      "description": "凝成赤色魔剑形光束横向扫掠，扫过的路径留下彼此平行的灼热弹列。",
       "effect": "focused_volley",
       "prerequisite": "needle_damage",
       "minimum_rank": 3,
@@ -226,7 +290,18 @@
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
       "geometry": "line",
-      "bullet_style": "flame"
+      "bullet_style": "laser",
+      "pattern": {
+        "kind": "sweeping_beam",
+        "original_reference": "TH06 SC56",
+        "reference_url": "https://en.touhouwiki.net/wiki/Embodiment_of_Scarlet_Devil/Spell_Cards/Extra",
+        "original_behavior": "巨大的赤色光束如魔剑般旋转横扫，并沿扫过的路径留下连续红色弹列。",
+        "accent_bullet_styles": [
+          "flame"
+        ],
+        "wave_count": 3,
+        "turn_rate_scale": 0.35
+      }
     }
   ],
   "spellcard_balance_version": 2

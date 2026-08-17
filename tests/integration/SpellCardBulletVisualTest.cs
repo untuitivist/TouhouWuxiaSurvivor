@@ -97,12 +97,13 @@ public partial class SpellCardBulletVisualTest : Node
             ["reimu_omnidirectional_oni_binding_circle"] = SpellBulletStyleKind.Amulet,
             ["marisa_master_spark"] = SpellBulletStyleKind.Laser,
             ["marisa_stardust_reverie"] = SpellBulletStyleKind.Star,
-            ["th06_rumia_night_bird"] = SpellBulletStyleKind.Shard,
-            ["th06_cirno_perfect_freeze"] = SpellBulletStyleKind.Shard,
-            ["th06_patchouli_philosophers_stone"] = SpellBulletStyleKind.LargeOrb,
+            ["th06_rumia_night_bird"] = SpellBulletStyleKind.Orb,
+            ["th06_cirno_perfect_freeze"] = SpellBulletStyleKind.Orb,
+            ["th06_meiling_rainbow_wind_chime"] = SpellBulletStyleKind.Needle,
+            ["th06_patchouli_philosophers_stone"] = SpellBulletStyleKind.Orb,
             ["th06_sakuya_killing_doll"] = SpellBulletStyleKind.Knife,
-            ["th06_remilia_scarlet_shoot"] = SpellBulletStyleKind.Needle,
-            ["th06_flandre_laevatein"] = SpellBulletStyleKind.Flame,
+            ["th06_remilia_scarlet_shoot"] = SpellBulletStyleKind.LargeOrb,
+            ["th06_flandre_laevatein"] = SpellBulletStyleKind.Laser,
         };
 
         foreach ((string id, SpellBulletStyleKind style) in expected)

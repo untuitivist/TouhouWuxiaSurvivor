@@ -65,6 +65,24 @@ public sealed class SpellCardProjectileVisualResolver
         out SpellBulletVisualSelection selection) => TryResolve(
             visualStyleId, projectileVariant, out texture, out selection, out _);
 
+    /// <summary>以同一符卡图集解析复合演出的指定弹型，保证五行或曳尾不会借用其他内容包。</summary>
+    public bool TryResolve(
+        int visualStyleId,
+        SpellBulletStyleKind style,
+        int projectileVariant,
+        out Texture2D texture,
+        out SpellBulletVisualSelection selection)
+    {
+        texture = null!;
+        selection = default;
+        if (visualStyleId <= 0 || !_spellVisuals.TryGetValue(visualStyleId, out var visual))
+            return false;
+        texture = visual.Texture;
+        selection = SpellBulletAtlasRegionResolver.Resolve(
+            visual.Definition, style, projectileVariant, texture);
+        return true;
+    }
+
     /// <summary>解析精确符卡视觉并返回实际采用的来源定义，供来源契约测试与诊断读取。</summary>
     public bool TryResolve(
         int visualStyleId,

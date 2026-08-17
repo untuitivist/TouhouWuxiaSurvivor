@@ -97,9 +97,16 @@ public sealed class EcsCombatItemRenderer
         ProjectileComponent projectile,
         Vector2 position)
     {
-        if (_spellVisuals.TryResolve(projectile.VisualStyleId,
+        bool hasStyleOverride = SpellBulletStyleSemantics.IsDefined(
+            projectile.VisualBulletStyleId);
+        bool hasSpellVisual = hasStyleOverride
+            ? _spellVisuals.TryResolve(projectile.VisualStyleId,
+                (SpellBulletStyleKind)projectile.VisualBulletStyleId,
                 projectile.VisualVariant, out Texture2D spellTexture,
-                out SpellBulletVisualSelection spellSelection))
+                out SpellBulletVisualSelection spellSelection)
+            : _spellVisuals.TryResolve(projectile.VisualStyleId,
+                projectile.VisualVariant, out spellTexture, out spellSelection);
+        if (hasSpellVisual)
         {
             ProjectileVisualDrawHelper.Draw(canvas, spellTexture, spellSelection,
                 position, projectile.Velocity);
@@ -107,8 +114,10 @@ public sealed class EcsCombatItemRenderer
         }
         else
         {
-            SpellBulletStyleKind style = ProjectileBulletStylePolicy.Resolve(
-                projectile.Faction, projectile.VisualVariant);
+            SpellBulletStyleKind style = hasStyleOverride
+                ? (SpellBulletStyleKind)projectile.VisualBulletStyleId
+                : ProjectileBulletStylePolicy.Resolve(
+                    projectile.Faction, projectile.VisualVariant);
             if (_spellVisuals.TryResolveSource(projectile.VisualSourceId, style,
                     projectile.VisualVariant, out Texture2D sourceTexture,
                     out SpellBulletVisualSelection sourceSelection, out _))

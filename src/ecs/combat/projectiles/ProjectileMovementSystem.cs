@@ -14,7 +14,14 @@ public sealed class ProjectileMovementSystem
         {
             var projectile = pool.Get(index);
             projectile.BeginPhysicsStep();
-            projectile.Position += projectile.Velocity * delta;
+            bool moving = ProjectileMotionPolicy.Step(
+                ref projectile.Velocity,
+                ref projectile.MotionAge,
+                ref projectile.MotionTransitionApplied,
+                projectile.Position,
+                projectile.Motion,
+                delta);
+            if (moving) projectile.Position += projectile.Velocity * delta;
             projectile.Lifetime -= delta;
             if (projectile.Lifetime <= 0.0f)
             {

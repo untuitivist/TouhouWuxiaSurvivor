@@ -24,7 +24,9 @@ public struct ProjectileComponent
         int secondaryHitDamage = -1,
         float hitDamageDecay = ProjectileDamageBudget.SecondaryHitMultiplier,
         int visualStyleId = 0,
-        int visualSourceId = 0)
+        int visualSourceId = 0,
+        int visualBulletStyleId = -1,
+        ProjectileMotionProfile motion = default)
     {
         Entity = entity;
         _position = new InterpolatedPosition2D(position);
@@ -36,6 +38,10 @@ public struct ProjectileComponent
         VisualVariant = Math.Max(0, visualVariant);
         VisualStyleId = Math.Max(0, visualStyleId);
         VisualSourceId = Math.Max(0, visualSourceId);
+        VisualBulletStyleId = visualBulletStyleId;
+        Motion = motion.Normalize();
+        MotionAge = 0.0f;
+        MotionTransitionApplied = false;
         RemainingHits = Math.Max(1, maximumHits);
         NextHitDamage = RemainingHits > 1
             ? secondaryHitDamage >= 0
@@ -92,6 +98,18 @@ public struct ProjectileComponent
 
     /// <summary>获取通用弹丸所属内容包的紧凑视觉编号；精确符卡仍由 VisualStyleId 决定。</summary>
     public int VisualSourceId;
+
+    /// <summary>获取符卡复合演出指定的弹型枚举值；负数表示继续使用该卡主弹型。</summary>
+    public int VisualBulletStyleId;
+
+    /// <summary>获取跨帧运动档案；线性默认值不会增加额外分支状态。</summary>
+    public ProjectileMotionProfile Motion;
+
+    /// <summary>记录投射物自生成后的运动阶段时间。</summary>
+    public float MotionAge;
+
+    /// <summary>记录停止结束或一次转向是否已经应用，防止跨帧重复改变速度。</summary>
+    public bool MotionTransitionApplied;
 
     /// <summary>获取弹丸在回收前仍可造成伤害的次数，普通弹为一，贯穿弹大于一。</summary>
     public int RemainingHits;

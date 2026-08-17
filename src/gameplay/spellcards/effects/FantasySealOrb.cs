@@ -17,6 +17,11 @@ public partial class FantasySealOrb : Node2D
     private double _lifetimeLeft = 2.0;
     private int _visualVariant;
     private float _curvature;
+    private ProjectileMotionProfile _motion;
+    private Vector2 _motionVelocity;
+    private float _motionAge;
+    private bool _motionTransitionApplied;
+    private bool _motionInitialized;
     private SpellCardTargetReference? _trackingTarget;
     private bool _lostTrackingTarget;
     private string _sourcePackId = string.Empty;
@@ -41,7 +46,8 @@ public partial class FantasySealOrb : Node2D
         string spellCardName,
         SpellBulletStyleKind bulletStyle,
         float curvature,
-        SpellCardTargetReference? trackingTarget = null)
+        SpellCardTargetReference? trackingTarget = null,
+        ProjectileMotionProfile motion = default)
     {
         _backend = backend ?? throw new ArgumentNullException(nameof(backend));
         ArgumentException.ThrowIfNullOrWhiteSpace(sourcePackId);
@@ -57,6 +63,10 @@ public partial class FantasySealOrb : Node2D
         _bulletStyle = bulletStyle;
         _curvature = curvature;
         _trackingTarget = trackingTarget;
+        _motion = motion.Normalize();
+        _motionAge = 0.0f;
+        _motionTransitionApplied = false;
+        _motionInitialized = false;
         _lostTrackingTarget = false;
         _configured = true;
     }
@@ -99,15 +109,50 @@ public partial class FantasySealOrb : Node2D
             return;
         }
 
-        Vector2 direction = GlobalPosition.DirectionTo(_targetPosition);
+        Vector2 direction = ResolveMovementDirection((float)delta, out bool moving);
+        Rotation = ProjectileVisualPosePolicy.ResolveRotation(_bulletStyle, direction);
+        if (moving) GlobalPosition += direction * _speed * (float)delta;
+    }
+
+    /// <summary>在线性追踪与原作跨帧运动之间选择方向，冻结阶段返回零位移但保留姿态。</summary>
+    private Vector2 ResolveMovementDirection(float delta, out bool moving)
+    {
+        if (_motion.Kind == ProjectileMotionKind.Linear)
+        {
+            moving = true;
+            return ApplyCurvature(GlobalPosition.DirectionTo(_targetPosition), delta);
+        }
+
+        if (!_motionInitialized)
+        {
+            _motionVelocity = GlobalPosition.DirectionTo(_targetPosition) * _speed;
+            if (_motionVelocity.IsZeroApprox()) _motionVelocity = Vector2.Right * _speed;
+            _motionInitialized = true;
+        }
+        if (_motionTransitionApplied && _motion.Kind is
+            ProjectileMotionKind.FreezeResume or ProjectileMotionKind.CurvedStream)
+        {
+            Vector2 homing = GlobalPosition.DirectionTo(_targetPosition);
+            if (!homing.IsZeroApprox()) _motionVelocity = homing * _speed;
+        }
+
+        moving = ProjectileMotionPolicy.Step(
+            ref _motionVelocity, ref _motionAge, ref _motionTransitionApplied,
+            GlobalPosition, _motion, delta);
+        return _motionVelocity.IsZeroApprox()
+            ? Vector2.Zero
+            : _motionVelocity.Normalized();
+    }
+
+    /// <summary>逐步收束几何策略提供的初始曲率，使普通追踪卡保持原有可靠命中。</summary>
+    private Vector2 ApplyCurvature(Vector2 direction, float delta)
+    {
         if (!direction.IsZeroApprox() && !Mathf.IsZeroApprox(_curvature))
         {
             direction = direction.Rotated(_curvature);
-            _curvature = Mathf.MoveToward(_curvature, 0.0f, 3.4f * (float)delta);
+            _curvature = Mathf.MoveToward(_curvature, 0.0f, 3.4f * delta);
         }
-
-        Rotation = ProjectileVisualPosePolicy.ResolveRotation(_bulletStyle, direction);
-        GlobalPosition += direction * _speed * (float)delta;
+        return direction;
     }
 
     /// <summary>目标存活时刷新最新位置；失效后解除引用并保留最后一次有效落点继续飞行。</summary>

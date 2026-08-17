@@ -71,6 +71,10 @@ public partial class CompendiumRuntimeSyncTest : Node
                 entry.Details.Contains(
                     SpellBulletStyleSemantics.DescribePose(spell.BulletStyleKind),
                     StringComparison.Ordinal) &&
+                entry.Details.Contains(SpellCardPatternText.GetName(spell.Pattern.Kind),
+                    StringComparison.Ordinal) &&
+                entry.Details.Contains(spell.Pattern.OriginalReference,
+                    StringComparison.Ordinal) &&
                 !entry.Details.Contains(CompendiumVisualProvenanceCatalog.Placeholder,
                     StringComparison.Ordinal),
                 $"Spell entry omitted bullet semantics or provenance: {spell.Id}.");
