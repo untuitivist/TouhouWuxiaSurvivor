@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Visuals.Internal;
@@ -57,6 +58,8 @@ public partial class SpellBulletVisualAcceptanceTest : Node2D
             int row = index % 7;
             DrawCard(_cards[index], 14.0f + column * 312.0f, 39.0f + row * 44.0f);
         }
+
+        DrawPoseCompass();
     }
 
     /// <summary>绘制一张卡片的短名、中文弹型与四个色种，完整帧统一到局内显示尺寸。</summary>
@@ -96,6 +99,26 @@ public partial class SpellBulletVisualAcceptanceTest : Node2D
             needle.Source);
         DrawTextureRectRegion(texture, star.CreateDestination(new Vector2(612.0f, 17.0f)),
             star.Source);
+    }
+
+    /// <summary>用八向飞针直观验收速度到姿态的映射，确保帧朝向不再固定朝下。</summary>
+    private void DrawPoseCompass()
+    {
+        SpellCardDefinition card = SpellCardCatalog.FindById("reimu_fantasy_seal")!;
+        Require(TryLoad(card, out InternalVisualDefinition definition, out Texture2D texture),
+            "Projectile pose atlas is unavailable.");
+        SpellBulletVisualSelection needle = SpellBulletAtlasRegionResolver.Resolve(
+            definition, SpellBulletStyleKind.Needle, 2, texture);
+        DrawRect(new Rect2(326.0f, 303.0f, 300.0f, 39.0f), new Color("101d15"));
+        DrawString(_font, new Vector2(332.0f, 326.0f), "姿态：八向飞针",
+            HorizontalAlignment.Left, 154.0f, 10, new Color("e9e2cb"));
+        Vector2 center = new(563.0f, 322.0f);
+        for (int index = 0; index < 8; index++)
+        {
+            Vector2 direction = Vector2.FromAngle(Mathf.Tau * index / 8.0f);
+            ProjectileVisualDrawHelper.Draw(
+                this, texture, needle, center + direction * 14.0f, direction);
+        }
     }
 
     /// <summary>按稳定内容身份取得图集映射与纹理，失败时不做跨作品静默回退。</summary>

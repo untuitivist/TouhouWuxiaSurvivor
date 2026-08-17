@@ -19,6 +19,7 @@ public partial class SpellCardBulletVisualTest : Node
             VerifyCatalogDiversityAndCuts();
             VerifyBaseAndScarletSemantics();
             VerifyDefaultProjectileChannels();
+            VerifyProjectilePosePolicy();
             GD.Print("Spell-card bullet visual test passed.");
             GetTree().Quit();
         }
@@ -126,6 +127,40 @@ public partial class SpellCardBulletVisualTest : Node
                 ProjectileFaction.Enemy, variant)).ToHashSet();
         Require(enemyStyles.Count == 4,
             "Enemy fallback projectiles do not expose four distinct bullet shapes.");
+    }
+
+    /// <summary>锁定方向型弹丸随速度转身、对称弹不被运动方向强制旋转的姿态契约。</summary>
+    private static void VerifyProjectilePosePolicy()
+    {
+        SpellBulletStyleKind[] directionalStyles =
+        [
+            SpellBulletStyleKind.Amulet,
+            SpellBulletStyleKind.Needle,
+            SpellBulletStyleKind.Knife,
+            SpellBulletStyleKind.Flame,
+            SpellBulletStyleKind.Butterfly,
+            SpellBulletStyleKind.Laser,
+            SpellBulletStyleKind.Shard,
+        ];
+        Require(directionalStyles.All(ProjectileVisualPosePolicy.IsDirectional)
+            && !ProjectileVisualPosePolicy.IsDirectional(SpellBulletStyleKind.Orb)
+            && !ProjectileVisualPosePolicy.IsDirectional(SpellBulletStyleKind.Star)
+            && !ProjectileVisualPosePolicy.IsDirectional(SpellBulletStyleKind.LargeOrb),
+            "Directional and symmetric bullet semantics were mixed.");
+        Require(Mathf.IsZeroApprox(ProjectileVisualPosePolicy.ResolveRotation(
+                SpellBulletStyleKind.Needle, Vector2.Down))
+            && Mathf.IsEqualApprox(ProjectileVisualPosePolicy.ResolveRotation(
+                SpellBulletStyleKind.Needle, Vector2.Right), -Mathf.Pi * 0.5f)
+            && Mathf.IsEqualApprox(ProjectileVisualPosePolicy.ResolveRotation(
+                SpellBulletStyleKind.Knife, Vector2.Left), Mathf.Pi * 0.5f)
+            && Mathf.IsEqualApprox(Mathf.Abs(ProjectileVisualPosePolicy.ResolveRotation(
+                SpellBulletStyleKind.Laser, Vector2.Up)), Mathf.Pi),
+            "Directional bullet pose no longer follows its velocity vector.");
+        Require(Mathf.IsZeroApprox(ProjectileVisualPosePolicy.ResolveRotation(
+                SpellBulletStyleKind.Orb, Vector2.Right))
+            && Mathf.IsZeroApprox(ProjectileVisualPosePolicy.ResolveRotation(
+                SpellBulletStyleKind.Needle, Vector2.Zero)),
+            "Symmetric or stationary bullets received an arbitrary pose.");
     }
 
     /// <summary>返回各原作图集家族中该语义弹型的真实单帧宽度。</summary>

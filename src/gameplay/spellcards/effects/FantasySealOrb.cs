@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
@@ -105,8 +106,8 @@ public partial class FantasySealOrb : Node2D
             _curvature = Mathf.MoveToward(_curvature, 0.0f, 3.4f * (float)delta);
         }
 
+        Rotation = ProjectileVisualPosePolicy.ResolveRotation(_bulletStyle, direction);
         GlobalPosition += direction * _speed * (float)delta;
-        Rotation += (float)delta * 5.0f;
     }
 
     /// <summary>目标存活时刷新最新位置；失效后解除引用并保留最后一次有效落点继续飞行。</summary>

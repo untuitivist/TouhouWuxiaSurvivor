@@ -25,7 +25,7 @@ public static class SpellBulletAtlasRegionResolver
         int column = frameSize == 16 ? ColorColumns[paletteIndex] : paletteIndex;
         var source = new Rect2(column * frameSize, row, frameSize, frameSize);
         ValidateBounds(texture, definition.AssetPath, source);
-        return new SpellBulletVisualSelection(source, ResolveDisplaySize(style));
+        return new SpellBulletVisualSelection(source, ResolveDisplaySize(style), style);
     }
 
     /// <summary>按图集路径识别 TH06、旧 Windows 作和现代作的三套真实排布。</summary>

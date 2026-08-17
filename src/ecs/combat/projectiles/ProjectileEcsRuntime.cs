@@ -99,8 +99,8 @@ public partial class ProjectileEcsRuntime : Node2D
                     projectile.Faction, projectile.VisualVariant);
                 SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
                     _definition, style, projectile.VisualVariant, _texture);
-                DrawTextureRectRegion(_texture,
-                    selection.CreateDestination(projectile.Position), selection.Source);
+                ProjectileVisualDrawHelper.Draw(this, _texture, selection,
+                    projectile.Position, projectile.Velocity);
             }
             else
             {

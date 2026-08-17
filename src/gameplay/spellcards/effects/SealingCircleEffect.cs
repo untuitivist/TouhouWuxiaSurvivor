@@ -1,4 +1,5 @@
 using Godot;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
@@ -79,6 +80,8 @@ public partial class SealingCircleEffect : Node2D
             bullet.Configure(
                 _sourcePackId, _spellCardName, _bulletStyle, index + 5);
             bullet.Position = ResolveBulletPosition(index);
+            bullet.Rotation = ProjectileVisualPosePolicy.ResolveRotation(
+                _bulletStyle, bullet.Position);
             bullet.Scale *= 0.8f;
             available |= bullet.Visible;
         }

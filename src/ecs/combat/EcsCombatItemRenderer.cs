@@ -114,8 +114,8 @@ public sealed class EcsCombatItemRenderer
                 projectile.VisualVariant, out Texture2D spellTexture,
                 out SpellBulletVisualSelection spellSelection))
         {
-            canvas.DrawTextureRectRegion(spellTexture,
-                CreateRoundedDestination(spellSelection, position), spellSelection.Source);
+            ProjectileVisualDrawHelper.Draw(canvas, spellTexture, spellSelection,
+                position, projectile.Velocity);
             CountProjectile(projectile);
         }
         else if (_bulletAtlas is not null && _bulletDefinition is not null)
@@ -124,8 +124,8 @@ public sealed class EcsCombatItemRenderer
                 projectile.Faction, projectile.VisualVariant);
             SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
                 _bulletDefinition, style, projectile.VisualVariant, _bulletAtlas);
-            canvas.DrawTextureRectRegion(_bulletAtlas,
-                CreateRoundedDestination(selection, position), selection.Source);
+            ProjectileVisualDrawHelper.Draw(canvas, _bulletAtlas, selection,
+                position, projectile.Velocity);
             CountProjectile(projectile);
         }
         else
@@ -137,15 +137,6 @@ public sealed class EcsCombatItemRenderer
                 : new Color("ef7898");
             canvas.DrawRect(destination, fallback);
         }
-    }
-
-    /// <summary>按像素网格取整目标位置，同时保留每种弹型的归一化尺寸。</summary>
-    private static Rect2 CreateRoundedDestination(
-        SpellBulletVisualSelection selection,
-        Vector2 position)
-    {
-        Rect2 destination = selection.CreateDestination(position);
-        return new Rect2(destination.Position.Round(), destination.Size);
     }
 
     /// <summary>统一累计通用与符卡弹幕的绘制数量，避免素材分支产生诊断统计差异。</summary>
