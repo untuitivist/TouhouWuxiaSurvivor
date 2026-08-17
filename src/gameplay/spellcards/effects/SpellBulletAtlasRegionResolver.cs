@@ -18,13 +18,28 @@ public static class SpellBulletAtlasRegionResolver
         InternalVisualDefinition definition,
         SpellBulletStyleKind style,
         int projectileVariant,
+        Texture2D texture) => Resolve(
+            definition.AssetPath,
+            definition.Variant,
+            style,
+            projectileVariant,
+            texture);
+
+    /// <summary>
+    /// 允许图鉴等只读消费者使用同一切片规则，而无需伪造正式视觉目录定义。
+    /// </summary>
+    public static SpellBulletVisualSelection Resolve(
+        string assetPath,
+        int mappingVariant,
+        SpellBulletStyleKind style,
+        int projectileVariant,
         Texture2D texture)
     {
-        var (row, frameSize, paletteSize) = ResolveFrame(definition.AssetPath, style);
-        int paletteIndex = PositiveModulo(definition.Variant + projectileVariant, paletteSize);
+        var (row, frameSize, paletteSize) = ResolveFrame(assetPath, style);
+        int paletteIndex = PositiveModulo(mappingVariant + projectileVariant, paletteSize);
         int column = frameSize == 16 ? ColorColumns[paletteIndex] : paletteIndex;
         var source = new Rect2(column * frameSize, row, frameSize, frameSize);
-        ValidateBounds(texture, definition.AssetPath, source);
+        ValidateBounds(texture, assetPath, source);
         return new SpellBulletVisualSelection(source, ResolveDisplaySize(style), style);
     }
 

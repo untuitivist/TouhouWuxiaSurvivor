@@ -13,6 +13,7 @@ public sealed class CompendiumEntry
     public string Name { get; }
     public string SourceId { get; }
     public string SourceName { get; }
+    public string VisualSourceName { get; }
     public string Summary { get; }
     public IReadOnlyList<CompendiumFact> Facts { get; }
     public string Details => string.Join("\n", Facts.Select(fact => $"{fact.Label}：{fact.Value}"));
@@ -34,12 +35,14 @@ public sealed class CompendiumEntry
         TileId previewTile = TileId.GrassBase,
         int previewVariant = 0,
         EnemyDefinition? enemy = null,
-        SpellCardDefinition? spellCard = null)
+        SpellCardDefinition? spellCard = null,
+        string? visualSourceName = null)
     {
         Category = category;
         Name = name;
         SourceId = sourceId;
         SourceName = sourceName;
+        VisualSourceName = visualSourceName ?? sourceName;
         Summary = summary;
         Facts = facts;
         PreviewTile = previewTile;
@@ -47,4 +50,13 @@ public sealed class CompendiumEntry
         Enemy = enemy;
         SpellCard = spellCard;
     }
+
+    /// <summary>
+    /// 返回替换了素材来源说明的不可变副本，使目录定义不需要持有 Godot 纹理对象。
+    /// </summary>
+    public CompendiumEntry WithPresentation(
+        IReadOnlyList<CompendiumFact> facts,
+        string visualSourceName) => new(
+            Category, Name, SourceId, SourceName, Summary, facts,
+            PreviewTile, PreviewVariant, Enemy, SpellCard, visualSourceName);
 }

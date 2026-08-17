@@ -28,8 +28,13 @@ public sealed class InternalPreviewCatalog
     /// </summary>
     public bool TryGet(CompendiumEntry entry, out InternalPreviewDefinition definition)
     {
-        InternalVisualCategory category = Enum.Parse<InternalVisualCategory>(
-            entry.Category.ToString(), false);
+        if (!Enum.TryParse(entry.Category.ToString(), false,
+                out InternalVisualCategory category))
+        {
+            definition = null!;
+            return false;
+        }
+
         if (!_catalog.TryGet(entry.SourceId, category, entry.Name, out var shared))
         {
             definition = null!;
@@ -43,7 +48,9 @@ public sealed class InternalPreviewCatalog
             shared.AssetPath,
             Enum.Parse<InternalPreviewKind>(shared.Kind.ToString(), false),
             shared.Variant,
-            shared.ProxySourceWork);
+            shared.ProxySourceWork,
+            shared.ReasonZh,
+            shared.ReviewStatus);
         return true;
     }
 

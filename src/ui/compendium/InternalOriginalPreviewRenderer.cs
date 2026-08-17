@@ -1,4 +1,6 @@
 using Godot;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
 namespace TouhouWuxiaSurvivor.Ui.Compendium;
 
@@ -41,7 +43,7 @@ public sealed class InternalOriginalPreviewRenderer
                 DrawPortrait(canvas, texture, area, animationTime, definition.Variant);
                 break;
             case InternalPreviewKind.BulletAtlas:
-                DrawSpellBullets(canvas, texture, area, animationTime, definition.Variant);
+                DrawSpellBullets(canvas, entry, definition, texture, area, animationTime);
                 break;
             default:
                 return false;
@@ -116,26 +118,40 @@ public sealed class InternalOriginalPreviewRenderer
     }
 
     /// <summary>
-    /// 从原作弹幕图集选择颜色行，让不同符卡变体呈现追踪收束、环形封魔等运动。
+    /// 从正式图集规则选择完整弹型帧，并按符卡阵式和速度方向绘制动态姿态。
     /// </summary>
     private static void DrawSpellBullets(
-        Control canvas, Texture2D texture, Rect2 area, double time, int variant)
+        Control canvas,
+        CompendiumEntry entry,
+        InternalPreviewDefinition definition,
+        Texture2D texture,
+        Rect2 area,
+        double time)
     {
-        Vector2 center = area.GetCenter() - new Vector2(0.0f, 5.0f);
-        int count = variant % 2 == 0 ? 8 : 6;
-        float close = variant % 2 == 0 ? (float)(time % 2.0 / 2.0) : 0.2f;
+        if (entry.SpellCard is null) return;
+
+        int count = definition.Variant % 2 == 0 ? 8 : 6;
         for (int index = 0; index < count; index++)
         {
-            int column = 1 + (variant * 5 + index * 2) % 14;
-            var source = new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f);
-            float angle = (float)time * (variant % 2 == 0 ? 2.4f : -1.7f) +
-                Mathf.Tau * index / count;
-            Vector2 orbit = center + Vector2.FromAngle(angle) * (22.0f + variant * 3.0f);
-            Vector2 position = orbit.Lerp(center, close * close * 0.7f);
-            canvas.DrawTextureRectRegion(texture,
-                new Rect2(position.Round() - new Vector2(8.0f, 8.0f), new Vector2(16.0f, 16.0f)),
-                source);
+            SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
+                definition.AssetPath,
+                definition.Variant,
+                entry.SpellCard.BulletStyleKind,
+                index,
+                texture);
+            var (position, velocity) = CompendiumSpellPreviewLayout.Resolve(
+                entry.SpellCard.GeometryKind, index, count, time, area);
+            float rotation = ProjectileVisualPosePolicy.ResolveRotation(
+                selection.Style, velocity);
+            float displaySize = Mathf.Clamp(selection.DisplaySize * 1.35f, 12.0f, 18.0f);
+            var destination = new Rect2(
+                new Vector2(-displaySize * 0.5f, -displaySize * 0.5f),
+                new Vector2(displaySize, displaySize));
+            canvas.DrawSetTransform(position.Round(), rotation, Vector2.One);
+            canvas.DrawTextureRectRegion(texture, destination, selection.Source);
         }
+
+        canvas.DrawSetTransform(Vector2.Zero, 0.0f, Vector2.One);
     }
 
     /// <summary>

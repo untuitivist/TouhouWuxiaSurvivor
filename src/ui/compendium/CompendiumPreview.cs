@@ -115,6 +115,10 @@ public partial class CompendiumPreview : Control
                     DrawCharacterScene(area);
                 }
                 break;
+            case CompendiumCategory.Build:
+                CompendiumBuildPreviewRenderer.Draw(
+                    this, _entry, area, _animationTime, _font);
+                break;
             case CompendiumCategory.SpellCard:
                 if (InternalOriginalActive)
                 {

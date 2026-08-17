@@ -44,6 +44,17 @@ public sealed class InternalVisualCatalog
         _definitions.TryGetValue(BuildKey(sourceId, category, name), out definition!);
 
     /// <summary>
+    /// 返回指定内容包和分类的稳定素材集合，供弹型所有权策略选择本包原生图集。
+    /// </summary>
+    public IReadOnlyList<InternalVisualDefinition> GetDefinitions(
+        string sourceId,
+        InternalVisualCategory category) => _definitions.Values
+            .Where(definition => definition.SourceId == sourceId &&
+                definition.Category == category)
+            .OrderBy(definition => definition.AssetPath, StringComparer.Ordinal)
+            .ToArray();
+
+    /// <summary>
     /// 按路径缓存加载纹理；被导出排除或导入失败时返回 false，让调用方启用替代视觉。
     /// </summary>
     public bool TryGetTexture(InternalVisualDefinition definition, out Texture2D texture)
@@ -106,9 +117,15 @@ public sealed class InternalVisualCatalog
             string? proxySourceWork = item.TryGetProperty("proxySourceWork", out JsonElement proxy)
                 ? RequiredString(item, "proxySourceWork")
                 : null;
+            string? reasonZh = item.TryGetProperty("reasonZh", out _)
+                ? RequiredString(item, "reasonZh")
+                : null;
+            string? reviewStatus = item.TryGetProperty("reviewStatus", out _)
+                ? RequiredString(item, "reviewStatus")
+                : null;
             var definition = new InternalVisualDefinition(
                 sourceId, category, name, AssetRoot + RequiredString(item, "asset"), kind,
-                variant, proxySourceWork);
+                variant, proxySourceWork, reasonZh, reviewStatus);
             result.Add(BuildKey(sourceId, category, name), definition);
         }
     }

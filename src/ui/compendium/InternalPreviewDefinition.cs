@@ -12,6 +12,8 @@ public sealed class InternalPreviewDefinition
     public InternalPreviewKind Kind { get; }
     public int Variant { get; }
     public string? ProxySourceWork { get; }
+    public string? ReasonZh { get; }
+    public string? ReviewStatus { get; }
 
     /// <summary>
     /// 构造经过清单解析的映射值，资源路径由目录统一补全为内部隔离路径。
@@ -23,7 +25,9 @@ public sealed class InternalPreviewDefinition
         string assetPath,
         InternalPreviewKind kind,
         int variant,
-        string? proxySourceWork = null)
+        string? proxySourceWork = null,
+        string? reasonZh = null,
+        string? reviewStatus = null)
     {
         SourceId = sourceId;
         Category = category;
@@ -32,5 +36,7 @@ public sealed class InternalPreviewDefinition
         Kind = kind;
         Variant = variant;
         ProxySourceWork = proxySourceWork;
+        ReasonZh = reasonZh;
+        ReviewStatus = reviewStatus;
     }
 }

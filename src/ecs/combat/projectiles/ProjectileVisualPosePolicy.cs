@@ -11,14 +11,8 @@ public static class ProjectileVisualPosePolicy
     private const float AtlasForwardAngle = Mathf.Pi * 0.5f;
 
     /// <summary>判断该轮廓是否具有明确前后方向，需要随飞行向量旋转。</summary>
-    public static bool IsDirectional(SpellBulletStyleKind style) => style is
-        SpellBulletStyleKind.Amulet or
-        SpellBulletStyleKind.Needle or
-        SpellBulletStyleKind.Knife or
-        SpellBulletStyleKind.Flame or
-        SpellBulletStyleKind.Butterfly or
-        SpellBulletStyleKind.Laser or
-        SpellBulletStyleKind.Shard;
+    public static bool IsDirectional(SpellBulletStyleKind style) =>
+        SpellBulletStyleSemantics.IsDirectional(style);
 
     /// <summary>把图集中朝下的原始弹型旋转到速度方向；对称弹与零速度保持零角度。</summary>
     public static float ResolveRotation(SpellBulletStyleKind style, Vector2 velocity)

@@ -27,8 +27,8 @@ public partial class CompendiumSmokeTest : Node
             Require(internalNotice.Text.Contains("仅供内部验证", StringComparison.Ordinal) &&
                 internalNotice.Text.Contains("公开前", StringComparison.Ordinal),
                 "Compendium does not declare the internal original-asset replacement boundary.");
-            Require(panel.SourceOptionCount == 22 && panel.CategoryCount == 5,
-                "Compendium filters do not cover base plus TH01-TH20 and five categories.");
+            Require(panel.SourceOptionCount == 22 && panel.CategoryCount == 6,
+                "Compendium filters do not cover base plus TH01-TH20 and six categories.");
             Require(panel.VisibleEntryCount == 65,
                 "All-source biome page must contain five base and sixty official biomes.");
             VerifyCompendiumDensity(panel);
@@ -49,6 +49,15 @@ public partial class CompendiumSmokeTest : Node
             TabBar tabs = panel.GetNode<TabBar>("Panel/Padding/Layout/CategoryTabs");
             source.Select(1);
             source.EmitSignal(OptionButton.SignalName.ItemSelected, 1L);
+            tabs.CurrentTab = (int)CompendiumCategory.Build;
+            Require(panel.VisibleEntryCount == 24 &&
+                (panel.CurrentDetailsText.Contains("等级上限", StringComparison.Ordinal) ||
+                    panel.CurrentDetailsText.Contains("解锁境界", StringComparison.Ordinal)) &&
+                panel.CurrentDetailsText.Contains("候选规则", StringComparison.Ordinal),
+                "Base compendium did not expose the runtime build and specialization catalog.");
+            Require(preview.CurrentCategory == CompendiumCategory.Build &&
+                !preview.InternalOriginalActive,
+                "Build preview did not use its rule-graph presentation.");
             tabs.CurrentTab = (int)CompendiumCategory.SpellCard;
             Require(panel.VisibleEntryCount == 6,
                 "Base compendium did not expose the complete permanent spell-card pool.");
@@ -66,8 +75,8 @@ public partial class CompendiumSmokeTest : Node
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             VBoxContainer facts = panel.GetNode<VBoxContainer>(
                 "Panel/Padding/Layout/Browser/Details/Layout/EntryFacts");
-            Require(facts.GetChildCount() == 6,
-                "Enemy attributes were not arranged as six complete grid rows.");
+            Require(facts.GetChildCount() == 8,
+                "Enemy attributes were not arranged as eight complete runtime rows.");
             Require(((HBoxContainer)facts.GetChild(0)).GetChildCount() == 1,
                 "Variable-length habitat did not receive a full-width row.");
             var widePair = (HBoxContainer)((HBoxContainer)facts.GetChild(0)).GetChild(0);
@@ -109,11 +118,13 @@ public partial class CompendiumSmokeTest : Node
                 new[] { "露米娅", "琪露诺", "红美铃", "帕秋莉·诺蕾姬", "十六夜咲夜",
                     "蕾米莉亚·斯卡蕾特", "芙兰朵露·斯卡蕾特" }.Any(owner =>
                         details.Contains(owner, StringComparison.Ordinal)) &&
-                details.Contains("设定来源：原作正式符卡", StringComparison.Ordinal) &&
+                details.Contains("设定与素材：原作正式符卡", StringComparison.Ordinal) &&
                 details.Contains("前置构筑", StringComparison.Ordinal) &&
                 details.Contains("自动触发", StringComparison.Ordinal) &&
-                details.Contains("定位与槽位", StringComparison.Ordinal) &&
-                details.Contains("弹幕形态", StringComparison.Ordinal) &&
+                details.Contains("定位与弹型", StringComparison.Ordinal) &&
+                details.Contains("弹型", StringComparison.Ordinal) &&
+                details.Contains("姿态", StringComparison.Ordinal) &&
+                details.Contains("本内容包原生同语义素材", StringComparison.Ordinal) &&
                 details.Contains("周天换算", StringComparison.Ordinal) &&
                 details.Contains("攻势换算", StringComparison.Ordinal),
                 "Spell-card details omitted canon, build, timing, or scaling fields.");

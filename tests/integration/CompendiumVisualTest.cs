@@ -4,12 +4,12 @@ using TouhouWuxiaSurvivor.Ui.Compendium;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 在真实主菜单覆盖图鉴五个分类，锁定内部动态图标、紧凑布局和最近邻截图表现。
+/// 在真实主菜单覆盖图鉴六个分类，锁定动态图标、紧凑布局和最近邻截图表现。
 /// </summary>
 public partial class CompendiumVisualTest : Node
 {
     /// <summary>
-    /// 依次展示本体与 TH06 的场景、敌人、角色和符卡，保存五个代表状态截图。
+    /// 依次展示本体与 TH06 的世界、战斗、武学和符卡，保存六类代表状态截图。
     /// </summary>
     public override async void _Ready()
     {
@@ -27,6 +27,9 @@ public partial class CompendiumVisualTest : Node
 
             await Capture(panel, preview, tabs, CompendiumCategory.Biome,
                 "compendium-base-biome-640x360.png");
+            SelectSource(source, 1);
+            await Capture(panel, preview, tabs, CompendiumCategory.Build,
+                "compendium-base-build-640x360.png");
             SelectSource(source, 7);
             await Capture(panel, preview, tabs, CompendiumCategory.Structure,
                 "compendium-th06-structure-640x360.png");
@@ -163,9 +166,18 @@ public partial class CompendiumVisualTest : Node
             "Internal asset notice extends beyond the design viewport.");
         Require(viewport.Encloses(browser.GetGlobalRect()) && browser.Size.Y >= 190.0f,
             $"Compendium browser became cramped: {browser.GetGlobalRect()}.");
-        Require(preview.CurrentCategory == expectedCategory &&
-            preview.InternalOriginalAssetsReady && preview.InternalOriginalActive,
-            $"Internal preview is inactive for {expectedCategory}.");
+        Require(preview.CurrentCategory == expectedCategory,
+            $"Preview did not select {expectedCategory}.");
+        if (expectedCategory == CompendiumCategory.Build)
+        {
+            Require(!preview.InternalOriginalActive,
+                "Build graph incorrectly borrowed a content-pack texture.");
+        }
+        else
+        {
+            Require(preview.InternalOriginalAssetsReady && preview.InternalOriginalActive,
+                $"Internal preview is inactive for {expectedCategory}.");
+        }
     }
 
     /// <summary>

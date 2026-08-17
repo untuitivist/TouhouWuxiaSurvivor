@@ -142,7 +142,8 @@ public partial class InternalOriginalAssetBoundaryTest : Node
             .ToHashSet(StringComparer.Ordinal);
         mappedSources.UnionWith(unavailable.Select(identity => identity.Split('\u001f')[0]));
         CompendiumEntry[] expected = CompendiumCatalog.All
-            .Where(entry => mappedSources.Contains(entry.SourceId)).ToArray();
+            .Where(entry => entry.Category != CompendiumCategory.Build &&
+                mappedSources.Contains(entry.SourceId)).ToArray();
         int expectedMappedCount = expected.Count(entry => !unavailable.Contains(Identity(entry)));
         Require(catalog.Count == expectedMappedCount,
             $"Internal mapping count {catalog.Count} does not match " +

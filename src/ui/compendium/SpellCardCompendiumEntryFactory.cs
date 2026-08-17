@@ -31,7 +31,7 @@ public static class SpellCardCompendiumEntryFactory
             : ContentPackCatalog.All.Single(pack => pack.Id == sourcePackId);
 
     /// <summary>
-    /// 组合一张符卡的原作身份、武侠定位、自动规则与完整战斗参数，长文本独占整行。
+    /// 组合一张符卡的原作身份、弹型姿态、自动规则与完整战斗参数，长文本独占整行。
     /// </summary>
     private static CompendiumEntry CreateEntry(
         SpellCardDefinition card,
@@ -49,6 +49,8 @@ public static class SpellCardCompendiumEntryFactory
         string slot = SpellCardSlotPolicy.Classify(card) == SpellCardSlotKind.Support
             ? $"护持奥义 · 共享 {SpellCardSlotPolicy.MaximumSupportSlots} 槽"
             : $"主攻奥义 · 共享 {SpellCardSlotPolicy.MaximumOffensiveSlots} 槽";
+        string bullet = SpellBulletStyleSemantics.GetDisplayName(card.BulletStyleKind);
+        string pose = SpellBulletStyleSemantics.DescribePose(card.BulletStyleKind);
         return new CompendiumEntry(
             CompendiumCategory.SpellCard,
             card.FullName,
@@ -59,11 +61,12 @@ public static class SpellCardCompendiumEntryFactory
             $"{slot} · {SpellCardActivationText.GetShortName(card.ActivationKind)}",
             [
                 new("所属角色", card.OwnerName),
-                new("设定来源", (card.CanonLevel == SpellCardCanonLevel.Official
+                new("设定与素材", (card.CanonLevel == SpellCardCanonLevel.Official
                     ? "原作正式符卡 · " : "旧作攻击意象的武侠化拟制 · ") +
-                    card.SourceNote, true),
-                new("定位与槽位", $"{card.WuxiaStyle} · {slot} · 弹幕形态 " +
-                    SpellCardGeometryText.GetName(card.GeometryKind), true),
+                    card.SourceNote.TrimEnd() + " 素材：" +
+                    CompendiumVisualProvenanceCatalog.Placeholder, true),
+                new("定位与弹型", $"{card.WuxiaStyle} · {slot} · 阵式 " +
+                    $"{SpellCardGeometryText.GetName(card.GeometryKind)} · 弹型 {bullet} · {pose}", true),
                 new("前置构筑", prerequisite, true),
                 new("自动触发", SpellCardTriggerTextFormatter.DescribeAutomaticTrigger(card), true),
                 new("周天换算", $"当前角色奥义周天 ×{card.Combat.IntervalScale:0.##}"),
