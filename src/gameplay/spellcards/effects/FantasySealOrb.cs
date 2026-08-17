@@ -18,9 +18,10 @@ public partial class FantasySealOrb : Node2D
     private float _curvature;
     private SpellCardTargetReference? _trackingTarget;
     private bool _lostTrackingTarget;
-    private string _sourcePackId = "th06_eosd";
-    private string _spellCardName = "灵符「梦想封印」";
+    private string _sourcePackId = string.Empty;
+    private string _spellCardName = string.Empty;
     private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Orbit;
+    private bool _configured;
     private InternalSpellBulletVisual? _visual;
     private Label? _fallbackLabel;
 
@@ -42,6 +43,8 @@ public partial class FantasySealOrb : Node2D
         SpellCardTargetReference? trackingTarget = null)
     {
         _backend = backend ?? throw new ArgumentNullException(nameof(backend));
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourcePackId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(spellCardName);
         _targetPosition = targetPosition;
         _damage = Math.Max(1, damage);
         _speed = Math.Max(1.0f, speed);
@@ -54,6 +57,7 @@ public partial class FantasySealOrb : Node2D
         _curvature = curvature;
         _trackingTarget = trackingTarget;
         _lostTrackingTarget = false;
+        _configured = true;
     }
 
     /// <summary>
@@ -61,6 +65,12 @@ public partial class FantasySealOrb : Node2D
     /// </summary>
     public override void _Ready()
     {
+        if (!_configured)
+        {
+            throw new InvalidOperationException(
+                "Fantasy seal orb must receive a spell-card visual identity before entering the tree.");
+        }
+
         _visual = GetNode<InternalSpellBulletVisual>("Visual");
         _fallbackLabel = GetNode<Label>("FallbackLabel");
         _visual.Configure(_sourcePackId, _spellCardName, _geometryKind, _visualVariant);

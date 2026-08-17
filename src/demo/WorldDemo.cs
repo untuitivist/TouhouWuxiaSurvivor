@@ -127,7 +127,8 @@ public partial class WorldDemo : Node2D
         Node2D spiritDrops = _combatEntities.GetNode<Node2D>("SpiritDrops");
         Node2D spellEffects = _combatEntities.GetNode<Node2D>("SpellEffects");
         _content = ContentPackSelectionService.Current;
-        _runContext = new RunContentContext(_content, CharacterSelectionService.Current);
+        _runContext = new RunContentContext(
+            _content, CharacterSelectionService.Current, WorldSeed);
         CharacterDefinition character = _runContext.CharacterSelection.Current;
         _player.GetNode<PlayerVisualController>("Visual").ConfigureCharacter(character);
         _player.MoveSpeed *= character.PlayableProfile.MoveSpeedMultiplier;

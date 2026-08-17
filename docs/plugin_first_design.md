@@ -176,16 +176,17 @@ content_packs/th06_eosd/
 
 | 当前入口 | 当前问题 | 目标状态 |
 | --- | --- | --- |
-| `ContentPackCatalog` | 能发现 `pack.json`，但多数内容只用于菜单说明 | 发现、校验并注册完整内容定义 |
-| `ContentPackManifestLoader` | 将地区、结构、敌人、角色转换为显示文字 | 读取带 schema 的强类型索引，不负责领域实现 |
+| `ContentPackCatalog` | 已严格校验身份、Base 依赖和能力；领域条目仍多为菜单摘要 | 发现、校验并注册完整内容定义 |
+| `ContentPackManifestLoader` | 已读取 v1 身份头、依赖、能力和摘要，尚无领域文件索引 | 读取带 schema 的强类型索引，不负责领域实现 |
 | `OfficialWorldContentCatalog` | 六十组世界内容集中硬编码在一个 C# Catalog | 世界定义归所属内容包，运行时只看 `BiomeRegistry` 与 `StructureRegistry` |
 | `CharacterCatalog`、`EnemyCatalog` | 身份、数值和行为仍由全局代码拼装 | 内容包提供定义，通用工厂装配 ECS 组件 |
 | `RunUpgradeCatalog`、`SpellCardCatalog` | 能按来源过滤，但定义仍跨 JSON 与代码分散 | Build 与奥义从同一内容定义注册，并使用通用行为能力 |
 | `ContentPackIds` | 每增加作品都要修改全局常量 | 内容包 ID 来自清单，内核不枚举具体作品 |
-| `RunContentContext` | 只记录启用集合、角色和种子的一部分语义 | 冻结规则版本、内容版本、指纹、角色与种子 |
+| `RunContentContext` | 已冻结规则版本、世界种子、角色、活动包版本与指纹 | 将同一身份写入存档和诊断复现头 |
 
-当前还有少量 `th06_eosd` 直接引用存在于 Boss 招式和符卡表现链。迁移红魔乡时必须改成“定义中
-引用稳定能力 ID 与素材 ID，由注册表解析”，不能把这些判断搬到另一个工具类里。
+Boss 招式现在按清单的 `boss_spell_sequences` 能力注册，通用符卡表现也必须显式接收定义中的
+来源身份，不再默认红魔乡。剩余具体作品常量主要位于尚未迁移的全局世界目录；逐域迁移时必须
+改为“定义引用稳定能力 ID 与素材 ID，由注册表解析”，不能把作品判断搬到另一个工具类里。
 
 ## 内容包清单契约 v1
 
@@ -295,7 +296,8 @@ content_packs/th06_eosd/
 
 ### 本局冻结快照
 
-当前仅保存启用包 ID 不够。新的 `RunContentContext` 至少要固定：
+身份层现已在开局时把下列字段冻结进 `RunContentContext`；后续存档与诊断只能读取这份快照，
+不能重新扫描当前安装目录：
 
 ```text
 RuleSetId + RuleSetVersion
@@ -518,10 +520,11 @@ Base 的条目要覆盖全部必要能力类别，TH06 只能提供替代和新�
 
 ### 阶段 1：冻结范围并建立契约
 
-1. 冻结 TH07 至 TH20 的玩法新增；原 JSON、素材和图鉴映射继续保留为迁移库存。
-2. 为内容清单增加 schema、内容版本、host API、领域文件索引和来源索引。
-3. 新增只读注册表、统一验证报告和 `RunContentContext` 快照。
-4. 建立临时对照测试：新注册表投影必须与当前 Base/TH06 Catalog 的稳定 ID 和数量一致。
+1. 已冻结 TH07 至 TH20 的玩法新增；原 JSON、素材和图鉴映射继续保留为迁移库存。
+2. 已增加 schema、内容版本、host API、依赖和能力；领域文件索引与来源索引仍待逐域迁移。
+3. 已建立严格身份目录和 `RunContentContext` 指纹快照；完整领域只读注册表仍待迁移。
+4. `ContentPackContractTest` 已锁定 Base/TH06 身份、横向依赖、能力和本局指纹；领域数量对照由
+   现有内容覆盖测试继续守护。
 
 ### 阶段 2：先迁移 Base
 

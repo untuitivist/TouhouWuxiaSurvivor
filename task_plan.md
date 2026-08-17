@@ -1,48 +1,59 @@
-# Task Plan: Documentation Consolidation and Architecture Alignment
+# Task Plan: Runtime Alignment with Canonical Design
 
 ## Current Goal - 2026-08-17
 
-Audit every document under `docs/` against the current code, product intent, versioning, content-pack
-lifecycle, ECS/OOP boundary, balance rules, and release workflow. Update missing or stale material,
-remove duplication through consolidation, and identify exact deletion candidates before requesting
-the required deletion approval.
+Optimize the playable game against the canonical documents in `docs/`. Close code-backed gaps in the
+five-minute base loop, adaptive enemy pressure, build progression, plugin boundaries, and hybrid
+ECS/OOP responsibilities without turning optional content packs into vertical progression.
 
 ## Current Phase
 
-Documentation consolidation complete; the two approved redirect-only files have been removed.
+Complete - strict content identity, frozen run fingerprints, capability-driven spell ownership, and
+endless-pressure continuation are implemented, documented, tested, and ready to commit.
 
 ## Acceptance Criteria
 
-- Every retained document has one explicit purpose and an owner topic; no two documents claim to be
-  competing sources of truth.
-- Version names, five-minute pacing, dynamic spawn pressure, fixed enemy species stats, build rules,
-  content-pack lifecycle, and Base/TH06 scope match current code and `.NOTE.md`.
-- ECS/OOP guidance identifies the hybrid boundary instead of requiring one paradigm everywhere.
-- README and `content/README.md` link the authoritative documents and do not call migration inventory
-  complete content.
-- Links and referenced local paths resolve; UTF-8 without BOM, SourcePolicy, build, and relevant
-  documentation tests pass.
-- Any deletion is preceded by a concrete list, rationale, replacement location, and user approval.
-- All accepted changes are committed without staging unrelated workspace edits.
+- Base-only play reaches a coherent Boss encounter in about five minutes through measured adaptive
+  pressure, not hidden time-based enemy stat inflation.
+- The 30-second sliding-window K/S gate, pressure rate, enemy mix, and endless continuation agree
+  between runtime, F3 diagnostics, tests, and `docs/enemy_balance.md`.
+- Player growth comes only from explicit upgrade choices; finite ranks, barrage presentation, spell
+  slots, and resolved values agree between combat, the E build view, and `docs/combat_balance.md`.
+- Optional content packs only add parallel regions, structures, enemies, characters, and spell-card
+  choices; core rules remain owned by Base.
+- High-frequency entities remain ECS data/systems while low-frequency orchestration remains OOP;
+  communication crosses explicit commands, events, and snapshots.
+- Focused and full regression, SourcePolicy, UTF-8/BOM checks, and `git diff --check` pass.
+- Every accepted change is committed without staging unrelated workspace edits.
 
 ## Active Phases
 
-- [x] Inventory `docs/`, inbound links, duplication, stale versions, and code claims.
-- [x] Decide the retained document map and list any deletion candidates for approval.
-- [x] Rewrite architecture, gameplay balance, enemy balance, and diagnostics documentation.
-- [x] Align README, content README, changelog references, and project intent notes.
-- [x] Validate links, terms, code contracts, encoding, build, and documentation-facing tests.
-- [x] Commit the documentation consolidation while preserving unrelated changes.
-- [x] Delete the two redirect-only documents after explicit user approval and commit the cleanup.
+- [x] Audit all canonical runtime contracts and identify measurable code gaps.
+- [x] Select the smallest coherent implementation set that materially improves the base loop.
+- [x] Implement the selected gameplay and architecture corrections with focused tests.
+- [x] Validate the five-minute loop, adaptive pressure, upgrades, UI projections, and plugin isolation.
+- [x] Update documentation and `.NOTE.md` only where implementation truth changes.
+- [x] Run frozen regression and commit all accepted changes while preserving unrelated edits.
 
 ## Decisions
 
 | Decision | Rationale |
 |----------|-----------|
-| Audit before deleting | The user permits cleanup, while repository policy requires exact approval before file deletion. |
-| Prefer one authority per topic | Duplicate summaries become stale independently and caused the current completion-status conflict. |
-| Verify claims against code | Documentation must describe the current executable and clearly label target architecture separately. |
-| Delete two redirect-only files after approval | Approval was received; `plugin_first_design.md` and `diagnostics.md` remain the respective authorities. |
+| Treat canonical docs as executable contracts | Optimization is complete only when production code, UI, and tests agree with the same rule. |
+| Preserve horizontal content packs | A pack may add choices and presentation, never stronger global rules or required progression. |
+| Use ECS and OOP by workload | Bulk combat stays data-oriented; scene flow and rare orchestration remain Nodes/services. |
+| Prioritize observable loop failures | Fix pacing, upgrade choice quality, Boss access, and diagnostics before adding more content. |
+| Establish identity before domain migration | Strict headers, capabilities, and fingerprints provide a stable boundary without pretending all catalogs are externally data-driven. |
+| Project endless through the shared snapshot | One coordinator timestamp fixes spawner and F3 behavior together and avoids a parallel difficulty clock. |
+
+---
+
+# Historical Plan: Documentation Consolidation and Architecture Alignment
+
+## Outcome - 2026-08-17
+
+Canonical documents were consolidated and validated. The two redirect-only files were deleted after
+explicit approval in commit `3a0c9fa`; the retained authorities are indexed by the README and `.NOTE.md`.
 
 ---
 

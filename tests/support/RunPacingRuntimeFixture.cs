@@ -63,6 +63,7 @@ public sealed class RunPacingRuntimeFixture
     {
         EnsureFinalEncounter();
         _elapsedSeconds = Math.Max(_elapsedSeconds, elapsedSeconds);
+        Pacing.Advance();
         if (!Director.TrySpawn(new Vector2(200.0f, 0.0f), elapsedSeconds, 0))
         {
             throw new InvalidOperationException("Test boss could not enter the encounter director.");

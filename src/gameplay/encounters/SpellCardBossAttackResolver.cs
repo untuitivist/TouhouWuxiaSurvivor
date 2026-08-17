@@ -10,15 +10,14 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Scaling;
 namespace TouhouWuxiaSurvivor.Gameplay.Encounters;
 
 /// <summary>
-/// 将本体与红魔乡角色拥有的符卡解析为 Boss 攻击；其他作品保持通用弹幕直至逐作制作完成。
+/// 将声明 Boss 符卡能力的内容包解析为攻击；其余作品保持通用弹幕直至完成迁移验收。
 /// </summary>
 public sealed class SpellCardBossAttackResolver : IBossAttackResolver
 {
-    private static readonly HashSet<string> SupportedSources = new(StringComparer.Ordinal)
-    {
-        ContentPackCatalog.Base.Id,
-        "th06_eosd",
-    };
+    private static readonly HashSet<string> SupportedSources = ContentPackCatalog.Installed
+        .Where(pack => pack.HasCapability(ContentPackCapabilityIds.BossSpellSequences))
+        .Select(pack => pack.Id)
+        .ToHashSet(StringComparer.Ordinal);
     private readonly IReadOnlyDictionary<string, BossAttackPattern[]> _attacks;
 
     /// <summary>在局开始时一次性解析全部受支持角色，避免每波弹幕重复扫描内容目录和换算倍率。</summary>

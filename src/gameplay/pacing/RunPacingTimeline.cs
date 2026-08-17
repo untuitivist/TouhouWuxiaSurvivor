@@ -75,8 +75,7 @@ public static class RunPacingTimeline
         double elapsed = NormalizeElapsed(elapsedSeconds);
         if (isEndless)
         {
-            return CreateTerminalSnapshot(RunPhaseId.Endless, "无尽游历",
-                "敌群与角色Boss将持续增强", elapsed, true);
+            return CreateEndlessSnapshot(elapsed, FinalEncounterSeconds);
         }
 
         if (elapsed >= FinalEncounterSeconds)
@@ -117,7 +116,8 @@ public static class RunPacingTimeline
         string name,
         string cue,
         double elapsed,
-        bool isEndless) => new(
+        bool isEndless,
+        double difficultySeconds = FinalEncounterSeconds) => new(
             id,
             name,
             cue,
@@ -130,10 +130,25 @@ public static class RunPacingTimeline
             0.0,
             !isEndless,
             isEndless,
-            FinalEncounterSeconds,
+            Math.Max(FinalEncounterSeconds, difficultySeconds),
             1.0,
             false,
             AdaptiveRules.Count);
+
+    /// <summary>
+    /// 从玩家实际选择无尽的时刻继续推进名义难度，有限阶段和 Boss 等待时间不重复计入。
+    /// </summary>
+    internal static RunPacingSnapshot CreateEndlessSnapshot(
+        double elapsedSeconds,
+        double endlessEnteredSeconds)
+    {
+        double elapsed = NormalizeElapsed(elapsedSeconds);
+        double entered = Math.Min(elapsed, NormalizeElapsed(endlessEnteredSeconds));
+        double difficulty = FinalEncounterSeconds + Math.Max(0.0, elapsed - entered);
+        return CreateTerminalSnapshot(
+            RunPhaseId.Endless, "无尽游历", "敌群数量将持续增强",
+            elapsed, true, difficulty);
+    }
 
     /// <summary>
     /// 将非法、负数与正无穷运行时间整理为可显示的有限非负秒数。

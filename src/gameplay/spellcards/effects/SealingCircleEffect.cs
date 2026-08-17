@@ -11,9 +11,10 @@ public partial class SealingCircleEffect : Node2D
     private const double DurationSeconds = 0.55;
     private double _elapsed;
     private Label? _fallbackLabel;
-    private string _sourcePackId = "th06_eosd";
-    private string _spellCardName = "梦符「封魔阵」";
+    private string _sourcePackId = string.Empty;
+    private string _spellCardName = string.Empty;
     private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Ring;
+    private bool _configured;
 
     /// <summary>
     /// 在节点进入场景树前注入当前符卡视觉键，使所有作品复用结界演出而不复用错误素材身份。
@@ -23,9 +24,12 @@ public partial class SealingCircleEffect : Node2D
         string spellCardName,
         SpellCardGeometryKind geometryKind)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sourcePackId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(spellCardName);
         _sourcePackId = sourcePackId;
         _spellCardName = spellCardName;
         _geometryKind = geometryKind;
+        _configured = true;
     }
 
     /// <summary>
@@ -33,6 +37,12 @@ public partial class SealingCircleEffect : Node2D
     /// </summary>
     public override void _Ready()
     {
+        if (!_configured)
+        {
+            throw new InvalidOperationException(
+                "Sealing circle must receive a spell-card visual identity before entering the tree.");
+        }
+
         _fallbackLabel = GetNode<Label>("FallbackLabel");
         bool hasBullets = CreateBulletRing();
         _fallbackLabel.Visible = !hasBullets;

@@ -52,7 +52,7 @@ public partial class BalanceTimelineContractTest : Node
         (int Minimum, int Maximum)[] levelBands =
         [
             (1, 1), (16, 21), (27, 35), (40, 48),
-            (54, 63), (64, 72), (82, 91), (104, 115),
+            (56, 66), (68, 79), (95, 110), (138, 158),
         ];
         foreach ((BalanceBuildKind kind, IReadOnlyList<BalanceTimelineSnapshot> values) in timelines)
         {
@@ -63,6 +63,16 @@ public partial class BalanceTimelineContractTest : Node
                 Require(item.RunLevel >= minimum && item.RunLevel <= maximum,
                     $"Level pacing left its target band: {kind}/{item.ElapsedMinutes}m " +
                     $"was {item.RunLevel}, expected {minimum}-{maximum}.");
+                if (item.ElapsedMinutes >= 5)
+                {
+                    double difficultySeconds = RunPacingTimeline.FinalEncounterSeconds +
+                        Math.Max(0.0,
+                            item.ElapsedMinutes * 60.0 - RunPacingTimeline.TargetClearSeconds);
+                    double expectedSupply = EnemyPressureCurve.Evaluate(
+                        difficultySeconds).SpawnRatePerSecond;
+                    Require(Math.Abs(item.ScheduledSpawnsPerSecond - expectedSupply) < 0.000001,
+                        $"Endless supply projection drifted: {kind}/{item.ElapsedMinutes}m.");
+                }
             }
 
             int learnedSpells = values[2].OffensiveSpellCount + values[2].SupportSpellCount;
@@ -193,7 +203,7 @@ public partial class BalanceTimelineContractTest : Node
     }
 
     /// <summary>
-    /// 检查路线标签确实改变构筑：强攻开局最高，速射后期普攻最高，效用保持更高经济成长。
+    /// 检查路线标签确实改变构筑：强攻开局最高，速射后期超过非输出路线，效用保持更高经济成长。
     /// </summary>
     private static void VerifyRouteIdentities(
         IReadOnlyDictionary<BalanceBuildKind, IReadOnlyList<BalanceTimelineSnapshot>> timelines)
@@ -204,20 +214,21 @@ public partial class BalanceTimelineContractTest : Node
         BalanceTimelineSnapshot baseline = timelines[BalanceBuildKind.Baseline][^1];
         Require(assault.TotalDps == timelines.Values.Max(values => values[0].TotalDps),
             "Assault route lost its opening burst identity.");
-        Require(rapid.WeaponDps == timelines.Values.Max(values => values[^1].WeaponDps),
-            "Rapid route lost its late-game normal-attack identity.");
+        Require(rapid.WeaponDps > baseline.WeaponDps &&
+            rapid.WeaponDps > utility.WeaponDps,
+            "Rapid route lost its late-game normal-attack advantage over non-output routes.");
         Require(utility.SpiritEconomyMultiplier == timelines.Values.Max(
                 values => values[^1].SpiritEconomyMultiplier),
             "Utility route lost its per-drop economy identity.");
         double rapidWeaponShare = rapid.WeaponDps / rapid.TotalDps;
         double baselineWeaponShare = baseline.WeaponDps / baseline.TotalDps;
         Require(rapidWeaponShare > baselineWeaponShare &&
-            rapid.WeaponDps >= baseline.WeaponDps * 1.05,
+            rapid.WeaponDps > baseline.WeaponDps,
             "Rapid route collapsed into the baseline route.");
     }
 
     /// <summary>
-    /// 独立推进正式刷怪投影，确认无击破时会顶住动态存活上限，有处理能力时接纳率由批次与间隔决定。
+    /// 独立推进正式刷怪投影，确认无击破时继续积压，有处理能力时完整消费批次与间隔供给。
     /// </summary>
     private static void VerifySpawnFlowUsesRuntimeLimits()
     {

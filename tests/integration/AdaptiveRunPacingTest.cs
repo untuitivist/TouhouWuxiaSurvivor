@@ -17,6 +17,7 @@ public partial class AdaptiveRunPacingTest : Node
             VerifySlidingWindowRechecksContinuously();
             VerifyEmptyWindowCannotAdvance();
             VerifySevenQualifiedWindowsReachBoss();
+            VerifyEndlessProjectionKeepsTelemetry();
             VerifyClockCannotMoveBackwards();
             GD.Print("Adaptive run pacing test passed.");
             GetTree().Quit();
@@ -83,6 +84,26 @@ public partial class AdaptiveRunPacingTest : Node
         RunPacingSnapshot final = state.CreateSnapshot(210.0);
         Require(final.IsFinalEncounter && final.PressureGear == 7,
             "Seven qualified windows did not reach the final encounter.");
+    }
+
+    /// <summary>进入无尽后只推进名义难度，并继续展示同一个三十秒滑动窗口的真实 K/S。</summary>
+    private static void VerifyEndlessProjectionKeepsTelemetry()
+    {
+        var state = new AdaptiveRunPacingState();
+        state.Advance(0.0, new RunCombatTelemetry(0, 0));
+        int total = 0;
+        for (int window = 1; window <= 7; window++)
+        {
+            total += 30;
+            state.Advance(window * 30.0, new RunCombatTelemetry(total, total));
+        }
+
+        state.Advance(300.0, new RunCombatTelemetry(300, 300));
+        state.Advance(330.0, new RunCombatTelemetry(345, 341));
+        RunPacingSnapshot endless = state.CreateSnapshot(330.0, true, 300.0);
+        Require(endless.IsEndless && endless.DifficultySeconds == 240.0 &&
+            endless.WindowSpawned == 45 && endless.WindowDefeated == 41,
+            "Endless projection reset telemetry or failed to advance from its entry time.");
     }
 
     /// <summary>异常倒退的外部时钟不得让阶段、真实显示时间或难度进度回退。</summary>

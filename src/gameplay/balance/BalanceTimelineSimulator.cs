@@ -47,7 +47,7 @@ public sealed class BalanceTimelineSimulator
         {
             pacing.Advance(elapsedSeconds, new RunCombatTelemetry(
                 SaturatingCount(spawnedEnemies), SaturatingCount(defeatedEnemies)));
-            RunPacingSnapshot pacingSnapshot = pacing.CreateSnapshot(elapsedSeconds);
+            RunPacingSnapshot pacingSnapshot = CreatePacingSnapshot(pacing, elapsedSeconds);
             EndlessDifficultySnapshot difficulty = EndlessDifficultyCurve.EvaluateSeconds(
                 pacingSnapshot.DifficultySeconds);
             BalanceEnemySnapshot enemy = BalanceEnemyBudget.Evaluate(
@@ -79,6 +79,19 @@ public sealed class BalanceTimelineSimulator
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 标准五分钟目标后按玩家选择继续游历建模，使长局策划预算与正式无尽供给使用同一投影。
+    /// </summary>
+    private static RunPacingSnapshot CreatePacingSnapshot(
+        AdaptiveRunPacingState pacing,
+        int elapsedSeconds)
+    {
+        bool isEndless = pacing.IsFinalEncounter &&
+            elapsedSeconds > RunPacingTimeline.TargetClearSeconds;
+        return pacing.CreateSnapshot(
+            elapsedSeconds, isEndless, RunPacingTimeline.TargetClearSeconds);
     }
 
     /// <summary>把连续策划累计量安全投影成正式节奏遥测使用的非负整数计数。</summary>

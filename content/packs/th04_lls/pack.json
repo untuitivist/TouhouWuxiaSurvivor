@@ -1,4 +1,15 @@
 {
+  "schema_version": 1,
+  "content_version": "0.0.0",
+  "host_api": "content-v1",
+  "kind": "optional",
+  "dependencies": {
+    "required": [
+      "base"
+    ],
+    "optional": []
+  },
+  "capabilities": [],
   "id": "th04_lls",
   "number": 4,
   "title_zh": "东方幻想乡",

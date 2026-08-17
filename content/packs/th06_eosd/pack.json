@@ -1,4 +1,17 @@
 {
+  "schema_version": 1,
+  "content_version": "0.1.0",
+  "host_api": "content-v1",
+  "kind": "optional",
+  "dependencies": {
+    "required": [
+      "base"
+    ],
+    "optional": []
+  },
+  "capabilities": [
+    "boss_spell_sequences"
+  ],
   "id": "th06_eosd",
   "number": 6,
   "title_zh": "东方红魔乡",

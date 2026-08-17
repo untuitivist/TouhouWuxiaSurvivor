@@ -1,5 +1,86 @@
 # Progress Log
 
+## 2026-08-17 - Runtime Alignment Continuation
+
+- Shared endless-pressure projection raised long-run upgrade counts as intended and exposed one stale
+  balance assertion.
+- The failed assertion required the Rapid route to have the highest absolute weapon DPS. This
+  contradicted the authored role contract: Power attacks are heavier but slower, while Rapid attacks
+  are lighter but denser.
+- Kept production values unchanged. The timeline contract now requires Rapid to beat Baseline and
+  Utility in late-game weapon DPS, while `CharacterBalanceContractTest` remains the hard cadence
+  check at 40 volleys versus Power's 32 over ten seconds.
+- The first spell schema audit rejected the newly edited manifests. The two schemas were already
+  correctly separated as `schema_version` and `spellcard_schema_version`; the actual mismatch was
+  noncanonical inline JSON formatting in the new identity header. The existing migration tool is used
+  once in write mode to normalize formatting, then rerun in its default read-only audit mode.
+
+## 2026-08-17 - Runtime Alignment with Canonical Design
+
+- Activated the file-based planning workflow for the implementation pass requested after the
+  documentation consolidation.
+- Locked the scope to observable base-loop improvements and documented runtime gaps; optional content
+  expansion, release export, and unrelated workspace files are excluded.
+- The first combined planning patch was atomically rejected because it assumed the wrong
+  `findings.md` heading; no partial edit landed, and the retry used the exact current file headers.
+- Two parallel WSL reads returned `E_UNEXPECTED/0x80072746`; no repository file changed. Further
+  document reads use bounded `cmd.exe` operations instead of repeating the failed WSL pattern.
+- A combined `rg` class-name expression was split at `|` by the `cmd.exe` invocation layer and failed
+  without changing files. Runtime entry searches now use one literal class name per command.
+- A later `rg` context search used a quoted pattern containing a space and was likewise split by the
+  command layer. No file changed; code searches now anchor on one identifier token only.
+- A subsequent multi-class search accidentally repeated the forbidden `|` pattern and failed without
+  file changes. All remaining repository searches are issued as separate literal commands only.
+- A direct read guessed `src/gameplay/progression/runtime/RunUpgradeChoice.cs`, but the file does not
+  exist at that path. The next step uses `rg --files` to locate the actual declaration.
+- A direct read guessed `src/content/RunContentContext.cs`; the file is located elsewhere. No file was
+  modified, and the declaration will be found by a literal repository search.
+- Two later planning-file reads were aimed at the outer workspace instead of the nested Git repository
+  and therefore returned no matches; no repository file changed, and subsequent reads use the Git root.
+- A spell-caster read guessed the parent spell-card directory, while the implementation is under
+  `src/gameplay/spellcards/effects`; the literal repository lookup found the actual path.
+- A Boss spell resolver read guessed a nested `spellcards/boss` directory; the real OOP encounter
+  adapter is `src/gameplay/encounters/SpellCardBossAttackResolver.cs`. No file changed.
+- A scene-text lookup searched for the label token `Continue`, while the completion scene names the
+  command `Endless`; the code-level event and real flow fixture provide the authoritative test seam.
+- The first implementation patch was atomically rejected because it described two existing files as
+  delete-and-add replacements inside one patch. No code landed; both files are now rewritten in place
+  through smaller reviewable patches, so no file deletion or deletion approval is involved.
+- The first compile after implementation found four errors in two root causes: implicit usings made
+  `FileAccess` ambiguous with `System.IO.FileAccess`, and two pacing assertions guessed a property that
+  belongs to a different difficulty snapshot. The manifest files and design are unaffected; the fix
+  qualifies Godot file access and reads the actual enemy-pressure snapshot API.
+- The first focused-test loop wrapped a Godot executable path containing no spaces in literal quotes;
+  this command interface passed the quotes into `cmd.exe`, so all eight invocations were rejected
+  before a Godot process started. No test ran and no state changed; the retry uses the unquoted path.
+- Focused content, Boss, spell-card, and SourcePolicy tests passed, while all three pacing tests failed
+  the same post-final difficulty assertion. This isolates one terminal-snapshot projection error rather
+  than three flow defects; the constructor field order is checked before changing the shared factory.
+- Corrected the terminal snapshot field order; pure, adaptive, and real completion-flow pacing tests
+  then passed. A follow-up review found endless mode still skipped telemetry ingestion, so the same
+  final adaptive state now keeps its rolling K/S live without allowing another pressure phase.
+- The deterministic balance simulator originally held 9.30/s forever because it never modeled the
+  explicit five-minute endless choice. After switching it to the shared projection, 10-120 minute
+  supply rose as specified; the only failure was an obsolete 30-minute level band calibrated against
+  the pinned rate, so the long-run contract must be updated rather than reverting production pacing.
+- Completed the canonical-contract audit and selected a coherent implementation set: strict content
+  identity headers and capabilities, frozen run fingerprints, capability-driven Boss spell support,
+  and post-final endless pressure projection through the existing shared snapshot.
+- Added strict identity headers to Base and all twenty optional manifests without changing their
+  lifecycle status or gameplay inventory.
+- Added deterministic active-content and run fingerprints, capability-driven Base/TH06 Boss spell
+  registration, and explicit spell visual injection with no TH06 fallback.
+- Connected endless play to the existing shared pressure curve from the actual continue timestamp;
+  the runtime spawner, F3 snapshot, adaptive telemetry, and deterministic simulator now agree.
+- Final verification passed Debug build with zero warnings/errors, all three content tools,
+  `git diff --check`, and 74/74 integration scenes including eight Windows-rendered visual acceptances.
+- No FPS benchmark, optional-content expansion, export, or unrelated workspace edit was included.
+- The first commit command used a spaced message that the Windows command boundary split into Git
+  pathspecs. No commit or file change occurred; the staged set remained intact and the retry uses an
+  ASCII message without spaces.
+
+---
+
 ## 2026-08-17 - Documentation Consolidation
 
 - Confirmed from production code that enemy stage scaling is identity-only: stages change supply,

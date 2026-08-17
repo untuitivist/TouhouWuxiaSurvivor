@@ -1,5 +1,167 @@
 # Findings and Decisions
 
+## Runtime Alignment Outcome - 2026-08-17
+
+- All 21 manifests now carry the strict v1 identity header. Base and TH06 alone declare the first
+  experimental Boss spell-sequence capability; inventory packs remain registered but are not promoted.
+- A run now freezes ruleset, seed, selected character, active pack versions, manifest fingerprints,
+  registry fingerprint, and run fingerprint before world orchestration begins.
+- Generic spell effects require an explicit visual identity, and Boss spell support is selected by
+  capability rather than a literal work ID.
+- Selecting endless records the real transition time and continues the shared pressure projection by
+  0.12 enemies per second for each nominal 30 seconds, while the rolling K/S telemetry remains live.
+- The deterministic balance simulator consumes the same endless projection. Its Rapid-route contract
+  now tests dense-fire identity against non-output routes without incorrectly requiring it to out-damage
+  the deliberately heavier Power role.
+- Final verification passed all 74 integration scenes, including eight Windows-rendered visual scenes,
+  plus the 21-manifest/51-card schema, geometry, and balance audits.
+
+## Runtime Alignment Findings - 2026-08-17
+
+- The canonical runtime authorities are `docs/plugin_first_design.md`, `docs/combat_balance.md`, and
+  `docs/enemy_balance.md`; `docs/diagnostics.md` defines evidence collection rather than gameplay.
+- The first audit must distinguish documented target behavior from code already implemented, so this
+  iteration does not duplicate completed ECS, build, or content-pack work.
+- Existing unrelated workspace changes (`project.godot`, two UID files, and local Obsidian files) are
+  outside this task and must remain unstaged unless code evidence makes one indispensable.
+- The architecture contract prioritizes the Base-only loop and TH06 as the first optional-pack
+  experiment. TH07-TH20 remain migration inventory; this pass must not bulk-promote their catalogs.
+- Rule ownership is explicit: five-minute pacing, K/S pressure, experience, offers, slots, victory,
+  and endless continuation belong to mandatory rule modules and cannot be supplied or altered by a
+  content pack.
+- Player combat has two presentation channels with one numeric budget: predictive ordinary shots grow
+  only through `追魂诀`, while centered radial/spiral shots grow only through `天罗弹阵`; elapsed time
+  and pressure phases may not grant either channel.
+- The implementation pass should verify the already-promised Base-only closure before attempting the
+  much larger target registry migration: two playable/Boss characters, six spell cards filling 4+2,
+  adaptive pressure, final Boss resolution, and complete failure/success flow.
+- Enemy species statistics are immutable across pressure phases. The eight finite rates are
+  2.40/3.15/4.05/5.10/6.15/7.20/8.25/9.30 per second; phases only change supply, tier mix, and species
+  eligibility, with no alive-count soft cap.
+- The finite adaptive gate is a real 30-second sliding window: ordinary kills must reach 90% of
+  ordinary spawns, each phase requires its own complete observation period, and transition supply is
+  eased over three seconds.
+- `docs/enemy_balance.md` names one current production gap: after endless is selected,
+  `RunPacingCoordinator` pins the final finite snapshot instead of consuming the existing
+  post-final `EnemyPressureCurve` supply continuation. This is a focused implementation candidate.
+- `.NOTE.md` confirms that Base and TH06 remain `development`, every other official work remains
+  `inventory`, and no release/export is authorized by this implementation request.
+- Diagnostics is an evidence contract, not another gameplay rule module. This pass should preserve
+  its one-second sampling and failure containment unless a gameplay change requires a new observable
+  field; it should not make speculative renderer or FPS changes.
+- F3 is required to expose pressure gear, aggregate difficulty, supply rate, tier mix, and live
+  30-second K/S. Any pacing correction must update the same immutable snapshot consumed by F3 rather
+  than inventing a second diagnostic calculation.
+- Base and TH06 manifests are still schema-less menu/content summaries with top-level localized names
+  and embedded spell-card data. They lack the documented `schema_version`, `content_version`,
+  `host_api`, `kind`, dependencies, domain-file indexes, and provenance pointer; this is the main
+  plugin-architecture gap rather than a cosmetic folder issue.
+- Their actual playable inventories already meet the first horizontal matrix at the manifest level:
+  Base has 5/6/9/2 plus six spell cards, while TH06 has 3/3/3/7 plus seven spell cards. Migrating the
+  identity header can therefore be performed without changing combat content or power budgets.
+- `ContentPackManifestLoader` currently validates only the three-state status. Missing identity and
+  display strings silently become empty values, and schema, host API, kind, dependency, content
+  version, and domain references are not parsed. It is a menu projection loader, not yet the strict
+  manifest boundary described by the plugin guide.
+- `ContentPackDefinition` carries only display/catalog fields (`Id`, work number, localized names,
+  lifecycle status, selectable flag, additions). The identity header needs a separate strong contract
+  or a carefully expanded definition; duplicating another manifest parser would violate the new
+  single-source rule.
+- `RunContentContext` lives under `src/content/characters`, confirming that the current snapshot grew
+  from character selection rather than a kernel-level frozen registry boundary.
+- The current `RunContentContext` stores only `ContentPackSelection` and `CharacterSelection`; it has
+  no rule-set identity/version, world seed, active pack versions/fingerprints, or aggregate registry
+  fingerprint. `WorldDemo` constructs it before play, so expanding this immutable boundary is viable
+  without moving high-frequency ECS code or parsing JSON during combat.
+- `ContentPackCatalog` scans manifests once and already offers a natural validation/freeze point. A
+  strict identity header plus deterministic catalog fingerprint is a coherent first plugin milestone;
+  moving every biome/enemy/build definition into new files is a later migration and would exceed this
+  gameplay optimization pass.
+- `ContentPackSelection` safely snapshots enabled IDs in a private set but exposes only `IsEnabled` and
+  a localized description. A sorted read-only ID projection is needed so context validation and
+  fingerprinting do not reverse-engineer selection through UI text.
+- Existing `ContentPackSmokeTest` covers lifecycle labels and Base/TH06 world/enemy isolation, but not
+  manifest schema, dependency validity, content fingerprints, unknown selected IDs, or frozen run
+  identity. Those contracts need a dedicated integration test rather than enlarging the UI test.
+- Formal pacing is assembled in `WorldDemo`, consumed by `WorldHudCoordinator`, and formatted through
+  `WorldHudTextFormatter`; `EnemySpawnPacing` and `EndlessDifficultyCurve` already depend on the shared
+  `EnemyPressureCurve`. The correction should extend `RunPacingCoordinator` state, not add a new timer.
+- `RunPacingCoordinator.Advance` returns immediately whenever `IsEndless` is true, and
+  `OnContinueEndlessRequested` records no transition timestamp. `EnemyPressureCurve` already supports
+  unbounded post-final supply, so the missing behavior is coordinator state projection rather than a
+  new curve or another spawn system.
+- `AdaptiveRunPacingState` correctly keeps cumulative samples and a moving baseline, never resets a
+  failed window, and advances at most one phase after a full per-phase 30-second observation. Its
+  endless snapshot delegates to `RunPacingTimeline.CreateTerminalSnapshot` and has no endless-origin
+  field, so the terminal snapshot factory is the next decisive code path.
+- `RunPacingTimeline.CreateTerminalSnapshot` hard-codes `DifficultySeconds` to
+  `FinalEncounterSeconds` (210), including endless snapshots. This directly proves why formal enemy
+  supply remains at 9.30/s despite `EnemyPressureCurve` already supporting post-final growth.
+- `WorldDemo` supplies `RunPacingSnapshot.DifficultySeconds` directly to `EnemySpawner`; there is no
+  second timer or scaling layer to update. A correct fix can record the endless-entry timestamp in the
+  OOP coordinator and project `210 + elapsedSinceEndless` into the existing snapshot/curve chain.
+- The existing adaptive test fully covers seven 30-second qualifying windows but stops at final-entry;
+  it has no assertion for endless-entry continuity or post-final supply growth.
+- Repository search found no integration assertion for `ContinueEndlessRequested`; the completion
+  overlay emits the event, but the endless pressure handoff is currently unguarded by tests.
+- `RunPacingTimelineTest` already asserts finite milestones and explicit endless identity, but does not
+  assert endless `DifficultySeconds` or supply growth. It is the appropriate place for the pure curve
+  contract; coordinator transition state still needs focused coverage.
+- `BossEncounterDirector` keeps the low-frequency orchestration boundary and delegates the actual Boss
+  entity/attacks to ECS, matching the hybrid architecture. It consumes the frozen context passed at
+  configure time, although candidate lookup still projects from its selection fields rather than an
+  active registry snapshot.
+- Production `ContentPackIds` use is already narrow: aside from the constants file, only the global
+  official-world catalog references it. Literal `th06_eosd` remains in two spell effect defaults and
+  the Boss spell resolver. These three paths can be audited and converted to definition-owned source
+  identities without a repository-wide world migration.
+- The two spell-effect literals are default field values on generic effect nodes; their formal
+  configure methods already accept `sourcePackId`, spell name, and geometry. Removing the TH06 default
+  is safe only after confirming every production instantiation configures the node before `_Ready`;
+  otherwise it would turn a visible fallback into an empty identity.
+- `SpellCardBossAttackResolver` has the exact plugin violation described by the architecture guide: a
+  hard-coded supported-source set containing Base and literal `th06_eosd`. This should become a stable
+  manifest capability such as `boss_spell_sequences`; Base and TH06 declare it, inventory packs do
+  not, and the resolver filters definitions through the catalog capability contract.
+- Finite upgrade definitions are centralized in `BaseRunUpgradeFactory`, while offer selection is
+  centralized in `RunOfferGenerator` and consumed by `RunProgressionCoordinator`; these are the
+  correct audit seams for choice quality rather than modifying the level-up UI directly.
+- `BaseRunUpgradeFactory` matches the documented six finite caps/effects and six repeatable
+  continuations. `RunOfferGenerator` already assembles momentum/complement/exploration roles without
+  replacement and removes additional spell cards after the first; no numeric rewrite is justified
+  until identity-level duplicate and presentation checks are complete.
+- `RunAffinityOfferTest` does not assert that one offer contains distinct root upgrade IDs. The
+  generator removes only the selected choice object, so the audit must verify whether a base-rank
+  choice and one of its specialization choices can occupy two cards in the same level-up offer.
+- The specialization test behavior is correct at run level 4 and base rank 2, but its Chinese method
+  comment still says level 8 and rank 3; this is a documentation-in-code mismatch to fix with the
+  related test rather than changing production gates.
+- `RunUpgradeChoice` is defined under `progression/definitions`, not `runtime`. Spell-card raw weights
+  are normalized by `RunOfferWeightTable` into one fixed category budget of 2.0, so enabling additional
+  packs changes spell identity distribution but not total spell-category probability as required.
+- Choice identity is the specialization ID when present and otherwise the definition ID. The current
+  generator can theoretically place a remaining specialization beside its parent rank late in a run,
+  but they are different actionable nodes; there is no evidence of duplicate choice IDs or a broken
+  apply path, so this is not selected as a runtime defect.
+- `SpellCardEffectCaster` configures both `FantasySealOrb` and `SealingCircleEffect` with the selected
+  definition's source pack, full name, geometry, and visual variant before adding either node to the
+  tree. Repository tests also configure the orb explicitly. The generic nodes can therefore reject an
+  unconfigured identity instead of silently defaulting to TH06.
+- The selected implementation intentionally stops before per-domain definition-file migration. This
+  pass establishes one strict identity header, deterministic pack/context fingerprints, and an
+  explicit Boss-sequence capability for every installed manifest, then proves Base/TH06 behavior
+  without promoting inventory packs to completed content.
+- Endless pressure will reuse the existing immutable `RunPacingSnapshot`: the OOP coordinator records
+  the entry time, timeline code projects post-final difficulty, `EnemyPressureCurve` supplies the
+  continued rate, and the existing spawner/F3 consumers receive the same value. No second clock or
+  difficulty system is introduced.
+- Removing endless difficulty pinning exposed a related telemetry detail: returning early from
+  `RunPacingCoordinator.Advance` also froze the 30-second K/S window. The final adaptive state already
+  records samples without changing phase, so endless mode should continue feeding it while only
+  suppressing further phase transitions.
+
+---
+
 ## Documentation Consolidation Audit - 2026-08-17
 
 - `docs/` starts with six tracked files: plugin-first product architecture, ECS architecture, combat

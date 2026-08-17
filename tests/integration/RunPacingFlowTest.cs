@@ -59,8 +59,13 @@ public partial class RunPacingFlowTest : Node
                 "Endless choice did not release modal input ownership.");
 
             fixture.DefeatBoss(RunPacingTimeline.TargetClearSeconds + 60.0);
-            Require(!fixture.Overlay.IsOpen,
-                "A later endless boss reopened the one-time completion choice.");
+            RunPacingSnapshot continued = fixture.Pacing.CreateSnapshot();
+            Require(!fixture.Overlay.IsOpen && continued.DifficultySeconds ==
+                    RunPacingTimeline.FinalEncounterSeconds + 60.0 &&
+                EnemyPressureCurve.Evaluate(continued.DifficultySeconds)
+                    .SpawnRatePerSecond >
+                    RunPacingTimeline.FinalEncounterRule.SpawnRatePerSecond,
+                "A later endless boss reopened completion or endless pressure stopped growing.");
         }
         finally
         {

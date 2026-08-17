@@ -64,14 +64,17 @@ public sealed class AdaptiveRunPacingState
     }
 
     /// <summary>把当前阶段状态投影成 HUD 与玩法共同消费的不可变快照。</summary>
-    public RunPacingSnapshot CreateSnapshot(double elapsedSeconds, bool isEndless = false)
+    public RunPacingSnapshot CreateSnapshot(
+        double elapsedSeconds,
+        bool isEndless = false,
+        double? endlessEnteredSeconds = null)
     {
         double elapsed = Math.Max(_lastElapsedSeconds, NormalizeElapsed(elapsedSeconds));
         (int spawned, int defeated) = GetWindowCounts();
         if (isEndless)
         {
-            return RunPacingTimeline.CreateTerminalSnapshot(
-                RunPhaseId.Endless, "无尽游历", "敌群数量将持续增强", elapsed, true) with
+            return RunPacingTimeline.CreateEndlessSnapshot(
+                elapsed, endlessEnteredSeconds ?? elapsed) with
             {
                 WindowSpawned = spawned,
                 WindowDefeated = defeated,

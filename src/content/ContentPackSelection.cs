@@ -6,13 +6,26 @@ namespace TouhouWuxiaSurvivor.Content;
 public sealed class ContentPackSelection
 {
     private readonly HashSet<string> _enabled;
+    private readonly IReadOnlyList<string> _enabledPackIds;
     public static ContentPackSelection BaseOnly { get; } = new([]);
+    public IReadOnlyList<string> EnabledPackIds => _enabledPackIds;
 
     /// <summary>
     /// 从内容包标识符建立去重快照，后续菜单改动不会影响已经开始的世界。
     /// </summary>
-    public ContentPackSelection(IEnumerable<string> enabledPackIds) =>
-        _enabled = new HashSet<string>(enabledPackIds, StringComparer.Ordinal);
+    public ContentPackSelection(IEnumerable<string> enabledPackIds)
+    {
+        ArgumentNullException.ThrowIfNull(enabledPackIds);
+        string[] normalized = enabledPackIds
+            .Select(id => string.IsNullOrWhiteSpace(id)
+                ? throw new ArgumentException("Content pack id cannot be empty.", nameof(enabledPackIds))
+                : id)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+        _enabledPackIds = Array.AsReadOnly(normalized);
+        _enabled = new HashSet<string>(normalized, StringComparer.Ordinal);
+    }
 
     /// <summary>
     /// 判断指定可选内容包是否存在于本局快照中。

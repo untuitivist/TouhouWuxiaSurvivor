@@ -1,4 +1,15 @@
 {
+  "schema_version": 1,
+  "content_version": "0.1.0",
+  "host_api": "content-v1",
+  "kind": "foundation",
+  "dependencies": {
+    "required": [],
+    "optional": []
+  },
+  "capabilities": [
+    "boss_spell_sequences"
+  ],
   "id": "base",
   "title_zh": "幻想乡本体",
   "status": "development",

@@ -60,8 +60,11 @@ public partial class RunPacingTimelineTest : Node
         RunPacingSnapshot endless = RunPacingTimeline.Evaluate(360.0, true);
         Require(final.IsFinalEncounter && !final.IsEndless && endless.IsEndless &&
             final.TotalProgress == 1.0 && endless.TotalProgress == 1.0 &&
+            endless.DifficultySeconds == 360.0 &&
+            EnemyPressureCurve.Evaluate(endless.DifficultySeconds)
+                .SpawnRatePerSecond > RunPacingTimeline.FinalEncounterRule.SpawnRatePerSecond &&
             RunPacingTimeline.TargetClearSeconds == 300.0,
-            "Final encounter did not remain gated until the explicit endless choice.");
+            "Final encounter or post-final endless pressure projection drifted.");
     }
 
     /// <summary>确认敌人总供给连续增长，而相同构筑在任意名义阶段都保持相同玩家弹数。</summary>

@@ -25,6 +25,7 @@ public sealed class RunPacingCoordinator : IDisposable
     private readonly Func<bool> _isFinalized;
     private readonly Func<RunEndReason, bool> _finalize;
     private readonly AdaptiveRunPacingState _adaptiveState = new();
+    private double? _endlessEnteredSeconds;
     private bool _disposed;
 
     public bool IsEndless { get; private set; }
@@ -75,7 +76,7 @@ public sealed class RunPacingCoordinator : IDisposable
     /// </summary>
     public void Advance()
     {
-        if (_disposed || IsEndless)
+        if (_disposed)
         {
             return;
         }
@@ -90,7 +91,8 @@ public sealed class RunPacingCoordinator : IDisposable
 
     /// <summary>以动态阶段状态创建 HUD 快照，真实时间与难度时间保持显式分离。</summary>
     public RunPacingSnapshot CreateSnapshot() =>
-        _adaptiveState.CreateSnapshot(_elapsedSeconds(), IsEndless);
+        _adaptiveState.CreateSnapshot(
+            _elapsedSeconds(), IsEndless, _endlessEnteredSeconds);
 
     /// <summary>
     /// 解除全部事件连接；重复释放安全返回，防止重开场景后旧协调器继续接收Boss事件。
@@ -158,6 +160,7 @@ public sealed class RunPacingCoordinator : IDisposable
 
         IsCompletionPending = false;
         IsEndless = true;
+        _endlessEnteredSeconds = _elapsedSeconds();
         SetOtherInputBlocked(false);
         _completion.CloseAndResume();
         _progression.ResumeChoicePresentation();
