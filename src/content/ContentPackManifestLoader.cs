@@ -43,13 +43,13 @@ public static class ContentPackManifestLoader
             ReadInt(manifest, "number"),
             ReadString(manifest, "title_zh"),
             ReadString(manifest, "title_en"),
-            ReadString(manifest, "status"),
+            ParseStatus(ReadString(manifest, "status"), manifestPath),
             ReadBool(manifest, "selectable"),
             additions);
     }
 
     /// <summary>
-    /// 遍历清单中的已知分类数组，把每个具名条目转换为带中文分类的增量内容。
+    /// 遍历清单中的已知分类数组，把每个具名条目转换为带中文分类的内容条目。
     /// </summary>
     private static void ReadAdditions(GodotDictionary source, List<ContentAddition> destination)
     {
@@ -89,6 +89,18 @@ public static class ContentPackManifestLoader
     /// </summary>
     private static string ReadString(GodotDictionary source, string key) =>
         source.TryGetValue(key, out Variant value) ? value.AsString() : string.Empty;
+
+    /// <summary>
+    /// 严格解析内容完成度；未知值直接指出所属清单，避免界面将损坏状态静默显示成未开发。
+    /// </summary>
+    private static ContentPackStatus ParseStatus(string value, string manifestPath) => value switch
+    {
+        "inventory" => ContentPackStatus.Inventory,
+        "development" => ContentPackStatus.Development,
+        "complete" => ContentPackStatus.Complete,
+        _ => throw new InvalidOperationException(
+            $"Unsupported content-pack status '{value}' in {manifestPath}."),
+    };
 
     /// <summary>
     /// 从清单读取整数编号；本体清单没有编号时使用零。

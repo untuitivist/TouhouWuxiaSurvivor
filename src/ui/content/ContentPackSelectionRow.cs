@@ -40,7 +40,7 @@ public partial class ContentPackSelectionRow : VBoxContainer
             ButtonPressed = isBase,
             Disabled = isBase || !definition.Selectable,
             CustomMinimumSize = new Vector2(22.0f, 24.0f),
-            TooltipText = isBase ? "幻想乡本体始终启用" : "勾选后加入本局内容",
+            TooltipText = BuildSelectionTooltip(definition, isBase),
         };
         _selection.Toggled += OnSelectionToggled;
         header.AddChild(_selection);
@@ -51,7 +51,7 @@ public partial class ContentPackSelectionRow : VBoxContainer
             Alignment = HorizontalAlignment.Left,
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
             CustomMinimumSize = new Vector2(0.0f, 24.0f),
-            TooltipText = "展开增量内容",
+            TooltipText = "展开内容清单",
         };
         _titleButton.AddThemeFontSizeOverride("font_size", 12);
         _titleButton.Pressed += ToggleExpanded;
@@ -95,7 +95,7 @@ public partial class ContentPackSelectionRow : VBoxContainer
         if (_titleButton is not null && Definition is not null)
         {
             _titleButton.Text = $"{(expanded ? "▼" : "▶")}  {BuildTitle(Definition, IsBase)}";
-            _titleButton.TooltipText = expanded ? "收起增量内容" : "展开增量内容";
+            _titleButton.TooltipText = expanded ? "收起内容清单" : "展开内容清单";
         }
     }
 
@@ -116,32 +116,56 @@ public partial class ContentPackSelectionRow : VBoxContainer
     private void OnSelectionToggled(bool selected) => SelectionChanged?.Invoke();
 
     /// <summary>
-    /// 生成折叠标题，只包含作品编号与名称，不泄漏状态或增量详情。
+    /// 生成折叠标题，只包含作品编号与名称，不泄漏状态或内容详情。
     /// </summary>
     private static string BuildTitle(ContentPackDefinition definition, bool isBase) =>
         isBase ? definition.DisplayName : $"TH{definition.Number:00}  {definition.DisplayName}";
 
     /// <summary>
-    /// 将开发状态及各增量分类按行展开，空清单明确标记尚未规划。
+    /// 将开发状态及各内容分类按行展开，空清单明确标记尚未规划。
     /// </summary>
     private static string BuildDetails(ContentPackDefinition definition, bool isBase)
     {
-        string status = isBase
-            ? "已完成 · 始终启用"
-            : definition.Status switch
-            {
-                "complete" => "已完成",
-                "development" => "开发中",
-                _ => "未开发",
-            };
+        string status = BuildStatusText(definition.Status);
+        if (isBase)
+        {
+            status += " · 始终启用";
+        }
+
         if (definition.Additions.Count == 0)
         {
-            return $"状态：{status}\n增量内容：尚未规划";
+            return $"状态：{status}\n内容清单：尚未规划";
         }
 
         string additions = string.Join("\n", definition.Additions
             .GroupBy(addition => addition.Category)
             .Select(group => $"{group.Key}：{string.Join("、", group.Select(item => item.Name))}"));
         return $"状态：{status}\n{additions}";
+    }
+
+    /// <summary>
+    /// 把强类型完成度转换为稳定中文文案；只有通过完整验收的内容才能显示为已完成。
+    /// </summary>
+    private static string BuildStatusText(ContentPackStatus status) => status switch
+    {
+        ContentPackStatus.Inventory => "资料已登记 · 待迁移验收",
+        ContentPackStatus.Development => "开发中",
+        ContentPackStatus.Complete => "已完成",
+        _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
+    };
+
+    /// <summary>
+    /// 根据包状态说明勾选的真实含义，避免把可试玩的迁移库存误解为已经完成。
+    /// </summary>
+    private static string BuildSelectionTooltip(ContentPackDefinition definition, bool isBase)
+    {
+        if (isBase)
+        {
+            return "幻想乡本体始终启用";
+        }
+
+        return definition.Status == ContentPackStatus.Inventory
+            ? "资料已登记但仍待迁移验收；勾选后加入本局现有实验内容"
+            : "勾选后加入本局内容";
     }
 }

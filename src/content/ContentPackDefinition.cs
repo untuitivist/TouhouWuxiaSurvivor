@@ -1,7 +1,7 @@
 namespace TouhouWuxiaSurvivor.Content;
 
 /// <summary>
-/// 保存一个正作内容包的身份、开发状态、可选状态和分类增量内容清单。
+/// 保存一个内容包的身份、开发状态、可选状态和分类内容清单。
 /// </summary>
 public sealed class ContentPackDefinition
 {
@@ -9,7 +9,7 @@ public sealed class ContentPackDefinition
     public int Number { get; }
     public string DisplayName { get; }
     public string EnglishName { get; }
-    public string Status { get; }
+    public ContentPackStatus Status { get; }
     public bool Selectable { get; }
     public IReadOnlyList<ContentAddition> Additions { get; }
 
@@ -21,7 +21,7 @@ public sealed class ContentPackDefinition
         int number,
         string displayName,
         string englishName,
-        string status,
+        ContentPackStatus status,
         bool selectable,
         IReadOnlyList<ContentAddition> additions)
     {

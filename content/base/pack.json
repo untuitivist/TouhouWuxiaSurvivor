@@ -1,7 +1,7 @@
 {
   "id": "base",
   "title_zh": "幻想乡本体",
-  "status": "complete",
+  "status": "development",
   "selectable": false,
   "spellcard_schema_version": 2,
   "additions": {

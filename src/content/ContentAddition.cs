@@ -9,7 +9,7 @@ public sealed class ContentAddition
     public string Name { get; }
 
     /// <summary>
-    /// 构造可供界面分组显示的增量内容条目。
+    /// 构造可供界面分组显示的内容条目。
     /// </summary>
     public ContentAddition(string category, string name)
     {

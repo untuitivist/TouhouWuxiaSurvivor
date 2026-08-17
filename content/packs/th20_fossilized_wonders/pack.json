@@ -3,7 +3,7 @@
   "number": 20,
   "title_zh": "东方锦上京",
   "title_en": "Fossilized Wonders",
-  "status": "complete",
+  "status": "inventory",
   "selectable": true,
   "spellcard_schema_version": 2,
   "additions": {

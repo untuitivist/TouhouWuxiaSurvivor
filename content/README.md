@@ -19,13 +19,13 @@ Each `packs/thXX_slug` directory is an isolated optional content package with th
 - `actors`: characters, enemies, projectiles, and actor-specific logic.
 - `world`: biomes, structures, encounters, and generation rules.
 - `assets`: package-owned textures, audio, data, and scenes.
-- `pack.json`: identity, development state, and categorized incremental content.
+- `pack.json`: identity, lifecycle status, and categorized content inventory.
 
 All integer-numbered packages from TH01 through TH20 currently have catalog entries across five
 runtime categories: biomes, structures, ordinary enemies, characters, and spell cards. Every package
 is independently selectable in the new-game list and declares three generated biomes, three labeled
 structures, three regional enemies, character identities, and representative spell-card data. These
-declarations are migration inventory; each package still requires the reference-plugin acceptance
+declarations are migration inventory; each package still requires the reference-content-pack acceptance
 contract before it can be called complete gameplay.
 
 The shared character catalog normalizes the package declarations into 132 stable identities. Every
@@ -37,6 +37,6 @@ independent timer; final combat values resolve from the selected character and c
 adaptations of pre-spell-card attack imagery, while later entries preserve their official-card boundary.
 Decimal-numbered official spin-offs are intentionally outside this main-series directory.
 
-The completed `base` manifest contains only setting-wide Gensokyo content. Locations and ecology
+The developing `base` manifest contains only setting-wide Gensokyo content. Locations and ecology
 introduced as official-game increments remain package-owned; in particular Bamboo Forest,
 Bamboo Trail, and Bamboo Spirit belong to `th08_in` and never generate in a base-only run.

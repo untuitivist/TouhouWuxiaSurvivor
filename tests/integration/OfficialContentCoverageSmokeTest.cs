@@ -10,7 +10,7 @@ using TouhouWuxiaSurvivor.World.Structures;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证 TH01 至 TH20 的地区、结构、敌人、角色和符卡均已注册，并保持运行时生成与本体隔离。
+/// 验证 TH01 至 TH20 的迁移库存仍完整注册，并保持运行时生成与本体隔离而不误报玩法完成。
 /// </summary>
 public partial class OfficialContentCoverageSmokeTest : Node
 {
@@ -82,8 +82,11 @@ public partial class OfficialContentCoverageSmokeTest : Node
     /// </summary>
     private static void VerifyPackage(ContentPackDefinition pack)
     {
-        Require(pack.Status == "complete" && pack.Selectable,
-            $"Package is not complete and selectable: {pack.Id}");
+        ContentPackStatus expectedStatus = pack.Id == ContentPackIds.EmbodimentOfScarletDevil
+            ? ContentPackStatus.Development
+            : ContentPackStatus.Inventory;
+        Require(pack.Status == expectedStatus && pack.Selectable,
+            $"Package lifecycle status or existing selection access is inaccurate: {pack.Id}");
         IReadOnlyList<OfficialWorldContentDefinition> worlds =
             OfficialWorldContentCatalog.GetByPack(pack.Id);
         Require(worlds.Count == 3, $"Package must have exactly three runtime regions: {pack.Id}");

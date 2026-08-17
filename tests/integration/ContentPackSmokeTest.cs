@@ -9,7 +9,7 @@ using TouhouWuxiaSurvivor.Gameplay.Pacing;
 namespace TouhouWuxiaSurvivor.Tests.Integration;
 
 /// <summary>
-/// 验证正作选择列表、分类增量说明以及本体和正作内容的生成隔离边界。
+/// 验证内容包选择列表、分类内容说明、真实完成度以及本体和正作内容的生成隔离边界。
 /// </summary>
 public partial class ContentPackSmokeTest : Node
 {
@@ -39,12 +39,13 @@ public partial class ContentPackSmokeTest : Node
     }
 
     /// <summary>
-    /// 确认本体清单标记完成，并准确列出五个地区、六类结构、九类敌人和博丽灵梦。
+    /// 确认本体清单保持开发中，并准确列出五个地区、六类结构、九类敌人和博丽灵梦。
     /// </summary>
     private static void VerifyBaseCatalog()
     {
         ContentPackDefinition definition = ContentPackCatalog.Base;
-        Require(definition.Status == "complete", "Base content manifest is not complete.");
+        Require(definition.Status == ContentPackStatus.Development,
+            "Base content manifest must remain in development until its full loop is accepted.");
         Require(definition.Additions.Count(item => item.Category == "地区") == 5,
             "Base manifest must list five biomes.");
         Require(definition.Additions.Count(item => item.Category == "结构") == 6,
@@ -56,7 +57,7 @@ public partial class ContentPackSmokeTest : Node
     }
 
     /// <summary>
-    /// 实例化主菜单并确认旧作过滤、默认折叠、独立展开和全部二十个正作的增量详情。
+    /// 实例化主菜单并确认旧作过滤、默认折叠、独立展开和全部二十个正作的内容详情。
     /// </summary>
     private void VerifySelectionMenu()
     {
@@ -74,13 +75,24 @@ public partial class ContentPackSmokeTest : Node
         Require(baseRow.HeaderText.Contains(ContentPackCatalog.Base.DisplayName,
                 StringComparison.Ordinal) && !baseRow.DetailsVisible,
             "Base row did not default to a compact name-only state.");
+        Require(baseRow.DetailsText.Contains("状态：开发中 · 始终启用", StringComparison.Ordinal),
+            "Base row falsely reports completed content or omits its mandatory state.");
         foreach (ContentPackDefinition definition in ContentPackCatalog.All)
         {
             ContentPackSelectionRow row = panel.GetPackRow(definition.Id);
+            ContentPackStatus expectedStatus = definition.Id ==
+                ContentPackIds.EmbodimentOfScarletDevil
+                    ? ContentPackStatus.Development
+                    : ContentPackStatus.Inventory;
+            string expectedStatusText = expectedStatus == ContentPackStatus.Development
+                ? "状态：开发中"
+                : "状态：资料已登记 · 待迁移验收";
+            Require(definition.Status == expectedStatus,
+                $"Package manifest reports an inaccurate lifecycle status: {definition.Id}");
             Require(!row.IsExpanded && !row.DetailsVisible &&
                 !row.HeaderText.Contains("已完成", StringComparison.Ordinal),
                 $"Package did not default to a name-only collapsed row: {definition.Id}");
-            Require(row.DetailsText.Contains("状态：已完成", StringComparison.Ordinal) &&
+            Require(row.DetailsText.Contains(expectedStatusText, StringComparison.Ordinal) &&
                 row.DetailsText.Contains("地区：", StringComparison.Ordinal) &&
                 row.DetailsText.Contains("结构：", StringComparison.Ordinal) &&
                 row.DetailsText.Contains("敌人：", StringComparison.Ordinal) &&
@@ -115,7 +127,7 @@ public partial class ContentPackSmokeTest : Node
         Require(inRow.DetailsText.Contains("地区：迷途竹林", StringComparison.Ordinal) &&
             inRow.DetailsText.Contains("结构：竹林古道", StringComparison.Ordinal) &&
             inRow.DetailsText.Contains("敌人：竹叶妖", StringComparison.Ordinal),
-            "TH08 boundary is missing from its completed package row.");
+            "TH08 boundary is missing from its migration-inventory row.");
 
         ContentPackDefinition firstOldDefinition = ContentPackCatalog.All.Single(
             definition => definition.Number == 1);

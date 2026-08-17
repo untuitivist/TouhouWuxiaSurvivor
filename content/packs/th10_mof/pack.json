@@ -3,7 +3,7 @@
   "number": 10,
   "title_zh": "东方风神录",
   "title_en": "Mountain of Faith",
-  "status": "complete",
+  "status": "inventory",
   "selectable": true,
   "spellcard_schema_version": 2,
   "additions": {

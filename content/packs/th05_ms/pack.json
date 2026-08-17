@@ -3,7 +3,7 @@
   "number": 5,
   "title_zh": "东方怪绮谈",
   "title_en": "Mystic Square",
-  "status": "complete",
+  "status": "inventory",
   "selectable": true,
   "spellcard_schema_version": 2,
   "additions": {
