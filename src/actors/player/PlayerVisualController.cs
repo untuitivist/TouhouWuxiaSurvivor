@@ -17,11 +17,13 @@ public partial class PlayerVisualController : Node2D
     private double _motionTime;
     private int _currentFrame = -1;
     private CharacterDefinition _character = CharacterCatalog.Default;
+    private string _visualSourcePackId = CharacterCatalog.Default.SourcePackId;
     private bool _portraitMode;
 
     public bool UsesSprite { get; private set; }
     public bool IsArmedVisible => _armedEffect?.Visible ?? false;
     public string DisplayName => _character.DisplayName;
+    public string VisualSourcePackId => _visualSourcePackId;
 
     /// <summary>
     /// 获取视觉节点并应用菜单选定角色；缺少内部素材时自动保留完整中文名。
@@ -52,9 +54,21 @@ public partial class PlayerVisualController : Node2D
     /// <summary>
     /// 注入本局选择的共享角色定义，并立即切换原作映射或中文回退，不复制角色身份字段。
     /// </summary>
-    public void ConfigureCharacter(CharacterDefinition character)
+    public void ConfigureCharacter(
+        CharacterDefinition character,
+        string visualSourcePackId)
     {
         _character = character ?? throw new ArgumentNullException(nameof(character));
+        ArgumentException.ThrowIfNullOrWhiteSpace(visualSourcePackId);
+        if (!character.AvailableSourcePackIds.Contains(
+                visualSourcePackId, StringComparer.Ordinal))
+        {
+            throw new ArgumentException(
+                "Player visual source must belong to the selected character.",
+                nameof(visualSourcePackId));
+        }
+
+        _visualSourcePackId = visualSourcePackId;
         if (_sprite is not null && _fallbackName is not null)
         {
             ApplyCharacterVisual();
@@ -115,7 +129,7 @@ public partial class PlayerVisualController : Node2D
     private bool TryLoadCharacterTexture()
     {
         if (!VisualCatalog.TryGet(
-                _character.SourcePackId,
+                _visualSourcePackId,
                 InternalVisualCategory.Character,
                 _character.DisplayName,
                 out var definition) ||

@@ -31,6 +31,7 @@ public partial class EcsCombatWorld : Node2D
     private PlayerHealth? _health;
     private PlayerBuffController? _buffs;
     private RunModifierState? _modifiers;
+    private int _playerVisualSourceId;
 
     /// <summary>敌人击破事件，参数为位置和定义。</summary>
     public event Action<Vector2, EnemyDefinition>? EnemyDefeated;
@@ -111,12 +112,14 @@ public partial class EcsCombatWorld : Node2D
 
     /// <summary>绑定玩家和局内状态，使批量系统不依赖场景查找。</summary>
     public void Configure(PlayerController player, PlayerHealth health, PlayerBuffController buffs,
-        RunModifierState modifiers)
+        RunModifierState modifiers, string playerVisualSourcePackId)
     {
         _player = player;
         _health = health;
         _buffs = buffs;
         _modifiers = modifiers;
+        _playerVisualSourceId = ProjectileVisualSourceBindingCatalog.GetBindingId(
+            playerVisualSourcePackId);
         _renderer.Configure();
         TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
     }
@@ -146,11 +149,12 @@ public partial class EcsCombatWorld : Node2D
         Vector2 direction,
         float speed,
         int damage,
-        int maximumHits = 1, int secondaryHitDamage = -1, int visualVariant = 0)
+        int maximumHits = 1, int secondaryHitDamage = -1, int visualVariant = 0,
+        int visualSourceId = 0)
     {
-        if (_projectiles.TryAdd(position, direction, speed, damage,
-                ProjectileFaction.Player, ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
-                4.0f, visualVariant, out _, maximumHits, secondaryHitDamage))
+        int source = visualSourceId > 0 ? visualSourceId : _playerVisualSourceId;
+        if (EcsProjectileSpawner.TrySpawnPlayer(_projectiles, position, direction,
+                speed, damage, maximumHits, secondaryHitDamage, visualVariant, source))
         {
             TotalProjectilesSpawned++;
         }
@@ -165,23 +169,13 @@ public partial class EcsCombatWorld : Node2D
         float speed,
         int damage,
         int visualVariant = 0,
-        int visualStyleId = 0)
+        int visualStyleId = 0,
+        int visualSourceId = 0)
     {
-        if (_projectiles.CountFaction(ProjectileFaction.Enemy) >=
-                ProjectilePool.MaximumEnemyActive ||
-            _projectiles.Count >= ProjectilePool.MaximumActive)
-        {
-            return false;
-        }
-
-        bool spawned = _projectiles.TryAdd(position, direction, speed, damage,
-            ProjectileFaction.Enemy, 7.0f, 3.5f, visualVariant, out _,
-            visualStyleId: visualStyleId);
-        if (spawned)
-        {
-            TotalEnemyProjectilesSpawned++;
-        }
-
+        bool spawned = EcsProjectileSpawner.TrySpawnEnemy(_projectiles,
+            position, direction, speed, damage, visualVariant,
+            visualStyleId, visualSourceId);
+        if (spawned) TotalEnemyProjectilesSpawned++;
         return spawned;
     }
 
@@ -303,7 +297,8 @@ public partial class EcsCombatWorld : Node2D
             amount => _health.ApplyDamage(amount));
         _enemyProjectiles.Step(_enemies, _player.GlobalPosition, (float)delta,
             request => SpawnEnemyProjectile(request.Position, request.Direction,
-                request.Speed, request.Damage, request.VisualVariant, request.VisualStyleId));
+                request.Speed, request.Damage, request.VisualVariant,
+                request.VisualStyleId, request.VisualSourceId));
         _projectileMovement.Step(_projectiles, (float)delta);
         ResolveProjectileHits();
         _pickupSystem.Step(_pickups, _player.GlobalPosition, _buffs, (float)delta, () => PickupCollected?.Invoke());

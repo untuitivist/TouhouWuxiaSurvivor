@@ -49,7 +49,7 @@ public partial class BossEncounterDirector : Node
         _encounterActive = false;
         IsFirstEncounterArmed = false;
         _random.Randomize();
-        world.ConfigureBossAttacks(new SpellCardBossAttackResolver());
+        world.ConfigureBossAttacks(new SpellCardBossAttackResolver(context));
         world.BossDefeated += OnBossDefeated;
     }
 
@@ -114,7 +114,8 @@ public partial class BossEncounterDirector : Node
             ? Math.Clamp(candidateIndex, 0, candidates.Count - 1)
             : _random.RandiRange(0, candidates.Count - 1);
         CharacterDefinition character = candidates[index];
-        _world.SpawnBoss(position, BossDefinitionFactory.Create(character));
+        string sourcePackId = CharacterContentSourceResolver.Resolve(character, _context);
+        _world.SpawnBoss(position, BossDefinitionFactory.Create(character, sourcePackId));
         LastSpawnedCharacter = character;
         SpawnedCount++;
         _activeEncounterStartedSeconds = Math.Max(0.0, elapsedSeconds);

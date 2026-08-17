@@ -13,10 +13,7 @@ namespace TouhouWuxiaSurvivor.Ecs.Combat;
 public sealed class EcsCombatItemRenderer
 {
     private const string BaseSourceId = "base";
-    private const string DefaultBulletName = "灵符「梦想封印」";
     private Texture2D? _itemAtlas;
-    private Texture2D? _bulletAtlas;
-    private InternalVisualDefinition? _bulletDefinition;
     private readonly SpellCardProjectileVisualResolver _spellVisuals = new();
     private Font? _font;
 
@@ -32,16 +29,6 @@ public sealed class EcsCombatItemRenderer
             InternalVisualCategory.Pickup,
             PickupCatalog.Get(PickupKind.RapidFire).DisplayName,
             InternalVisualKind.ItemAtlas);
-        _bulletAtlas = null;
-        _bulletDefinition = null;
-        if (visuals.TryGet(BaseSourceId, InternalVisualCategory.SpellCard,
-                DefaultBulletName, out InternalVisualDefinition definition)
-            && definition.Kind == InternalVisualKind.BulletAtlas
-            && visuals.TryGetTexture(definition, out Texture2D bulletAtlas))
-        {
-            _bulletDefinition = definition;
-            _bulletAtlas = bulletAtlas;
-        }
         _spellVisuals.Configure(visuals);
         _font = ThemeDB.FallbackFont;
     }
@@ -118,24 +105,27 @@ public sealed class EcsCombatItemRenderer
                 position, projectile.Velocity);
             CountProjectile(projectile);
         }
-        else if (_bulletAtlas is not null && _bulletDefinition is not null)
+        else
         {
             SpellBulletStyleKind style = ProjectileBulletStylePolicy.Resolve(
                 projectile.Faction, projectile.VisualVariant);
-            SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
-                _bulletDefinition, style, projectile.VisualVariant, _bulletAtlas);
-            ProjectileVisualDrawHelper.Draw(canvas, _bulletAtlas, selection,
-                position, projectile.Velocity);
-            CountProjectile(projectile);
-        }
-        else
-        {
-            var destination = new Rect2(
-                (position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
-            Color fallback = projectile.Faction == ProjectileFaction.Player
-                ? new Color("f4df7d")
-                : new Color("ef7898");
-            canvas.DrawRect(destination, fallback);
+            if (_spellVisuals.TryResolveSource(projectile.VisualSourceId, style,
+                    projectile.VisualVariant, out Texture2D sourceTexture,
+                    out SpellBulletVisualSelection sourceSelection, out _))
+            {
+                ProjectileVisualDrawHelper.Draw(canvas, sourceTexture, sourceSelection,
+                    position, projectile.Velocity);
+                CountProjectile(projectile);
+            }
+            else
+            {
+                var destination = new Rect2(
+                    (position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
+                Color fallback = projectile.Faction == ProjectileFaction.Player
+                    ? new Color("f4df7d")
+                    : new Color("ef7898");
+                canvas.DrawRect(destination, fallback);
+            }
         }
     }
 

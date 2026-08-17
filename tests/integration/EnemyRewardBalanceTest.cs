@@ -53,7 +53,8 @@ public partial class EnemyRewardBalanceTest : Node
     {
         CharacterDefinition character = CharacterCatalog.All.First(character =>
             character.SourcePackId != ContentPackCatalog.Base.Id);
-        EnemyDefinition boss = BossDefinitionFactory.Create(character);
+        EnemyDefinition boss = BossDefinitionFactory.Create(
+            character, character.SourcePackId);
         Require(boss.MaxHealth == BossCombatBalancePolicy.ScaleHealth(
                 character.BossProfile.MaxHealth) &&
             boss.BaseMaxHealth == Mathf.CeilToInt(character.BossProfile.MaxHealth) &&

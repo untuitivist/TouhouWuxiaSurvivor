@@ -114,7 +114,7 @@ public partial class EnemyAiBossTest : Node
         var renderer = new EcsCombatRenderer();
         renderer.Configure();
         bool visualFound = candidates.Any(character => renderer.TryResolveBossVisual(
-            BossDefinitionFactory.Create(character), out _));
+            BossDefinitionFactory.Create(character, character.SourcePackId), out _));
         Require(visualFound, "No registered boss character resolved to Portrait or ActorStrip visuals.");
         var world = new EcsCombatWorld();
         var director = new BossEncounterDirector();

@@ -13,6 +13,7 @@ public static class BossSpellProjectileEmitter
         ref EnemyComponent enemy,
         Vector2 playerPosition,
         BossAttackPattern attack,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         (float countScale, float intervalScale) = enemy.BossPhase switch
@@ -26,7 +27,8 @@ public static class BossSpellProjectileEmitter
             1.0,
             EnemyProjectileSystem.MaximumShotsPerVolley);
         UpdatePresentation(ref enemy, attack.DisplayName);
-        EmitPattern(ref enemy, playerPosition, attack, count, emitProjectile);
+        EmitPattern(ref enemy, playerPosition, attack, count,
+            visualSourceId, emitProjectile);
         enemy.PatternAngle += 0.13f * enemy.PatternDirection;
         if (enemy.BossPhase == BossBulletPhase.AlternatingSpiral)
         {
@@ -41,6 +43,7 @@ public static class BossSpellProjectileEmitter
         Vector2 playerPosition,
         BossAttackPattern attack,
         int count,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         Vector2 aimed = enemy.Position.DirectionTo(playerPosition);
@@ -48,22 +51,23 @@ public static class BossSpellProjectileEmitter
         {
             case BossProjectilePatternKind.Orbit:
                 EmitOrbit(enemy.Position, playerPosition, count, enemy.PatternAngle,
-                    attack, emitProjectile);
+                    attack, visualSourceId, emitProjectile);
                 break;
             case BossProjectilePatternKind.Ring:
-                EmitRing(enemy.Position, count, enemy.PatternAngle, attack, emitProjectile);
+                EmitRing(enemy.Position, count, enemy.PatternAngle,
+                    attack, visualSourceId, emitProjectile);
                 break;
             case BossProjectilePatternKind.Backstab:
                 EmitCrossfire(enemy.Position, playerPosition, aimed, count,
-                    attack, emitProjectile);
+                    attack, visualSourceId, emitProjectile);
                 break;
             case BossProjectilePatternKind.Line:
                 EmitFan(enemy.Position, aimed, count, attack.SpreadDegrees * 0.18f,
-                    8, attack, emitProjectile);
+                    8, attack, visualSourceId, emitProjectile);
                 break;
             default:
                 EmitFan(enemy.Position, aimed, count, attack.SpreadDegrees,
-                    12, attack, emitProjectile);
+                    12, attack, visualSourceId, emitProjectile);
                 break;
         }
     }
@@ -84,6 +88,7 @@ public static class BossSpellProjectileEmitter
         float spreadDegrees,
         int variant,
         BossAttackPattern attack,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         float center = aimed.Angle();
@@ -92,7 +97,8 @@ public static class BossSpellProjectileEmitter
         for (int shot = 0; shot < count; shot++)
         {
             float angle = count <= 1 ? center : start + spread * shot;
-            Emit(position, Vector2.FromAngle(angle), shot + variant, attack, emitProjectile);
+            Emit(position, Vector2.FromAngle(angle), shot + variant,
+                attack, visualSourceId, emitProjectile);
         }
     }
 
@@ -102,12 +108,13 @@ public static class BossSpellProjectileEmitter
         int count,
         float phase,
         BossAttackPattern attack,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         for (int shot = 0; shot < count; shot++)
         {
             Emit(position, Vector2.FromAngle(phase + Mathf.Tau * shot / count),
-                shot + 4, attack, emitProjectile);
+                shot + 4, attack, visualSourceId, emitProjectile);
         }
     }
 
@@ -118,13 +125,15 @@ public static class BossSpellProjectileEmitter
         int count,
         float phase,
         BossAttackPattern attack,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         for (int shot = 0; shot < count; shot++)
         {
             Vector2 spawn = center + Vector2.FromAngle(
                 phase + Mathf.Tau * shot / count) * attack.SpawnDistance;
-            Emit(spawn, spawn.DirectionTo(playerPosition), shot, attack, emitProjectile);
+            Emit(spawn, spawn.DirectionTo(playerPosition), shot,
+                attack, visualSourceId, emitProjectile);
         }
     }
 
@@ -135,6 +144,7 @@ public static class BossSpellProjectileEmitter
         Vector2 aimed,
         int count,
         BossAttackPattern attack,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         Vector2 side = aimed.IsZeroApprox() ? Vector2.Up : aimed.Orthogonal();
@@ -142,7 +152,8 @@ public static class BossSpellProjectileEmitter
         {
             float offset = ((shot & 1) == 0 ? -1.0f : 1.0f) * attack.SpawnDistance;
             Vector2 spawn = center + side * offset;
-            Emit(spawn, spawn.DirectionTo(playerPosition), shot + 16, attack, emitProjectile);
+            Emit(spawn, spawn.DirectionTo(playerPosition), shot + 16,
+                attack, visualSourceId, emitProjectile);
         }
     }
 
@@ -152,6 +163,7 @@ public static class BossSpellProjectileEmitter
         Vector2 direction,
         int variant,
         BossAttackPattern attack,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile) =>
         emitProjectile(new EnemyProjectileSpawnRequest(
             position,
@@ -159,5 +171,6 @@ public static class BossSpellProjectileEmitter
             attack.ProjectileSpeed,
             attack.Damage,
             variant,
-            attack.VisualStyleId));
+            attack.VisualStyleId,
+            visualSourceId));
 }

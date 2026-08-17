@@ -130,7 +130,10 @@ public partial class WorldDemo : Node2D
         _runContext = new RunContentContext(
             _content, CharacterSelectionService.Current, WorldSeed);
         CharacterDefinition character = _runContext.CharacterSelection.Current;
-        _player.GetNode<PlayerVisualController>("Visual").ConfigureCharacter(character);
+        string playerVisualSourcePackId = CharacterContentSourceResolver.Resolve(
+            character, _runContext);
+        _player.GetNode<PlayerVisualController>("Visual").ConfigureCharacter(
+            character, playerVisualSourcePackId);
         _player.MoveSpeed *= character.PlayableProfile.MoveSpeedMultiplier;
         _health.ConfigureCharacterBase((int)MathF.Round(character.PlayableProfile.MaxHealth));
         _autoShooter.CharacterAttackMultiplier = character.PlayableProfile.AttackMultiplier;
@@ -169,7 +172,8 @@ public partial class WorldDemo : Node2D
         _progression.Configure(_levelUp, _map, _pauseMenu, _stats, _content);
         _player.ConfigureRunModifiers(_progression.Modifiers);
         _pickupSpawner.Configure(pickups);
-        _ecsCombatWorld.Configure(_player, _health, _buffs, _progression.Modifiers);
+        _ecsCombatWorld.Configure(_player, _health, _buffs,
+            _progression.Modifiers, playerVisualSourcePackId);
         _originRebase = new WorldOriginRebaseCoordinator(
             _streamer, _player, _combatEntities, _ecsCombatWorld);
         _bossEncounters = new BossEncounterDirector { Name = "BossEncounterDirector" };

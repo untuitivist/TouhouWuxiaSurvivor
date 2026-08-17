@@ -61,7 +61,8 @@ public partial class BossSpellCardAttackTest : Node
     private static void VerifyBossBalanceAndFallback()
     {
         CharacterDefinition rumia = CharacterCatalog.GetRequiredByDisplayName("露米娅");
-        Actors.Enemies.EnemyDefinition boss = BossDefinitionFactory.Create(rumia);
+        Actors.Enemies.EnemyDefinition boss = BossDefinitionFactory.Create(
+            rumia, ScarletPackId);
         Require(boss.MaxHealth == BossCombatBalancePolicy.ScaleHealth(
                 rumia.BossProfile.MaxHealth) &&
             boss.MaxHealth == (int)Math.Ceiling(rumia.BossProfile.MaxHealth * 6.0) &&
@@ -69,7 +70,7 @@ public partial class BossSpellCardAttackTest : Node
             boss.ContactDamage == (int)Math.Ceiling(rumia.BossProfile.ContactDamage),
             "Boss health or unchanged contact-damage contract regressed.");
 
-        var resolver = new SpellCardBossAttackResolver();
+        var resolver = new SpellCardBossAttackResolver(CreateScarletContext());
         CharacterDefinition unsupported = CharacterCatalog.All.First(character =>
             character.SourcePackId == "th07_pcb");
         Require(!resolver.TryResolve(unsupported.CharacterId,
@@ -82,9 +83,11 @@ public partial class BossSpellCardAttackTest : Node
     {
         CharacterDefinition rumia = CharacterCatalog.GetRequiredByDisplayName("露米娅");
         var pool = new EnemyPool();
-        pool.Add(new Vector2(96.0f, 0.0f), BossDefinitionFactory.Create(rumia));
+        pool.Add(new Vector2(96.0f, 0.0f), BossDefinitionFactory.Create(
+            rumia, ScarletPackId));
         var system = new EnemyProjectileSystem();
-        system.ConfigureBossAttacks(new SpellCardBossAttackResolver());
+        system.ConfigureBossAttacks(new SpellCardBossAttackResolver(
+            CreateScarletContext()));
 
         (int high, int highStyle) = FireAtRatio(pool, system, 0.9f);
         (int middle, int middleStyle) = FireAtRatio(pool, system, 0.5f);
@@ -116,6 +119,11 @@ public partial class BossSpellCardAttackTest : Node
             "One boss volley mixed unrelated spell-card visual bindings.");
         return (requests.Count, requests[0].VisualStyleId);
     }
+
+    /// <summary>建立本体加红魔乡冻结快照，使 Boss 符卡目录不能读取未启用作品。</summary>
+    private static RunContentContext CreateScarletContext() => new(
+        new ContentPackSelection([ScarletPackId]),
+        new CharacterSelection(CharacterCatalog.Default));
 
     /// <summary>逐卡解析本体和红魔乡图集区域，并确认视觉编号能完整写入投射物池。</summary>
     private static void VerifyOriginalBulletVisuals()

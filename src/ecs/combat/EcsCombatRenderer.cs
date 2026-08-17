@@ -29,7 +29,7 @@ public sealed class EcsCombatRenderer
     public int LastCulledEntityCount { get; private set; }
 
     /// <summary>
-    /// 从共享内部清单加载东方道具、红魔乡弹幕图集和默认字体，不直接持有资源路径。
+    /// 从共享内部清单建立道具和内容包弹幕索引并加载默认字体，不直接持有资源路径。
     /// </summary>
     public void Configure()
     {

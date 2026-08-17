@@ -14,9 +14,9 @@ public partial class ProjectileEcsRuntime : Node2D
     private readonly ProjectileMovementSystem _movement = new();
     private readonly ProjectileCollisionSystem _collision = new();
     private readonly InternalVisualCatalog _visuals = new();
+    private readonly SpellCardProjectileVisualResolver _projectileVisuals = new();
     private Node2D? _enemyContainer;
-    private Texture2D? _texture;
-    private InternalVisualDefinition? _definition;
+    private int _visualSourceId;
 
     /// <summary>获取当前活跃的 ECS 投射物数量，供 HUD 和性能测试读取。</summary>
     public int ActiveCount => _pool.Count;
@@ -25,19 +25,14 @@ public partial class ProjectileEcsRuntime : Node2D
     public int TotalSpawned { get; private set; }
 
     /// <summary>
-    /// 绑定敌人容器并按本体常驻奥义身份加载弹幕图集；素材缺失时仍能绘制纯色占位点。
+    /// 绑定敌人容器和玩家内容包来源；素材缺失时绘制纯色点而不借用其他内容包。
     /// </summary>
-    public void Configure(Node2D enemyContainer)
+    public void Configure(Node2D enemyContainer, string visualSourcePackId)
     {
         _enemyContainer = enemyContainer;
-        if (_visuals.TryGet("base", InternalVisualCategory.SpellCard,
-                "灵符「梦想封印」", out InternalVisualDefinition definition) &&
-            definition.Kind == InternalVisualKind.BulletAtlas &&
-            _visuals.TryGetTexture(definition, out Texture2D texture))
-        {
-            _definition = definition;
-            _texture = texture;
-        }
+        _visualSourceId = ProjectileVisualSourceBindingCatalog.GetBindingId(
+            visualSourcePackId);
+        _projectileVisuals.Configure(_visuals);
         TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
         QueueRedraw();
     }
@@ -55,7 +50,7 @@ public partial class ProjectileEcsRuntime : Node2D
         if (_pool.TryAdd(position, direction, speed, damage,
                 ProjectileFaction.Player, ProjectileKinematicsPolicy.PlayerLifetimeSeconds,
                 4.0f, visualVariant, out _, maximumHits,
-                secondaryHitDamage))
+                secondaryHitDamage, visualSourceId: _visualSourceId))
         {
             TotalSpawned++;
         }
@@ -93,13 +88,13 @@ public partial class ProjectileEcsRuntime : Node2D
     {
         _pool.ForEach(projectile =>
         {
-            if (_texture is not null && _definition is not null)
+            SpellBulletStyleKind style = ProjectileBulletStylePolicy.Resolve(
+                projectile.Faction, projectile.VisualVariant);
+            if (_projectileVisuals.TryResolveSource(projectile.VisualSourceId, style,
+                    projectile.VisualVariant, out Texture2D texture,
+                    out SpellBulletVisualSelection selection, out _))
             {
-                SpellBulletStyleKind style = ProjectileBulletStylePolicy.Resolve(
-                    projectile.Faction, projectile.VisualVariant);
-                SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
-                    _definition, style, projectile.VisualVariant, _texture);
-                ProjectileVisualDrawHelper.Draw(this, _texture, selection,
+                ProjectileVisualDrawHelper.Draw(this, texture, selection,
                     projectile.Position, projectile.Velocity);
             }
             else

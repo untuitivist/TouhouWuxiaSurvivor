@@ -21,10 +21,14 @@ public sealed class SpellCardBossAttackResolver : IBossAttackResolver
     private readonly IReadOnlyDictionary<string, BossAttackPattern[]> _attacks;
 
     /// <summary>在局开始时一次性解析全部受支持角色，避免每波弹幕重复扫描内容目录和换算倍率。</summary>
-    public SpellCardBossAttackResolver()
+    public SpellCardBossAttackResolver(RunContentContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
+        HashSet<string> activeSources = context.ActiveContentPacks
+            .Select(pack => pack.Id).ToHashSet(StringComparer.Ordinal);
         _attacks = SpellCardCatalog.All
-            .Where(card => SupportedSources.Contains(card.SourcePackId))
+            .Where(card => SupportedSources.Contains(card.SourcePackId) &&
+                activeSources.Contains(card.SourcePackId))
             .GroupBy(card => card.OwnerCharacterId, StringComparer.Ordinal)
             .ToDictionary(
                 group => group.Key,

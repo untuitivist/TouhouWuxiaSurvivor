@@ -11,9 +11,18 @@ public static class BossDefinitionFactory
     /// <summary>
     /// 为指定角色创建不参与普通权重的 Boss 定义；角色身份、素材来源和接触伤害完整保留。
     /// </summary>
-    public static EnemyDefinition Create(CharacterDefinition character)
+    public static EnemyDefinition Create(
+        CharacterDefinition character,
+        string activeSourcePackId)
     {
         ArgumentNullException.ThrowIfNull(character);
+        ArgumentException.ThrowIfNullOrWhiteSpace(activeSourcePackId);
+        if (!character.AvailableSourcePackIds.Contains(
+                activeSourcePackId, StringComparer.Ordinal))
+        {
+            throw new ArgumentException(
+                "Boss content source must belong to the character.", nameof(activeSourcePackId));
+        }
         BossCharacterProfile profile = character.BossProfile;
         int health = BossCombatBalancePolicy.ScaleHealth(profile.MaxHealth);
         int contactDamage = SaturatingPositiveInt(profile.ContactDamage);
@@ -27,7 +36,7 @@ public static class BossDefinitionFactory
             0.0f,
             1.0f,
             [],
-            requiredContentPack: character.SourcePackId,
+            requiredContentPack: activeSourcePackId,
             contactDamage: contactDamage,
             aiProfile: EnemyAiProfile.BossPhased,
             projectileProfile: EnemyProjectileProfile.Boss,

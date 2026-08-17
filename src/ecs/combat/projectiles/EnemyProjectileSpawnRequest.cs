@@ -11,4 +11,5 @@ public readonly record struct EnemyProjectileSpawnRequest(
     float Speed,
     int Damage,
     int VisualVariant,
-    int VisualStyleId = 0);
+    int VisualStyleId = 0,
+    int VisualSourceId = 0);

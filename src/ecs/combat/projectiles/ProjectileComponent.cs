@@ -23,7 +23,8 @@ public struct ProjectileComponent
         int maximumHits = 1,
         int secondaryHitDamage = -1,
         float hitDamageDecay = ProjectileDamageBudget.SecondaryHitMultiplier,
-        int visualStyleId = 0)
+        int visualStyleId = 0,
+        int visualSourceId = 0)
     {
         Entity = entity;
         _position = new InterpolatedPosition2D(position);
@@ -34,6 +35,7 @@ public struct ProjectileComponent
         Faction = faction;
         VisualVariant = Math.Max(0, visualVariant);
         VisualStyleId = Math.Max(0, visualStyleId);
+        VisualSourceId = Math.Max(0, visualSourceId);
         RemainingHits = Math.Max(1, maximumHits);
         NextHitDamage = RemainingHits > 1
             ? secondaryHitDamage >= 0
@@ -87,6 +89,9 @@ public struct ProjectileComponent
 
     /// <summary>获取符卡视觉绑定编号；零表示使用双方阵营的通用弹幕图集。</summary>
     public int VisualStyleId;
+
+    /// <summary>获取通用弹丸所属内容包的紧凑视觉编号；精确符卡仍由 VisualStyleId 决定。</summary>
+    public int VisualSourceId;
 
     /// <summary>获取弹丸在回收前仍可造成伤害的次数，普通弹为一，贯穿弹大于一。</summary>
     public int RemainingHits;

@@ -54,7 +54,8 @@ public sealed class ProjectilePool
         int maximumHits = 1,
         int secondaryHitDamage = -1,
         float hitDamageDecay = ProjectileDamageBudget.SecondaryHitMultiplier,
-        int visualStyleId = 0)
+        int visualStyleId = 0,
+        int visualSourceId = 0)
     {
         if (_items.Count >= MaximumActive)
         {
@@ -76,7 +77,8 @@ public sealed class ProjectilePool
             maximumHits,
             secondaryHitDamage,
             hitDamageDecay,
-            visualStyleId));
+            visualStyleId,
+            visualSourceId));
         ChangeFactionCount(faction, 1);
         return true;
     }

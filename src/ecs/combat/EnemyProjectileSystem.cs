@@ -44,9 +44,12 @@ public sealed class EnemyProjectileSystem
 
             if (enemy.FireCooldown <= 0.0f)
             {
+                int visualSourceId = ProjectileVisualSourceBindingCatalog.GetBindingId(
+                    enemy.Definition.RequiredContentPack);
                 enemy.FireCooldown = enemy.Definition.IsBoss
-                    ? EmitBossPattern(ref enemy, playerPosition, emitProjectile)
-                    : EmitOrdinaryVolley(enemy, playerPosition, emitProjectile);
+                    ? EmitBossPattern(ref enemy, playerPosition, visualSourceId, emitProjectile)
+                    : EmitOrdinaryVolley(
+                        enemy, playerPosition, visualSourceId, emitProjectile);
             }
 
             enemies.Set(index, enemy);
@@ -73,6 +76,7 @@ public sealed class EnemyProjectileSystem
     private static float EmitOrdinaryVolley(
         EnemyComponent enemy,
         Vector2 playerPosition,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         EnemyProjectileProfile profile = enemy.Definition.ProjectileProfile;
@@ -80,7 +84,7 @@ public sealed class EnemyProjectileSystem
         float spread = Math.Max(0.0f, profile.SpreadDegrees);
         Vector2 aimed = enemy.Position.DirectionTo(playerPosition);
         EmitFan(enemy.Position, aimed, count, spread,
-            profile.ProjectileSpeed, profile.Damage, 0, 0,
+            profile.ProjectileSpeed, profile.Damage, 0, 0, visualSourceId,
             emitProjectile);
         return profile.FireInterval;
     }
@@ -91,13 +95,14 @@ public sealed class EnemyProjectileSystem
     private float EmitBossPattern(
         ref EnemyComponent enemy,
         Vector2 playerPosition,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         if (_bossAttacks is not null && enemy.Definition.CharacterId is string characterId &&
             _bossAttacks.TryResolve(characterId, enemy.BossPhase, out BossAttackPattern attack))
         {
             return BossSpellProjectileEmitter.Emit(
-                ref enemy, playerPosition, attack, emitProjectile);
+                ref enemy, playerPosition, attack, visualSourceId, emitProjectile);
         }
 
         EnemyProjectileProfile profile = enemy.Definition.ProjectileProfile;
@@ -108,19 +113,19 @@ public sealed class EnemyProjectileSystem
         {
             case BossBulletPhase.Ring:
                 EmitRing(enemy.Position, CapVolley(14L), enemy.PatternAngle,
-                    speed * 0.88f, damage, 1, 0, emitProjectile);
+                    speed * 0.88f, damage, 1, 0, visualSourceId, emitProjectile);
                 enemy.PatternAngle += 0.11f;
                 interval = 0.92f;
                 break;
             case BossBulletPhase.AlternatingSpiral:
                 EmitSpiral(ref enemy, CapVolley(2L), speed * 1.08f,
-                    damage, emitProjectile);
+                    damage, visualSourceId, emitProjectile);
                 interval = 0.20f;
                 break;
             default:
                 EmitFan(enemy.Position, enemy.Position.DirectionTo(playerPosition),
                     CapVolley(5L),
-                    12.0f, speed, damage, 2, 0, emitProjectile);
+                    12.0f, speed, damage, 2, 0, visualSourceId, emitProjectile);
                 interval = 1.12f;
                 break;
         }
@@ -138,6 +143,7 @@ public sealed class EnemyProjectileSystem
         int damage,
         int visualVariant,
         int visualStyle,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         float centerAngle = centerDirection.Angle();
@@ -148,7 +154,7 @@ public sealed class EnemyProjectileSystem
             float angle = count <= 1 ? centerAngle : start + spread * shot;
             emitProjectile(new EnemyProjectileSpawnRequest(
                 position, Vector2.FromAngle(angle), speed, damage,
-                visualVariant, visualStyle));
+                visualVariant, visualStyle, visualSourceId));
         }
     }
 
@@ -161,6 +167,7 @@ public sealed class EnemyProjectileSystem
         int damage,
         int visualVariant,
         int visualStyle,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         for (int shot = 0; shot < count; shot++)
@@ -168,7 +175,7 @@ public sealed class EnemyProjectileSystem
             float angle = phase + Mathf.Tau * shot / count;
             emitProjectile(new EnemyProjectileSpawnRequest(
                 position, Vector2.FromAngle(angle), speed, damage,
-                visualVariant, visualStyle));
+                visualVariant, visualStyle, visualSourceId));
         }
     }
 
@@ -178,6 +185,7 @@ public sealed class EnemyProjectileSystem
         int count,
         float speed,
         int damage,
+        int visualSourceId,
         Func<EnemyProjectileSpawnRequest, bool> emitProjectile)
     {
         float spacing = Mathf.Tau / Math.Max(2, count);
@@ -185,7 +193,8 @@ public sealed class EnemyProjectileSystem
         {
             float angle = enemy.PatternAngle + spacing * shot * enemy.PatternDirection;
             emitProjectile(new EnemyProjectileSpawnRequest(
-                enemy.Position, Vector2.FromAngle(angle), speed, damage, 3));
+                enemy.Position, Vector2.FromAngle(angle), speed, damage, 3,
+                VisualSourceId: visualSourceId));
         }
 
         enemy.PatternAngle += 0.21f;

@@ -5,6 +5,7 @@ using TouhouWuxiaSurvivor.Content;
 using TouhouWuxiaSurvivor.Content.Characters;
 using TouhouWuxiaSurvivor.Demo;
 using TouhouWuxiaSurvivor.Ecs.Combat;
+using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
 using TouhouWuxiaSurvivor.Gameplay.Spawning;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Runtime;
@@ -140,14 +141,17 @@ public partial class CharacterWorldVisualAcceptanceTest : Node
         for (int index = 0; index < 10; index++)
         {
             Vector2 direction = Vector2.Right.Rotated(Mathf.Tau * index / 10.0f);
-            ecs.SpawnProjectile(center + direction * 50.0f, direction, 0.0f, 1);
+            ecs.SpawnProjectile(center + direction * 50.0f, direction, 24.0f, 1);
         }
 
+        int visualSourceId = ProjectileVisualSourceBindingCatalog.GetBindingId(
+            ContentPackIds.EmbodimentOfScarletDevil);
         for (int index = 0; index < 18; index++)
         {
             Vector2 direction = Vector2.Right.Rotated(Mathf.Tau * index / 18.0f);
             ecs.SpawnEnemyProjectile(
-                bossPosition + direction * 54.0f, Vector2.Zero, 0.0f, 1, index % 4);
+                bossPosition + direction * 54.0f, direction, 24.0f, 1,
+                index % 4, visualSourceId: visualSourceId);
         }
 
         ecs.QueueRedraw();
