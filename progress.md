@@ -24,7 +24,7 @@
 - A combined follow-up patch was atomically rejected because `docs/ecs_architecture.md` differed from
   the audit summary. No partial README, note, or redirect changes landed; the files were reread exactly.
 - Added the architecture document map, synchronized README and `.NOTE.md`, and converted both obsolete
-  files into migration-only redirects while deletion approval remains pending.
+  files into migration-only redirects before requesting the required deletion approval.
 - Two WSL grep invocations with alternation/parentheses were misparsed across the Windows-to-WSL shell
   boundary; one yielded a session and was explicitly terminated. No files changed; validation switched
   to one literal `rg` pattern per command.
@@ -67,8 +67,9 @@
   pacing, affinity offers, 51-card budget, and 120-minute balance timeline all pass.
 - All explicit local documentation targets exist, literal stale-version/rank/card-count checks pass,
   `git diff --check` is clean, and the full process list contains no Godot console test process.
-- No file was deleted. Exact approval remains required for `docs/ecs_architecture.md` and
-  `docs/beta_debug_diagnostics.md`; both are redirect-only until that decision.
+- After explicit user approval, deleted `docs/ecs_architecture.md` and
+  `docs/beta_debug_diagnostics.md`; their authoritative replacements remain
+  `docs/plugin_first_design.md` and `docs/diagnostics.md`.
 
 
 ## 2026-08-16 - Five-Minute Core Loop and Boss Combat

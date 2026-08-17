@@ -9,7 +9,7 @@ the required deletion approval.
 
 ## Current Phase
 
-Non-destructive consolidation complete; awaiting approval for the exact obsolete-file deletion list.
+Documentation consolidation complete; the two approved redirect-only files have been removed.
 
 ## Acceptance Criteria
 
@@ -33,6 +33,7 @@ Non-destructive consolidation complete; awaiting approval for the exact obsolete
 - [x] Align README, content README, changelog references, and project intent notes.
 - [x] Validate links, terms, code contracts, encoding, build, and documentation-facing tests.
 - [x] Commit the documentation consolidation while preserving unrelated changes.
+- [x] Delete the two redirect-only documents after explicit user approval and commit the cleanup.
 
 ## Decisions
 
@@ -41,7 +42,7 @@ Non-destructive consolidation complete; awaiting approval for the exact obsolete
 | Audit before deleting | The user permits cleanup, while repository policy requires exact approval before file deletion. |
 | Prefer one authority per topic | Duplicate summaries become stale independently and caused the current completion-status conflict. |
 | Verify claims against code | Documentation must describe the current executable and clearly label target architecture separately. |
-| Delete two redirect-only files after approval | `ecs_architecture.md` is fully owned by the plugin guide; `beta_debug_diagnostics.md` is fully owned by the canonical diagnostics guide. |
+| Delete two redirect-only files after approval | Approval was received; `plugin_first_design.md` and `diagnostics.md` remain the respective authorities. |
 
 ---
 

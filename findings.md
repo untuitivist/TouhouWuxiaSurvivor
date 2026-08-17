@@ -12,11 +12,12 @@
   `inventory`; no package is currently `complete`.
 - Existing root planning files contain extensive historical records but are outside the requested
   `docs/` cleanup and are required by the active planning workflow.
-- `docs/ecs_architecture.md` has no inbound reference and still describes the completed ECS migration
-  as future work. Its valid hybrid-boundary content is already superseded by `plugin_first_design.md`.
-- `docs/beta_debug_diagnostics.md` also has no inbound reference and calls itself a legacy compatibility
-  filename. Both it and the tracked canonical `docs/diagnostics.md` still described alpha-0.0.4; only
-  the canonical file should retain the current procedure.
+- `docs/ecs_architecture.md` had no inbound reference and described the completed ECS migration as
+  future work. Its valid hybrid-boundary content is owned by `plugin_first_design.md`; the redirect was
+  deleted after explicit approval.
+- `docs/beta_debug_diagnostics.md` had no inbound reference and used a legacy compatibility filename.
+  The current procedure is owned by `docs/diagnostics.md`; the redirect was deleted after explicit
+  approval.
 - `combat_balance.md` and `enemy_balance.md` are linked by the main README and should remain separate:
   the first owns player/build budgets, while the second owns enemy species and spawn-pressure policy.
 - Diagnostics tools already expose the canonical `build_diagnostics.cmd`; the legacy
