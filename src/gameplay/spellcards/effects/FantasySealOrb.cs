@@ -4,7 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
 /// <summary>
-/// 表示梦想封印的一枚文字灵玉，持续追踪指定敌人并在抵达时走正常伤害接口。
+/// 表示自动奥义的一枚追踪或定点弹丸，持续追踪指定敌人并通过统一后端结算伤害。
 /// </summary>
 public partial class FantasySealOrb : Node2D
 {
@@ -20,7 +20,7 @@ public partial class FantasySealOrb : Node2D
     private bool _lostTrackingTarget;
     private string _sourcePackId = string.Empty;
     private string _spellCardName = string.Empty;
-    private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Orbit;
+    private SpellBulletStyleKind _bulletStyle = SpellBulletStyleKind.Orb;
     private bool _configured;
     private InternalSpellBulletVisual? _visual;
     private Label? _fallbackLabel;
@@ -38,7 +38,7 @@ public partial class FantasySealOrb : Node2D
         int visualVariant,
         string sourcePackId,
         string spellCardName,
-        SpellCardGeometryKind geometryKind,
+        SpellBulletStyleKind bulletStyle,
         float curvature,
         SpellCardTargetReference? trackingTarget = null)
     {
@@ -53,7 +53,7 @@ public partial class FantasySealOrb : Node2D
         _visualVariant = visualVariant;
         _sourcePackId = sourcePackId;
         _spellCardName = spellCardName;
-        _geometryKind = geometryKind;
+        _bulletStyle = bulletStyle;
         _curvature = curvature;
         _trackingTarget = trackingTarget;
         _lostTrackingTarget = false;
@@ -73,7 +73,7 @@ public partial class FantasySealOrb : Node2D
 
         _visual = GetNode<InternalSpellBulletVisual>("Visual");
         _fallbackLabel = GetNode<Label>("FallbackLabel");
-        _visual.Configure(_sourcePackId, _spellCardName, _geometryKind, _visualVariant);
+        _visual.Configure(_sourcePackId, _spellCardName, _bulletStyle, _visualVariant);
         _fallbackLabel.Visible = !_visual.Visible;
     }
 

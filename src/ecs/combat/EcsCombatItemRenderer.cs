@@ -1,6 +1,7 @@
 using Godot;
 using TouhouWuxiaSurvivor.Actors.Pickups;
 using TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Visuals.Internal;
 
@@ -15,6 +16,7 @@ public sealed class EcsCombatItemRenderer
     private const string DefaultBulletName = "灵符「梦想封印」";
     private Texture2D? _itemAtlas;
     private Texture2D? _bulletAtlas;
+    private InternalVisualDefinition? _bulletDefinition;
     private readonly SpellCardProjectileVisualResolver _spellVisuals = new();
     private Font? _font;
 
@@ -30,9 +32,16 @@ public sealed class EcsCombatItemRenderer
             InternalVisualCategory.Pickup,
             PickupCatalog.Get(PickupKind.RapidFire).DisplayName,
             InternalVisualKind.ItemAtlas);
-        _bulletAtlas = LoadTexture(visuals, BaseSourceId,
-            InternalVisualCategory.SpellCard, DefaultBulletName,
-            InternalVisualKind.BulletAtlas);
+        _bulletAtlas = null;
+        _bulletDefinition = null;
+        if (visuals.TryGet(BaseSourceId, InternalVisualCategory.SpellCard,
+                DefaultBulletName, out InternalVisualDefinition definition)
+            && definition.Kind == InternalVisualKind.BulletAtlas
+            && visuals.TryGetTexture(definition, out Texture2D bulletAtlas))
+        {
+            _bulletDefinition = definition;
+            _bulletAtlas = bulletAtlas;
+        }
         _spellVisuals.Configure(visuals);
         _font = ThemeDB.FallbackFont;
     }
@@ -95,36 +104,48 @@ public sealed class EcsCombatItemRenderer
         }
     }
 
-    /// <summary>从共享弹幕图集选择阵营与变体对应的灵弹，并固定为八像素显示尺寸。</summary>
+    /// <summary>按奥义身份或双方弹道通道选择语义匹配的完整弹型帧。</summary>
     public void DrawProjectile(
         Node2D canvas,
         ProjectileComponent projectile,
         Vector2 position)
     {
-        var destination = new Rect2(
-            (position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
         if (_spellVisuals.TryResolve(projectile.VisualStyleId,
-                projectile.VisualVariant, out Texture2D spellTexture, out Rect2 spellSource))
+                projectile.VisualVariant, out Texture2D spellTexture,
+                out SpellBulletVisualSelection spellSelection))
         {
-            canvas.DrawTextureRectRegion(spellTexture, destination, spellSource);
+            canvas.DrawTextureRectRegion(spellTexture,
+                CreateRoundedDestination(spellSelection, position), spellSelection.Source);
             CountProjectile(projectile);
         }
-        else if (_bulletAtlas is not null)
+        else if (_bulletAtlas is not null && _bulletDefinition is not null)
         {
-            int column = projectile.Faction == ProjectileFaction.Player
-                ? 1 + projectile.VisualVariant % 2
-                : 3 + projectile.VisualVariant % 4;
-            canvas.DrawTextureRectRegion(
-                _bulletAtlas, destination, new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f));
+            SpellBulletStyleKind style = ProjectileBulletStylePolicy.Resolve(
+                projectile.Faction, projectile.VisualVariant);
+            SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
+                _bulletDefinition, style, projectile.VisualVariant, _bulletAtlas);
+            canvas.DrawTextureRectRegion(_bulletAtlas,
+                CreateRoundedDestination(selection, position), selection.Source);
             CountProjectile(projectile);
         }
         else
         {
+            var destination = new Rect2(
+                (position - Vector2.One * 4.0f).Round(), Vector2.One * 8.0f);
             Color fallback = projectile.Faction == ProjectileFaction.Player
                 ? new Color("f4df7d")
                 : new Color("ef7898");
             canvas.DrawRect(destination, fallback);
         }
+    }
+
+    /// <summary>按像素网格取整目标位置，同时保留每种弹型的归一化尺寸。</summary>
+    private static Rect2 CreateRoundedDestination(
+        SpellBulletVisualSelection selection,
+        Vector2 position)
+    {
+        Rect2 destination = selection.CreateDestination(position);
+        return new Rect2(destination.Position.Round(), destination.Size);
     }
 
     /// <summary>统一累计通用与符卡弹幕的绘制数量，避免素材分支产生诊断统计差异。</summary>

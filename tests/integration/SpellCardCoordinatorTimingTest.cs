@@ -164,6 +164,7 @@ public partial class SpellCardCoordinatorTimingTest : Node
         "测试自动奥义",
         SpellCardEffectKind.HomingVolley,
         SpellCardGeometryKind.Orbit,
+        SpellBulletStyleKind.Orb,
         SpellCardActivationKind.Periodic,
         "test_prerequisite",
         1,

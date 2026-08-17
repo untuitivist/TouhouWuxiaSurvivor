@@ -66,7 +66,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "butterfly"
     },
     {
       "id": "th04_gengetsu_double_magic_cannon",
@@ -91,7 +92,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "laser"
     }
   ],
   "spellcard_balance_version": 2

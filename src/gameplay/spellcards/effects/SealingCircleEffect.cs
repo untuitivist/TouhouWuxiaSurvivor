@@ -4,7 +4,7 @@ using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
 /// <summary>
-/// 播放封魔阵的短暂文字结界演出，仅负责视觉生命周期而不重复结算伤害。
+/// 播放范围或护持奥义的短暂阵式演出，仅负责视觉生命周期而不重复结算伤害。
 /// </summary>
 public partial class SealingCircleEffect : Node2D
 {
@@ -14,6 +14,7 @@ public partial class SealingCircleEffect : Node2D
     private string _sourcePackId = string.Empty;
     private string _spellCardName = string.Empty;
     private SpellCardGeometryKind _geometryKind = SpellCardGeometryKind.Ring;
+    private SpellBulletStyleKind _bulletStyle = SpellBulletStyleKind.Amulet;
     private bool _configured;
 
     /// <summary>
@@ -22,13 +23,15 @@ public partial class SealingCircleEffect : Node2D
     public void Configure(
         string sourcePackId,
         string spellCardName,
-        SpellCardGeometryKind geometryKind)
+        SpellCardGeometryKind geometryKind,
+        SpellBulletStyleKind bulletStyle)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sourcePackId);
         ArgumentException.ThrowIfNullOrWhiteSpace(spellCardName);
         _sourcePackId = sourcePackId;
         _spellCardName = spellCardName;
         _geometryKind = geometryKind;
+        _bulletStyle = bulletStyle;
         _configured = true;
     }
 
@@ -74,9 +77,9 @@ public partial class SealingCircleEffect : Node2D
             var bullet = new InternalSpellBulletVisual();
             AddChild(bullet);
             bullet.Configure(
-                _sourcePackId, _spellCardName, _geometryKind, index + 5);
+                _sourcePackId, _spellCardName, _bulletStyle, index + 5);
             bullet.Position = ResolveBulletPosition(index);
-            bullet.Scale = Vector2.One * 0.8f;
+            bullet.Scale *= 0.8f;
             available |= bullet.Visible;
         }
 

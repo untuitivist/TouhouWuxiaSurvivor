@@ -84,7 +84,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "orbit"
+      "geometry": "orbit",
+      "bullet_style": "orb"
     },
     {
       "id": "reimu_evil_sealing_circle",
@@ -109,7 +110,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "on_damaged",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "amulet"
     },
     {
       "id": "reimu_duplex_barrier",
@@ -134,7 +136,8 @@
       "spawn_distance_scale": 1.2,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "amulet"
     },
     {
       "id": "reimu_omnidirectional_oni_binding_circle",
@@ -159,7 +162,8 @@
       "spawn_distance_scale": 1.1,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "amulet"
     },
     {
       "id": "marisa_master_spark",
@@ -184,7 +188,8 @@
       "spawn_distance_scale": 1.4,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "laser"
     },
     {
       "id": "marisa_stardust_reverie",
@@ -209,7 +214,8 @@
       "spawn_distance_scale": 1.35,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "star"
     }
   ],
   "spellcard_balance_version": 2

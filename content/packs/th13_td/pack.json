@@ -67,7 +67,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "orbit"
+      "geometry": "orbit",
+      "bullet_style": "amulet"
     },
     {
       "id": "th13_mamizou_wild_deserted_island",
@@ -92,7 +93,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "backstab"
+      "geometry": "backstab",
+      "bullet_style": "large_orb"
     }
   ],
   "spellcard_balance_version": 2

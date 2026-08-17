@@ -5,137 +5,111 @@ using TouhouWuxiaSurvivor.Visuals.Internal;
 namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 
 /// <summary>
-/// 从原作 16 像素弹幕图集选择稳定形状和颜色，使奥义身份不再退化为同一行圆弹。
+/// 按原作图集家族与弹型语义挑选完整帧，避免把 32 像素大型弹切成四块。
 /// </summary>
 public static class SpellBulletAtlasRegionResolver
 {
-    private const int CellSize = 16;
-    private static readonly int[] ShapeRows = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13];
-    private static readonly Dictionary<string, bool[]> OccupiedCells = new(StringComparer.Ordinal);
+    private static readonly int[] ColorColumns = [1, 3, 5, 7, 9, 11, 13, 14];
 
     /// <summary>
-    /// 以几何决定基础弹型、映射变体区分同类卡片、弹丸序号轮换颜色和次级弹型。
+    /// 以声明式弹型决定基础帧，映射变体和弹丸序号只负责轮换色种。
     /// </summary>
-    public static Rect2 Resolve(
+    public static SpellBulletVisualSelection Resolve(
         InternalVisualDefinition definition,
-        SpellCardGeometryKind geometryKind,
+        SpellBulletStyleKind style,
         int projectileVariant,
         Texture2D texture)
     {
-        Vector2 textureSize = texture.GetSize();
-        int columns = Math.Max(1, (int)textureSize.X / CellSize);
-        int rows = Math.Max(1, (int)textureSize.Y / CellSize);
-        int normalizedVariant = Math.Max(0, projectileVariant);
-        int geometryIndex = geometryKind switch
-        {
-            SpellCardGeometryKind.Orbit => 0,
-            SpellCardGeometryKind.Fan => 2,
-            SpellCardGeometryKind.Line => 3,
-            SpellCardGeometryKind.Ring => 5,
-            SpellCardGeometryKind.Backstab => 6,
-            _ => 0,
-        };
-        int shapeIndex = PositiveModulo(
-            geometryIndex + definition.Variant * 2 + normalizedVariant / 4,
-            ShapeRows.Length);
-        int row = Math.Min(rows - 1, ShapeRows[shapeIndex]);
-        int colorCount = Math.Max(1, Math.Min(14, columns - 1));
-        int column = columns <= 1
-            ? 0
-            : 1 + PositiveModulo(
-                definition.Variant * 3 + normalizedVariant, colorCount);
-        bool[] occupied = GetOccupiedCells(definition.AssetPath, texture, columns, rows);
-        (column, row) = FindVisibleCell(
-            occupied, columns, rows, column, row, colorCount, shapeIndex);
-        return new Rect2(column * CellSize, row * CellSize, CellSize, CellSize);
+        var (row, frameSize, paletteSize) = ResolveFrame(definition.AssetPath, style);
+        int paletteIndex = PositiveModulo(definition.Variant + projectileVariant, paletteSize);
+        int column = frameSize == 16 ? ColorColumns[paletteIndex] : paletteIndex;
+        var source = new Rect2(column * frameSize, row, frameSize, frameSize);
+        ValidateBounds(texture, definition.AssetPath, source);
+        return new SpellBulletVisualSelection(source, ResolveDisplaySize(style));
     }
 
-    /// <summary>首次使用图集时扫描 Alpha 并缓存每个十六像素格是否含可见弹丸。</summary>
-    private static bool[] GetOccupiedCells(
+    /// <summary>按图集路径识别 TH06、旧 Windows 作和现代作的三套真实排布。</summary>
+    private static (int Row, int FrameSize, int PaletteSize) ResolveFrame(
         string assetPath,
-        Texture2D texture,
-        int columns,
-        int rows)
+        SpellBulletStyleKind style)
     {
-        if (OccupiedCells.TryGetValue(assetPath, out bool[]? cached))
+        if (assetPath.Contains("/th06/", StringComparison.Ordinal))
         {
-            return cached;
-        }
-
-        Image image = texture.GetImage();
-        image.Convert(Image.Format.Rgba8);
-        byte[] pixels = image.GetData();
-        int width = image.GetWidth();
-        var occupied = new bool[columns * rows];
-        for (int row = 0; row < rows; row++)
-        {
-            for (int column = 0; column < columns; column++)
+            return style switch
             {
-                occupied[row * columns + column] = CellHasAlpha(
-                    pixels, width, column * CellSize, row * CellSize);
-            }
+                SpellBulletStyleKind.Orb => (32, 16, 8),
+                SpellBulletStyleKind.Amulet or SpellBulletStyleKind.Shard => (64, 16, 8),
+                SpellBulletStyleKind.Needle => (80, 16, 8),
+                SpellBulletStyleKind.Butterfly => (96, 16, 8),
+                SpellBulletStyleKind.Knife or SpellBulletStyleKind.Laser => (160, 32, 8),
+                SpellBulletStyleKind.Star or SpellBulletStyleKind.Flame => (192, 32, 4),
+                SpellBulletStyleKind.LargeOrb => (128, 32, 8),
+                _ => throw new ArgumentOutOfRangeException(nameof(style)),
+            };
         }
 
-        OccupiedCells.Add(assetPath, occupied);
-        return occupied;
+        if (IsOldWindowsAtlas(assetPath))
+        {
+            return style switch
+            {
+                SpellBulletStyleKind.Orb => (32, 16, 8),
+                SpellBulletStyleKind.Amulet => (16, 16, 8),
+                SpellBulletStyleKind.Shard => (64, 16, 8),
+                SpellBulletStyleKind.Needle or SpellBulletStyleKind.Star => (80, 16, 8),
+                SpellBulletStyleKind.LargeOrb => (112, 32, 8),
+                SpellBulletStyleKind.Knife or SpellBulletStyleKind.Laser => (144, 32, 8),
+                SpellBulletStyleKind.Butterfly => (176, 32, 8),
+                SpellBulletStyleKind.Flame => (208, 32, 8),
+                _ => throw new ArgumentOutOfRangeException(nameof(style)),
+            };
+        }
+
+        return style switch
+        {
+            SpellBulletStyleKind.Orb => (32, 16, 8),
+            SpellBulletStyleKind.Shard => (64, 16, 8),
+            SpellBulletStyleKind.Needle or SpellBulletStyleKind.Knife => (80, 16, 8),
+            SpellBulletStyleKind.Amulet => (112, 16, 8),
+            SpellBulletStyleKind.Laser => (128, 16, 8),
+            SpellBulletStyleKind.Butterfly => (144, 16, 8),
+            SpellBulletStyleKind.Star => (160, 16, 8),
+            SpellBulletStyleKind.Flame => (176, 16, 8),
+            SpellBulletStyleKind.LargeOrb => (208, 32, 8),
+            _ => throw new ArgumentOutOfRangeException(nameof(style)),
+        };
     }
 
-    /// <summary>优先保留同一弹型的其他颜色，再按候选形状和全图可见格确定性回退。</summary>
-    private static (int Column, int Row) FindVisibleCell(
-        bool[] occupied,
-        int columns,
-        int rows,
-        int preferredColumn,
-        int preferredRow,
-        int colorCount,
-        int shapeIndex)
+    /// <summary>判断素材是否采用 TH07 至 TH09 的旧式 32 像素大弹排布。</summary>
+    private static bool IsOldWindowsAtlas(string assetPath)
     {
-        if (IsOccupied(occupied, columns, preferredColumn, preferredRow))
-        {
-            return (preferredColumn, preferredRow);
-        }
-
-        for (int offset = 1; offset < colorCount; offset++)
-        {
-            int column = 1 + PositiveModulo(preferredColumn - 1 + offset, colorCount);
-            if (IsOccupied(occupied, columns, column, preferredRow)) return (column, preferredRow);
-        }
-
-        for (int rowOffset = 1; rowOffset < ShapeRows.Length; rowOffset++)
-        {
-            int row = Math.Min(rows - 1, ShapeRows[(shapeIndex + rowOffset) % ShapeRows.Length]);
-            for (int columnOffset = 0; columnOffset < colorCount; columnOffset++)
-            {
-                int column = 1 + PositiveModulo(preferredColumn - 1 + columnOffset, colorCount);
-                if (IsOccupied(occupied, columns, column, row)) return (column, row);
-            }
-        }
-
-        for (int index = 0; index < occupied.Length; index++)
-        {
-            if (occupied[index]) return (index % columns, index / columns);
-        }
-
-        return (preferredColumn, preferredRow);
+        return assetPath.Contains("/th07/", StringComparison.Ordinal)
+            || assetPath.Contains("/th08/", StringComparison.Ordinal)
+            || assetPath.Contains("/th09/", StringComparison.Ordinal);
     }
 
-    /// <summary>读取缓存格状态，并把越界候选视为透明。</summary>
-    private static bool IsOccupied(bool[] occupied, int columns, int column, int row) =>
-        column >= 0 && row >= 0 && row * columns + column < occupied.Length &&
-        occupied[row * columns + column];
-
-    /// <summary>直接扫描 RGBA8 字节中的 Alpha，避免逐像素跨 Godot 绑定调用。</summary>
-    private static bool CellHasAlpha(byte[] pixels, int width, int startX, int startY)
+    /// <summary>为不同轮廓给出克制但可辨认的统一局内尺寸。</summary>
+    private static float ResolveDisplaySize(SpellBulletStyleKind style)
     {
-        for (int y = startY; y < startY + CellSize; y++)
+        return style switch
         {
-            for (int x = startX; x < startX + CellSize; x++)
-            {
-                if (pixels[(y * width + x) * 4 + 3] > 2) return true;
-            }
-        }
+            SpellBulletStyleKind.LargeOrb => 13f,
+            SpellBulletStyleKind.Laser or SpellBulletStyleKind.Flame => 12f,
+            SpellBulletStyleKind.Knife or SpellBulletStyleKind.Butterfly => 11f,
+            SpellBulletStyleKind.Needle or SpellBulletStyleKind.Star => 10f,
+            _ => 9f,
+        };
+    }
 
-        return false;
+    /// <summary>对声明式切片执行边界校验，使错误图集在开发期直接暴露。</summary>
+    private static void ValidateBounds(Texture2D texture, string assetPath, Rect2 source)
+    {
+        Vector2 atlasSize = texture.GetSize();
+        if (source.Position.X < 0f || source.Position.Y < 0f
+            || source.End.X > atlasSize.X || source.End.Y > atlasSize.Y)
+        {
+            throw new InvalidOperationException(
+                $"Bullet region {source} exceeds atlas '{assetPath}'.");
+        }
     }
 
     /// <summary>返回不会因负映射变体产生负图集坐标的数学模。</summary>

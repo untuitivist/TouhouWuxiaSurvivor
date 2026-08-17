@@ -67,7 +67,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "needle"
     },
     {
       "id": "th10_suwako_mishaguji",
@@ -92,7 +93,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "on_damaged",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "amulet"
     }
   ],
   "spellcard_balance_version": 2

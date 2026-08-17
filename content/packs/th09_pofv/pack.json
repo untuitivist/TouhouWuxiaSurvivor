@@ -63,7 +63,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "butterfly"
     },
     {
       "id": "th09_eiki_last_judgement",
@@ -88,7 +89,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "laser"
     }
   ],
   "spellcard_balance_version": 2

@@ -141,7 +141,7 @@ public partial class SpellCardTrackingTest : Node
         FantasySealOrb orb = OrbScene.Instantiate<FantasySealOrb>();
         orb.ConfigureImpact(backend, targetPosition, damage, 100.0f, 5.0f,
             5.0f, 0, "base", "追踪测试",
-            SpellCardGeometryKind.Orbit, 0.0f, target);
+            SpellBulletStyleKind.Orb, 0.0f, target);
         AddChild(orb);
         orb.SetPhysicsProcess(false);
         orb.GlobalPosition = Vector2.Zero;

@@ -67,7 +67,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "amulet"
     },
     {
       "id": "th17_saki_black_pegasus_meteor_shot",
@@ -92,7 +93,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "needle"
     }
   ],
   "spellcard_balance_version": 2

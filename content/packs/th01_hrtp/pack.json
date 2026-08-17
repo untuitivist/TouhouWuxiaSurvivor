@@ -67,7 +67,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "orbit"
+      "geometry": "orbit",
+      "bullet_style": "orb"
     },
     {
       "id": "th01_sariel_fallen_judgement",
@@ -92,7 +93,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "laser"
     }
   ],
   "spellcard_balance_version": 2

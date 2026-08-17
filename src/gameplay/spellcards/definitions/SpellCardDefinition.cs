@@ -17,6 +17,7 @@ public sealed class SpellCardDefinition
     public string EffectDescription { get; }
     public SpellCardEffectKind EffectKind { get; }
     public SpellCardGeometryKind GeometryKind { get; }
+    public SpellBulletStyleKind BulletStyleKind { get; }
     public SpellCardActivationKind ActivationKind { get; }
     public string UnlockUpgradeId { get; }
     public string PrerequisiteUpgradeId { get; }
@@ -39,6 +40,7 @@ public sealed class SpellCardDefinition
         string effectDescription,
         SpellCardEffectKind effectKind,
         SpellCardGeometryKind geometryKind,
+        SpellBulletStyleKind bulletStyleKind,
         SpellCardActivationKind activationKind,
         string prerequisiteUpgradeId,
         int minimumRank,
@@ -56,6 +58,7 @@ public sealed class SpellCardDefinition
         EffectDescription = Require(effectDescription, nameof(effectDescription));
         EffectKind = effectKind;
         GeometryKind = geometryKind;
+        BulletStyleKind = bulletStyleKind;
         ActivationKind = activationKind;
         UnlockUpgradeId = $"spell_{Id}";
         PrerequisiteUpgradeId = Require(prerequisiteUpgradeId, nameof(prerequisiteUpgradeId));

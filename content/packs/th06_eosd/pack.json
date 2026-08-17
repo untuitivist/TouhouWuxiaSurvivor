@@ -69,7 +69,8 @@
       "spawn_distance_scale": 1.25,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "shard"
     },
     {
       "id": "th06_cirno_perfect_freeze",
@@ -94,7 +95,8 @@
       "spawn_distance_scale": 1.15,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "shard"
     },
     {
       "id": "th06_meiling_rainbow_wind_chime",
@@ -119,7 +121,8 @@
       "spawn_distance_scale": 1.25,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "orb"
     },
     {
       "id": "th06_patchouli_philosophers_stone",
@@ -144,7 +147,8 @@
       "spawn_distance_scale": 1.3,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "orbit"
+      "geometry": "orbit",
+      "bullet_style": "large_orb"
     },
     {
       "id": "th06_sakuya_killing_doll",
@@ -169,7 +173,8 @@
       "spawn_distance_scale": 1.4,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "backstab"
+      "geometry": "backstab",
+      "bullet_style": "knife"
     },
     {
       "id": "th06_remilia_scarlet_shoot",
@@ -194,7 +199,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "needle"
     },
     {
       "id": "th06_flandre_laevatein",
@@ -219,7 +225,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "flame"
     }
   ],
   "spellcard_balance_version": 2

@@ -1,4 +1,6 @@
 using Godot;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Definitions;
+using TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 using TouhouWuxiaSurvivor.Visuals.Internal;
 
 namespace TouhouWuxiaSurvivor.Ecs.Combat.Projectiles;
@@ -14,6 +16,7 @@ public partial class ProjectileEcsRuntime : Node2D
     private readonly InternalVisualCatalog _visuals = new();
     private Node2D? _enemyContainer;
     private Texture2D? _texture;
+    private InternalVisualDefinition? _definition;
 
     /// <summary>获取当前活跃的 ECS 投射物数量，供 HUD 和性能测试读取。</summary>
     public int ActiveCount => _pool.Count;
@@ -32,6 +35,7 @@ public partial class ProjectileEcsRuntime : Node2D
             definition.Kind == InternalVisualKind.BulletAtlas &&
             _visuals.TryGetTexture(definition, out Texture2D texture))
         {
+            _definition = definition;
             _texture = texture;
         }
         TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
@@ -89,15 +93,18 @@ public partial class ProjectileEcsRuntime : Node2D
     {
         _pool.ForEach(projectile =>
         {
-            Rect2 destination = new(projectile.Position - new Vector2(4.0f, 4.0f), new Vector2(8.0f, 8.0f));
-            if (_texture is not null)
+            if (_texture is not null && _definition is not null)
             {
-                int column = 1 + projectile.VisualVariant % 2;
-                DrawTextureRectRegion(_texture, destination,
-                    new Rect2(column * 16.0f, 32.0f, 16.0f, 16.0f));
+                SpellBulletStyleKind style = ProjectileBulletStylePolicy.Resolve(
+                    projectile.Faction, projectile.VisualVariant);
+                SpellBulletVisualSelection selection = SpellBulletAtlasRegionResolver.Resolve(
+                    _definition, style, projectile.VisualVariant, _texture);
+                DrawTextureRectRegion(_texture,
+                    selection.CreateDestination(projectile.Position), selection.Source);
             }
             else
             {
+                Rect2 destination = new(projectile.Position - new Vector2(4.0f, 4.0f), new Vector2(8.0f, 8.0f));
                 DrawRect(destination, new Color(0.95f, 0.86f, 0.48f), true);
             }
         });

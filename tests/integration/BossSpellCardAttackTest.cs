@@ -127,8 +127,9 @@ public partial class BossSpellCardAttackTest : Node
                      card.SourcePackId is "base" or ScarletPackId))
         {
             int binding = SpellCardVisualBindingCatalog.GetBindingId(card.Id);
-            Require(resolver.TryResolve(binding, 3, out Texture2D texture, out Rect2 source) &&
-                texture.GetWidth() >= 16 && source.Size == Vector2.One * 16.0f,
+            Require(resolver.TryResolve(binding, 3, out Texture2D texture,
+                    out SpellBulletVisualSelection selection) &&
+                texture.GetWidth() >= 16 && selection.Source.Size.X is 16.0f or 32.0f,
                 $"Spell bullet visual is not usable: {card.Id}");
         }
 

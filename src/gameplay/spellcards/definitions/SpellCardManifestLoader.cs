@@ -55,6 +55,7 @@ public static class SpellCardManifestLoader
             RequiredString(card, "description"),
             ParseEffect(RequiredString(card, "effect")),
             ParseGeometry(RequiredString(card, "geometry")),
+            ParseBulletStyle(RequiredString(card, "bullet_style")),
             ParseActivation(RequiredString(card, "activation")),
             RequiredString(card, "prerequisite"),
             RequiredInt(card, "minimum_rank"),
@@ -116,6 +117,22 @@ public static class SpellCardManifestLoader
         "ring" => SpellCardGeometryKind.Ring,
         "backstab" => SpellCardGeometryKind.Backstab,
         _ => throw new InvalidDataException($"Unknown spell geometry: {value}"),
+    };
+
+    /// <summary>把弹丸美术语义转换为独立枚举，禁止再用轨迹几何猜测素材形状。</summary>
+    private static SpellBulletStyleKind ParseBulletStyle(string value) => value switch
+    {
+        "orb" => SpellBulletStyleKind.Orb,
+        "amulet" => SpellBulletStyleKind.Amulet,
+        "needle" => SpellBulletStyleKind.Needle,
+        "knife" => SpellBulletStyleKind.Knife,
+        "star" => SpellBulletStyleKind.Star,
+        "flame" => SpellBulletStyleKind.Flame,
+        "butterfly" => SpellBulletStyleKind.Butterfly,
+        "laser" => SpellBulletStyleKind.Laser,
+        "shard" => SpellBulletStyleKind.Shard,
+        "large_orb" => SpellBulletStyleKind.LargeOrb,
+        _ => throw new InvalidDataException($"Unknown spell bullet style: {value}"),
     };
 
     /// <summary>严格解析无资源消耗的自动运转方式，禁止内容包以任意字符串偷偷恢复灵力条件。</summary>

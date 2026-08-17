@@ -67,7 +67,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "shard"
     },
     {
       "id": "th20_beiko_tartarian_rhapsody",
@@ -92,7 +93,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "orb"
     }
   ],
   "spellcard_balance_version": 2

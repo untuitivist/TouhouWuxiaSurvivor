@@ -66,7 +66,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "on_damaged",
       "activation_threshold_scale": 0.5,
-      "geometry": "backstab"
+      "geometry": "backstab",
+      "bullet_style": "shard"
     },
     {
       "id": "th03_yumemi_science_magic_cannon",
@@ -91,7 +92,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "line"
+      "geometry": "line",
+      "bullet_style": "laser"
     }
   ],
   "spellcard_balance_version": 2

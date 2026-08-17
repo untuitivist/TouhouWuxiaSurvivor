@@ -116,6 +116,7 @@ public partial class SpellCardTriggerTest : Node
         new(id, "test_pack", id, id, "test_owner", "测试角色",
             SpellCardCanonLevel.Official, "测试来源", "测试武学", "测试自动奥义",
             SpellCardEffectKind.HomingVolley, SpellCardGeometryKind.Orbit,
+            SpellBulletStyleKind.Orb,
             activation, "test_prerequisite", 1,
             new SpellCardCombatProfile(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
                 1.0f, 1.0f, 1.0f, 1.0f));

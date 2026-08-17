@@ -10,7 +10,7 @@ namespace TouhouWuxiaSurvivor.Gameplay.SpellCards.Effects;
 public sealed class SpellCardProjectileVisualResolver
 {
     private readonly Dictionary<int,
-        (InternalVisualDefinition Definition, SpellCardGeometryKind Geometry)> _visuals = new();
+        (InternalVisualDefinition Definition, SpellBulletStyleKind Style)> _visuals = new();
     private InternalVisualCatalog? _catalog;
 
     /// <summary>一次性加载全部有效符卡图集；缺少映射的条目由正式渲染器继续使用通用弹幕。</summary>
@@ -28,19 +28,19 @@ public sealed class SpellCardProjectileVisualResolver
             }
 
             int binding = SpellCardVisualBindingCatalog.GetBindingId(card.Id);
-            _visuals.Add(binding, (definition, card.GeometryKind));
+            _visuals.Add(binding, (definition, card.BulletStyleKind));
         }
     }
 
-    /// <summary>返回该符卡和弹丸序号对应的可见十六像素格；编号零或缺图时返回 false。</summary>
+    /// <summary>返回该符卡和弹丸序号对应的完整帧及显示尺寸；编号零或缺图时返回 false。</summary>
     public bool TryResolve(
         int visualStyleId,
         int projectileVariant,
         out Texture2D texture,
-        out Rect2 source)
+        out SpellBulletVisualSelection selection)
     {
         texture = null!;
-        source = default;
+        selection = default;
         if (visualStyleId <= 0 || _catalog is null ||
             !_visuals.TryGetValue(visualStyleId, out var visual) ||
             !_catalog.TryGetTexture(visual.Definition, out texture))
@@ -48,8 +48,8 @@ public sealed class SpellCardProjectileVisualResolver
             return false;
         }
 
-        source = SpellBulletAtlasRegionResolver.Resolve(
-            visual.Definition, visual.Geometry, projectileVariant, texture);
+        selection = SpellBulletAtlasRegionResolver.Resolve(
+            visual.Definition, visual.Style, projectileVariant, texture);
         return true;
     }
 }

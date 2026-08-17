@@ -107,7 +107,8 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
                 resolved.Damage,
                 resolved.ProjectileSpeed,
                 resolved.ImpactRange, resolved.TravelDurationSeconds, index,
-                card.SourcePackId, card.FullName, card.GeometryKind, trajectory.Curvature,
+                card.SourcePackId, card.FullName,
+                card.BulletStyleKind, trajectory.Curvature,
                 SpellCardCombatBackend.MatchTarget(
                     trajectory.TargetPosition, candidates, assignedTargets));
             _effects.AddChild(orb);
@@ -140,7 +141,8 @@ public sealed class SpellCardEffectCaster : ISpellCardEffectExecutor
         }
 
         var effect = _circleScene.Instantiate<SealingCircleEffect>();
-        effect.Configure(card.SourcePackId, card.FullName, card.GeometryKind);
+        effect.Configure(card.SourcePackId, card.FullName,
+            card.GeometryKind, card.BulletStyleKind);
         _effects.AddChild(effect);
         effect.GlobalPosition = plan.VisualCenter;
         return true;

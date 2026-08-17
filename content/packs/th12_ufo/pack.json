@@ -67,7 +67,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "periodic",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "laser"
     },
     {
       "id": "th12_nue_barrage_chimera",
@@ -92,7 +93,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "fan"
+      "geometry": "fan",
+      "bullet_style": "butterfly"
     }
   ],
   "spellcard_balance_version": 2

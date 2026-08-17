@@ -68,7 +68,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "crowd",
       "activation_threshold_scale": 0.5,
-      "geometry": "ring"
+      "geometry": "ring",
+      "bullet_style": "large_orb"
     },
     {
       "id": "th14_raiko_pristine_beat",
@@ -93,7 +94,8 @@
       "spawn_distance_scale": 1.333333333,
       "activation": "on_damaged",
       "activation_threshold_scale": 0.5,
-      "geometry": "orbit"
+      "geometry": "orbit",
+      "bullet_style": "star"
     }
   ],
   "spellcard_balance_version": 2

@@ -106,6 +106,10 @@ function migrateCard(card) {
  * 严格验证 v2 卡片没有混入旧充能/绝对值字段，且全部系数均为有限数值并满足零值语义。
  */
 function verifyV2Card(card, sourcePath) {
+  const bulletStyles = new Set([
+    "orb", "amulet", "needle", "knife", "star", "flame",
+    "butterfly", "laser", "shard", "large_orb",
+  ]);
   const legacyFields = [
     "trigger", "power_cost", "cooldown_seconds", "effect_range",
     "damage", "target_count", "defense_seconds",
@@ -118,6 +122,9 @@ function verifyV2Card(card, sourcePath) {
   ];
   if (!["periodic", "crowd", "on_damaged"].includes(card.activation)) {
     throw new Error(`${sourcePath}: ${card.id} has invalid activation.`);
+  }
+  if (!bulletStyles.has(card.bullet_style)) {
+    throw new Error(`${sourcePath}: ${card.id} has invalid bullet_style.`);
   }
   for (const legacy of legacyFields) {
     if (legacy in card) {
