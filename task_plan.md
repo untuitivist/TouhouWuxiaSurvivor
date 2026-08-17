@@ -1,4 +1,51 @@
-# Task Plan: Adaptive Mowing Pacing and Boss Access
+# Task Plan: Documentation Consolidation and Architecture Alignment
+
+## Current Goal - 2026-08-17
+
+Audit every document under `docs/` against the current code, product intent, versioning, content-pack
+lifecycle, ECS/OOP boundary, balance rules, and release workflow. Update missing or stale material,
+remove duplication through consolidation, and identify exact deletion candidates before requesting
+the required deletion approval.
+
+## Current Phase
+
+Non-destructive consolidation complete; awaiting approval for the exact obsolete-file deletion list.
+
+## Acceptance Criteria
+
+- Every retained document has one explicit purpose and an owner topic; no two documents claim to be
+  competing sources of truth.
+- Version names, five-minute pacing, dynamic spawn pressure, fixed enemy species stats, build rules,
+  content-pack lifecycle, and Base/TH06 scope match current code and `.NOTE.md`.
+- ECS/OOP guidance identifies the hybrid boundary instead of requiring one paradigm everywhere.
+- README and `content/README.md` link the authoritative documents and do not call migration inventory
+  complete content.
+- Links and referenced local paths resolve; UTF-8 without BOM, SourcePolicy, build, and relevant
+  documentation tests pass.
+- Any deletion is preceded by a concrete list, rationale, replacement location, and user approval.
+- All accepted changes are committed without staging unrelated workspace edits.
+
+## Active Phases
+
+- [x] Inventory `docs/`, inbound links, duplication, stale versions, and code claims.
+- [x] Decide the retained document map and list any deletion candidates for approval.
+- [x] Rewrite architecture, gameplay balance, enemy balance, and diagnostics documentation.
+- [x] Align README, content README, changelog references, and project intent notes.
+- [x] Validate links, terms, code contracts, encoding, build, and documentation-facing tests.
+- [x] Commit the documentation consolidation while preserving unrelated changes.
+
+## Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Audit before deleting | The user permits cleanup, while repository policy requires exact approval before file deletion. |
+| Prefer one authority per topic | Duplicate summaries become stale independently and caused the current completion-status conflict. |
+| Verify claims against code | Documentation must describe the current executable and clearly label target architecture separately. |
+| Delete two redirect-only files after approval | `ecs_architecture.md` is fully owned by the plugin guide; `beta_debug_diagnostics.md` is fully owned by the canonical diagnostics guide. |
+
+---
+
+# Historical Plan: Adaptive Mowing Pacing and Boss Access
 
 ## Current Goal - 2026-08-16
 

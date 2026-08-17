@@ -1,5 +1,85 @@
 # Findings and Decisions
 
+## Documentation Consolidation Audit - 2026-08-17
+
+- `docs/` starts with six tracked files: plugin-first product architecture, ECS architecture, combat
+  balance, enemy balance, canonical diagnostics, and historical beta diagnostics.
+- The document count is small enough for a complete code-backed audit. Deletion should be based on
+  obsolete ownership, not size alone.
+- The newly approved architecture distinguishes internal modules from player-facing content packs,
+  uses ECS for high-frequency bulk state, and keeps low-frequency orchestration in OOP Nodes.
+- Content lifecycle is now typed: Base and TH06 are `development`; TH01-TH05 and TH07-TH20 are
+  `inventory`; no package is currently `complete`.
+- Existing root planning files contain extensive historical records but are outside the requested
+  `docs/` cleanup and are required by the active planning workflow.
+- `docs/ecs_architecture.md` has no inbound reference and still describes the completed ECS migration
+  as future work. Its valid hybrid-boundary content is already superseded by `plugin_first_design.md`.
+- `docs/beta_debug_diagnostics.md` also has no inbound reference and calls itself a legacy compatibility
+  filename. Both it and the tracked canonical `docs/diagnostics.md` still described alpha-0.0.4; only
+  the canonical file should retain the current procedure.
+- `combat_balance.md` and `enemy_balance.md` are linked by the main README and should remain separate:
+  the first owns player/build budgets, while the second owns enemy species and spawn-pressure policy.
+- Diagnostics tools already expose the canonical `build_diagnostics.cmd`; the legacy
+  `build_beta_debug.cmd` remains outside the requested `docs/` cleanup.
+- `enemy_balance.md` is materially stale: it documents time-indexed batches and a dynamic alive cap,
+  while current pacing uses eight explicit rates from 2.40 to 9.30 per second and a 30-second
+  adaptive state. The user has explicitly rejected an enemy survival soft cap.
+- `combat_balance.md` still says projectile count is granted automatically at 2/5-minute marks;
+  current design requires normal-shot and centered-barrage counts to come from upgrades instead.
+- Current code contains `AdaptiveRunPacingState`, `EnemyPressureCurve`, and an eight-phase
+  `RunPacingTimeline`; documentation must distinguish the implemented runtime from older time-only
+  simulation assumptions.
+- The implemented finite gate is exactly a 30-second sliding difference of cumulative ordinary
+  spawns and defeats. It advances only when `S > 0` and `K >= ceil(0.90*S)`; failed observations do
+  not clear the history. Each newly entered phase must itself accumulate 30 seconds before advancing.
+- Pressure rates are `2.40/3.15/4.05/5.10/6.15/7.20/8.25/9.30` per second, with tier mixes progressing
+  from `100/0/0/0` to `40/30/22/8`. The spawner uses fractional spawn credit and has no alive cap.
+- Stage changes feed only spawn supply, tier scheduling, and unlock selection. `EnemySpawner` passes
+  the authored `EnemyDefinition` directly into ECS; it does not apply time-based health or damage.
+- `RunPacingTimeline.Evaluate` remains a nominal/testing projection, while formal runtime progression
+  is owned by `AdaptiveRunPacingState`; retained docs must state this distinction to avoid reviving
+  fixed-time phase switching.
+- Enemy definitions confirm that authored attributes are species data. Base enemies use explicit
+  values, optional-pack enemies share three ecological baselines (38/92/216 HP and 60/48/38 speed),
+  and `EnemyDifficultyScaler.Scale` returns the original definition unchanged.
+- Runtime strength labels are `Common`, `Veteran`, `Elite`, and `Champion`. Optional-pack outer,
+  core, and deep species currently map to Common/Veteran/Champion, while selected base species also
+  occupy Elite.
+- The current finite build is six parallel routes, capped at rank 3 or 4, with no time-granted
+  projectile count. `追魂诀` adds predictive ordinary shots, `天罗弹阵` adds player-centered barrage
+  shots, and both share the same single-projectile damage budget.
+- Every finite route has an endless continuation after its own cap. The current specialization gate
+  is run level 4 plus base rank 2, and the two specializations are intentionally not mutually exclusive.
+- The main README is also stale and must be corrected with the docs: it still claims time-granted
+  1/3/5-shot growth, five-rank finite paths, global enemy stat growth, and a 46-card catalog. Current
+  intent and manifests use upgrade-only projectile growth, 3-4 finite ranks, fixed species stats,
+  six base cards plus seven TH06 Boss cards, and 51 cards total.
+- `plugin_first_design.md` already contains the current hybrid ECS/OOP boundary and content lifecycle.
+  It needs a documentation-authority map, not another architecture section.
+- `build_diagnostics.cmd` copies `docs/diagnostics.md` into the package. The file existed but was stale;
+  rewriting it is required so newly built diagnostic packages carry current instructions.
+- `CHANGELOG.md` correctly preserves historical claims as version history. The docs cleanup should not
+  rewrite old release entries as if those versions had shipped with current rules.
+- The canonical spell-card balance tool confirms the current manifest inventory is exactly base plus
+  20 optional packs and 51 cards, with the shared budget range still passing (`0.168..0.699`).
+- `docs/diagnostics.md` is now rewritten as the sole current guide consumed by
+  `tools/diagnostics/build_diagnostics.cmd`.
+- Literal stale-text checks now find no `alpha-0.0.4`, five-rank build, or 46-card claims in current
+  docs/README/notes. The remaining numeric `46` is the authored insect movement speed.
+- Stable spell targeting is implemented with `SpellCardTargetReference` carrying an `EcsEntity`; the
+  combat backend resolves current position and damage through that stable handle.
+- Initial diagnostics-source search found entity/projectile/collision/chunk metrics but not pacing
+  window or build-count fields. The new guide must not promise those fields unless the snapshot audit
+  proves they are emitted.
+- Full diagnostics snapshot audit confirms pacing gear, spawn rate, K/S, and current ordinary/barrage
+  counts are not serialized. The guide must limit its field list to actual entity/projectile/collision,
+  chunk, level, content, character, pause/modal, visual fallback, frame, memory, and renderer metrics.
+- `EnemyPressureCurve` has a pure post-final `+0.12` continuation, but formal `RunPacingCoordinator`
+  stops advancing in endless and emits a terminal snapshot pinned at final difficulty. Current runtime
+  therefore holds 9.30 spawns/s after choosing endless. This is a documented implementation gap, not
+  an implemented endless-pressure feature.
+
+
 ## Five-Minute Core Loop Audit - 2026-08-16
 
 - The user replaced fixed time-only phase jumps with combat-capability progression: once the

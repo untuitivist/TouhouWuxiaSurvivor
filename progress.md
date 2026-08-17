@@ -1,5 +1,76 @@
 # Progress Log
 
+## 2026-08-17 - Documentation Consolidation
+
+- Confirmed from production code that enemy stage scaling is identity-only: stages change supply,
+  mix, and eligibility, never authored enemy attributes.
+- A read-only `rg` command containing alternation was parsed by the host before `cmd.exe` and failed;
+  no files changed. Subsequent Windows searches use an explicit `cmd.exe` shell and simpler patterns.
+- Two attempts to inspect numbered planning-file excerpts also failed because quoted `for /f` syntax
+  was escaped by the tool boundary. Direct reads succeeded; no repository content was changed.
+- One planning-record patch was rejected because its expected context did not match the current file;
+  the retry used the exact current heading and applied cleanly.
+- Verified the current eight enemy-pressure rules and the finite upgrade definitions directly from
+  production code. Two guessed file paths for modifier/barrage classes were absent; they will be
+  located from the repository inventory before being cited.
+- A multi-pattern `rg` call under explicit `cmd.exe` returned no matches despite known text. It was
+  treated as an unreliable shell invocation and not used as evidence.
+- Completed the code-backed audit of player progression, barrage growth, enemy pacing, Boss scaling,
+  the main README, the plugin architecture document, the changelog, and diagnostic launch scripts.
+- Locked the retained document ownership: plugin architecture, combat/build balance, enemy pressure,
+  and diagnostics remain separate authorities; historical changelog entries remain historical.
+- Rewrote `docs/combat_balance.md`, `docs/enemy_balance.md`, and the tracked canonical
+  `docs/diagnostics.md` from current production contracts and build scripts.
+- A combined follow-up patch was atomically rejected because `docs/ecs_architecture.md` differed from
+  the audit summary. No partial README, note, or redirect changes landed; the files were reread exactly.
+- Added the architecture document map, synchronized README and `.NOTE.md`, and converted both obsolete
+  files into migration-only redirects while deletion approval remains pending.
+- Two WSL grep invocations with alternation/parentheses were misparsed across the Windows-to-WSL shell
+  boundary; one yielded a session and was explicitly terminated. No files changed; validation switched
+  to one literal `rg` pattern per command.
+- The read-only spell-card balance audit passed for 51 cards across base plus 20 optional packs.
+- Literal stale-text checks passed for the obsolete version, five-rank upgrade wording, and 46-card
+  count. Confirmed stable ECS spell-target handles are present in production.
+- Flagged one provisional diagnostics claim (`K/S` and build counts) for source-level verification
+  before validation; it will be removed if not actually serialized.
+- Completed that verification: removed unsupported diagnostics-field promises and recorded the formal
+  endless-pressure disconnect between the pure curve and the coordinator as a current implementation gap.
+
+### Initial audit
+
+- Activated the file-based planning workflow and established a code-backed audit plan before editing
+  the formal documentation set.
+- Inventoried six tracked files under `docs/`; no file has been deleted.
+- Locked the current documentation truths: hybrid ECS/OOP selection, declarative content packs,
+  Base/TH06 development status, and migration-inventory status for the other official works.
+- Next: inspect every retained document and its inbound references, then present exact deletion
+  candidates before any destructive operation.
+- Read all six documents and audited inbound references. `ecs_architecture.md` and
+  `beta_debug_diagnostics.md` have no inbound links and are the current deletion/replacement
+  candidates; no deletion has occurred.
+- Test-name audit found that `EnemyPressureCurveTest` is not a real integration scene; the enemy
+  document will cite the actual curve-owning test after locating its assertions.
+- Located those assertions in `EnemyBalanceSmokeTest` and corrected the document. A HUD search also
+  included one nonexistent guessed directory (`src/demo/hud`); `rg` still returned the real matches
+  from `src/ui/hud`, confirming F3 exposes limit/VSync, pressure, rate, and K/S.
+- Debug build passed with zero warnings and zero errors. The first Godot test command did not start
+  because explicit `cmd.exe` treated quotes around the no-space executable path as literal text;
+  the retry removes those unnecessary quotes. No engine process or repository mutation resulted.
+- SourcePolicy and VersionPolicy passed. BetaDebugExportPolicy then correctly rejected the renamed
+  guide heading because remote testers need a stable “回传内容” navigation marker; the heading was
+  restored as “回传内容与隐私” without weakening the test.
+- Final inventory correction: `docs/diagnostics.md` was tracked before this task, so the starting count
+  was six and this task rewrote it rather than creating it. A filtered `tasklist` probe also failed
+  because the tool boundary removed the required filter quotes; no process was modified.
+- Final validation passed: Debug build has 0 warnings/errors; SourcePolicy reports 1021 text and 518
+  C# files; VersionPolicy, diagnostic export/runtime, content-pack status, enemy balance, adaptive
+  pacing, affinity offers, 51-card budget, and 120-minute balance timeline all pass.
+- All explicit local documentation targets exist, literal stale-version/rank/card-count checks pass,
+  `git diff --check` is clean, and the full process list contains no Godot console test process.
+- No file was deleted. Exact approval remains required for `docs/ecs_architecture.md` and
+  `docs/beta_debug_diagnostics.md`; both are redirect-only until that decision.
+
+
 ## 2026-08-16 - Five-Minute Core Loop and Boss Combat
 
 - Reframed finite pacing as guarded dynamic progression: sustained clearing dominance may advance
