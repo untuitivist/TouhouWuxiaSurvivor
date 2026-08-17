@@ -3,6 +3,10 @@
 当前版本：`alpha-0.0.5`。运行时版本的唯一来源是 `project.godot` 中的
 `application/config/version`；版本规则与变更记录见 [CHANGELOG.md](CHANGELOG.md)。
 
+项目采用“一切皆插件”的产品与架构基调：幻想乡本体必须独立完整，东方红魔乡作为第一份
+可关闭参考插件，其他作品在该契约稳定后再继续迁移。详细定义与验收顺序见
+[插件优先设计基线](docs/plugin_first_design.md)。
+
 当前阶段是无限幻想乡生存者玩法 Alpha 内部开发版。幻想乡本体与 TH01 至 TH20 均可按包启用，
 132 个规范化角色身份都可作为自机或角色 Boss；本局所选自机会从 Boss 候选中排除。
 控制、世界生成、区块流送、ECS 战斗、自动符卡和渲染均为当前项目内的 C# 实现。
@@ -46,7 +50,7 @@ Chunk、当前群系、流送队列和本局内容包；调试开关可在按键
 都会先清除死亡暂停状态，主菜单不会继承上一局的暂停状态。
 
 Windows 发行版使用 `build_release.cmd` 生成到
-`release/TouhouWuxiaSurvivor_alpha-0.0.4.exe`。导出预设采用 x86_64 Mono Release 模板、
+`release/TouhouWuxiaSurvivor_alpha-0.0.5.exe`。导出预设采用 x86_64 Mono Release 模板、
 内嵌 PCK 和内嵌 .NET 构建产物，发行目录不需要独立 PCK。
 
 当前人物、敌人、弹幕、场景预览、道具和音频优先使用“东方原作弹幕游戏素材包”的内部映射，
@@ -103,7 +107,8 @@ Windows 发行版使用 `build_release.cmd` 生成到
 武侠界面使用项目内确定性 RGB 绘制器生成宣纸纹理、卷轴九宫格边框、祥云分隔、朱砂印章、
 墨山背景以及动态图鉴精灵表。资产说明和重建命令见 `assets/ui/wuxia/README.md`；敌人曲线、
 威胁模型与刷怪节奏见 `docs/enemy_balance.md`；角色、修行、奥义、经验和 0 至 120 分钟
-时间轴的统一策划基线见 `docs/combat_balance.md`。
+时间轴的统一策划基线见 `docs/combat_balance.md`；插件边界和当前实施顺序见
+`docs/plugin_first_design.md`。
 
 ## 验证
 

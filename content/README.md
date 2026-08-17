@@ -1,5 +1,17 @@
 # Content Packages
 
+## Active Delivery Scope
+
+The product follows a plugin-first contract. `base` is the mandatory bundled plugin and must provide
+a complete run without optional content. `th06_eosd` is the first optional reference plugin used to
+validate world, structure, enemy, character, build, boss, presentation, and isolation extension points.
+All optional packages except `th06_eosd` remain installed catalog and asset inventory while this
+contract is being proven; their existing manifest coverage is not evidence that their runtime
+gameplay is complete.
+
+The governing product and architecture baseline is documented in
+[`docs/plugin_first_design.md`](../docs/plugin_first_design.md).
+
 `base` contains systems and world content that exist without selecting any official game.
 Each `packs/thXX_slug` directory is an isolated optional content package with these boundaries:
 
@@ -8,10 +20,12 @@ Each `packs/thXX_slug` directory is an isolated optional content package with th
 - `assets`: package-owned textures, audio, data, and scenes.
 - `pack.json`: identity, development state, and categorized incremental content.
 
-All integer-numbered packages from TH01 through TH20 are complete across five runtime categories:
-biomes, structures, ordinary enemies, characters, and spell cards. Every package is independently
-selectable in the new-game list and owns three generated biomes, three labeled structures, three
-regional enemies, its declared character identities, and structured representative spell-card data.
+All integer-numbered packages from TH01 through TH20 currently have catalog entries across five
+runtime categories: biomes, structures, ordinary enemies, characters, and spell cards. Every package
+is independently selectable in the new-game list and declares three generated biomes, three labeled
+structures, three regional enemies, character identities, and representative spell-card data. These
+declarations are migration inventory; each package still requires the reference-plugin acceptance
+contract before it can be called complete gameplay.
 
 The shared character catalog normalizes the package declarations into 132 stable identities. Every
 identity uses one definition for both playable-character and character-boss roles; the selected player
