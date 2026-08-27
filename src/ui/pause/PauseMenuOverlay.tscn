@@ -28,7 +28,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.012, 0.016, 0.014, 0.78)
+color = Color(0.008, 0.012, 0.018, 0.84)
 
 [node name="PausePanel" type="PanelContainer" parent="Root"]
 layout_mode = 1
@@ -37,62 +37,69 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -130.0
-offset_top = -142.0
-offset_right = 130.0
-offset_bottom = 142.0
+offset_left = -112.0
+offset_top = -122.0
+offset_right = 112.0
+offset_bottom = 122.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"WuxiaPanel"
 
 [node name="Padding" type="MarginContainer" parent="Root/PausePanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 13
 
 [node name="Layout" type="VBoxContainer" parent="Root/PausePanel/Padding"]
 layout_mode = 2
-theme_override_constants/separation = 7
+theme_override_constants/separation = 4
 
 [node name="Title" type="Label" parent="Root/PausePanel/Padding/Layout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 0.89, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "游戏暂停"
-horizontal_alignment = 1
+horizontal_alignment = 0
 
 [node name="Separator" type="HSeparator" parent="Root/PausePanel/Padding/Layout"]
 layout_mode = 2
 
 [node name="Continue" type="Button" parent="Root/PausePanel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
+theme_type_variation = &"WuxiaMenuPrimary"
 text = "继续游戏"
+alignment = 0
 
 [node name="Settings" type="Button" parent="Root/PausePanel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+theme_type_variation = &"WuxiaMenuEntry"
 text = "设置"
+alignment = 0
 
 [node name="Compendium" type="Button" parent="Root/PausePanel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+theme_type_variation = &"WuxiaMenuEntry"
 text = "幻想乡图鉴"
+alignment = 0
 
 [node name="MainMenu" type="Button" parent="Root/PausePanel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-theme_type_variation = &"DangerButton"
+theme_type_variation = &"WuxiaMenuDanger"
 text = "返回主菜单"
+alignment = 0
 
 [node name="Desktop" type="Button" parent="Root/PausePanel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-theme_type_variation = &"DangerButton"
+theme_type_variation = &"WuxiaMenuDanger"
 text = "返回桌面"
+alignment = 0
 
 [node name="SettingsPanel" parent="Root" instance=ExtResource("2_settings")]
 visible = false

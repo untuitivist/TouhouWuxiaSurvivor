@@ -8,16 +8,16 @@ namespace TouhouWuxiaSurvivor.Tools.UiAssetGenerator;
 internal sealed class UiControlPainter
 {
     /// <summary>
-    /// 根据交互状态生成削角丝绢按钮，悬停和按下分别强化金边与朱砂漆面。
+    /// 根据交互状态生成低对比墨签按钮，悬停和按下才强化朱砂漆面与旧金收边。
     /// </summary>
     public PixelCanvas PaintButton(UiControlState state)
     {
         Rgba32 face = state switch
         {
-            UiControlState.Hover => new Rgba32(47, 20, 17, 255),
-            UiControlState.Pressed => new Rgba32(66, 23, 20, 255),
-            UiControlState.Disabled => new Rgba32(14, 19, 16, 235),
-            _ => UiPixelPalette.Ink,
+            UiControlState.Hover => new Rgba32(67, 25, 27, 248),
+            UiControlState.Pressed => new Rgba32(96, 29, 29, 252),
+            UiControlState.Disabled => new Rgba32(18, 20, 21, 190),
+            _ => new Rgba32(14, 18, 20, 232),
         };
         Rgba32 edge = state switch
         {
@@ -53,53 +53,56 @@ internal sealed class UiControlPainter
     public PixelCanvas PaintField(bool focused)
     {
         var canvas = NewCanvas(24, 20);
-        PixelDrawing.FillRect(canvas, 0, 0, 24, 20, UiPixelPalette.InkBlack);
-        PixelDrawing.FillRect(canvas, 1, 1, 22, 18, focused
-            ? UiPixelPalette.GoldDark : UiPixelPalette.JadeDark);
-        PixelDrawing.FillRect(canvas, 3, 3, 18, 14, UiPixelPalette.Ink);
-        PixelDrawing.Line(canvas, 4, 16, 19, 16, focused
-            ? UiPixelPalette.GoldLight : UiPixelPalette.Jade);
+        PixelDrawing.FillRect(canvas, 1, 2, 22, 16, UiPixelPalette.Shadow);
+        PixelDrawing.FillRect(canvas, 2, 3, 20, 14, UiPixelPalette.Ink);
+        PixelDrawing.Line(canvas, 4, 3, 19, 3,
+            focused ? UiPixelPalette.GoldLight : UiPixelPalette.PaperLight);
+        PixelDrawing.Line(canvas, 4, 17, 19, 17,
+            focused ? UiPixelPalette.CinnabarLight : UiPixelPalette.Jade);
+        PixelDrawing.Line(canvas, 2, 6, 2, 14, UiPixelPalette.JadeDark);
         if (focused)
         {
-            canvas.SetPixel(2, 2, UiPixelPalette.CinnabarLight);
-            canvas.SetPixel(21, 2, UiPixelPalette.CinnabarLight);
+            canvas.SetPixel(2, 3, UiPixelPalette.CinnabarLight);
+            canvas.SetPixel(21, 16, UiPixelPalette.CinnabarLight);
         }
 
         return canvas;
     }
 
     /// <summary>
-    /// 生成低矮页签，选中态以朱砂漆面和完整金色下沿表达当前页。
+    /// 生成无盒页签，选中态只增加暗红墨面和完整金色下沿表达当前页。
     /// </summary>
     public PixelCanvas PaintTab(UiControlState state)
     {
         var canvas = NewCanvas(24, 16);
         Rgba32 face = state == UiControlState.Pressed
-            ? new Rgba32(65, 21, 18, 255)
-            : state == UiControlState.Hover ? UiPixelPalette.PaperLight : UiPixelPalette.Ink;
+            ? new Rgba32(70, 24, 25, 244)
+            : state == UiControlState.Hover
+                ? new Rgba32(29, 34, 33, 210)
+                : UiPixelPalette.Transparent;
         Rgba32 edge = state == UiControlState.Pressed
             ? UiPixelPalette.GoldLight
             : state == UiControlState.Hover ? UiPixelPalette.Gold : UiPixelPalette.JadeDark;
-        PixelDrawing.FillRect(canvas, 1, 1, 22, 15, edge);
-        PixelDrawing.FillRect(canvas, 3, 3, 18, 13, face);
-        PixelDrawing.Line(canvas, 5, 0, 18, 0, edge);
-        PixelDrawing.Line(canvas, 2, 2, 2, 7, edge);
-        PixelDrawing.Line(canvas, 21, 2, 21, 7, edge);
+        PixelDrawing.FillRect(canvas, 2, 3, 20, 11, face);
+        PixelDrawing.Line(canvas, 5, 2, 15, 2, edge);
         PixelDrawing.FillRect(canvas, 4, 14, 16, 2, state == UiControlState.Pressed
             ? UiPixelPalette.CinnabarLight : edge);
+        canvas.SetPixel(2, 13, UiPixelPalette.CinnabarDark);
+        canvas.SetPixel(21, 13, UiPixelPalette.JadeDark);
         return canvas;
     }
 
     /// <summary>
-    /// 生成列表正文的内嵌纸面，使条目列表与外层面板形成清楚的前后层次。
+    /// 生成低层级列表墨面，只保留左侧压暗和上下短线，避免在外框内再次画完整方框。
     /// </summary>
     public PixelCanvas PaintListPanel()
     {
         var canvas = NewCanvas(24, 24);
-        PixelDrawing.FillRect(canvas, 0, 0, 24, 24, UiPixelPalette.InkBlack);
-        PixelDrawing.FillRect(canvas, 1, 1, 22, 22, UiPixelPalette.JadeDark);
-        PixelDrawing.FillRect(canvas, 3, 3, 18, 18, UiPixelPalette.Ink);
-        PixelDrawing.Line(canvas, 4, 4, 19, 4, UiPixelPalette.PaperLight);
+        PixelDrawing.FillRect(canvas, 0, 0, 24, 24, new Rgba32(8, 12, 14, 244));
+        PixelDrawing.FillRect(canvas, 0, 0, 2, 24, UiPixelPalette.Shadow);
+        PixelDrawing.Line(canvas, 4, 1, 18, 1, UiPixelPalette.JadeDark);
+        PixelDrawing.Line(canvas, 7, 22, 21, 22, UiPixelPalette.GoldDark);
+        canvas.SetPixel(2, 2, UiPixelPalette.CinnabarDark);
         return canvas;
     }
 
@@ -149,12 +152,12 @@ internal sealed class UiControlPainter
     public PixelCanvas PaintHorizontalSeparator()
     {
         var canvas = NewCanvas(32, 5);
-        PixelDrawing.Line(canvas, 0, 1, 31, 1, UiPixelPalette.JadeDark);
-        PixelDrawing.Line(canvas, 0, 3, 31, 3, UiPixelPalette.GoldDark);
-        for (int x = 1; x < 32; x += 4)
+        PixelDrawing.Line(canvas, 0, 2, 31, 2, UiPixelPalette.GoldDark);
+        for (int x = 1; x < 32; x += 6)
         {
-            canvas.SetPixel(x, 2, UiPixelPalette.JadeLight);
-            canvas.SetPixel(x + 2, 2, UiPixelPalette.Gold);
+            canvas.SetPixel(x, 1, UiPixelPalette.Jade);
+            canvas.SetPixel(x + 1, 2, UiPixelPalette.GoldLight);
+            canvas.SetPixel(x + 2, 3, UiPixelPalette.CinnabarDark);
         }
 
         return canvas;
@@ -166,12 +169,12 @@ internal sealed class UiControlPainter
     public PixelCanvas PaintVerticalSeparator()
     {
         var canvas = NewCanvas(5, 32);
-        PixelDrawing.Line(canvas, 1, 0, 1, 31, UiPixelPalette.JadeDark);
-        PixelDrawing.Line(canvas, 3, 0, 3, 31, UiPixelPalette.GoldDark);
-        for (int y = 1; y < 32; y += 4)
+        PixelDrawing.Line(canvas, 2, 0, 2, 31, UiPixelPalette.GoldDark);
+        for (int y = 1; y < 32; y += 6)
         {
-            canvas.SetPixel(2, y, UiPixelPalette.JadeLight);
-            canvas.SetPixel(2, y + 2, UiPixelPalette.Gold);
+            canvas.SetPixel(1, y, UiPixelPalette.Jade);
+            canvas.SetPixel(2, y + 1, UiPixelPalette.GoldLight);
+            canvas.SetPixel(3, y + 2, UiPixelPalette.CinnabarDark);
         }
 
         return canvas;
@@ -219,12 +222,13 @@ internal sealed class UiControlPainter
     private static void DrawBevel(
         PixelCanvas canvas, Rgba32 face, Rgba32 edge, bool pressed)
     {
-        PixelDrawing.FillRect(canvas, 2, 0, 20, 20, edge);
-        PixelDrawing.FillRect(canvas, 0, 2, 24, 16, edge);
-        PixelDrawing.FillRect(canvas, 2, 2, 20, 16, face);
-        Rgba32 light = pressed ? UiPixelPalette.CinnabarDark : UiPixelPalette.PaperLight;
-        PixelDrawing.Line(canvas, 4, 3, 19, 3, light);
-        PixelDrawing.Line(canvas, 4, 16, 19, 16, UiPixelPalette.InkBlack);
+        PixelDrawing.FillRect(canvas, 2, 3, 21, 15, UiPixelPalette.Shadow);
+        PixelDrawing.FillRect(canvas, 2, 2, 20, 15, face);
+        PixelDrawing.FillRect(canvas, 1, 6, 2, 9,
+            pressed ? UiPixelPalette.Gold : UiPixelPalette.CinnabarDark);
+        PixelDrawing.Line(canvas, 5, 2, 16, 2,
+            pressed ? UiPixelPalette.CinnabarLight : UiPixelPalette.JadeDark);
+        PixelDrawing.Line(canvas, 5, 16, 20, 16, edge);
     }
 
     /// <summary>

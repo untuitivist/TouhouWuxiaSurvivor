@@ -17,39 +17,39 @@ script = ExtResource("1_video")
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Video/WindowMode"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "显示模式"
 
 [node name="Option" type="OptionButton" parent="Video/WindowMode"]
-custom_minimum_size = Vector2(170, 28)
+custom_minimum_size = Vector2(150, 25)
 layout_mode = 2
 
 [node name="Resolution" type="HBoxContainer" parent="Video"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Video/Resolution"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "窗口分辨率"
 
 [node name="Option" type="OptionButton" parent="Video/Resolution"]
-custom_minimum_size = Vector2(170, 28)
+custom_minimum_size = Vector2(150, 25)
 layout_mode = 2
 
 [node name="Vsync" type="HBoxContainer" parent="Video"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Video/Vsync"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "垂直同步"
 
 [node name="Toggle" type="CheckButton" parent="Video/Vsync"]
-custom_minimum_size = Vector2(64, 28)
+custom_minimum_size = Vector2(58, 25)
 layout_mode = 2
 text = "开启"
 
@@ -57,13 +57,13 @@ text = "开启"
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Video/FpsLimit"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "帧率上限"
 
 [node name="Option" type="OptionButton" parent="Video/FpsLimit"]
-custom_minimum_size = Vector2(170, 28)
+custom_minimum_size = Vector2(150, 25)
 layout_mode = 2
 
 [node name="EffectiveState" type="Label" parent="Video"]

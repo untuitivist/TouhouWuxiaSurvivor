@@ -23,7 +23,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.008, 0.012, 0.01, 0.82)
+color = Color(0.008, 0.012, 0.018, 0.88)
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -32,10 +32,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -278.0
-offset_top = -156.0
-offset_right = 278.0
-offset_bottom = 156.0
+offset_left = -274.0
+offset_top = -154.0
+offset_right = 274.0
+offset_bottom = 154.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"WuxiaPanel"
@@ -43,27 +43,27 @@ theme_type_variation = &"WuxiaPanel"
 [node name="Padding" type="MarginContainer" parent="Panel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
+theme_override_constants/margin_top = 9
 theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_bottom = 9
 
 [node name="Layout" type="VBoxContainer" parent="Panel/Padding"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 5
 
 [node name="Title" type="Label" parent="Panel/Padding/Layout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.94, 0.85, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text = "本局内容"
-horizontal_alignment = 1
+horizontal_alignment = 0
 
 [node name="VisibilityFilters" type="HBoxContainer" parent="Panel/Padding/Layout"]
 layout_mode = 2
 alignment = 2
 
 [node name="ShowOldWorks" type="CheckButton" parent="Panel/Padding/Layout/VisibilityFilters"]
-custom_minimum_size = Vector2(112, 24)
+custom_minimum_size = Vector2(96, 22)
 layout_mode = 2
 tooltip_text = "显示 PC-98 时期的 TH01 至 TH05"
 text = "显示旧作"
@@ -81,13 +81,13 @@ text = "自机"
 vertical_alignment = 1
 
 [node name="CharacterChoice" type="OptionButton" parent="Panel/Padding/Layout/CharacterSelection"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "本局使用角色"
 
 [node name="Scroll" type="ScrollContainer" parent="Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 158)
+custom_minimum_size = Vector2(0, 162)
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
@@ -103,12 +103,12 @@ alignment = 2
 theme_override_constants/separation = 8
 
 [node name="Back" type="Button" parent="Panel/Padding/Layout/Commands"]
-custom_minimum_size = Vector2(80, 30)
+custom_minimum_size = Vector2(72, 27)
 layout_mode = 2
 text = "返回"
 
 [node name="Start" type="Button" parent="Panel/Padding/Layout/Commands"]
-custom_minimum_size = Vector2(104, 30)
+custom_minimum_size = Vector2(96, 27)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
 text = "开始游戏"
