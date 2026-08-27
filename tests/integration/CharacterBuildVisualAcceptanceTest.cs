@@ -36,6 +36,7 @@ public partial class CharacterBuildVisualAcceptanceTest : Node
             overlay.ShowPage(CharacterStatsPage.Build);
             CharacterBuildNodeView spellNode = model.LearnedNodes.Single(node =>
                 node.Category == RunUpgradeCategory.SpellCard);
+            VerifyNodeTitleLayout(spellNode);
             view.Graph.SelectNode(spellNode.Id);
             await WaitFrames(3);
             VerifyLayout(overlay, view);
@@ -53,6 +54,21 @@ public partial class CharacterBuildVisualAcceptanceTest : Node
             await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
             GetTree().Quit(exitCode);
         }
+    }
+
+    /// <summary>
+    /// 验证中英混排符卡名不会再被无提示截成固定六字，且最终绘制文本严格落在节点宽度内。
+    /// </summary>
+    private static void VerifyNodeTitleLayout(CharacterBuildNodeView spellNode)
+    {
+        Font font = ThemeDB.FallbackFont;
+        (string text, int fontSize) = CharacterBuildNodeTitleLayout.Fit(
+            font, spellNode.DisplayName, 70.0f, 10, 7);
+        float width = font.GetStringSize(
+            text, HorizontalAlignment.Left, -1.0f, fontSize).X;
+        Require(width <= 70.5f, $"Build node title overflowed: {text} ({width:0.#}px).");
+        Require(text == spellNode.DisplayName || text.EndsWith("...", StringComparison.Ordinal),
+            $"Build node title was silently cut: {text}.");
     }
 
     /// <summary>

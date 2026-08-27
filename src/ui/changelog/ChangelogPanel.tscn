@@ -1,15 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/ui/changelog/ChangelogPanel.cs" id="1_panel"]
 [ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="2_theme"]
-
-[sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(0.018, 0.028, 0.022, 0.985)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.48, 0.55, 0.4, 0.9)
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="3_paper"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/seal_stamp.png" id="4_seal"]
 
 [node name="ChangelogPanel" type="Control"]
 texture_filter = 1
@@ -43,7 +37,14 @@ offset_right = -16.0
 offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StylePanel")
+theme_type_variation = &"WuxiaPanel"
+
+[node name="PaperTexture" type="TextureRect" parent="Panel"]
+modulate = Color(0.82, 0.72, 0.5, 0.1)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_paper")
+stretch_mode = 1
 
 [node name="Padding" type="MarginContainer" parent="Panel"]
 layout_mode = 2
@@ -59,6 +60,14 @@ theme_override_constants/separation = 6
 [node name="Header" type="HBoxContainer" parent="Panel/Padding/Layout"]
 layout_mode = 2
 theme_override_constants/separation = 8
+
+[node name="Seal" type="TextureRect" parent="Panel/Padding/Layout/Header"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("4_seal")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="Panel/Padding/Layout/Header"]
 layout_mode = 2

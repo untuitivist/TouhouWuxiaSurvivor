@@ -1,115 +1,401 @@
-[gd_resource type="Theme" load_steps=11 format=3]
+[gd_resource type="Theme" load_steps=51 format=3]
 
-[sub_resource type="StyleBoxFlat" id="ButtonNormal"]
-bg_color = Color(0.025, 0.034, 0.029, 0.78)
-border_width_left = 2
-border_color = Color(0.31, 0.39, 0.31, 0.72)
-content_margin_left = 11.0
-content_margin_right = 9.0
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_normal.png" id="1_button_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_hover.png" id="2_button_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_pressed.png" id="3_button_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_disabled.png" id="4_button_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_focus.png" id="5_button_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/field_normal.png" id="6_field_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/field_focus.png" id="7_field_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/tab_normal.png" id="8_tab_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/tab_hover.png" id="9_tab_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/tab_selected.png" id="10_tab_selected"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/list_panel.png" id="11_list_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/list_selected.png" id="12_list_selected"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/check_off.png" id="13_check_off"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/check_on.png" id="14_check_on"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/check_off_disabled.png" id="15_check_off_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/check_on_disabled.png" id="16_check_on_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/option_arrow.png" id="17_option_arrow"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/slider_grabber.png" id="18_slider_grabber"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/slider_grabber_hover.png" id="19_slider_grabber_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/separator_horizontal.png" id="20_separator_h"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/separator_vertical.png" id="21_separator_v"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_track.png" id="22_scroll_track"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_grabber.png" id="23_scroll_grabber"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_grabber_hover.png" id="24_scroll_grabber_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/progress_track.png" id="25_progress_track"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/progress_affinity.png" id="26_progress_affinity"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/progress_health.png" id="27_progress_health"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/progress_experience.png" id="28_progress_experience"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/progress_pacing.png" id="29_progress_pacing"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="30_outer_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/danger_panel.png" id="31_danger_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/inset_panel.png" id="32_inset_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/hud_panel.png" id="33_hud_panel"]
 
-[sub_resource type="StyleBoxFlat" id="ButtonHover"]
-bg_color = Color(0.12, 0.045, 0.04, 0.92)
-border_width_left = 4
-border_color = Color(0.72, 0.19, 0.16, 1)
-content_margin_left = 9.0
-content_margin_right = 9.0
+[sub_resource type="StyleBoxTexture" id="ButtonNormal"]
+texture = ExtResource("1_button_normal")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="ButtonPressed"]
-bg_color = Color(0.19, 0.055, 0.045, 0.96)
-border_width_left = 4
-border_color = Color(0.87, 0.3, 0.22, 1)
-content_margin_left = 9.0
-content_margin_right = 9.0
+[sub_resource type="StyleBoxTexture" id="ButtonHover"]
+texture = ExtResource("2_button_hover")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="ButtonFocus"]
-bg_color = Color(0, 0, 0, 0)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.79, 0.67, 0.43, 0.82)
+[sub_resource type="StyleBoxTexture" id="ButtonPressed"]
+texture = ExtResource("3_button_pressed")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
 
-[sub_resource type="StyleBoxFlat" id="FieldNormal"]
-bg_color = Color(0.025, 0.034, 0.029, 0.94)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.3, 0.38, 0.3, 0.9)
+[sub_resource type="StyleBoxTexture" id="ButtonDisabled"]
+texture = ExtResource("4_button_disabled")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="ButtonFocus"]
+texture = ExtResource("5_button_focus")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+draw_center = false
+
+[sub_resource type="StyleBoxEmpty" id="ControlEmpty"]
+
+[sub_resource type="StyleBoxTexture" id="FieldNormal"]
+texture = ExtResource("6_field_normal")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
 content_margin_left = 8.0
+content_margin_top = 4.0
 content_margin_right = 8.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="TabNormal"]
-bg_color = Color(0.02, 0.028, 0.024, 0.72)
-border_width_bottom = 1
-border_color = Color(0.3, 0.38, 0.3, 0.8)
-content_margin_left = 10.0
-content_margin_right = 10.0
+[sub_resource type="StyleBoxTexture" id="FieldFocus"]
+texture = ExtResource("7_field_focus")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="TabSelected"]
-bg_color = Color(0.1, 0.04, 0.035, 0.9)
-border_width_bottom = 3
-border_color = Color(0.72, 0.19, 0.16, 1)
-content_margin_left = 10.0
-content_margin_right = 10.0
+[sub_resource type="StyleBoxTexture" id="TabNormal"]
+texture = ExtResource("8_tab_normal")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
+content_margin_left = 9.0
+content_margin_top = 4.0
+content_margin_right = 9.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="ListPanel"]
-bg_color = Color(0.016, 0.023, 0.019, 0.72)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.25, 0.32, 0.26, 0.72)
+[sub_resource type="StyleBoxTexture" id="TabHover"]
+texture = ExtResource("9_tab_hover")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
+content_margin_left = 9.0
+content_margin_top = 4.0
+content_margin_right = 9.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="ListSelected"]
-bg_color = Color(0.15, 0.05, 0.042, 0.92)
-border_width_left = 3
-border_color = Color(0.78, 0.22, 0.17, 1)
+[sub_resource type="StyleBoxTexture" id="TabSelected"]
+texture = ExtResource("10_tab_selected")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
+content_margin_left = 9.0
+content_margin_top = 4.0
+content_margin_right = 9.0
+content_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="PopupPanel"]
-bg_color = Color(0.025, 0.033, 0.028, 0.99)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.5, 0.55, 0.4, 0.9)
+[sub_resource type="StyleBoxTexture" id="ListPanel"]
+texture = ExtResource("11_list_panel")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="ListSelected"]
+texture = ExtResource("12_list_selected")
+texture_margin_left = 6.0
+texture_margin_top = 5.0
+texture_margin_right = 6.0
+texture_margin_bottom = 5.0
+content_margin_left = 8.0
+content_margin_right = 5.0
+
+[sub_resource type="StyleBoxTexture" id="SeparatorHorizontal"]
+texture = ExtResource("20_separator_h")
+axis_stretch_horizontal = 1
+content_margin_top = 2.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="SeparatorVertical"]
+texture = ExtResource("21_separator_v")
+axis_stretch_vertical = 1
+content_margin_left = 2.0
+content_margin_right = 3.0
+
+[sub_resource type="StyleBoxTexture" id="ScrollTrack"]
+texture = ExtResource("22_scroll_track")
+texture_margin_left = 2.0
+texture_margin_top = 5.0
+texture_margin_right = 2.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="ScrollGrabber"]
+texture = ExtResource("23_scroll_grabber")
+texture_margin_left = 3.0
+texture_margin_top = 5.0
+texture_margin_right = 3.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="ScrollGrabberHover"]
+texture = ExtResource("24_scroll_grabber_hover")
+texture_margin_left = 3.0
+texture_margin_top = 5.0
+texture_margin_right = 3.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="ProgressTrack"]
+texture = ExtResource("25_progress_track")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="ProgressAffinity"]
+texture = ExtResource("26_progress_affinity")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="ProgressHealth"]
+texture = ExtResource("27_progress_health")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="ProgressExperience"]
+texture = ExtResource("28_progress_experience")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="ProgressPacing"]
+texture = ExtResource("29_progress_pacing")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxTexture" id="OuterPanel"]
+texture = ExtResource("30_outer_panel")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="DangerPanel"]
+texture = ExtResource("31_danger_panel")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="InsetPanel"]
+texture = ExtResource("32_inset_panel")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_left = 6.0
+content_margin_top = 6.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxTexture" id="HudPanel"]
+texture = ExtResource("33_hud_panel")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_left = 4.0
+content_margin_top = 2.0
+content_margin_right = 4.0
+content_margin_bottom = 2.0
 
 [resource]
 default_font_size = 12
-Button/colors/font_color = Color(0.91, 0.9, 0.82, 1)
-Button/colors/font_hover_color = Color(1, 0.93, 0.77, 1)
-Button/colors/font_pressed_color = Color(1, 0.88, 0.7, 1)
+Button/colors/font_color = Color(0.91, 0.89, 0.78, 1)
+Button/colors/font_hover_color = Color(1, 0.93, 0.75, 1)
+Button/colors/font_pressed_color = Color(1, 0.87, 0.65, 1)
 Button/colors/font_focus_color = Color(0.96, 0.92, 0.8, 1)
+Button/colors/font_disabled_color = Color(0.42, 0.45, 0.4, 1)
 Button/styles/normal = SubResource("ButtonNormal")
 Button/styles/hover = SubResource("ButtonHover")
 Button/styles/pressed = SubResource("ButtonPressed")
+Button/styles/disabled = SubResource("ButtonDisabled")
 Button/styles/focus = SubResource("ButtonFocus")
-CheckButton/colors/font_color = Color(0.88, 0.88, 0.79, 1)
-CheckButton/colors/font_hover_color = Color(1, 0.91, 0.72, 1)
-CheckButton/colors/font_pressed_color = Color(1, 0.86, 0.67, 1)
-Label/colors/font_color = Color(0.86, 0.86, 0.78, 1)
-LineEdit/colors/font_color = Color(0.9, 0.89, 0.81, 1)
-LineEdit/colors/caret_color = Color(0.82, 0.25, 0.19, 1)
-LineEdit/styles/normal = SubResource("FieldNormal")
-OptionButton/colors/font_color = Color(0.9, 0.89, 0.81, 1)
-OptionButton/styles/normal = SubResource("FieldNormal")
-OptionButton/styles/hover = SubResource("ButtonHover")
-OptionButton/styles/pressed = SubResource("ButtonPressed")
-OptionButton/styles/focus = SubResource("ButtonFocus")
-PopupMenu/colors/font_color = Color(0.89, 0.88, 0.8, 1)
-PopupMenu/colors/font_hover_color = Color(1, 0.9, 0.7, 1)
-PopupMenu/styles/panel = SubResource("PopupPanel")
-TabBar/colors/font_unselected_color = Color(0.65, 0.69, 0.61, 1)
-TabBar/colors/font_selected_color = Color(1, 0.89, 0.69, 1)
-TabBar/colors/font_hovered_color = Color(0.95, 0.9, 0.75, 1)
-TabBar/styles/tab_unselected = SubResource("TabNormal")
-TabBar/styles/tab_hovered = SubResource("ButtonHover")
-TabBar/styles/tab_selected = SubResource("TabSelected")
-ItemList/colors/font_color = Color(0.84, 0.85, 0.77, 1)
-ItemList/colors/font_selected_color = Color(1, 0.91, 0.74, 1)
+CheckButton/colors/font_color = Color(0.87, 0.86, 0.76, 1)
+CheckButton/colors/font_hover_color = Color(1, 0.91, 0.7, 1)
+CheckButton/colors/font_pressed_color = Color(1, 0.86, 0.65, 1)
+CheckButton/colors/font_disabled_color = Color(0.42, 0.45, 0.4, 1)
+CheckButton/constants/h_separation = 6
+CheckButton/icons/unchecked = ExtResource("13_check_off")
+CheckButton/icons/checked = ExtResource("14_check_on")
+CheckButton/icons/unchecked_disabled = ExtResource("15_check_off_disabled")
+CheckButton/icons/checked_disabled = ExtResource("16_check_on_disabled")
+CheckButton/styles/normal = SubResource("ButtonNormal")
+CheckButton/styles/hover = SubResource("ButtonHover")
+CheckButton/styles/pressed = SubResource("ButtonPressed")
+CheckButton/styles/disabled = SubResource("ButtonDisabled")
+CheckButton/styles/focus = SubResource("ButtonFocus")
+CheckBox/colors/font_color = Color(0.87, 0.86, 0.76, 1)
+CheckBox/colors/font_hover_color = Color(1, 0.91, 0.7, 1)
+CheckBox/colors/font_pressed_color = Color(1, 0.86, 0.65, 1)
+CheckBox/colors/font_disabled_color = Color(0.42, 0.45, 0.4, 1)
+CheckBox/constants/h_separation = 5
+CheckBox/icons/unchecked = ExtResource("13_check_off")
+CheckBox/icons/checked = ExtResource("14_check_on")
+CheckBox/icons/unchecked_disabled = ExtResource("15_check_off_disabled")
+CheckBox/icons/checked_disabled = ExtResource("16_check_on_disabled")
+CheckBox/styles/normal = SubResource("ControlEmpty")
+CheckBox/styles/hover = SubResource("ControlEmpty")
+CheckBox/styles/pressed = SubResource("ControlEmpty")
+CheckBox/styles/disabled = SubResource("ControlEmpty")
+CheckBox/styles/focus = SubResource("ButtonFocus")
+HSeparator/constants/separation = 5
+HSeparator/styles/separator = SubResource("SeparatorHorizontal")
+HSlider/icons/grabber = ExtResource("18_slider_grabber")
+HSlider/icons/grabber_highlight = ExtResource("19_slider_grabber_hover")
+HSlider/icons/grabber_disabled = ExtResource("18_slider_grabber")
+HSlider/styles/slider = SubResource("ProgressTrack")
+HSlider/styles/grabber_area = SubResource("ProgressAffinity")
+HSlider/styles/grabber_area_highlight = SubResource("ProgressAffinity")
+ItemList/colors/font_color = Color(0.83, 0.84, 0.75, 1)
+ItemList/colors/font_selected_color = Color(1, 0.91, 0.7, 1)
+ItemList/colors/guide_color = Color(0.29, 0.39, 0.29, 0.45)
+ItemList/constants/v_separation = 2
 ItemList/styles/panel = SubResource("ListPanel")
 ItemList/styles/selected = SubResource("ListSelected")
 ItemList/styles/selected_focus = SubResource("ListSelected")
 ItemList/styles/focus = SubResource("ButtonFocus")
-RichTextLabel/colors/default_color = Color(0.82, 0.83, 0.76, 1)
+Label/colors/font_color = Color(0.86, 0.85, 0.75, 1)
+LineEdit/colors/font_color = Color(0.9, 0.88, 0.78, 1)
+LineEdit/colors/font_selected_color = Color(0.98, 0.94, 0.82, 1)
+LineEdit/colors/caret_color = Color(0.88, 0.34, 0.25, 1)
+LineEdit/colors/selection_color = Color(0.38, 0.12, 0.1, 0.9)
+LineEdit/styles/normal = SubResource("FieldNormal")
+LineEdit/styles/focus = SubResource("FieldFocus")
+OptionButton/colors/font_color = Color(0.9, 0.88, 0.78, 1)
+OptionButton/colors/font_hover_color = Color(1, 0.93, 0.75, 1)
+OptionButton/constants/arrow_margin = 8
+OptionButton/icons/arrow = ExtResource("17_option_arrow")
+OptionButton/styles/normal = SubResource("FieldNormal")
+OptionButton/styles/hover = SubResource("ButtonHover")
+OptionButton/styles/pressed = SubResource("ButtonPressed")
+OptionButton/styles/focus = SubResource("FieldFocus")
+PopupMenu/colors/font_color = Color(0.89, 0.87, 0.77, 1)
+PopupMenu/colors/font_hover_color = Color(1, 0.9, 0.68, 1)
+PopupMenu/colors/font_separator_color = Color(0.62, 0.55, 0.37, 1)
+PopupMenu/styles/panel = SubResource("OuterPanel")
+PopupMenu/styles/hover = SubResource("ListSelected")
+ProgressBar/styles/background = SubResource("ProgressTrack")
+ProgressBar/styles/fill = SubResource("ProgressAffinity")
+RichTextLabel/colors/default_color = Color(0.82, 0.82, 0.73, 1)
+RichTextLabel/colors/font_selected_color = Color(0.98, 0.93, 0.78, 1)
+RichTextLabel/colors/selection_color = Color(0.36, 0.12, 0.1, 0.88)
+RichTextLabel/constants/line_separation = 2
 RichTextLabel/styles/normal = SubResource("ListPanel")
+ScrollContainer/styles/panel = SubResource("ListPanel")
+TabBar/colors/font_unselected_color = Color(0.64, 0.68, 0.6, 1)
+TabBar/colors/font_selected_color = Color(1, 0.89, 0.67, 1)
+TabBar/colors/font_hovered_color = Color(0.95, 0.9, 0.73, 1)
+TabBar/styles/tab_unselected = SubResource("TabNormal")
+TabBar/styles/tab_hovered = SubResource("TabHover")
+TabBar/styles/tab_selected = SubResource("TabSelected")
+TabBar/styles/tab_focus = SubResource("ButtonFocus")
+TabContainer/styles/panel = SubResource("InsetPanel")
+TabContainer/styles/tabbar_background = SubResource("ListPanel")
+VScrollBar/styles/scroll = SubResource("ScrollTrack")
+VScrollBar/styles/scroll_focus = SubResource("ScrollTrack")
+VScrollBar/styles/grabber = SubResource("ScrollGrabber")
+VScrollBar/styles/grabber_highlight = SubResource("ScrollGrabberHover")
+VScrollBar/styles/grabber_pressed = SubResource("ScrollGrabberHover")
+VSeparator/constants/separation = 5
+VSeparator/styles/separator = SubResource("SeparatorVertical")
+DangerButton/base_type = &"Button"
+DangerButton/colors/font_hover_color = Color(1, 0.83, 0.69, 1)
+DangerButton/styles/hover = SubResource("ButtonPressed")
+DangerButton/styles/pressed = SubResource("ButtonPressed")
+PrimaryButton/base_type = &"Button"
+PrimaryButton/colors/font_color = Color(1, 0.92, 0.72, 1)
+PrimaryButton/colors/font_hover_color = Color(1, 0.96, 0.8, 1)
+PrimaryButton/styles/normal = SubResource("ButtonHover")
+PrimaryButton/styles/hover = SubResource("ButtonPressed")
+PrimaryButton/styles/pressed = SubResource("ButtonPressed")
+HealthProgress/base_type = &"ProgressBar"
+HealthProgress/styles/fill = SubResource("ProgressHealth")
+ExperienceProgress/base_type = &"ProgressBar"
+ExperienceProgress/styles/fill = SubResource("ProgressExperience")
+PacingProgress/base_type = &"ProgressBar"
+PacingProgress/styles/fill = SubResource("ProgressPacing")
+WuxiaPanel/base_type = &"PanelContainer"
+WuxiaPanel/styles/panel = SubResource("OuterPanel")
+WuxiaDangerPanel/base_type = &"PanelContainer"
+WuxiaDangerPanel/styles/panel = SubResource("DangerPanel")
+WuxiaInsetPanel/base_type = &"PanelContainer"
+WuxiaInsetPanel/styles/panel = SubResource("InsetPanel")
+WuxiaHudPanel/base_type = &"PanelContainer"
+WuxiaHudPanel/styles/panel = SubResource("HudPanel")

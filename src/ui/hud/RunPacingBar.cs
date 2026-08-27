@@ -8,11 +8,12 @@ namespace TouhouWuxiaSurvivor.Ui.Hud;
 /// </summary>
 public partial class RunPacingBar : Control
 {
-    private static readonly Color BackgroundColor = new("172019");
-    private static readonly Color FillColor = new("a33b36");
-    private static readonly Color FinalColor = new("c9a64b");
-    private static readonly Color EndlessColor = new("5f9d72");
-    private static readonly Color MarkerColor = new("d7d5bd");
+    private static readonly Color BackgroundColor = new("08100b");
+    private static readonly Color TrackRim = new("6c5730");
+    private static readonly Color FillColor = new("b2352e");
+    private static readonly Color FinalColor = new("b99445");
+    private static readonly Color EndlessColor = new("49865f");
+    private static readonly Color MarkerColor = new("ded0a2");
     private RunPacingSnapshot _snapshot;
 
     public double ProgressRatio => _snapshot.TotalProgress;
@@ -37,24 +38,35 @@ public partial class RunPacingBar : Control
     /// </summary>
     public override void _Draw()
     {
-        Rect2 track = new(Vector2.Zero, new Vector2(Math.Max(1.0f, Size.X), 8.0f));
-        DrawRect(track, BackgroundColor);
+        float width = Math.Max(1.0f, Size.X);
+        Rect2 track = new(Vector2.Zero, new Vector2(width, 8.0f));
+        Rect2 channel = new(new Vector2(2, 2), new Vector2(Math.Max(1.0f, width - 4), 4));
+        DrawRect(track, new Color(0.01f, 0.02f, 0.014f, 0.92f));
+        DrawRect(new Rect2(1, 1, Math.Max(1.0f, width - 2), 6), TrackRim);
+        DrawRect(channel, BackgroundColor);
         Color fill = _snapshot.IsEndless
             ? EndlessColor
             : _snapshot.IsFinalEncounter ? FinalColor : FillColor;
-        float filledWidth = (float)(track.Size.X * Math.Clamp(_snapshot.TotalProgress, 0.0, 1.0));
+        float filledWidth = (float)(channel.Size.X *
+            Math.Clamp(_snapshot.TotalProgress, 0.0, 1.0));
         if (filledWidth > 0.0f)
         {
-            DrawRect(new Rect2(track.Position, new Vector2(filledWidth, track.Size.Y)), fill);
+            DrawRect(new Rect2(channel.Position, new Vector2(filledWidth, channel.Size.Y)), fill);
+            for (float x = channel.Position.X + 3; x < channel.Position.X + filledWidth; x += 7)
+            {
+                DrawRect(new Rect2(x, 3, 2, 1), fill.Lightened(0.26f));
+                DrawRect(new Rect2(x + 2, 5, 2, 1), fill.Darkened(0.22f));
+            }
         }
 
         foreach (double milestone in RunPacingTimeline.MilestoneSeconds)
         {
-            float x = (float)(track.Size.X * milestone /
+            float x = channel.Position.X + (float)(channel.Size.X * milestone /
                 RunPacingTimeline.FinalEncounterSeconds);
-            DrawLine(new Vector2(x, 0.0f), new Vector2(x, track.Size.Y), MarkerColor, 1.0f);
+            DrawLine(new Vector2(x, 1.0f), new Vector2(x, 7.0f), MarkerColor, 1.0f);
         }
 
-        DrawRect(track, new Color("697064"), false, 1.0f);
+        DrawRect(new Rect2(0, 0, 2, 2), TrackRim);
+        DrawRect(new Rect2(width - 2, 6, 2, 2), TrackRim);
     }
 }

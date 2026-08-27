@@ -2,19 +2,8 @@
 
 [ext_resource type="Script" path="res://src/ui/stats/CharacterStatsOverlay.cs" id="1_stats"]
 [ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="2_theme"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="3_scroll"]
 [ext_resource type="PackedScene" path="res://src/ui/stats/CharacterBuildView.tscn" id="4_build"]
-
-[sub_resource type="StyleBoxTexture" id="StylePanel"]
-texture = ExtResource("3_scroll")
-texture_margin_left = 8.0
-texture_margin_top = 8.0
-texture_margin_right = 8.0
-texture_margin_bottom = 8.0
-content_margin_left = 8.0
-content_margin_top = 8.0
-content_margin_right = 8.0
-content_margin_bottom = 8.0
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="5_paper"]
 
 [node name="CharacterStatsOverlay" type="CanvasLayer"]
 process_mode = 3
@@ -54,7 +43,14 @@ offset_right = 308.0
 offset_bottom = 168.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StylePanel")
+theme_type_variation = &"WuxiaPanel"
+
+[node name="PaperTexture" type="TextureRect" parent="Root/Panel"]
+modulate = Color(0.82, 0.72, 0.5, 0.09)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("5_paper")
+stretch_mode = 1
 
 [node name="Padding" type="MarginContainer" parent="Root/Panel"]
 layout_mode = 2

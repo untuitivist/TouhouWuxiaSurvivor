@@ -4,18 +4,8 @@
 [ext_resource type="Script" path="res://src/ui/compendium/CompendiumPreview.cs" id="2_preview"]
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="3_paper"]
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/preview_frame.png" id="4_frame"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="6_scroll"]
-
-[sub_resource type="StyleBoxTexture" id="StylePanel"]
-texture = ExtResource("6_scroll")
-texture_margin_left = 8.0
-texture_margin_top = 8.0
-texture_margin_right = 8.0
-texture_margin_bottom = 8.0
-content_margin_left = 8.0
-content_margin_top = 8.0
-content_margin_right = 8.0
-content_margin_bottom = 8.0
+[ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="7_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/seal_stamp.png" id="8_seal"]
 
 [node name="CompendiumPanel" type="Control"]
 process_mode = 3
@@ -26,6 +16,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
+theme = ExtResource("7_theme")
 script = ExtResource("1_panel")
 
 [node name="Backdrop" type="ColorRect" parent="."]
@@ -46,7 +37,7 @@ anchor_right = 0.975
 anchor_bottom = 0.98
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StylePanel")
+theme_type_variation = &"WuxiaPanel"
 
 [node name="PaperTexture" type="TextureRect" parent="Panel"]
 modulate = Color(0.72, 0.78, 0.67, 0.18)
@@ -68,6 +59,14 @@ theme_override_constants/separation = 5
 
 [node name="Header" type="HBoxContainer" parent="Panel/Padding/Layout"]
 layout_mode = 2
+
+[node name="Seal" type="TextureRect" parent="Panel/Padding/Layout/Header"]
+custom_minimum_size = Vector2(19, 19)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("8_seal")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Title" type="Label" parent="Panel/Padding/Layout/Header"]
 layout_mode = 2
@@ -142,10 +141,10 @@ theme_override_constants/separation = 4
 custom_minimum_size = Vector2(120, 84)
 layout_mode = 2
 texture = ExtResource("4_frame")
-patch_margin_left = 8
-patch_margin_top = 8
-patch_margin_right = 8
-patch_margin_bottom = 8
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
 
 [node name="Preview" type="Control" parent="Panel/Padding/Layout/Browser/Details/Layout/Identity/PreviewFrame"]
 texture_filter = 1
@@ -154,10 +153,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = -8.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2

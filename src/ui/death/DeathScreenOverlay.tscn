@@ -1,21 +1,8 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://src/ui/death/DeathScreenOverlay.cs" id="1_death"]
-
-[sub_resource type="StyleBoxFlat" id="StyleDeath"]
-bg_color = Color(0.055, 0.047, 0.051, 0.98)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.62, 0.18, 0.2, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="Theme" id="ThemeCompact"]
-default_font_size = 12
+[ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="3_paper"]
 
 [node name="DeathScreenOverlay" type="CanvasLayer"]
 process_mode = 3
@@ -30,6 +17,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 
 [node name="Backdrop" type="ColorRect" parent="Root"]
 layout_mode = 1
@@ -54,8 +42,14 @@ offset_right = 180.0
 offset_bottom = 92.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = SubResource("ThemeCompact")
-theme_override_styles/panel = SubResource("StyleDeath")
+theme_type_variation = &"WuxiaDangerPanel"
+
+[node name="PaperTexture" type="TextureRect" parent="Root/DeathPopup"]
+modulate = Color(0.92, 0.52, 0.38, 0.08)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_paper")
+stretch_mode = 1
 
 [node name="Padding" type="MarginContainer" parent="Root/DeathPopup"]
 layout_mode = 2
@@ -94,11 +88,13 @@ alignment = 1
 [node name="ViewSummary" type="Button" parent="Root/DeathPopup/Padding/Layout/Buttons"]
 custom_minimum_size = Vector2(118, 32)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "查看本局总结"
 
 [node name="MainMenu" type="Button" parent="Root/DeathPopup/Padding/Layout/Buttons"]
 custom_minimum_size = Vector2(110, 32)
 layout_mode = 2
+theme_type_variation = &"DangerButton"
 text = "返回主菜单"
 
 [node name="SummaryPanel" type="PanelContainer" parent="Root"]
@@ -115,8 +111,14 @@ offset_right = 230.0
 offset_bottom = 130.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = SubResource("ThemeCompact")
-theme_override_styles/panel = SubResource("StyleDeath")
+theme_type_variation = &"WuxiaDangerPanel"
+
+[node name="PaperTexture" type="TextureRect" parent="Root/SummaryPanel"]
+modulate = Color(0.92, 0.52, 0.38, 0.07)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_paper")
+stretch_mode = 1
 
 [node name="Padding" type="MarginContainer" parent="Root/SummaryPanel"]
 layout_mode = 2
@@ -278,9 +280,11 @@ alignment = 2
 [node name="Restart" type="Button" parent="Root/SummaryPanel/Padding/Layout/Buttons"]
 custom_minimum_size = Vector2(104, 30)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "重新开始"
 
 [node name="MainMenu" type="Button" parent="Root/SummaryPanel/Padding/Layout/Buttons"]
 custom_minimum_size = Vector2(104, 30)
 layout_mode = 2
+theme_type_variation = &"DangerButton"
 text = "返回主菜单"

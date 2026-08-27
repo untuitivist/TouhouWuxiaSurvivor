@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3]
+[gd_scene load_steps=44 format=3]
 
 [ext_resource type="Script" path="res://src/demo/WorldDemo.cs" id="1_demo"]
 [ext_resource type="Script" path="res://src/actors/player/PlayerController.cs" id="2_player"]
@@ -35,6 +35,8 @@
 [ext_resource type="PackedScene" path="res://src/ui/completion/RunCompletionOverlay.tscn" id="37_completion"]
 [ext_resource type="Script" path="res://src/ui/hud/RunPacingBar.cs" id="38_pacing_bar"]
 [ext_resource type="Script" path="res://src/ui/hud/spellcards/SpellCardHudStrip.cs" id="39_spell_hud"]
+[ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="40_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/map_frame.png" id="41_map_frame"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -245,7 +247,8 @@ mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="WorldDebugHud/PacingMargin"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StylePacingPanel")
+theme = ExtResource("40_theme")
+theme_type_variation = &"WuxiaHudPanel"
 
 [node name="Padding" type="MarginContainer" parent="WorldDebugHud/PacingMargin/Panel"]
 layout_mode = 2
@@ -332,7 +335,8 @@ grow_vertical = 0
 
 [node name="Panel" type="PanelContainer" parent="WorldDebugHud/StatusMargin"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+theme = ExtResource("40_theme")
+theme_type_variation = &"WuxiaHudPanel"
 
 [node name="Padding" type="MarginContainer" parent="WorldDebugHud/StatusMargin/Panel"]
 layout_mode = 2
@@ -354,8 +358,7 @@ text = "生命"
 custom_minimum_size = Vector2(112, 12)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleHealthBackground")
-theme_override_styles/fill = SubResource("StyleHealthFill")
+theme_type_variation = &"HealthProgress"
 max_value = 5.0
 value = 5.0
 show_percentage = false
@@ -380,8 +383,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(72, 8)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleExperienceBackground")
-theme_override_styles/fill = SubResource("StyleExperienceFill")
+theme_type_variation = &"ExperienceProgress"
 max_value = 8.0
 show_percentage = false
 
@@ -450,7 +452,43 @@ grow_vertical = 2
 mouse_filter = 0
 script = ExtResource("5_map")
 
+[node name="Frame" type="NinePatchRect" parent="MapLayer/WorldMapOverlay"]
+z_index = 5
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("41_map_frame")
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+draw_center = false
+
+[node name="MapTitle" type="PanelContainer" parent="MapLayer/WorldMapOverlay"]
+z_index = 6
+layout_mode = 0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 142.0
+offset_bottom = 38.0
+mouse_filter = 2
+theme = ExtResource("40_theme")
+theme_type_variation = &"WuxiaHudPanel"
+
+[node name="Label" type="Label" parent="MapLayer/WorldMapOverlay/MapTitle"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.86, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "幻想乡行旅图"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Labels" type="Control" parent="MapLayer/WorldMapOverlay"]
+z_index = 3
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

@@ -1,13 +1,26 @@
 # 武侠 UI 像素资产
 
-本目录保存游戏运行时直接引用的像素 UI 资产。所有图片由项目内 RGB 像素绘制器确定性生成，
-不依赖外部图片服务；相同代码与参数会得到相同 PNG，便于后续统一调色和批量迭代。
+本目录保存游戏运行时直接引用的东方武侠像素 UI 资产。所有图片由项目内 RGB 像素绘制器
+确定性生成，不依赖外部图片服务；相同代码与参数会得到相同 PNG，便于统一调色和批量迭代。
 
 ## 资产清单
 
 - `paper_fiber.png`：宣纸纤维底纹
-- `scroll_panel.png`：九宫格卷轴面板边框
-- `preview_frame.png`：图鉴动态窗九宫格边框
+- `scroll_panel.png`：八像素切片的漆木外层面板
+- `danger_panel.png`：八像素切片的朱砂危险与失败面板
+- `inset_panel.png`：六像素切片的正文、列表和详情内嵌面
+- `preview_frame.png`：十像素切片的图鉴动态陈列框
+- `hud_panel.png`：六像素切片的紧凑状态栏外框
+- `map_frame.png`：十像素切片、透明中心的行旅地图包边
+- `button_*.png`：按钮普通、悬停、按下、禁用与焦点五态
+- `field_*.png`：输入框普通与聚焦两态
+- `tab_*.png`：页签普通、悬停与选中三态
+- `list_*.png`：条目列表底面与当前选中签
+- `check_*.png`：启用、禁用条件下的勾选与未勾选四态
+- `option_arrow.png`、`slider_grabber*.png`：选项箭头与滑杆结绳抓手
+- `separator_*.png`：不含可拖动语义的横竖编织分隔纹
+- `scroll_*.png`：竹节式滚动槽与抓手
+- `progress_*.png`：生命、经验、阶段与亲和的语义进度纹样
 - `cloud_divider.png`：祥云分隔纹
 - `seal_stamp.png`：朱砂印章
 - `ink_mountains.png`：主菜单墨山、月轮与鸟居背景

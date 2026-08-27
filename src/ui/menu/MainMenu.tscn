@@ -11,16 +11,13 @@
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/cloud_divider.png" id="10_divider"]
 [ext_resource type="PackedScene" path="res://src/ui/meta/CultivationPanel.tscn" id="11_cultivation"]
 [ext_resource type="PackedScene" path="res://src/ui/changelog/ChangelogPanel.tscn" id="12_changelog"]
-
-[sub_resource type="StyleBoxFlat" id="StyleMenu"]
-bg_color = Color(0.018, 0.026, 0.021, 0.78)
-border_width_left = 2
-border_color = Color(0.67, 0.18, 0.15, 0.95)
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="13_paper"]
 
 [sub_resource type="StyleBoxFlat" id="StyleTitle"]
-bg_color = Color(0.012, 0.019, 0.015, 0.94)
-border_width_bottom = 1
-border_color = Color(0.54, 0.16, 0.14, 0.95)
+bg_color = Color(0.028, 0.023, 0.017, 0.95)
+border_width_top = 1
+border_width_bottom = 2
+border_color = Color(0.48, 0.37, 0.18, 0.95)
 
 [node name="MainMenu" type="Control"]
 texture_filter = 1
@@ -56,6 +53,18 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.008, 0.014, 0.01, 0.67)
+
+[node name="PaperWash" type="TextureRect" parent="."]
+modulate = Color(0.82, 0.68, 0.48, 0.08)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("13_paper")
+stretch_mode = 1
 
 [node name="RightWash" type="ColorRect" parent="."]
 layout_mode = 1
@@ -124,6 +133,14 @@ theme_override_colors/font_color = Color(0.58, 0.64, 0.55, 1)
 theme_override_font_sizes/font_size = 9
 text = "幻想乡异闻卷"
 
+[node name="TitleRule" type="TextureRect" parent="TitleBand/Margin/Header/TitleStack"]
+custom_minimum_size = Vector2(152, 4)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("10_divider")
+expand_mode = 1
+stretch_mode = 0
+
 [node name="Seal" type="TextureRect" parent="TitleBand/Margin/Header"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -144,9 +161,9 @@ grow_vertical = 2
 layout_mode = 0
 offset_left = 22.0
 offset_top = 70.0
-offset_right = 238.0
+offset_right = 232.0
 offset_bottom = 338.0
-theme_override_styles/panel = SubResource("StyleMenu")
+theme_type_variation = &"WuxiaPanel"
 
 [node name="Padding" type="MarginContainer" parent="Menu/Panel"]
 layout_mode = 2
@@ -166,42 +183,44 @@ theme_override_font_sizes/font_size = 12
 text = "无限幻想乡"
 
 [node name="Start" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "启程"
 alignment = 0
 
 [node name="Compendium" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 text = "幻想乡图鉴"
 alignment = 0
 
 [node name="Cultivation" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 text = "神社整备"
 alignment = 0
 
 [node name="Settings" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 text = "设置"
 alignment = 0
 
 [node name="Changelog" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 text = "版本日志"
 alignment = 0
 
 [node name="Quit" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+theme_type_variation = &"DangerButton"
 text = "离开"
 alignment = 0
 
-[node name="RoleBlock" type="MarginContainer" parent="Menu"]
+[node name="RoleBlock" type="PanelContainer" parent="Menu"]
 layout_mode = 1
 anchor_left = 0.57
 anchor_top = 0.36
@@ -209,10 +228,7 @@ anchor_right = 0.94
 anchor_bottom = 0.70
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_type_variation = &"WuxiaInsetPanel"
 mouse_filter = 2
 
 [node name="Layout" type="VBoxContainer" parent="Menu/RoleBlock"]

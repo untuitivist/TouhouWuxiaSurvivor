@@ -96,20 +96,15 @@ public partial class DeathScreenOverlay : CanvasLayer
     }
 
     /// <summary>
-    /// 为成功结算复制一份金色边框样式，为失败保留朱砂边框，避免修改场景共享子资源。
+    /// 为成功结算切换金色漆框，为失败保留朱砂漆框；两页始终使用相同结果语义。
     /// </summary>
     private void ApplyOutcomeStyle(RunEndReason reason)
     {
-        if (_deathPopup!.GetThemeStylebox("panel") is not StyleBoxFlat source)
-        {
-            return;
-        }
-
-        var style = (StyleBoxFlat)source.Duplicate();
-        style.BorderColor = reason == RunEndReason.Cleared
-            ? new Color(0.72f, 0.58f, 0.25f)
-            : new Color(0.62f, 0.18f, 0.2f);
-        _deathPopup.AddThemeStyleboxOverride("panel", style);
+        StringName variation = reason == RunEndReason.Cleared
+            ? "WuxiaPanel"
+            : "WuxiaDangerPanel";
+        _deathPopup!.ThemeTypeVariation = variation;
+        _summaryPanel!.ThemeTypeVariation = variation;
     }
 
     /// <summary>

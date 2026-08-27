@@ -1,33 +1,9 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/ui/pause/PauseMenuOverlay.cs" id="1_pause"]
 [ext_resource type="PackedScene" path="res://src/ui/settings/SettingsPanel.tscn" id="2_settings"]
 [ext_resource type="PackedScene" path="res://src/ui/compendium/CompendiumPanel.tscn" id="3_compendium"]
 [ext_resource type="Theme" path="res://src/ui/theme/WuxiaTheme.tres" id="4_theme"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/scroll_panel.png" id="5_scroll"]
-
-[sub_resource type="StyleBoxTexture" id="StylePause"]
-texture = ExtResource("5_scroll")
-texture_margin_left = 8.0
-texture_margin_top = 8.0
-texture_margin_right = 8.0
-texture_margin_bottom = 8.0
-content_margin_left = 8.0
-content_margin_top = 8.0
-content_margin_right = 8.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleConfirm"]
-bg_color = Color(0.07, 0.075, 0.068, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.74, 0.56, 0.42, 0.95)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [node name="PauseMenuOverlay" type="CanvasLayer"]
 process_mode = 3
@@ -62,12 +38,12 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -130.0
-offset_top = -145.0
+offset_top = -142.0
 offset_right = 130.0
-offset_bottom = 145.0
+offset_bottom = 142.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StylePause")
+theme_type_variation = &"WuxiaPanel"
 
 [node name="Padding" type="MarginContainer" parent="Root/PausePanel"]
 layout_mode = 2
@@ -93,6 +69,7 @@ layout_mode = 2
 [node name="Continue" type="Button" parent="Root/PausePanel/Padding/Layout"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+theme_type_variation = &"PrimaryButton"
 text = "继续游戏"
 
 [node name="Settings" type="Button" parent="Root/PausePanel/Padding/Layout"]
@@ -108,11 +85,13 @@ text = "幻想乡图鉴"
 [node name="MainMenu" type="Button" parent="Root/PausePanel/Padding/Layout"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+theme_type_variation = &"DangerButton"
 text = "返回主菜单"
 
 [node name="Desktop" type="Button" parent="Root/PausePanel/Padding/Layout"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+theme_type_variation = &"DangerButton"
 text = "返回桌面"
 
 [node name="SettingsPanel" parent="Root" instance=ExtResource("2_settings")]
@@ -135,7 +114,7 @@ offset_right = 190.0
 offset_bottom = 78.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleConfirm")
+theme_type_variation = &"WuxiaDangerPanel"
 
 [node name="Padding" type="MarginContainer" parent="Root/ConfirmPanel"]
 layout_mode = 2
@@ -169,4 +148,5 @@ text = "取消"
 [node name="Confirm" type="Button" parent="Root/ConfirmPanel/Padding/Layout/Buttons"]
 custom_minimum_size = Vector2(88, 30)
 layout_mode = 2
+theme_type_variation = &"DangerButton"
 text = "确认"

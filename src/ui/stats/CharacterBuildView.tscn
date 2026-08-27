@@ -1,27 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://src/ui/stats/CharacterBuildView.cs" id="1_view"]
 [ext_resource type="Script" path="res://src/ui/stats/CharacterBuildGraph.cs" id="2_graph"]
 
-[sub_resource type="StyleBoxFlat" id="GraphPanel"]
-bg_color = Color(0.043, 0.063, 0.051, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.28, 0.37, 0.29, 0.82)
-
-[sub_resource type="StyleBoxFlat" id="DetailPanel"]
-bg_color = Color(0.027, 0.041, 0.033, 0.86)
-border_width_left = 2
-border_color = Color(0.56, 0.43, 0.24, 0.78)
-content_margin_left = 7.0
-content_margin_top = 5.0
-content_margin_right = 6.0
-content_margin_bottom = 5.0
-
-[sub_resource type="StyleBoxFlat" id="AffinityFill"]
-bg_color = Color(0.68, 0.19, 0.15, 0.9)
 
 [node name="CharacterBuildView" type="Control"]
 custom_minimum_size = Vector2(0, 260)
@@ -67,7 +48,6 @@ text = "刚 0"
 [node name="AffinityBar0" type="ProgressBar" parent="Summary"]
 custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-theme_override_styles/fill = SubResource("AffinityFill")
 show_percentage = false
 [node name="Affinity1" type="Label" parent="Summary"]
 layout_mode = 2
@@ -75,7 +55,6 @@ text = "巧 0"
 [node name="AffinityBar1" type="ProgressBar" parent="Summary"]
 custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-theme_override_styles/fill = SubResource("AffinityFill")
 show_percentage = false
 [node name="Affinity2" type="Label" parent="Summary"]
 layout_mode = 2
@@ -83,7 +62,6 @@ text = "疾 0"
 [node name="AffinityBar2" type="ProgressBar" parent="Summary"]
 custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-theme_override_styles/fill = SubResource("AffinityFill")
 show_percentage = false
 [node name="Affinity3" type="Label" parent="Summary"]
 layout_mode = 2
@@ -91,7 +69,6 @@ text = "阵 0"
 [node name="AffinityBar3" type="ProgressBar" parent="Summary"]
 custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-theme_override_styles/fill = SubResource("AffinityFill")
 show_percentage = false
 [node name="Affinity4" type="Label" parent="Summary"]
 layout_mode = 2
@@ -99,7 +76,6 @@ text = "御 0"
 [node name="AffinityBar4" type="ProgressBar" parent="Summary"]
 custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-theme_override_styles/fill = SubResource("AffinityFill")
 show_percentage = false
 
 [node name="Filters" type="HBoxContainer" parent="."]
@@ -174,7 +150,7 @@ theme_override_constants/separation = 6
 custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("GraphPanel")
+theme_type_variation = &"WuxiaInsetPanel"
 
 [node name="Graph" type="Control" parent="Body/GraphFrame"]
 custom_minimum_size = Vector2(330, 205)
@@ -185,7 +161,7 @@ script = ExtResource("2_graph")
 [node name="DetailsFrame" type="PanelContainer" parent="Body"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("DetailPanel")
+theme_type_variation = &"WuxiaInsetPanel"
 
 [node name="Details" type="VBoxContainer" parent="Body/DetailsFrame"]
 layout_mode = 2

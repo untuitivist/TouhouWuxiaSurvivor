@@ -11,7 +11,7 @@ namespace TouhouWuxiaSurvivor.Ui.Map;
 /// </summary>
 public partial class WorldMapOverlay : Control
 {
-    private static readonly Color BackgroundColor = new("0b0f11");
+    private static readonly Color BackgroundColor = new("07100b");
     private readonly WorldMapTextureBuilder _textureBuilder = new();
     private readonly MapViewState _view = new();
     private ExploredMapStore? _exploredMap;

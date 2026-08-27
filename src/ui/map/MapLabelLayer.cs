@@ -11,9 +11,12 @@ namespace TouhouWuxiaSurvivor.Ui.Map;
 public partial class MapLabelLayer : Control
 {
     private static readonly Color BiomeText = new("d8e5ce");
-    private static readonly Color BiomeBackground = new(0.04f, 0.09f, 0.055f, 0.88f);
+    private static readonly Color BiomeBackground = new(0.035f, 0.075f, 0.045f, 0.94f);
     private static readonly Color StructureText = new("f2d995");
-    private static readonly Color StructureBackground = new(0.16f, 0.065f, 0.045f, 0.92f);
+    private static readonly Color StructureBackground = new(0.18f, 0.055f, 0.04f, 0.95f);
+    private static readonly Color BiomeBorder = new("59745a");
+    private static readonly Color StructureBorder = new("b78e48");
+    private static readonly Color PlateShadow = new(0.01f, 0.018f, 0.012f, 0.9f);
     private IReadOnlyList<MapLabel> _labels = [];
     private ExploredMapStore? _exploredMap;
     private MapLabelProvider? _provider;
@@ -138,8 +141,8 @@ public partial class MapLabelLayer : Control
         Color background = label.Kind == MapLabelKind.Structure
             ? StructureBackground
             : BiomeBackground;
-        DrawCircle(anchor, label.Kind == MapLabelKind.Structure ? 2.5f : 1.5f, textColor);
-        DrawRect(textRect.Grow(3.0f), background);
+        DrawMapPin(anchor, label.Kind, textColor);
+        DrawLabelPlate(textRect, label.Kind, background);
         DrawString(
             font,
             textRect.Position + new Vector2(0, font.GetAscent(fontSize)),
@@ -163,7 +166,7 @@ public partial class MapLabelLayer : Control
         position.X = Mathf.Clamp(position.X, 6.0f, Math.Max(6.0f, Size.X - textSize.X - 6.0f));
         position.Y = Mathf.Clamp(position.Y, 6.0f, Math.Max(6.0f, Size.Y - textSize.Y - 6.0f));
         var textRect = new Rect2(position, textSize);
-        DrawRect(textRect.Grow(4.0f), BiomeBackground);
+        DrawLabelPlate(textRect.Grow(1.0f), MapLabelKind.Biome, BiomeBackground);
         DrawString(
             font,
             position + new Vector2(0, font.GetAscent(fontSize)),
@@ -172,6 +175,34 @@ public partial class MapLabelLayer : Control
             -1,
             fontSize,
             BiomeText);
+    }
+
+    /// <summary>
+    /// 绘制阴影、语义包边和左上朱砂榫钉组成的像素铭牌，避免标签退化成纯色矩形。
+    /// </summary>
+    private void DrawLabelPlate(Rect2 textRect, MapLabelKind kind, Color background)
+    {
+        Color border = kind == MapLabelKind.Structure ? StructureBorder : BiomeBorder;
+        Rect2 outer = textRect.Grow(4.0f);
+        DrawRect(new Rect2(outer.Position + new Vector2(2, 2), outer.Size), PlateShadow);
+        DrawRect(outer, border);
+        DrawRect(outer.Grow(-1.0f), background);
+        DrawLine(outer.Position + new Vector2(3, 2),
+            new Vector2(outer.End.X - 3, outer.Position.Y + 2), border.Lightened(0.18f));
+        DrawRect(new Rect2(outer.Position + new Vector2(1, 1), new Vector2(2, 2)),
+            new Color("c64a38"));
+    }
+
+    /// <summary>
+    /// 用十字金属环和朱砂中心标记地图锚点，结构锚点比群系提示多一层外沿。
+    /// </summary>
+    private void DrawMapPin(Vector2 anchor, MapLabelKind kind, Color color)
+    {
+        float radius = kind == MapLabelKind.Structure ? 3.0f : 2.0f;
+        DrawCircle(anchor, radius + 1.0f, new Color("07100b"));
+        DrawCircle(anchor, radius, color);
+        DrawRect(new Rect2(anchor - Vector2.One, new Vector2(2, 2)),
+            new Color("d94b3b"));
     }
 
     /// <summary>

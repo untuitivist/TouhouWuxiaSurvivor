@@ -10,10 +10,10 @@ namespace TouhouWuxiaSurvivor.Ui.Hud.SpellCards;
 /// </summary>
 public partial class SpellCardCooldownIcon : Control
 {
-    private static readonly Color OffensiveFill = new("3b1516");
-    private static readonly Color SupportFill = new("143328");
-    private static readonly Color OffensiveBorder = new("b85b4e");
-    private static readonly Color SupportBorder = new("5f9d72");
+    private static readonly Color OffensiveFill = new("4b1918");
+    private static readonly Color SupportFill = new("163a2b");
+    private static readonly Color OffensiveBorder = new("c56351");
+    private static readonly Color SupportBorder = new("67a77b");
     private static readonly Color ReadyBorder = new("e5c66b");
     private static readonly Color TextColor = new("f1ead4");
     private static readonly Color CooldownMask = new(0.015f, 0.02f, 0.017f, 0.76f);
@@ -49,7 +49,7 @@ public partial class SpellCardCooldownIcon : Control
         return new Rect2(Vector2.Zero, new Vector2(Math.Max(0.0f, Size.X), height));
     }
 
-    /// <summary>依次绘制底色、文字、剩余遮罩、待机标记和一像素槽位边框。</summary>
+    /// <summary>依次绘制削角印章、文字、受内框裁切的冷却遮罩、待机标记与槽位包边。</summary>
     public override void _Draw()
     {
         if (_timer is null || _font is null)
@@ -59,22 +59,42 @@ public partial class SpellCardCooldownIcon : Control
 
         Rect2 bounds = new(Vector2.Zero, Size);
         bool support = SpellCardSlotPolicy.Classify(_timer.Card) == SpellCardSlotKind.Support;
-        DrawRect(bounds, support ? SupportFill : OffensiveFill);
+        Color fill = support ? SupportFill : OffensiveFill;
+        Color border = IsWaitingForCondition
+            ? ReadyBorder
+            : support ? SupportBorder : OffensiveBorder;
+        DrawSealFrame(bounds, fill, border);
         DrawGlyph(_timer.Card.ShortName, bounds);
-        Rect2 mask = GetCooldownMaskRect();
+        Rect2 mask = GetCooldownMaskRect().Intersection(bounds.Grow(-3.0f));
         if (mask.Size.Y > 0.0f)
         {
             DrawRect(mask, CooldownMask);
         }
 
-        Color border = IsWaitingForCondition
-            ? ReadyBorder
-            : support ? SupportBorder : OffensiveBorder;
-        DrawRect(bounds, border, false, IsWaitingForCondition ? 2.0f : 1.0f);
         if (IsWaitingForCondition)
         {
             DrawRect(new Rect2(3.0f, Size.Y - 3.0f, Size.X - 6.0f, 2.0f), ReadyBorder);
         }
+    }
+
+    /// <summary>
+    /// 绘制偏移阴影、硬削角底、内沿高光与四枚榫钉，形成可辨识的微型文字印章。
+    /// </summary>
+    private void DrawSealFrame(Rect2 bounds, Color fill, Color border)
+    {
+        DrawRect(new Rect2(bounds.Position + new Vector2(2, 2), bounds.Size),
+            new Color(0.01f, 0.015f, 0.01f, 0.82f));
+        DrawRect(new Rect2(bounds.Position + new Vector2(2, 0),
+            bounds.Size - new Vector2(4, 0)), border);
+        DrawRect(new Rect2(bounds.Position + new Vector2(0, 2),
+            bounds.Size - new Vector2(0, 4)), border);
+        DrawRect(bounds.Grow(-2.0f), fill);
+        DrawLine(new Vector2(4, 3), new Vector2(Size.X - 4, 3),
+            border.Lightened(0.22f), 1.0f);
+        DrawLine(new Vector2(4, Size.Y - 3), new Vector2(Size.X - 4, Size.Y - 3),
+            border.Darkened(0.28f), 1.0f);
+        DrawRect(new Rect2(2, 2, 2, 2), ReadyBorder.Darkened(0.18f));
+        DrawRect(new Rect2(Size.X - 4, Size.Y - 4, 2, 2), ReadyBorder.Darkened(0.18f));
     }
 
     /// <summary>把中英文短名压缩为两字或两个英文首字母，并居中绘制在印章中。</summary>
