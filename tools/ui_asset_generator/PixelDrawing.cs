@@ -3,7 +3,7 @@ using TouhouWuxiaSurvivor.Tools.TileGenerator;
 namespace TouhouWuxiaSurvivor.Tools.UiAssetGenerator;
 
 /// <summary>
-/// 为 UI 像素资产提供矩形、直线、圆、三角形和任意多边形基础绘制操作。
+/// 为 UI 像素资产提供矩形、直线、圆和三角形基础绘制操作。
 /// </summary>
 internal static class PixelDrawing
 {
@@ -101,45 +101,6 @@ internal static class PixelDrawing
                 {
                     canvas.SetPixel(x, y, color);
                 }
-            }
-        }
-    }
-
-    /// <summary>
-    /// 使用奇偶扫描线规则填充任意简单多边形，供山脊、屋檐和道路绘制自然的不规则轮廓。
-    /// </summary>
-    public static void FillPolygon(
-        PixelCanvas canvas, IReadOnlyList<(int X, int Y)> points, Rgba32 color)
-    {
-        if (points.Count < 3)
-        {
-            return;
-        }
-
-        int minY = points.Min(point => point.Y);
-        int maxY = points.Max(point => point.Y);
-        var intersections = new List<int>(points.Count);
-        for (int y = minY; y <= maxY; y++)
-        {
-            intersections.Clear();
-            for (int index = 0; index < points.Count; index++)
-            {
-                (int X, int Y) first = points[index];
-                (int X, int Y) second = points[(index + 1) % points.Count];
-                if ((first.Y <= y && second.Y > y) ||
-                    (second.Y <= y && first.Y > y))
-                {
-                    int x = first.X + (y - first.Y) * (second.X - first.X) /
-                        (second.Y - first.Y);
-                    intersections.Add(x);
-                }
-            }
-
-            intersections.Sort();
-            for (int index = 0; index + 1 < intersections.Count; index += 2)
-            {
-                FillRect(canvas, intersections[index], y,
-                    intersections[index + 1] - intersections[index] + 1, 1, color);
             }
         }
     }

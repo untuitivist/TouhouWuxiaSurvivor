@@ -3,15 +3,14 @@
 [ext_resource type="Script" path="res://src/ui/settings/AudioSettingsPanel.cs" id="1_audio"]
 
 [node name="音频" type="MarginContainer"]
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
 
 [node name="Audio" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
+theme_override_constants/separation = 12
 script = ExtResource("1_audio")
 
 [node name="Master" type="HBoxContainer" parent="Audio"]
@@ -19,7 +18,7 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Audio/Master"]
-custom_minimum_size = Vector2(76, 0)
+custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "主音量"
 
@@ -30,7 +29,7 @@ max_value = 100.0
 step = 1.0
 
 [node name="Value" type="Label" parent="Audio/Master"]
-custom_minimum_size = Vector2(36, 0)
+custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 text = "80%"
 horizontal_alignment = 2
@@ -40,7 +39,7 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Audio/Music"]
-custom_minimum_size = Vector2(76, 0)
+custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "音乐"
 
@@ -51,7 +50,7 @@ max_value = 100.0
 step = 1.0
 
 [node name="Value" type="Label" parent="Audio/Music"]
-custom_minimum_size = Vector2(36, 0)
+custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 text = "70%"
 horizontal_alignment = 2
@@ -61,7 +60,7 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="Audio/Sfx"]
-custom_minimum_size = Vector2(76, 0)
+custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
 text = "音效"
 
@@ -72,7 +71,7 @@ max_value = 100.0
 step = 1.0
 
 [node name="Value" type="Label" parent="Audio/Sfx"]
-custom_minimum_size = Vector2(36, 0)
+custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 text = "80%"
 horizontal_alignment = 2

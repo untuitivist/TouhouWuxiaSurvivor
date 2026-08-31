@@ -8,21 +8,21 @@ namespace TouhouWuxiaSurvivor.Tools.UiAssetGenerator;
 internal static class UiPixelPalette
 {
     public static readonly Rgba32 Transparent = new(0, 0, 0, 0);
-    public static readonly Rgba32 Shadow = new(3, 4, 6, 224);
-    public static readonly Rgba32 InkBlack = new(8, 10, 12, 255);
-    public static readonly Rgba32 Ink = new(15, 18, 19, 255);
-    public static readonly Rgba32 PaperDark = new(23, 25, 24, 255);
-    public static readonly Rgba32 Paper = new(34, 36, 33, 255);
-    public static readonly Rgba32 PaperLight = new(51, 53, 47, 255);
-    public static readonly Rgba32 JadeDark = new(24, 48, 46, 255);
-    public static readonly Rgba32 Jade = new(52, 91, 82, 255);
-    public static readonly Rgba32 JadeLight = new(101, 136, 116, 255);
-    public static readonly Rgba32 GoldDark = new(83, 63, 32, 255);
-    public static readonly Rgba32 Gold = new(157, 126, 61, 255);
-    public static readonly Rgba32 GoldLight = new(218, 181, 96, 255);
-    public static readonly Rgba32 CinnabarDark = new(76, 20, 23, 255);
-    public static readonly Rgba32 Cinnabar = new(161, 42, 42, 255);
-    public static readonly Rgba32 CinnabarLight = new(220, 82, 61, 255);
-    public static readonly Rgba32 Ivory = new(229, 220, 188, 255);
-    public static readonly Rgba32 Muted = new(82, 87, 82, 255);
+    public static readonly Rgba32 Shadow = new(3, 7, 5, 220);
+    public static readonly Rgba32 InkBlack = new(6, 11, 8, 255);
+    public static readonly Rgba32 Ink = new(10, 18, 13, 255);
+    public static readonly Rgba32 PaperDark = new(13, 24, 17, 255);
+    public static readonly Rgba32 Paper = new(19, 31, 23, 255);
+    public static readonly Rgba32 PaperLight = new(27, 42, 30, 255);
+    public static readonly Rgba32 JadeDark = new(37, 58, 42, 255);
+    public static readonly Rgba32 Jade = new(73, 98, 72, 255);
+    public static readonly Rgba32 JadeLight = new(116, 139, 103, 255);
+    public static readonly Rgba32 GoldDark = new(91, 70, 34, 255);
+    public static readonly Rgba32 Gold = new(166, 137, 72, 255);
+    public static readonly Rgba32 GoldLight = new(220, 188, 111, 255);
+    public static readonly Rgba32 CinnabarDark = new(91, 24, 22, 255);
+    public static readonly Rgba32 Cinnabar = new(178, 49, 41, 255);
+    public static readonly Rgba32 CinnabarLight = new(224, 100, 73, 255);
+    public static readonly Rgba32 Ivory = new(235, 226, 195, 255);
+    public static readonly Rgba32 Muted = new(79, 89, 76, 255);
 }

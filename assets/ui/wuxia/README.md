@@ -6,14 +6,12 @@
 ## 资产清单
 
 - `paper_fiber.png`：宣纸纤维底纹
-- `scroll_panel.png`：八像素切片、仅保留书脊和上下卷轴杆的外层面板
+- `scroll_panel.png`：八像素切片的漆木外层面板
 - `danger_panel.png`：八像素切片的朱砂危险与失败面板
 - `inset_panel.png`：六像素切片的正文、列表和详情内嵌面
 - `preview_frame.png`：十像素切片的图鉴动态陈列框
 - `hud_panel.png`：六像素切片的紧凑状态栏外框
 - `map_frame.png`：十像素切片、透明中心的行旅地图包边
-- `menu_entry_*.png`：普通态无盒、交互态展开朱砂墨迹的主菜单题签五态
-- `role_plaque.png`：以不规则墨面和落款线融入场景的角色信息底纹
 - `button_*.png`：按钮普通、悬停、按下、禁用与焦点五态
 - `field_*.png`：输入框普通与聚焦两态
 - `tab_*.png`：页签普通、悬停与选中三态
@@ -25,7 +23,7 @@
 - `progress_*.png`：生命、经验、阶段与亲和的语义进度纹样
 - `cloud_divider.png`：祥云分隔纹
 - `seal_stamp.png`：朱砂印章
-- `ink_mountains.png`：640×360 原生绘制的月下神社、鸟居、参道、河湾与远山背景
+- `ink_mountains.png`：主菜单墨山、月轮与鸟居背景
 - `enemy_preview_sheet.png`：十二种敌人原型的双帧移动图
 - `daily_actor_sheet.png`：四种场景日常人物的双帧行走图
 

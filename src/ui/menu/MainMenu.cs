@@ -16,7 +16,6 @@ namespace TouhouWuxiaSurvivor.Ui.Menu;
 public partial class MainMenu : Control
 {
     private Control? _menu;
-    private Control? _titleBand;
     private SettingsPanel? _settings;
     private ContentPackSelectionPanel? _contentSelection;
     private CompendiumPanel? _compendium;
@@ -31,7 +30,6 @@ public partial class MainMenu : Control
         GameSettingsService.Initialize();
         GetTree().Paused = false;
         _menu = GetNode<Control>("Menu");
-        _titleBand = GetNode<Control>("TitleBand");
         _settings = GetNode<SettingsPanel>("SettingsPanel");
         _contentSelection = GetNode<ContentPackSelectionPanel>("ContentPackSelectionPanel");
         _compendium = GetNode<CompendiumPanel>("CompendiumPanel");
@@ -64,49 +62,49 @@ public partial class MainMenu : Control
     /// </summary>
     private void ShowContentSelection()
     {
-        SetPrimaryChromeVisible(false);
+        _menu!.Hide();
         _contentSelection!.Present();
     }
 
     /// <summary>
     /// 从内容选择返回时恢复主菜单命令区域。
     /// </summary>
-    private void HideContentSelection() => SetPrimaryChromeVisible(true);
+    private void HideContentSelection() => _menu!.Show();
 
     /// <summary>
     /// 隐藏主菜单命令并打开由运行目录自动构建的幻想乡图鉴。
     /// </summary>
     private void ShowCompendium()
     {
-        SetPrimaryChromeVisible(false);
+        _menu!.Hide();
         _compendium!.Present();
     }
 
     /// <summary>
     /// 从图鉴返回时恢复主菜单命令区域。
     /// </summary>
-    private void HideCompendium() => SetPrimaryChromeVisible(true);
+    private void HideCompendium() => _menu!.Show();
 
     /// <summary>
     /// 隐藏主菜单命令并打开幻想乡钱财、解锁与博丽神社整备单页。
     /// </summary>
     private void ShowCultivation()
     {
-        SetPrimaryChromeVisible(false);
+        _menu!.Hide();
         _cultivation!.Present();
     }
 
     /// <summary>
     /// 从神社整备返回时恢复主菜单命令区域。
     /// </summary>
-    private void HideCultivation() => SetPrimaryChromeVisible(true);
+    private void HideCultivation() => _menu!.Show();
 
     /// <summary>
     /// 隐藏主菜单命令并显示复用设置面板。
     /// </summary>
     private void ShowSettings()
     {
-        SetPrimaryChromeVisible(false);
+        _menu!.Hide();
         _settings!.Show();
     }
 
@@ -116,7 +114,7 @@ public partial class MainMenu : Control
     private void HideSettings()
     {
         _settings!.Hide();
-        SetPrimaryChromeVisible(true);
+        _menu!.Show();
     }
 
     /// <summary>
@@ -124,21 +122,12 @@ public partial class MainMenu : Control
     /// </summary>
     private void ShowChangelog()
     {
-        SetPrimaryChromeVisible(false);
+        _menu!.Hide();
         _changelog!.Present();
     }
 
     /// <summary>从版本日志返回时恢复主菜单命令区域。</summary>
-    private void HideChangelog() => SetPrimaryChromeVisible(true);
-
-    /// <summary>
-    /// 同步切换标题与主命令，避免二级页面打开后仍残留首页文字造成视觉叠层。
-    /// </summary>
-    private void SetPrimaryChromeVisible(bool visible)
-    {
-        _menu!.Visible = visible;
-        _titleBand!.Visible = visible;
-    }
+    private void HideChangelog() => _menu!.Show();
 
     /// <summary>
     /// 请求 Godot 正常结束游戏进程。
@@ -155,9 +144,9 @@ public partial class MainMenu : Control
         name.Text = character.DisplayName;
         name.AddThemeFontSizeOverride("font_size", character.DisplayName.Length switch
         {
-            <= 5 => 21,
-            <= 9 => 18,
-            _ => 14,
+            <= 5 => 26,
+            <= 9 => 20,
+            _ => 15,
         });
         GetNode<Label>("Menu/RoleBlock/Layout/Role").Text =
             $"生命 {character.PlayableProfile.MaxHealth:0}  ·  " +

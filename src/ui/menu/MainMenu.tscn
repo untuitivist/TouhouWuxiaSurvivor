@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://src/ui/menu/MainMenu.cs" id="1_menu"]
+[ext_resource type="Texture2D" path="res://assets/world/tiles/tile_catalog.png" id="2_world"]
 [ext_resource type="PackedScene" path="res://src/ui/settings/SettingsPanel.tscn" id="4_settings"]
 [ext_resource type="PackedScene" path="res://src/ui/content/ContentPackSelectionPanel.tscn" id="5_content"]
 [ext_resource type="PackedScene" path="res://src/ui/compendium/CompendiumPanel.tscn" id="6_compendium"]
@@ -10,8 +11,13 @@
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/cloud_divider.png" id="10_divider"]
 [ext_resource type="PackedScene" path="res://src/ui/meta/CultivationPanel.tscn" id="11_cultivation"]
 [ext_resource type="PackedScene" path="res://src/ui/changelog/ChangelogPanel.tscn" id="12_changelog"]
+[ext_resource type="Texture2D" path="res://assets/ui/wuxia/paper_fiber.png" id="13_paper"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleTitle"]
+[sub_resource type="StyleBoxFlat" id="StyleTitle"]
+bg_color = Color(0.028, 0.023, 0.017, 0.95)
+border_width_top = 1
+border_width_bottom = 2
+border_color = Color(0.48, 0.37, 0.18, 0.95)
 
 [node name="MainMenu" type="Control"]
 texture_filter = 1
@@ -24,17 +30,8 @@ grow_vertical = 2
 theme = ExtResource("7_theme")
 script = ExtResource("1_menu")
 
-[node name="BackdropBase" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.025, 0.031, 0.043, 1)
-
-[node name="InkMountains" type="TextureRect" parent="."]
+[node name="WorldTexture" type="TextureRect" parent="."]
+modulate = Color(0.26, 0.31, 0.27, 1)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,50 +40,85 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture_filter = 1
-texture = ExtResource("8_mountains")
+texture = ExtResource("2_world")
 expand_mode = 1
-stretch_mode = 0
+stretch_mode = 6
 
-[node name="LeftVeil" type="ColorRect" parent="."]
-visible = false
+[node name="Shade" type="ColorRect" parent="."]
 layout_mode = 1
-anchor_right = 0.36
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.014, 0.01, 0.67)
+
+[node name="PaperWash" type="TextureRect" parent="."]
+modulate = Color(0.82, 0.68, 0.48, 0.08)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("13_paper")
+stretch_mode = 1
+
+[node name="RightWash" type="ColorRect" parent="."]
+layout_mode = 1
+anchor_left = 0.51
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.008, 0.012, 0.017, 0.48)
+color = Color(0.025, 0.02, 0.016, 0.34)
+
+[node name="InkMountains" type="TextureRect" parent="."]
+modulate = Color(0.88, 0.94, 0.86, 0.9)
+layout_mode = 1
+anchor_left = 0.38
+anchor_top = 0.16
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 1
+texture = ExtResource("8_mountains")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="TitleBand" type="PanelContainer" parent="."]
-layout_mode = 0
-offset_left = 26.0
-offset_top = 17.0
-offset_right = 286.0
-offset_bottom = 76.0
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 58.0
+grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleTitle")
-mouse_filter = 2
 
 [node name="Margin" type="MarginContainer" parent="TitleBand"]
 layout_mode = 2
-theme_override_constants/margin_left = 0
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 0
-theme_override_constants/margin_bottom = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 6
 
 [node name="Header" type="HBoxContainer" parent="TitleBand/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="BrandMark" type="ColorRect" parent="TitleBand/Margin/Header"]
-custom_minimum_size = Vector2(2, 0)
+custom_minimum_size = Vector2(4, 0)
 layout_mode = 2
 mouse_filter = 2
-color = Color(0.72, 0.16, 0.16, 1)
+color = Color(0.72, 0.18, 0.15, 1)
 
 [node name="TitleStack" type="VBoxContainer" parent="TitleBand/Margin/Header"]
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
 [node name="Title" type="Label" parent="TitleBand/Margin/Header/TitleStack"]
@@ -97,12 +129,12 @@ text = "东方武侠生存录"
 
 [node name="Edition" type="Label" parent="TitleBand/Margin/Header/TitleStack"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.68, 0.64, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.58, 0.64, 0.55, 1)
+theme_override_font_sizes/font_size = 9
 text = "幻想乡异闻卷"
 
 [node name="TitleRule" type="TextureRect" parent="TitleBand/Margin/Header/TitleStack"]
-custom_minimum_size = Vector2(166, 4)
+custom_minimum_size = Vector2(152, 4)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("10_divider")
@@ -110,7 +142,7 @@ expand_mode = 1
 stretch_mode = 0
 
 [node name="Seal" type="TextureRect" parent="TitleBand/Margin/Header"]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("9_seal")
@@ -125,96 +157,88 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="Control" parent="Menu"]
+[node name="Panel" type="PanelContainer" parent="Menu"]
 layout_mode = 0
-offset_left = 27.0
-offset_top = 99.0
-offset_right = 205.0
-offset_bottom = 336.0
+offset_left = 22.0
+offset_top = 70.0
+offset_right = 232.0
+offset_bottom = 338.0
+theme_type_variation = &"WuxiaPanel"
 
 [node name="Padding" type="MarginContainer" parent="Menu/Panel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 0
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 0
-theme_override_constants/margin_bottom = 0
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 10
 
 [node name="Layout" type="VBoxContainer" parent="Menu/Panel/Padding"]
 layout_mode = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 6
 
 [node name="Subtitle" type="Label" parent="Menu/Panel/Padding/Layout"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.66, 0.72, 0.68, 1)
-theme_override_font_sizes/font_size = 10
-text = "幻想乡游历"
+theme_override_colors/font_color = Color(0.7, 0.75, 0.63, 1)
+theme_override_font_sizes/font_size = 12
+text = "无限幻想乡"
 
 [node name="Start" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_type_variation = &"WuxiaMenuPrimary"
+theme_type_variation = &"PrimaryButton"
 text = "启程"
 alignment = 0
 
 [node name="Compendium" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_type_variation = &"WuxiaMenuEntry"
 text = "幻想乡图鉴"
 alignment = 0
 
 [node name="Cultivation" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_type_variation = &"WuxiaMenuEntry"
 text = "神社整备"
 alignment = 0
 
 [node name="Settings" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_type_variation = &"WuxiaMenuEntry"
 text = "设置"
 alignment = 0
 
 [node name="Changelog" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_type_variation = &"WuxiaMenuEntry"
 text = "版本日志"
 alignment = 0
 
 [node name="Quit" type="Button" parent="Menu/Panel/Padding/Layout"]
-custom_minimum_size = Vector2(0, 26)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
-theme_type_variation = &"WuxiaMenuDanger"
+theme_type_variation = &"DangerButton"
 text = "离开"
 alignment = 0
 
 [node name="RoleBlock" type="PanelContainer" parent="Menu"]
 layout_mode = 1
-anchor_left = 0.64
-anchor_top = 0.76
-anchor_right = 0.97
-anchor_bottom = 0.95
+anchor_left = 0.57
+anchor_top = 0.36
+anchor_right = 0.94
+anchor_bottom = 0.70
 grow_horizontal = 2
 grow_vertical = 2
-theme_type_variation = &"WuxiaRolePlaque"
+theme_type_variation = &"WuxiaInsetPanel"
 mouse_filter = 2
 
 [node name="Layout" type="VBoxContainer" parent="Menu/RoleBlock"]
 layout_mode = 2
-theme_override_constants/separation = 1
+theme_override_constants/separation = 5
 
 [node name="Eyebrow" type="Label" parent="Menu/RoleBlock/Layout"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.82, 0.35, 0.3, 1)
-theme_override_font_sizes/font_size = 9
+theme_override_colors/font_color = Color(0.73, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 11
 text = "当前自机"
 
 [node name="CharacterName" type="Label" parent="Menu/RoleBlock/Layout"]
@@ -223,11 +247,11 @@ theme_override_colors/font_color = Color(0.96, 0.91, 0.8, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 26
 text = "博丽灵梦"
 
 [node name="Rule" type="TextureRect" parent="Menu/RoleBlock/Layout"]
-custom_minimum_size = Vector2(0, 3)
+custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("10_divider")
@@ -236,8 +260,8 @@ stretch_mode = 0
 
 [node name="Role" type="Label" parent="Menu/RoleBlock/Layout"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.66, 0.72, 0.68, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.66, 0.71, 0.62, 1)
+theme_override_font_sizes/font_size = 11
 text = "博丽巫女  ·  阴阳玉"
 
 [node name="SettingsPanel" parent="." instance=ExtResource("4_settings")]

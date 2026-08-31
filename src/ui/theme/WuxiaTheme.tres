@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=63 format=3]
+[gd_resource type="Theme" load_steps=51 format=3]
 
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_normal.png" id="1_button_normal"]
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/button_hover.png" id="2_button_hover"]
@@ -33,12 +33,6 @@
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/danger_panel.png" id="31_danger_panel"]
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/inset_panel.png" id="32_inset_panel"]
 [ext_resource type="Texture2D" path="res://assets/ui/wuxia/hud_panel.png" id="33_hud_panel"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/menu_entry_normal.png" id="34_menu_normal"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/menu_entry_hover.png" id="35_menu_hover"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/menu_entry_pressed.png" id="36_menu_pressed"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/menu_entry_disabled.png" id="37_menu_disabled"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/menu_entry_focus.png" id="38_menu_focus"]
-[ext_resource type="Texture2D" path="res://assets/ui/wuxia/role_plaque.png" id="39_role_plaque"]
 
 [sub_resource type="StyleBoxTexture" id="ButtonNormal"]
 texture = ExtResource("1_button_normal")
@@ -281,69 +275,6 @@ content_margin_top = 2.0
 content_margin_right = 4.0
 content_margin_bottom = 2.0
 
-[sub_resource type="StyleBoxTexture" id="MenuNormal"]
-texture = ExtResource("34_menu_normal")
-texture_margin_left = 12.0
-texture_margin_top = 6.0
-texture_margin_right = 12.0
-texture_margin_bottom = 6.0
-content_margin_left = 18.0
-content_margin_top = 3.0
-content_margin_right = 12.0
-content_margin_bottom = 3.0
-
-[sub_resource type="StyleBoxTexture" id="MenuHover"]
-texture = ExtResource("35_menu_hover")
-texture_margin_left = 12.0
-texture_margin_top = 6.0
-texture_margin_right = 12.0
-texture_margin_bottom = 6.0
-content_margin_left = 18.0
-content_margin_top = 3.0
-content_margin_right = 12.0
-content_margin_bottom = 3.0
-
-[sub_resource type="StyleBoxTexture" id="MenuPressed"]
-texture = ExtResource("36_menu_pressed")
-texture_margin_left = 12.0
-texture_margin_top = 6.0
-texture_margin_right = 12.0
-texture_margin_bottom = 6.0
-content_margin_left = 18.0
-content_margin_top = 4.0
-content_margin_right = 12.0
-content_margin_bottom = 2.0
-
-[sub_resource type="StyleBoxTexture" id="MenuDisabled"]
-texture = ExtResource("37_menu_disabled")
-texture_margin_left = 12.0
-texture_margin_top = 6.0
-texture_margin_right = 12.0
-texture_margin_bottom = 6.0
-content_margin_left = 18.0
-content_margin_top = 3.0
-content_margin_right = 12.0
-content_margin_bottom = 3.0
-
-[sub_resource type="StyleBoxTexture" id="MenuFocus"]
-texture = ExtResource("38_menu_focus")
-texture_margin_left = 12.0
-texture_margin_top = 6.0
-texture_margin_right = 12.0
-texture_margin_bottom = 6.0
-draw_center = false
-
-[sub_resource type="StyleBoxTexture" id="RolePlaque"]
-texture = ExtResource("39_role_plaque")
-texture_margin_left = 12.0
-texture_margin_top = 8.0
-texture_margin_right = 14.0
-texture_margin_bottom = 8.0
-content_margin_left = 13.0
-content_margin_top = 8.0
-content_margin_right = 14.0
-content_margin_bottom = 8.0
-
 [resource]
 default_font_size = 12
 Button/colors/font_color = Color(0.91, 0.89, 0.78, 1)
@@ -365,10 +296,10 @@ CheckButton/icons/unchecked = ExtResource("13_check_off")
 CheckButton/icons/checked = ExtResource("14_check_on")
 CheckButton/icons/unchecked_disabled = ExtResource("15_check_off_disabled")
 CheckButton/icons/checked_disabled = ExtResource("16_check_on_disabled")
-CheckButton/styles/normal = SubResource("ControlEmpty")
-CheckButton/styles/hover = SubResource("ControlEmpty")
-CheckButton/styles/pressed = SubResource("ControlEmpty")
-CheckButton/styles/disabled = SubResource("ControlEmpty")
+CheckButton/styles/normal = SubResource("ButtonNormal")
+CheckButton/styles/hover = SubResource("ButtonHover")
+CheckButton/styles/pressed = SubResource("ButtonPressed")
+CheckButton/styles/disabled = SubResource("ButtonDisabled")
 CheckButton/styles/focus = SubResource("ButtonFocus")
 CheckBox/colors/font_color = Color(0.87, 0.86, 0.76, 1)
 CheckBox/colors/font_hover_color = Color(1, 0.91, 0.7, 1)
@@ -448,30 +379,6 @@ DangerButton/base_type = &"Button"
 DangerButton/colors/font_hover_color = Color(1, 0.83, 0.69, 1)
 DangerButton/styles/hover = SubResource("ButtonPressed")
 DangerButton/styles/pressed = SubResource("ButtonPressed")
-WuxiaMenuEntry/base_type = &"Button"
-WuxiaMenuEntry/colors/font_color = Color(0.88, 0.87, 0.78, 1)
-WuxiaMenuEntry/colors/font_hover_color = Color(1, 0.93, 0.72, 1)
-WuxiaMenuEntry/colors/font_pressed_color = Color(1, 0.86, 0.64, 1)
-WuxiaMenuEntry/colors/font_disabled_color = Color(0.43, 0.45, 0.43, 1)
-WuxiaMenuEntry/styles/normal = SubResource("MenuNormal")
-WuxiaMenuEntry/styles/hover = SubResource("MenuHover")
-WuxiaMenuEntry/styles/pressed = SubResource("MenuPressed")
-WuxiaMenuEntry/styles/disabled = SubResource("MenuDisabled")
-WuxiaMenuEntry/styles/focus = SubResource("MenuFocus")
-WuxiaMenuPrimary/base_type = &"Button"
-WuxiaMenuPrimary/colors/font_color = Color(1, 0.93, 0.72, 1)
-WuxiaMenuPrimary/colors/font_hover_color = Color(1, 0.96, 0.82, 1)
-WuxiaMenuPrimary/styles/normal = SubResource("MenuHover")
-WuxiaMenuPrimary/styles/hover = SubResource("MenuPressed")
-WuxiaMenuPrimary/styles/pressed = SubResource("MenuPressed")
-WuxiaMenuPrimary/styles/focus = SubResource("MenuFocus")
-WuxiaMenuDanger/base_type = &"Button"
-WuxiaMenuDanger/colors/font_color = Color(0.75, 0.72, 0.66, 1)
-WuxiaMenuDanger/colors/font_hover_color = Color(1, 0.78, 0.66, 1)
-WuxiaMenuDanger/styles/normal = SubResource("MenuNormal")
-WuxiaMenuDanger/styles/hover = SubResource("MenuPressed")
-WuxiaMenuDanger/styles/pressed = SubResource("MenuPressed")
-WuxiaMenuDanger/styles/focus = SubResource("MenuFocus")
 PrimaryButton/base_type = &"Button"
 PrimaryButton/colors/font_color = Color(1, 0.92, 0.72, 1)
 PrimaryButton/colors/font_hover_color = Color(1, 0.96, 0.8, 1)
@@ -492,5 +399,3 @@ WuxiaInsetPanel/base_type = &"PanelContainer"
 WuxiaInsetPanel/styles/panel = SubResource("InsetPanel")
 WuxiaHudPanel/base_type = &"PanelContainer"
 WuxiaHudPanel/styles/panel = SubResource("HudPanel")
-WuxiaRolePlaque/base_type = &"PanelContainer"
-WuxiaRolePlaque/styles/panel = SubResource("RolePlaque")

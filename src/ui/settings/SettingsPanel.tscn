@@ -15,10 +15,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -248.0
-offset_top = -124.0
-offset_right = 248.0
-offset_bottom = 124.0
+offset_left = -270.0
+offset_top = -140.0
+offset_right = 270.0
+offset_bottom = 140.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("9_theme")
@@ -27,20 +27,20 @@ script = ExtResource("1_settings")
 
 [node name="Padding" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 11
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 11
-theme_override_constants/margin_bottom = 9
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
 
 [node name="Layout" type="VBoxContainer" parent="Padding"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Header" type="HBoxContainer" parent="Padding/Layout"]
 layout_mode = 2
 
 [node name="Seal" type="TextureRect" parent="Padding/Layout/Header"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("10_seal")
@@ -50,7 +50,7 @@ stretch_mode = 5
 [node name="Title" type="Label" parent="Padding/Layout/Header"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93, 0.95, 0.88, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 18
 text = "设置"
 
 [node name="Spacer" type="Control" parent="Padding/Layout/Header"]
@@ -58,14 +58,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Back" type="Button" parent="Padding/Layout/Header"]
-custom_minimum_size = Vector2(62, 25)
+custom_minimum_size = Vector2(70, 28)
 layout_mode = 2
 text = "返回"
 
 [node name="Tabs" type="TabContainer" parent="Padding/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 
 [node name="音频" parent="Padding/Layout/Tabs" instance=ExtResource("6_audio")]
 

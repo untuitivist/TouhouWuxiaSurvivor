@@ -83,7 +83,7 @@ public partial class UiShellVisualAcceptanceTest : Node
         await WaitForFrames(2);
         Control panel = pause.GetNode<Control>("Root/PausePanel");
         VerifyInsideViewport(panel, "pause panel");
-        Require(panel.Size.X <= 224.5f && panel.Size.Y <= 244.5f,
+        Require(panel.Size.X <= 260.5f && panel.Size.Y <= 284.5f,
             $"Pause panel became oversized: {panel.Size}.");
         SaveScreenshot("visual-pause-menu-1280x720.png");
         pause.Close();

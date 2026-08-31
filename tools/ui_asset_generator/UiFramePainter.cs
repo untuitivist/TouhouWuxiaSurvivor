@@ -8,7 +8,7 @@ namespace TouhouWuxiaSurvivor.Tools.UiAssetGenerator;
 internal sealed class UiFramePainter
 {
     /// <summary>
-    /// 生成带上下卷轴杆、左侧朱砂书脊和克制角饰的通用外层面板。
+    /// 生成带双层木边、鎏金包角和朱砂榫钉的通用外层面板。
     /// </summary>
     public PixelCanvas PaintLacquerPanel() => PaintOuterFrame(false);
 
@@ -18,17 +18,19 @@ internal sealed class UiFramePainter
     public PixelCanvas PaintDangerPanel() => PaintOuterFrame(true);
 
     /// <summary>
-    /// 生成供列表、正文和构筑详情使用的内嵌墨面，避免在外层卷轴内重复闭合描边。
+    /// 生成供列表、正文和构筑详情使用的内嵌宣纸框，视觉层级低于外层漆框。
     /// </summary>
     public PixelCanvas PaintInsetPanel()
     {
-        var canvas = NewCanvas(24, 24, new Rgba32(11, 15, 17, 248));
-        PixelDrawing.FillRect(canvas, 0, 0, 2, 24, UiPixelPalette.Shadow);
-        PixelDrawing.Line(canvas, 3, 1, 17, 1, UiPixelPalette.JadeDark);
-        PixelDrawing.Line(canvas, 7, 22, 21, 22, UiPixelPalette.GoldDark);
-        PixelDrawing.FillRect(canvas, 2, 4, 1, 13, UiPixelPalette.CinnabarDark);
-        canvas.SetPixel(3, 2, UiPixelPalette.Gold);
-        canvas.SetPixel(21, 21, UiPixelPalette.Jade);
+        var canvas = NewCanvas(24, 24, UiPixelPalette.PaperDark);
+        BeveledRect(canvas, 0, 0, 24, 24, UiPixelPalette.Shadow);
+        BeveledRect(canvas, 1, 1, 22, 22, UiPixelPalette.JadeDark);
+        BeveledRect(canvas, 3, 3, 18, 18, UiPixelPalette.Ink);
+        PixelDrawing.FillRect(canvas, 5, 5, 14, 14, UiPixelPalette.PaperDark);
+        DrawCornerKnot(canvas, 2, 2, UiPixelPalette.Jade, UiPixelPalette.GoldDark);
+        DrawCornerKnot(canvas, 21, 2, UiPixelPalette.Jade, UiPixelPalette.GoldDark);
+        DrawCornerKnot(canvas, 2, 21, UiPixelPalette.Jade, UiPixelPalette.GoldDark);
+        DrawCornerKnot(canvas, 21, 21, UiPixelPalette.Jade, UiPixelPalette.GoldDark);
         return canvas;
     }
 
@@ -40,10 +42,9 @@ internal sealed class UiFramePainter
         var canvas = NewCanvas(32, 32, UiPixelPalette.InkBlack);
         BeveledRect(canvas, 0, 0, 32, 32, UiPixelPalette.Shadow);
         BeveledRect(canvas, 1, 1, 30, 30, UiPixelPalette.GoldDark);
-        BeveledRect(canvas, 3, 3, 26, 26, UiPixelPalette.Ink);
-        PixelDrawing.Line(canvas, 6, 4, 25, 4, UiPixelPalette.GoldLight);
-        PixelDrawing.Line(canvas, 5, 27, 26, 27, UiPixelPalette.Jade);
-        PixelDrawing.FillRect(canvas, 6, 6, 20, 20, UiPixelPalette.InkBlack);
+        BeveledRect(canvas, 3, 3, 26, 26, UiPixelPalette.GoldLight);
+        BeveledRect(canvas, 5, 5, 22, 22, UiPixelPalette.JadeDark);
+        PixelDrawing.FillRect(canvas, 7, 7, 18, 18, UiPixelPalette.InkBlack);
         DrawRuyiCorner(canvas, 2, 2, 1, 1);
         DrawRuyiCorner(canvas, 29, 2, -1, 1);
         DrawRuyiCorner(canvas, 2, 29, 1, -1);
@@ -56,11 +57,11 @@ internal sealed class UiFramePainter
     /// </summary>
     public PixelCanvas PaintHudPanel()
     {
-        var canvas = NewCanvas(24, 24, new Rgba32(7, 9, 10, 236));
+        var canvas = NewCanvas(24, 24, new Rgba32(7, 12, 9, 236));
         BeveledRect(canvas, 0, 0, 24, 24, UiPixelPalette.Shadow);
         BeveledRect(canvas, 1, 1, 22, 22, UiPixelPalette.GoldDark);
-        BeveledRect(canvas, 2, 2, 20, 20, UiPixelPalette.PaperLight);
-        PixelDrawing.FillRect(canvas, 4, 4, 16, 16, new Rgba32(9, 12, 13, 238));
+        BeveledRect(canvas, 2, 2, 20, 20, UiPixelPalette.JadeDark);
+        PixelDrawing.FillRect(canvas, 4, 4, 16, 16, new Rgba32(8, 15, 11, 238));
         DrawCornerKnot(canvas, 2, 2, UiPixelPalette.Gold, UiPixelPalette.Cinnabar);
         DrawCornerKnot(canvas, 21, 2, UiPixelPalette.Gold, UiPixelPalette.Cinnabar);
         DrawCornerKnot(canvas, 2, 21, UiPixelPalette.Gold, UiPixelPalette.Cinnabar);
@@ -90,28 +91,24 @@ internal sealed class UiFramePainter
     }
 
     /// <summary>
-    /// 按危险语义切换卷轴书脊与中心色阶，拉伸区保持平坦以免产生重复纹样。
+    /// 按危险语义切换包边与漆面色阶，保持中心区域平坦以免拉伸产生噪点。
     /// </summary>
     private static PixelCanvas PaintOuterFrame(bool danger)
     {
-        Rgba32 rim = danger ? UiPixelPalette.Cinnabar : UiPixelPalette.GoldDark;
+        Rgba32 rim = danger ? UiPixelPalette.Cinnabar : UiPixelPalette.Gold;
         Rgba32 joint = danger ? UiPixelPalette.GoldLight : UiPixelPalette.Cinnabar;
-        Rgba32 face = danger ? new Rgba32(34, 14, 17, 252) : new Rgba32(18, 22, 23, 250);
+        Rgba32 face = danger ? new Rgba32(30, 12, 12, 252) : UiPixelPalette.PaperDark;
         var canvas = NewCanvas(32, 32, face);
-        PixelDrawing.FillRect(canvas, 0, 0, 32, 3, UiPixelPalette.Shadow);
-        PixelDrawing.FillRect(canvas, 0, 29, 32, 3, UiPixelPalette.Shadow);
-        PixelDrawing.FillRect(canvas, 2, 2, 28, 2, rim);
-        PixelDrawing.FillRect(canvas, 2, 28, 28, 2,
-            danger ? UiPixelPalette.CinnabarLight : UiPixelPalette.JadeDark);
-        PixelDrawing.FillRect(canvas, 1, 5, 3, 22, joint);
-        PixelDrawing.FillRect(canvas, 4, 6, 1, 18, UiPixelPalette.GoldDark);
-        PixelDrawing.Line(canvas, 8, 4, 24, 4, UiPixelPalette.Gold);
-        PixelDrawing.Line(canvas, 9, 27, 23, 27, UiPixelPalette.Jade);
-        DrawWoodGrain(canvas, danger ? UiPixelPalette.CinnabarDark : UiPixelPalette.GoldDark);
-        DrawCornerKnot(canvas, 4, 3, rim, joint);
-        DrawCornerKnot(canvas, 27, 3, rim, joint);
-        DrawCornerKnot(canvas, 4, 28, rim, joint);
-        DrawCornerKnot(canvas, 27, 28, rim, joint);
+        BeveledRect(canvas, 0, 0, 32, 32, UiPixelPalette.Shadow);
+        BeveledRect(canvas, 1, 1, 30, 30, UiPixelPalette.InkBlack);
+        BeveledRect(canvas, 2, 2, 28, 28, rim);
+        BeveledRect(canvas, 4, 4, 24, 24, UiPixelPalette.JadeDark);
+        PixelDrawing.FillRect(canvas, 6, 6, 20, 20, face);
+        DrawWoodGrain(canvas, danger ? UiPixelPalette.CinnabarDark : UiPixelPalette.PaperLight);
+        DrawCornerKnot(canvas, 3, 3, rim, joint);
+        DrawCornerKnot(canvas, 28, 3, rim, joint);
+        DrawCornerKnot(canvas, 3, 28, rim, joint);
+        DrawCornerKnot(canvas, 28, 28, rim, joint);
         return canvas;
     }
 
