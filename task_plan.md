@@ -3,9 +3,9 @@
 ## Initial Domain Deployment
 
 1. [complete] Confirm authorized target, SSH identity, DNS, Caddy and existing routes without changing the website.
-2. [in_progress] Prepare verified immutable assets, limited game route and recoverable activation; deploy without replacing other applications.
-3. [pending] Verify real HTTPS headers, desktop/mobile-emulated browser startup and preserved existing routes.
-4. [pending] Record exact deployment/rollback state and two-deliverable release contract; commit without new EXE, version bump or Git push.
+2. [complete] Verified immutable assets, isolated Caddy route, gzip sidecars and backed-up activation deployed; source synced via authorized GitHub clone and subsequent fast-forward pull.
+3. [complete] Real HTTPS headers, redirect, MIME, compression/cache, desktop and touch/save-reload/portrait checks pass; existing routes preserved. Screenshots inspected.
+4. [complete] Exact deployed revision and rollback paths recorded; commits pushed as newly authorized, server receives final documentation via pull. No version bump or new Windows EXE.
 
 ## Active Shared Windows And Web Project — 2026-09-06
 

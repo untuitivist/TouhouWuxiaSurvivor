@@ -1,5 +1,13 @@
 # Progress Log
 
+## Initial Caddy Domain Deployment
+
+- User supplied allinagent.top / 170.106.119.27 and ljy.pem, then explicitly authorized GitHub push plus clone/pull. Located the key without printing its content, backed up its ACL metadata and restricted overbroad file permissions so Windows OpenSSH could use it. Ubuntu login and Caddy identified; existing routes captured before changes.
+- Added verified-artifact deployment, immutable versioned asset URLs behind a stable entry, gzip sidecars, Caddy-scoped headers, configuration fingerprints, lock/backups and automatic activation-failure restoration. Six local safety/rollback regressions pass; no private key, SDK cache or generated game bundle entered Git.
+- Initial public check caught Caddy's relative redir argument being treated as a matcher. Fixed it using an explicit wildcard matcher and added a redirect health gate. The server then updated from the authorized GitHub main via git pull --ff-only, proving the requested follow-up update path.
+- Final active release: alpha-0.0.9-f605aa0-20260906T164408Z (UTC), source f605aa0. Public Edge normal desktop and mobile-emulated touch/save-reload/portrait tests passed with zero browser errors/failed requests. Root/data/test routes preserved; raw assets remain identical to the locally verified build. Gzip sidecars total 32161645 bytes. Captures inspected, browser contexts closed normally.
+- Recorded actual deployment and backup paths, updated the unreleased log and release contract, and preserved the original EXE/version. Final record-only commits are pushed and pulled to the server without re-exporting or changing the deployed game bundle.
+
 ## 2026-09-06 — Shared CSharp Windows And Web Runtime
 
 - Stable shared build now succeeds with generated SDK/framework metadata overrides only; original root csproj survives desktop import, and source hashes match in Web staging. Historical editor backups and all experimental build outputs are retained.

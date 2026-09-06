@@ -1,5 +1,12 @@
 # Findings and Decisions
 
+## Real Domain Deployment
+
+- The authorized server uses Caddy 2.11.4, not Nginx. Preserve its primary reverse proxy and existing /tusharedata import. A dedicated game import adds COOP/COEP, gzip files, MIME-aware static serving and immutable resource caching only under /TouhouSurvivor/.
+- Caddy parses a leading slash argument as a possible matcher: inside an exact handle, `redir /TouhouSurvivor/ 308` silently left the outer no-slash path unanswered. `redir * /TouhouSurvivor/ 308` is unambiguous. Syntax validation alone is insufficient; activation now checks both the redirect status and the expected versioned HTML before succeeding.
+- Public normal browser startup and mobile-emulated multi-touch/IndexedDB refresh pass with no console errors or failed requests. The stable HTML references absolute versioned engine/pack/worker paths, so activation cannot mix previously loaded HTML with new binary assets. Original immutable release files retain their verified hashes.
+- Direct local GitHub requests reset; command-scoped use of the already configured localhost proxy allowed fetch/push without modifying global Git settings. Server GitHub access worked directly. Generated bundles remain outside Git, while both clone and subsequent pull of committed deployment code were exercised.
+
 ## Shared Windows / Web Runtime — 2026-09-06
 
 - Final result: all five browser scenarios pass in Edge 152.0.4191.62, zero console events/failed requests; both deterministic seed-42 characters see a live boss and reach Won plus persisted result counters. Reimu wins at 265.47 simulated seconds, Marisa at 272.20. This verifies execution, not player feel, real-network readiness or physical-phone performance.

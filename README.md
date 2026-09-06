@@ -6,6 +6,10 @@
 
 ## 成品交付
 
+网页试运行入口：`https://allinagent.top/TouhouSurvivor/`，手机请横屏。已完成真实域名的电脑和触控模拟验证；Android/iPhone 实机仍需测试。网页包含本轮未发布优化，现有 Windows EXE 没有重新导出，不将本次试部署称为新的双端正式版。
+
+今后正式发布同时交付自带依赖 EXE 与对应版本的网页更新部署。服务器首次 clone 同一仓库，后续 `git pull --ff-only`；构建产物单独传输、校验并保留回滚版本。部署步骤见 `docs/deployment.md`。
+
 正式交付入口为 `release/TouhouWuxiaSurvivor_alpha-0.0.9.exe`，不是源码启动脚本。
 沿用旧版本的单文件口径，PCK 与 .NET 构建输出内嵌；全部旧版 EXE 保留。
 版本来源为 `project.godot`，采用 `stage-major.release.optimization`，Windows 文件版本为 `0.0.9.0`。
