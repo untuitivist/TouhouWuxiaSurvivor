@@ -19,6 +19,8 @@ public sealed class PlayerProfile
     public float MasterVolume { get; set; } = 1;
     public float MusicVolume { get; set; } = 1;
     public float SoundVolume { get; set; } = 1;
+    public VideoPreferences Video { get; set; } = new();
+    public Dictionary<string, long[]> Bindings { get; set; } = GameControls.DefaultBindings();
 }
 
 public sealed class ProfileStore
@@ -39,6 +41,9 @@ public sealed class ProfileStore
             loaded.MasterVolume = NormalizeVolume(loaded.MasterVolume);
             loaded.MusicVolume = NormalizeVolume(loaded.MusicVolume);
             loaded.SoundVolume = NormalizeVolume(loaded.SoundVolume);
+            loaded.Video ??= new();
+            loaded.Video.Normalize();
+            loaded.Bindings = GameControls.NormalizeBindings(loaded.Bindings);
             Data = loaded;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidDataException)

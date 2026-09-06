@@ -86,6 +86,12 @@ public partial class GameCanvas : Node2D
     private void Text(string text, Vector2 position, int size, Color color, Font? font = null)
         => DrawString(font ?? BodyFont, position, text, HorizontalAlignment.Left, -1, size, color);
 
+    private void FittedText(string text, Vector2 position, float width, int size, Color color)
+    {
+        while (size > 10 && BodyFont.GetStringSize(text, fontSize: size).X > width) size--;
+        DrawString(BodyFont, position, text, HorizontalAlignment.Left, width, size, color);
+    }
+
     private void CenterText(string text, Vector2 position, int size, Color color, Font? font = null)
     {
         var selected = font ?? BodyFont;

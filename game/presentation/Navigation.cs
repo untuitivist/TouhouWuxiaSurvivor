@@ -9,12 +9,25 @@ public partial class GameRoot
 
     public override void _Input(InputEvent input)
     {
-        if (input is not InputEventKey { Pressed: true, Echo: false } key) return;
+        if (input is not InputEventKey key) return;
+        if (CaptureBinding(key)) { GetViewport().SetInputAsHandled(); return; }
+        if (!key.Pressed || key.Echo) return;
         var code = key.PhysicalKeycode == Key.None ? key.Keycode : key.PhysicalKeycode;
-        if (code == Key.F11)
+        if (currentScreen == "video_confirm")
         {
-            var mode = DisplayServer.WindowGetMode();
-            DisplayServer.WindowSetMode(mode == DisplayServer.WindowMode.Fullscreen ? DisplayServer.WindowMode.Windowed : DisplayServer.WindowMode.Fullscreen);
+            if (code != Key.Escape && !input.IsActionPressed(GameControls.Fullscreen)) return;
+            FinishVideoPreview(false);
+        }
+        else if (currentScreen == "settings_reset")
+        {
+            if (code != Key.Escape) return;
+            BuildSettings();
+        }
+        else if (input.IsActionPressed(GameControls.Fullscreen))
+        {
+            var candidate = profile.Data.Video.Copy();
+            candidate.WindowMode = candidate.WindowMode == 2 ? 0 : 2;
+            BeginVideoPreview(candidate, currentScreen == "settings");
         }
         else if (input.IsActionPressed(GameControls.Inspect))
         {
@@ -22,10 +35,17 @@ public partial class GameRoot
             else if (currentScreen is "playing" or "pause" or "choices") OpenBuild();
             else return;
         }
-        else if (input.IsActionPressed(GameControls.Pause))
+        else if (code == Key.Escape || input.IsActionPressed(GameControls.Pause))
         {
-            if (code == Key.P && run == null) return;
+            if (code != Key.Escape && run == null && currentScreen != "settings") return;
             NavigateBack();
+        }
+        else if (currentScreen == "playing" && input.IsActionPressed(GameControls.Dash)) dashRequested = true;
+        else if (currentScreen == "choices")
+        {
+            var index = input.IsActionPressed(GameControls.ChoiceOne) ? 0 : input.IsActionPressed(GameControls.ChoiceTwo) ? 1 : input.IsActionPressed(GameControls.ChoiceThree) ? 2 : -1;
+            if (index < 0) return;
+            SelectArt(index);
         }
         else return;
         GetViewport().SetInputAsHandled();

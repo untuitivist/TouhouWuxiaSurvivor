@@ -18,9 +18,8 @@ public partial class GameRoot
         var arguments = OS.GetCmdlineUserArgs();
         smokeMode = arguments.Contains("--rebirth-smoke");
         capturePath = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
-        diagnosticMode = smokeMode || capturePath.Length > 0;
+        diagnosticMode = smokeMode || capturePath.Length > 0 || arguments.Contains("--rebirth-video-smoke");
         if (!diagnosticMode) return;
-        profile = new ProfileStore(ProjectSettings.GlobalizePath($"user://rebirth/diagnostics/sessions/{Guid.NewGuid():N}/profile.json"));
         if (smokeMode) { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }
         canvas.ReducedMotion = profile.Data.ReducedMotion;
         audio.Apply(new PlayerProfile { MusicEnabled = false, SoundEnabled = false });
@@ -29,6 +28,18 @@ public partial class GameRoot
         if (mode == "heroes") { ShowHeroes(); return; }
         if (mode == "help") { ShowHelp(); return; }
         if (mode == "settings") { ShowSettings(); return; }
+        if (mode is "settings-video" or "settings-controls" or "settings-confirm")
+        {
+            ShowSettings();
+            settingsTab = mode == "settings-controls" ? 2 : 1;
+            BuildSettings();
+            if (mode == "settings-confirm")
+            {
+                var size = DisplayServer.WindowGetSize();
+                BeginVideoPreview(new() { Width = size.X, Height = size.Y }, true);
+            }
+            return;
+        }
         if (mode == "changelog") { ShowChangelog(); return; }
         PrepareBattlePreview(mode);
     }
@@ -96,10 +107,12 @@ public partial class GameRoot
 
     public override void _Process(double delta)
     {
+        TickVideoPreview(delta);
         if (!diagnosticMode || diagnosticFinished) return;
         diagnosticFrames++;
         if (diagnosticFrames < 24) return;
         diagnosticFinished = true;
+        if (OS.GetCmdlineUserArgs().Contains("--rebirth-video-smoke")) { RunDisplaySmokeTests(); return; }
         if (smokeMode)
         {
             try { RunUiSmokeTests(); GD.Print("REBIRTH_UI_SMOKE_PASS"); GetTree().Quit(); }
@@ -140,7 +153,7 @@ public partial class GameRoot
         run.TogglePause();
         RefreshRunScreen();
         AssertUiBounds();
-        PressButton("音画设置");
+        PressButton("游戏设置");
         Require(currentScreen == "settings" && run.Phase == RunPhase.Paused, "Settings preserves pause");
         AssertUiBounds();
         var master = Descendants(screen!).OfType<HSlider>().Single(slider => slider.Name == "master_volume");
@@ -148,6 +161,7 @@ public partial class GameRoot
         Require(AudioServer.IsBusMute(0), "Zero master volume really mutes audio");
         master.Value = 37;
         Require(!AudioServer.IsBusMute(0) && Math.Abs(profile.Data.MasterVolume - 0.37f) < 0.001f, "Volume changes apply without rebuilding screen");
+        TestFullSettings();
         PressButton("返回");
         PressButton("继续行走");
         run.AddExperience(30);
@@ -186,6 +200,8 @@ public partial class GameRoot
         Require(history.GetParsedText().Contains(ProjectSettings.GetSetting("application/config/version").AsString()), "Changelog initially shows current release");
         var versions = Descendants(screen!).OfType<OptionButton>().Single();
         Require(versions.ItemCount >= 9, "Historical releases are individually selectable");
+        versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 2);
+        Require(history.GetParsedText().Contains("完整设置回归"), "Daily changes remain separately accessible without changing release version");
         versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 1);
         Require(history.GetParsedText().Contains("alpha-0.0.0") && history.GetParsedText().Contains("alpha-0.0.5"), "Embedded complete history remains accessible");
         PressKey(Key.Escape);

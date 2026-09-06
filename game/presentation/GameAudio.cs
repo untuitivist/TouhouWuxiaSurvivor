@@ -38,7 +38,7 @@ public partial class GameAudio : Node
         for (var index = 0; index < 8; index++) { var voice = new AudioStreamPlayer(); AddChild(voice); voices.Add(voice); }
     }
 
-    public void Apply(PlayerProfile profile)
+    public void Apply(PlayerProfile profile, bool allowPlayback = true)
     {
         SoundEnabled = profile.SoundEnabled;
         soundVolume = profile.SoundVolume;
@@ -50,8 +50,8 @@ public partial class GameAudio : Node
             if (!SoundEnabled) voice.Stop();
             voice.VolumeLinear = Mathf.DbToLinear(voice.GetMeta("base_volume", -16).AsSingle()) * soundVolume;
         }
-        if (profile.MusicEnabled && !music.Playing) music.Play();
-        if (!profile.MusicEnabled) music.Stop();
+        if (profile.MusicEnabled && allowPlayback && !music.Playing) music.Play();
+        if (!profile.MusicEnabled || !allowPlayback) music.Stop();
     }
 
     public override void _ExitTree()

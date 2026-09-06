@@ -38,9 +38,9 @@ public partial class GameCanvas
             for (var dot = 0; dot < 5; dot++) DrawRect(new(horizontal + dot * 8, 708, 5, 3), Palette.Alpha(color, dot < rank ? 1 : 0.12f));
             horizontal += 58;
         }
-        Text(Run.DashCooldown <= 0 ? "SPACE  闪身 · 就绪" : $"SPACE  闪身 · {Run.DashCooldown:0.0}s", new(654, 683), 16, Run.DashCooldown <= 0 ? Palette.Paper : Palette.Muted);
+        FittedText($"{GameControls.Hint(GameControls.Dash)} 闪身 · {(Run.DashCooldown <= 0 ? "就绪" : $"{Run.DashCooldown:0.0}s")}", new(654, 683), 173, 16, Run.DashCooldown <= 0 ? Palette.Paper : Palette.Muted);
         Bar(new(654, 697, 173, 3), 1 - Run.DashCooldown / Run.DashInterval, Palette.Gold);
-        Text("SHIFT 慢移   ESC 暂停", new(1032, 690), 14, Palette.Muted);
+        FittedText($"{GameControls.Hint(GameControls.Focus)} 慢移   Esc 暂停", new(1032, 690), 218, 14, Palette.Muted);
         DrawMinimap();
         DrawObjective();
         var boss = Run.Boss;
@@ -54,7 +54,7 @@ public partial class GameCanvas
         {
             DrawRect(new(383, 551, 514, 65), Palette.Alpha(Palette.Deep, 0.8f));
             CenterText(Run.Hero == HeroKind.Reimu ? "御札追敌，阴阳护身。" : "星弹开路，魔炮锁向。", new(640, 578), 20, Palette.Paper, TitleFont);
-            CenterText("WASD / 方向键 移动  ·  E 构筑  ·  Esc / P 暂停", new(640, 603), 15, Palette.Muted);
+            FittedText($"{GameControls.Hint(GameControls.Up)} / {GameControls.Hint(GameControls.Left)} / {GameControls.Hint(GameControls.Down)} / {GameControls.Hint(GameControls.Right)} 移动 · {GameControls.Hint(GameControls.Inspect)} 构筑 · Esc 暂停", new(397, 603), 486, 15, Palette.Muted);
         }
         if (Run.SpellFlash > 0) CenterText(ArtCatalog.SignatureName(Run.Hero), new(640, 213), 30, Palette.Alpha(Palette.Gold, Run.SpellFlash / 0.65f), TitleFont);
         if (Run.Health < Run.MaxHealth * 0.25f)

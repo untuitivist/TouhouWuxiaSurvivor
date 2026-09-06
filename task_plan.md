@@ -1,5 +1,13 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Settings Restoration — 2026-09-06
+
+1. [complete] Audit legacy audio/video/dual-slot bindings and current runtime integration.
+2. [complete] Restore settings with validation, persistence, current-action bindings and safe video preview.
+3. [complete] Test migration, input routing, rollback and rendering; append unreleased changelog and prepare the daily Git commit without export/push/version change.
+
+Scope: restore functional settings, not absent map/debug gameplay. No deletion of historical files. Existing alpha-0.0.8 EXE remains untouched; this request is settings restoration, not an explicit new release export.
+
 ## Active Delivery alpha-0.0.8 — 2026-09-06
 
 1. [complete] Replace shared sword/lightning identities with character-owned ability catalogs and shared, inspectable tuning.

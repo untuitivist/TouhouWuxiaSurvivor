@@ -61,7 +61,7 @@ public sealed class UiFactory(Font body, Font title)
 
     public Button Button(Control parent, string text, Rect2 rectangle, Action action, bool primary = false)
     {
-        var button = new Button { Text = text, Position = rectangle.Position, Size = rectangle.Size, MouseDefaultCursorShape = Control.CursorShape.PointingHand };
+        var button = new Button { Text = text, TooltipText = text, ClipText = true, Position = rectangle.Position, Size = rectangle.Size, MouseDefaultCursorShape = Control.CursorShape.PointingHand };
         if (primary)
         {
             button.AddThemeStyleboxOverride("normal", Box(new("35463f"), Palette.Gold));

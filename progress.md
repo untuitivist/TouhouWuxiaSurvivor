@@ -731,3 +731,12 @@
 - Historical `alpha-0.0.0` and `alpha-0.0.1` executables were preserved unchanged.
 
 ---
+## Settings Restoration — 2026-09-06
+
+- Core 26/26 and expanded UI/settings smoke passed. First real-display validation failed when requesting borderless after 640x360 window; added actual mode/size/flag diagnostics before changing implementation or assertions.
+- Resolved borderless contract as explicit maximized work-area window, separate from full-screen. Native maximum size differs by 2px from usable area on this machine, so the test records both and allows bounded native frame margins while requiring exact mode and borderless flag. Windowed mode retains exact-size checks. Real display and eight setting render captures subsequently passed.
+- User clarified daily commit vs push vs release. Added an unreleased changelog section and in-game selector; no version bump, push, EXE export or history deletion.
+- Final rerun: Godot import succeeded and generated six C# UID files; Debug 0 warnings/errors, 26/26 core tests, full UI smoke and real-window/render suite passed. Confirmed the 640x360 confirmation capture is genuinely 640x360 and visually fits. Released changelog content and alpha-0.0.8 EXE hash are unchanged. Ready for daily commit.
+
+- Started audit against legacy src/settings and current game/presentation. Worktree was clean at 7d63194.
+- Shell lookup of a guessed smoke filename failed and cmd quoted search parsed incorrectly; switched complex reads to installed PowerShell 7. No files deleted.

@@ -27,7 +27,7 @@ public partial class GameRoot
         }
         var training = ArtCatalog.Training.Select(art => $"{art.Name} {run.Ranks[(int)art.Id]}/{art.MaxRank}");
         ui.Label(panel, "通用修习    " + string.Join("    ·    ", training), new(36, 496, 1048, 34), 16, Palette.Jade);
-        ui.Button(panel, "返回 [E / Esc]", new(36, 554, 276, 42), CloseBuild, true).GrabFocus();
+        ui.Button(panel, $"返回 [{GameControls.Hint(GameControls.Inspect)} / Esc]", new(36, 554, 276, 42), CloseBuild, true).GrabFocus();
         var destination = run.Phase == RunPhase.Choosing ? "返回后继续三选一，不改变候选项。" : resumeAfterInspection ? "返回后继续战斗。" : "返回暂停菜单，战斗仍暂停。";
         ui.Label(panel, "时间已停。" + destination, new(343, 561, 741, 30), 16, Palette.Muted);
     }
@@ -39,6 +39,7 @@ public partial class GameRoot
         var headings = System.Text.RegularExpressions.Regex.Matches(text, @"(?m)^## ((?:alpha|beta|rc|stable)-\d+\.\d+\.\d+)\r?$");
         var versions = new OptionButton { Name = "release_version", Position = new(36, 129), Size = new(382, 40) };
         foreach (System.Text.RegularExpressions.Match heading in headings) versions.AddItem(heading.Groups[1].Value);
+        versions.AddItem("未发布（工作区变更）");
         versions.AddItem("全部历史（含版本说明）");
         panel.AddChild(versions);
         var history = new RichTextLabel
@@ -57,6 +58,11 @@ public partial class GameRoot
             {
                 var end = index + 1 < headings.Count ? headings[index + 1].Index : text.Length;
                 section = text[headings[index].Index..end];
+            }
+            else if (index == headings.Count)
+            {
+                var start = text.IndexOf("## 未发布", StringComparison.Ordinal);
+                section = start >= 0 ? text[start..(headings.Count > 0 ? headings[0].Index : text.Length)] : "暂无未发布记录。";
             }
             history.Clear();
             foreach (var line in section.Split('\n'))

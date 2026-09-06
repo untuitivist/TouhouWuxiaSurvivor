@@ -1,5 +1,14 @@
 # Rebirth validation — 2026-09-06
 
+## Unreleased settings restoration
+
+- No release bump/export/push. project.godot remains alpha-0.0.8; the existing EXE retains SHA-256 `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`. The entire released changelog tail from alpha-0.0.8 through older releases matches HEAD before this work; new entries live under Unreleased.
+- `tools/rebirth/verify.cmd`: Debug build 0 warnings/errors; 26/26 core regressions; six unchanged balance journeys; expanded UI smoke passes settings and existing navigation/choice/history/profile checks. Logs: artifacts/settings-verify.log. Deliberately corrupt JSON still produces the expected warning without overwriting its original file.
+- Added settings checks: preview applies without persisting, Escape/15-second timeout rollback, keep confirmation, draft discard, per-page reset/cancel, current 12 actions/24 slots, conflicting/cancelled/cleared bindings, mandatory last key, Tab reservation, F11 capture suppression, rebound inspection/dash/Enter choice routing, restored defaults, old rebirth profile defaults, video/binding persistence and invalid-value repair.
+- `tools/rebirth/verify_settings.cmd`: real OpenGL window changes verified on the local Windows/NVIDIA system, from exact 640x360 window to borderless maximized work area to fullscreen and back; preview timeout also returns to the exact old window. Mode/flag checks are exact. Maximized native geometry allows a symmetric 16px frame tolerance, because this system reports usable height 1410 and actual maximized client height 1408. Logs: artifacts/settings-display.log and artifacts/settings-render.log.
+- Eight real-render captures cover audio/video/controls/display confirmation at 1280x720 and 640x360. Visual checks include control layout at 1280 and video/confirmation at 640. All fit without global scrolling; text at 640 is small. The confirmation capture retains the requested capture resolution rather than silently restoring default 1280.
+- Diagnostics use separate fresh profiles from startup and keep playback disabled; they do not alter the player's profile or claim human audio listening. Old pre-rewrite user://settings.json is deliberately not auto-imported or deleted. This is source-runtime validation, not a new EXE or clean-machine/DPI certification.
+
 ## Exported delivery: alpha-0.0.8
 
 - Character-faithful combat iteration, implementation commit `a40b2af`: three exclusive tracks per hero, shared tuning, homing/retargeting ofuda, stationary sealing field, star spread/focus, stardust and sustained Master Spark with separate signatures.

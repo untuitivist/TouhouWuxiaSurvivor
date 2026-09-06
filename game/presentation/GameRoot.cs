@@ -30,8 +30,12 @@ public partial class GameRoot : Node
         AddChild(canvas);
         AddChild(audio);
         ui = new(body, title);
-        profile = new();
-        GameControls.Configure();
+        var arguments = OS.GetCmdlineUserArgs();
+        diagnosticMode = arguments.Contains("--rebirth-smoke") || arguments.Contains("--rebirth-video-smoke") || arguments.Any(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal));
+        profile = diagnosticMode ? new ProfileStore(ProjectSettings.GlobalizePath($"user://rebirth/diagnostics/sessions/{Guid.NewGuid():N}/profile.json")) : new();
+        if (!diagnosticMode) profile.Data.Video.Apply();
+        else { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }
+        GameControls.Configure(profile.Data.Bindings);
         audio.Apply(profile.Data);
         canvas.ReducedMotion = profile.Data.ReducedMotion;
         var layer = new CanvasLayer();
@@ -58,18 +62,6 @@ public partial class GameRoot : Node
         }
         dashRequested = false;
         if (displayedPhase != run.Phase) RefreshRunScreen();
-    }
-
-    public override void _UnhandledInput(InputEvent input)
-    {
-        if (input is not InputEventKey { Pressed: true, Echo: false } key) return;
-        var code = key.PhysicalKeycode == Key.None ? key.Keycode : key.PhysicalKeycode;
-        if (run?.Phase == RunPhase.Playing && input.IsActionPressed(GameControls.Dash)) { dashRequested = true; GetViewport().SetInputAsHandled(); }
-        if (run?.Phase == RunPhase.Choosing && currentScreen == "choices")
-        {
-            var index = code switch { Key.Key1 or Key.Kp1 => 0, Key.Key2 or Key.Kp2 => 1, Key.Key3 or Key.Kp3 => 2, _ => -1 };
-            if (index >= 0) { SelectArt(index); GetViewport().SetInputAsHandled(); }
-        }
     }
 
     public override void _Notification(int notification)

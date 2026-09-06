@@ -979,3 +979,12 @@
 - A direct 180-frame headless execution of the exported EXE returned exit code 0 without log errors, leaks, or orphan warnings.
 
 ---
+## Settings Audit — 2026-09-06
+
+- 实窗发现：无边框精确铺满显示器后，当前 Godot/Windows 组合在后续帧报告 ExclusiveFullscreen，而同步 setter 后仍显示 Windowed。改为明确请求无边框最大化，保留任务栏；独立全屏选项负责铺满。使用 Window 属性统一根窗口状态。验证严格检查 Windowed/Maximized/Fullscreen 与边框标志；窗口化尺寸精确匹配，最大化尺寸由窗口管理器决定，使用双向 16px 原生边缘容差（本机桌面可用高度 1410，最大化实际 1408）。
+
+- 已目视检查操作页 1280x720 与视频页 640x360：所有键位和页脚都在屏幕内，无整体滚动。640x360 可布局但字号较小，日常建议使用默认 1280x720；此次不声称完成所有 DPI/显示器适配。
+
+- Legacy settings contain three audio sliders; windowed/borderless/fullscreen, seven resolutions (640x360 through 3840x2160), VSync, FPS 30/60/120/144/unlimited; dual-slot keyboard bindings and binding reset.
+- Current runtime retains audio sliders/mutes/reduced motion but hardcodes controls and F11, with no video persistence. Old src settings are not compiled.
+- Current logical canvas is 1280x720 with content scaling; settings must be inspected at small window sizes. Keep legacy files intact and integrate through game/presentation.
