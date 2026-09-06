@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Rebirth.Core;
+using Rebirth.Diagnostics;
 
 var tests = new (string Name, Action Body)[]
 {
@@ -40,11 +41,7 @@ static void Near(float actual, float expected, float tolerance = 0.05f) => Check
 static RunState NewRun(HeroKind hero = HeroKind.Reimu) => new(hero, 260906);
 static void Resolve(RunState run)
 {
-    while (run.Phase == RunPhase.Choosing)
-    {
-        var preferred = run.Choices.FindIndex(art => art is ArtKind.Sword or ArtKind.Orbit or ArtKind.Talisman or ArtKind.Lightning);
-        run.Choose(preferred < 0 ? 0 : preferred);
-    }
+    RunPilot.ResolveChoices(run);
 }
 
 static void HeroIdentity()
@@ -236,23 +233,7 @@ static void FullTimeline()
 
 static FrameInput BotInput(RunState run, int tick)
 {
-    var target = run.Seals.FirstOrDefault(seal => !seal.Complete)?.Position ?? (run.Boss?.Position ?? Vector2.Zero);
-    var direction = target - run.PlayerPosition;
-    var desiredDistance = run.PurifiedSeals < 3 ? 25 : 190;
-    var movement = direction.Length() > desiredDistance ? Geometry.Direction(direction) : Vector2.Zero;
-    foreach (var enemy in run.Enemies)
-    {
-        var away = run.PlayerPosition - enemy.Position;
-        var distance = away.Length();
-        if (distance < 95 && distance > 0) movement += away / distance * (1 - distance / 95) * 2.5f;
-    }
-    foreach (var projectile in run.Projectiles.Where(projectile => projectile.Hostile))
-    {
-        var away = run.PlayerPosition - projectile.Position - projectile.Velocity * 0.18f;
-        var distance = away.Length();
-        if (distance < 55 && distance > 0) movement += away / distance * (1 - distance / 55) * 2;
-    }
-    return new(movement, false, run.Health < run.MaxHealth * 0.5f && tick % 180 == 0);
+    return RunPilot.Input(run, tick);
 }
 
 static void BalanceReport()

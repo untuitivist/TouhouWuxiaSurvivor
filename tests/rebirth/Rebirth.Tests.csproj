@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../game/core/**/*.cs" Link="core/%(Filename)%(Extension)" />
+    <Compile Include="../../game/diagnostics/RunPilot.cs" Link="RunPilot.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

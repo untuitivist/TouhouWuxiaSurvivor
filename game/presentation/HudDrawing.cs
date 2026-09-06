@@ -23,7 +23,7 @@ public partial class GameCanvas
         Text("剑意", new(989, 31), 17, Palette.Jade);
         Text($"{(int)Run.Qi} / 100", new(1162, 31), 15, Palette.Paper);
         Bar(new(989, 45, 263, 8), Run.Qi / 100, Palette.Jade);
-        Text("擦弹蓄势 · 满意自动清弹", new(989, 77), 14, Palette.Muted);
+        Text("擦弹蓄势 · 满槽自动清弹", new(989, 77), 14, Palette.Muted);
         Text("修 为", new(28, 679), 13, Palette.Jade);
         Bar(new(84, 668, 242, 7), (float)Run.Experience / Run.NextLevelExperience, Palette.Jade);
         Text($"{Run.Experience} / {Run.NextLevelExperience}", new(84, 699), 13, Palette.Muted);
@@ -74,7 +74,8 @@ public partial class GameCanvas
         if (nearest == null) return;
         var direction = Palette.Vector(nearest.Position - Run.PlayerPosition);
         if (direction.Length() < 140) return;
-        var arrow = new Vector2(640, 370) + direction.Normalized() * 180;
+        var arrow = new Vector2(640, 370) + Palette.Vector(Run.PlayerPosition) - camera + direction.Normalized() * 160;
+        arrow = arrow.Clamp(new(275, 193), new(1070, 580));
         var heading = direction.Normalized();
         DrawColoredPolygon([arrow + heading * 11, arrow - heading * 5 + heading.Orthogonal() * 6, arrow - heading * 5 - heading.Orthogonal() * 6], Palette.Gold);
         CenterText(nearest.Name, arrow + new Vector2(0, 27), 14, Palette.Gold);

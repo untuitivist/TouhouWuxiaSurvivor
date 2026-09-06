@@ -5,8 +5,8 @@ set DOTNET_CLI_UI_LANGUAGE=en
 if not exist artifacts mkdir artifacts
 echo [1/3] Build independent Godot runtime
 dotnet build TouhouWuxiaSurvivor.csproj --configuration Debug > artifacts\build.log 2>&1
+if errorlevel 1 goto build_failed
 type artifacts\build.log
-if errorlevel 1 exit /b 1
 findstr /c:"Build FAILED" artifacts\build.log > nul
 if not errorlevel 1 exit /b 1
 echo [2/3] Run deterministic core regressions
@@ -22,6 +22,9 @@ findstr /c:"REBIRTH_UI_SMOKE_PASS" artifacts\ui-smoke.log > nul
 if errorlevel 1 exit /b 1
 echo REBIRTH_VALIDATION_PASS
 exit /b 0
+:build_failed
+type artifacts\build.log
+exit /b 1
 :core_failed
 type artifacts\core-tests.log
 exit /b 1

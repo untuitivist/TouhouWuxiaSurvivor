@@ -1,5 +1,6 @@
 using Godot;
 using Rebirth.Core;
+using Rebirth.Diagnostics;
 using NumericsVector = System.Numerics.Vector2;
 
 namespace Rebirth.Presentation;
@@ -31,21 +32,12 @@ public partial class GameRoot
     private void PrepareBattlePreview(string mode)
     {
         StartRun(HeroKind.Reimu, 260906);
-        for (var index = 0; index < 4200; index++)
+        var targetTicks = mode == "boss" ? 15300 : 4500;
+        for (var index = 0; index < targetTicks; index++)
         {
-            if (run!.Phase == RunPhase.Choosing) { run.Choose(0); continue; }
-            if (index % 120 == 0) run.Pickups.Add(new() { Position = run.PlayerPosition, Healing = true, Value = 100 });
-            var direction = new NumericsVector(MathF.Cos(index * 0.0028f), MathF.Sin(index * 0.0028f));
-            run.Step(new(direction));
-        }
-        if (mode == "boss")
-        {
-            run!.SpawnEnemy(EnemyKind.Boss, run.PlayerPosition + new NumericsVector(0, -210));
-            for (var index = 0; index < 190; index++)
-            {
-                if (run.Phase == RunPhase.Choosing) run.Choose(0);
-                else run.Step(new(NumericsVector.Zero));
-            }
+            RunPilot.ResolveChoices(run!);
+            run!.Step(RunPilot.Input(run, index));
+            if (run.Phase is RunPhase.Won or RunPhase.Lost) break;
         }
         if (mode == "choices")
         {
@@ -155,6 +147,8 @@ public partial class GameRoot
         {
             if (control is not (Button or Label)) continue;
             Require(viewport.Encloses(control.GetGlobalRect()), $"Control fits viewport: {control.Name}");
+            if (control.GetParent() is Panel parent)
+                Require(parent.GetGlobalRect().Grow(2).Encloses(control.GetGlobalRect()), $"Control fits card: {(control as Label)?.Text ?? control.Name}");
         }
     }
 

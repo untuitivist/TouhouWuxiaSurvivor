@@ -2,6 +2,9 @@
 
 ## Clean Rewrite — 2026-09-06
 
+- Upgrade-card screenshot caught text crossing card edges despite whole-viewport assertions. Root cause: Label size was assigned before text wrapping and theme minimum-size updates. Reapply intended bounds after parenting and add parent-panel containment assertions.
+- Increase Boss health from 6,200 to 26,000 to allow phase transitions and multiple volleys; reuse one diagnostic pilot for balance reports and realistic captures.
+
 - Real OpenGL captures succeed for all nine screens. First visual inspection: title hierarchy is readable; battle camera at the arena edge exposes excessive empty out-of-bounds space. Clamp the camera to the visible playfield independently of player movement.
 - The initial circle-walking capture underlevels because it ignores objectives and leaves experience behind. Replace preview movement with the same goal-seeking behavior used by the unassisted balance probe; do not confuse screenshot preparation with a human playtest.
 

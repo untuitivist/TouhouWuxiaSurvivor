@@ -99,7 +99,6 @@ public sealed partial class RunState
     {
         for (var index = Projectiles.Count - 1; index >= 0; index--)
         {
-            if (index >= Projectiles.Count) continue;
             var projectile = Projectiles[index];
             var previous = projectile.Position;
             projectile.Position += projectile.Velocity * StepSeconds;
@@ -131,11 +130,7 @@ public sealed partial class RunState
                     if (projectile.Pierce-- <= 0) { projectile.Life = 0; break; }
                 }
             }
-            if (projectile.Life <= 0)
-            {
-                if (index < Projectiles.Count && ReferenceEquals(Projectiles[index], projectile)) Projectiles.RemoveAt(index);
-                else Projectiles.Remove(projectile);
-            }
+            if (projectile.Life <= 0) Projectiles.RemoveAt(index);
         }
     }
 

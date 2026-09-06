@@ -55,6 +55,7 @@ public sealed class UiFactory(Font body, Font title)
         label.AddThemeFontSizeOverride("font_size", size);
         label.AddThemeColorOverride("font_color", color ?? Palette.Paper);
         parent.AddChild(label);
+        label.Size = rectangle.Size;
         return label;
     }
 
@@ -68,6 +69,7 @@ public sealed class UiFactory(Font body, Font title)
         }
         button.Pressed += action;
         parent.AddChild(button);
+        button.Size = rectangle.Size;
         return button;
     }
 }

@@ -28,7 +28,7 @@ public partial class GameCanvas : Node2D
 
     public void ResetView()
     {
-        camera = Run == null ? Vector2.Zero : Palette.Vector(Run.PlayerPosition);
+        camera = CameraTarget();
         effects.Clear();
         shake = 0;
     }
@@ -52,7 +52,7 @@ public partial class GameCanvas : Node2D
         if (Run == null || Run.Phase == RunPhase.Playing) Clock += elapsed;
         if (Run != null)
         {
-            camera = camera.Lerp(Palette.Vector(Run.PlayerPosition), 1 - MathF.Exp(-elapsed * 12));
+            camera = camera.Lerp(CameraTarget(), 1 - MathF.Exp(-elapsed * 12));
             if (Run.Phase == RunPhase.Playing)
             {
                 foreach (var effect in effects) effect.Age += elapsed;
@@ -75,6 +75,12 @@ public partial class GameCanvas : Node2D
         DrawCombat();
         DrawSetTransform(Vector2.Zero);
         DrawHud();
+    }
+
+    private Vector2 CameraTarget()
+    {
+        if (Run == null) return Vector2.Zero;
+        return Palette.Vector(Run.PlayerPosition).Clamp(new(-RunState.ArenaHalfWidth + 640, -RunState.ArenaHalfHeight + 282), new(RunState.ArenaHalfWidth - 640, RunState.ArenaHalfHeight - 282));
     }
 
     private void Text(string text, Vector2 position, int size, Color color, Font? font = null)

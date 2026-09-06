@@ -86,6 +86,13 @@ public partial class GameRoot : Node
 
     private static bool Pressed(Key first, Key second) => Input.IsPhysicalKeyPressed(first) || Input.IsPhysicalKeyPressed(second);
 
+    public override void _Notification(int notification)
+    {
+        if (notification != NotificationWMWindowFocusOut || diagnosticMode || run?.Phase != RunPhase.Playing) return;
+        run.TogglePause();
+        RefreshRunScreen();
+    }
+
     private void StartRun(HeroKind hero, int? seed = null)
     {
         lastHero = hero;

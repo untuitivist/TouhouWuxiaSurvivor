@@ -50,7 +50,7 @@ public sealed partial class RunState
             EnemyKind.Fairy => (32 + Time * 0.13f, 68, 16, 15),
             EnemyKind.Charger => (48 + Time * 0.16f, 92, 19, 20),
             EnemyKind.Elite => (300 + Time * 2.0f, 63, 27, 22),
-            _ => (6200, 70, 32, 26)
+            _ => (26000, 70, 32, 26)
         };
         enemy.Health = enemy.MaxHealth;
         if (kind == EnemyKind.Boss) enemy.Timer = 3;
