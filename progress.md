@@ -2,6 +2,14 @@
 
 ## 2026-09-06 — Clean Rewrite
 
+### First validation
+
+- `dotnet build`: PASS, 0 warnings, 0 errors.
+- Pure-core regression runner: PASS 15/15 in 0.31 seconds.
+- Headless real-engine UI flow: PASS title, character select, start, dash, pause, settings, queued upgrades, victory, replay, help, viewport bounds.
+- Six unassisted navigation-bot runs: all win; useful as reachability evidence, not proof of human enjoyment or final difficulty.
+- Real OpenGL screenshot suite is next; screenshots have not yet been visually accepted.
+
 - Saved previous implementation as `d229b36`; intent record committed as `2814b1e`.
 - User authorized redesign of all product details except Touhou + wuxia + survivor.
 - Verified local Godot and .NET executables; selected independent `game/` runtime without deleting legacy files.

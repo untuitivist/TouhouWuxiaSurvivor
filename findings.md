@@ -2,6 +2,11 @@
 
 ## Clean Rewrite — 2026-09-06
 
+- New project builds with zero warnings/errors; 15/15 pure simulation tests and headless UI smoke pass.
+- Existing player and generic-enemy strips are four square frames (192 x 48); rendering derives frame size from texture height.
+- Initial six unassisted automated runs win around 246–249 seconds, leaving too little time for the Boss patterns. Increase the final encounter's durability, then remeasure rather than claiming the first balance is finished.
+- Root-cause fixes during implementation: avoid mutating the projectile collection from nested enemy-death callbacks; cast unsigned terrain hashes before subtracting world offsets.
+
 - Actual repository is the inner `touhou-wuxia-survivor/` directory; snapshot `d229b36` preserves the former runtime.
 - Local engine reports `4.7.1.stable.mono.official.a13da4feb`; .NET SDK is `8.0.302`.
 - Existing base assets contain Reimu/Marisa sprite strips, generic enemies, scenery and internally sourced audio. Reuse does not grant redistribution rights.
