@@ -74,6 +74,23 @@ development does not bump `alpha-0.0.9`, replace a historical EXE, push, or depl
 
 ## Hosting at /TouhouSurvivor/
 
+### Release contract
+
+The user's release contract now has two deliverables: a self-contained Windows
+EXE and an updated Web deployment from the same game version/source revision.
+A release is only complete after both deliverables and their verification succeed;
+otherwise report a partial release explicitly. Preserve old artifacts and a Web
+rollback target. A Git push is still a separate action, not implied by deployment.
+
+The user has authorized an initial Web deployment attempt, but the real domain,
+SSH target and existing hosting configuration have not yet been supplied. Do not
+guess the website server from unrelated local SSH profiles. This first deployment
+trial does not itself authorize a version bump or a new Windows release export.
+Earlier no-deployment statements in this document describe the completed local
+validation, not a prohibition on this newly authorized trial.
+
+### Server configuration
+
 Upload only the contents of `<build>/site/TouhouSurvivor/` to an equivalent static
 directory on the existing HTTPS server. No C# server runtime is needed to serve
 these files. Configure the subpath with a trailing-slash redirect, `.wasm` MIME
