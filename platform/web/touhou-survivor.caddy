@@ -1,5 +1,5 @@
 handle /TouhouSurvivor {
-    redir /TouhouSurvivor/ 308
+    redir * /TouhouSurvivor/ 308
 }
 
 handle_path /TouhouSurvivor/* {

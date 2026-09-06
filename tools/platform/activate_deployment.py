@@ -107,6 +107,9 @@ def activate(arguments):
         run('caddy', 'validate', '--config', str(MAIN), '--adapter', 'caddyfile')
         atomic_text(entry, html)
         run('systemctl', 'reload', 'caddy')
+        redirect = subprocess.check_output(['curl', '--silent', '--show-error', '--max-time', '30', '--resolve', 'allinagent.top:443:127.0.0.1', '-o', '/dev/null', '-w', '%{http_code}', 'https://allinagent.top/TouhouSurvivor'])
+        if redirect != b'308':
+            raise RuntimeError('Stable entry redirect failed')
         response = subprocess.check_output(['curl', '--fail', '--silent', '--show-error', '--max-time', '30', '--resolve', 'allinagent.top:443:127.0.0.1', 'https://allinagent.top/TouhouSurvivor/'])
         if prefix.encode() not in response:
             raise RuntimeError('Activated entry did not reference the expected release')

@@ -37,10 +37,12 @@ class DeploymentTests(unittest.TestCase):
                 archive.addfile(member, io.BytesIO(content))
         self.arguments.sha256 = deployment.sha256(self.arguments.archive)
 
-    def activate(self, response=None):
+    def activate(self, response=None, redirect=b'308'):
         if response is None:
             response = ('/TouhouSurvivor/releases/' + self.arguments.release + '/').encode()
-        with patch.object(deployment, 'ROOT', self.root), patch.object(deployment, 'MAIN', self.main), patch.object(deployment, 'SNIPPET', self.snippet), patch.object(deployment, 'run'), patch.object(deployment.subprocess, 'check_output', return_value=response):
+        def output(command):
+            return redirect if '-w' in command else response
+        with patch.object(deployment, 'ROOT', self.root), patch.object(deployment, 'MAIN', self.main), patch.object(deployment, 'SNIPPET', self.snippet), patch.object(deployment, 'run'), patch.object(deployment.subprocess, 'check_output', side_effect=output):
             deployment.activate(self.arguments)
 
     def test_versioned_entry_and_preserved_original_artifacts(self):
@@ -83,6 +85,11 @@ class DeploymentTests(unittest.TestCase):
             self.activate(b'wrong site')
         self.assertEqual(entry.read_text(encoding='utf-8'), 'previous entry')
         self.assertEqual(self.snippet.read_text(encoding='utf-8'), 'previous route')
+        self.assertEqual(self.main.read_text(encoding='utf-8'), self.original)
+
+    def test_failed_redirect_restores_original_configuration(self):
+        with self.assertRaisesRegex(RuntimeError, 'redirect failed'):
+            self.activate(redirect=b'200')
         self.assertEqual(self.main.read_text(encoding='utf-8'), self.original)
 
 
