@@ -1,5 +1,14 @@
 # Findings and Decisions
 
+## Shared-Memory-Free Browser Compatibility Audit
+
+- User identifies Xiaomi's bundled browser as a failing environment and asks for a compatible route when cross-origin isolation/shared memory are unavailable. Device OS and browser versions are still unknown; no physical Xiaomi test was performed.
+- Read-only HTTPS inspection of the canonical game entry returns HTTP 200, `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`. This confirms this response's server configuration, not what a particular phone/cache/network path receives.
+- Active `export_presets.cfg` enables `variant/thread_support=true`. The pinned experimental 4.6.1 SDK's `Sdk/Browser.targets` unconditionally sets `WasmEnableThreads=true` and requires agreement with GetRuntimePack. The actual exported JS creates `WebAssembly.Memory` with `shared:true`; the loader's thread check is therefore not the sole blocker. The installed release contains only `web_debug.zip` and `web_release.zip`, not a verified single-thread C# variant.
+- Checked primary upstream PR godotengine/godot#106125 at head `raulsntos/godot` revision `aa1f5ffe8321bc57155f606197b5aa93dd9e662c`: PR is open/unmerged, and its Browser.targets and GetRuntimePack patch both set WasmEnableThreads=false. This is a concrete single-thread research direction, not proof that the project's existing editor/templates can run with that property flipped. Matching native templates, .NET runtime and SDK require an isolated build and full game verification.
+- Proposed acceptance: same C# gameplay and Windows build, plus a Web compatibility build that demonstrably starts without isolation/SAB, with input, save, audio, pause and both character journeys tested. Keep current headers for the existing threaded build. Do not deploy a capability selector that advertises a nonexistent fallback, and do not claim that a better error panel constitutes compatibility.
+- No engine download/rebuild, server change, version bump or deployment was performed in this audit. Toolchain replacement/rebuild is a broader change than HTTP configuration and remains unimplemented.
+
 ## Active Runtime Performance Audit
 
 - Final build `artifacts/web-builds/20260907-024930-329` uses the unchanged production loader. Its six loading scenarios pass, including compressed transfer/cache, stall/recovery, disconnect and explicit failures. Desktop, touch and both character journeys pass the full Web suite; touch-upgrade and the separate performance gate fail only their strict request-error checks on `index.pck net::ERR_ABORTED`. Gameplay assertions themselves complete. Earlier successful performance runs are not substituted for the final failed acceptance gate.
