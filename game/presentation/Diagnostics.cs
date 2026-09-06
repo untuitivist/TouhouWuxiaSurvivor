@@ -20,12 +20,16 @@ public partial class GameRoot
         capturePath = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
         diagnosticMode = smokeMode || capturePath.Length > 0;
         if (!diagnosticMode) return;
+        profile = new ProfileStore(ProjectSettings.GlobalizePath($"user://rebirth/diagnostics/sessions/{Guid.NewGuid():N}/profile.json"));
+        if (smokeMode) { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }
+        canvas.ReducedMotion = profile.Data.ReducedMotion;
         audio.Apply(new PlayerProfile { MusicEnabled = false, SoundEnabled = false });
         var mode = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-screen=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "title";
         if (mode == "title") return;
         if (mode == "heroes") { ShowHeroes(); return; }
         if (mode == "help") { ShowHelp(); return; }
         if (mode == "settings") { ShowSettings(); return; }
+        if (mode == "changelog") { ShowChangelog(); return; }
         PrepareBattlePreview(mode);
     }
 
@@ -59,6 +63,14 @@ public partial class GameRoot
         canvas.Focused = true;
         canvas.ReceiveEvents();
         RefreshRunScreen();
+        if (mode is "build" or "build-max")
+        {
+            while (run.Phase == RunPhase.Choosing) run.Choose(0);
+            if (mode == "build-max")
+                foreach (var art in ArtCatalog.All.Take(8)) run.Ranks[(int)art.Id] = art.MaxRank;
+            RefreshRunScreen();
+            OpenBuild();
+        }
     }
 
     public override void _Process(double delta)
@@ -101,6 +113,7 @@ public partial class GameRoot
         AssertUiBounds();
         PressButton("执此道 · 博丽灵梦");
         Require(run?.Hero == HeroKind.Reimu && currentScreen == "playing", "Character starts run");
+        TestNavigation();
         run!.Step(new(new NumericsVector(1, 0), false, true));
         Require(run.DashCooldown > 0, "Dash input reaches simulation");
         run.TogglePause();
@@ -109,6 +122,11 @@ public partial class GameRoot
         PressButton("音画设置");
         Require(currentScreen == "settings" && run.Phase == RunPhase.Paused, "Settings preserves pause");
         AssertUiBounds();
+        var master = Descendants(screen!).OfType<HSlider>().Single(slider => slider.Name == "master_volume");
+        master.Value = 0;
+        Require(AudioServer.IsBusMute(0), "Zero master volume really mutes audio");
+        master.Value = 37;
+        Require(!AudioServer.IsBusMute(0) && Math.Abs(profile.Data.MasterVolume - 0.37f) < 0.001f, "Volume changes apply without rebuilding screen");
         PressButton("返回");
         PressButton("继续行走");
         run.AddExperience(30);
@@ -116,6 +134,15 @@ public partial class GameRoot
         RefreshRunScreen();
         Require(currentScreen == "choices", "Experience opens choices");
         AssertUiBounds();
+        var originalChoices = run.Choices.ToArray();
+        var pending = run.PendingChoices;
+        PressKey(Key.E);
+        Require(currentScreen == "build" && run.Phase == RunPhase.Choosing, "Upgrade inspection retains choosing state");
+        AssertUiBounds();
+        PressKey(Key.Key1);
+        Require(run.PendingChoices == pending && run.Choices.SequenceEqual(originalChoices), "Hidden choices cannot be selected through inspection");
+        PressKey(Key.Escape);
+        Require(currentScreen == "choices" && run.Choices.SequenceEqual(originalChoices), "Inspection returns to unchanged offers");
         while (run.Phase == RunPhase.Choosing) { PressButton("[1]  领悟"); }
         Require(currentScreen == "playing", "Queued choices resume run");
         var boss = run.SpawnEnemy(EnemyKind.Boss, run.PlayerPosition + new NumericsVector(40, 0));
@@ -131,7 +158,51 @@ public partial class GameRoot
         ShowTitle();
         ShowHelp();
         AssertUiBounds();
-        GD.Print("UI: title, heroes, start, dash, pause, settings, queued upgrades, victory, replay, help, viewport bounds");
+        ShowTitle();
+        PressButton("更新记录");
+        AssertUiBounds();
+        var history = Descendants(screen!).OfType<RichTextLabel>().Single();
+        Require(history.GetParsedText().Contains(ProjectSettings.GetSetting("application/config/version").AsString()), "Changelog initially shows current release");
+        var versions = Descendants(screen!).OfType<OptionButton>().Single();
+        Require(versions.ItemCount >= 9, "Historical releases are individually selectable");
+        versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 1);
+        Require(history.GetParsedText().Contains("alpha-0.0.0") && history.GetParsedText().Contains("alpha-0.0.5"), "Embedded complete history remains accessible");
+        PressKey(Key.Escape);
+        Require(currentScreen == "title", "Changelog returns to title");
+        GD.Print("UI: navigation, inspection, preserved offers, audio sliders, embedded history, title, heroes, dash, victory, replay, help, viewport bounds");
+    }
+
+    private void TestNavigation()
+    {
+        Require(InputMap.ActionGetEvents(GameControls.Left).Count == 2 && InputMap.ActionGetEvents(GameControls.Pause).Count == 2, "Movement and pause retain dual defaults");
+        PressKey(Key.P);
+        Require(currentScreen == "pause" && run!.Phase == RunPhase.Paused, "P pauses from combat");
+        PressButton("结束本局");
+        PressKey(Key.Escape);
+        Require(currentScreen == "pause" && run!.Phase == RunPhase.Paused, "Escape cancels abandon without resuming combat");
+        PressButton("更新记录");
+        PressKey(Key.Escape);
+        Require(currentScreen == "pause" && run!.Phase == RunPhase.Paused, "Pause changelog returns to pause");
+        PressKey(Key.E);
+        Require(currentScreen == "build", "E opens build despite focused pause button");
+        AssertUiBounds();
+        PressKey(Key.E);
+        Require(currentScreen == "pause", "Pause inspection does not resume combat");
+        PressKey(Key.P);
+        Require(currentScreen == "playing", "P resumes pause");
+        dashRequested = true;
+        PressKey(Key.E);
+        var ticks = run!.Ticks;
+        run.Step(default);
+        Require(currentScreen == "build" && run.Ticks == ticks && !dashRequested, "Combat inspection freezes simulation and clears queued dash");
+        PressKey(Key.Escape);
+        Require(currentScreen == "playing" && run.Phase == RunPhase.Playing, "Direct combat inspection returns to combat");
+    }
+
+    private void PressKey(Key code)
+    {
+        GetViewport().PushInput(new InputEventKey { PhysicalKeycode = code, Keycode = code, Pressed = true });
+        GetViewport().PushInput(new InputEventKey { PhysicalKeycode = code, Keycode = code, Pressed = false });
     }
 
     private static void TestProfilePersistence(RunState victory)
@@ -141,9 +212,21 @@ public partial class GameRoot
         var path = Path.Combine(directory, "profile.json");
         var store = new ProfileStore(path);
         store.Data.MusicEnabled = false;
+        store.Data.MasterVolume = 0.37f;
+        store.Data.MusicVolume = 0.52f;
+        store.Data.SoundVolume = 0;
         store.Record(victory);
         var restored = new ProfileStore(path);
         Require(restored.Data.Victories == 1 && restored.Data.CompletedRuns == 1 && !restored.Data.MusicEnabled, "Profile round trip");
+        Require(restored.Data.MasterVolume == 0.37f && restored.Data.MusicVolume == 0.52f && restored.Data.SoundVolume == 0, "Volume preferences round trip");
+        var legacyPath = Path.Combine(directory, "legacy.json");
+        System.IO.File.WriteAllText(legacyPath, "{\"Version\":1,\"BestKills\":42,\"MusicEnabled\":false}", new System.Text.UTF8Encoding(false));
+        var legacy = new ProfileStore(legacyPath);
+        Require(legacy.Data.BestKills == 42 && !legacy.Data.MusicEnabled && legacy.Data.MasterVolume == 1 && legacy.Data.MusicVolume == 1 && legacy.Data.SoundVolume == 1, "Old profiles retain records and gain default volumes");
+        var rangePath = Path.Combine(directory, "range.json");
+        System.IO.File.WriteAllText(rangePath, "{\"Version\":1,\"BestKills\":42,\"MasterVolume\":-5,\"SoundVolume\":20}", new System.Text.UTF8Encoding(false));
+        var range = new ProfileStore(rangePath);
+        Require(range.Data.BestKills == 42 && range.Data.MasterVolume == 0 && range.Data.SoundVolume == 1, "Out-of-range volumes are clamped without discarding records");
         var bytes = System.IO.File.ReadAllBytes(path);
         Require(bytes.Length > 3 && !(bytes[0] == 239 && bytes[1] == 187 && bytes[2] == 191), "Profile UTF-8 without BOM");
         var corruptPath = Path.Combine(directory, "corrupt.json");
@@ -152,7 +235,7 @@ public partial class GameRoot
         Require(corrupt.Warning.Length > 0, "Corrupt profile falls back with warning");
         corrupt.Save();
         Require(System.IO.File.ReadAllText(corruptPath, System.Text.Encoding.UTF8) == "{broken", "Corrupt original remains intact");
-        GD.Print("PROFILE_PASS: round trip, preferences, victory count, UTF-8, malformed-file preservation");
+        GD.Print("PROFILE_PASS: round trip, volume preferences, legacy compatibility, range clamps, victory count, UTF-8, malformed-file preservation");
     }
 
     private void PressButton(string text)
@@ -167,7 +250,7 @@ public partial class GameRoot
         var viewport = new Rect2(-1, -1, 1282, 722);
         foreach (var control in Descendants(screen!).OfType<Control>())
         {
-            if (control is not (Button or Label)) continue;
+            if (control is not (Button or Label or HSlider or RichTextLabel)) continue;
             Require(viewport.Encloses(control.GetGlobalRect()), $"Control fits viewport: {control.Name}");
             if (control.GetParent() is Panel parent)
                 Require(parent.GetGlobalRect().Grow(2).Encloses(control.GetGlobalRect()), $"Control fits card: {(control as Label)?.Text ?? control.Name}");

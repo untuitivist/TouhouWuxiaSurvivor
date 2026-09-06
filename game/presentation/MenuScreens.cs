@@ -5,6 +5,7 @@ namespace Rebirth.Presentation;
 
 public partial class GameRoot
 {
+    private Label? settingsWarning;
     private void ShowTitle()
     {
         run = null;
@@ -18,7 +19,8 @@ public partial class GameRoot
         var first = ui.Button(screen!, "踏入夜境     →", new(86, 380, 362, 58), ShowHeroes, true);
         ui.Button(screen!, "行走须知", new(86, 450, 173, 45), ShowHelp);
         ui.Button(screen!, "音画设置", new(275, 450, 173, 45), ShowSettings);
-        ui.Button(screen!, "收剑离去", new(86, 507, 362, 43), () => GetTree().Quit());
+        ui.Button(screen!, "更新记录", new(86, 507, 173, 43), ShowChangelog);
+        ui.Button(screen!, "收剑离去", new(275, 507, 173, 43), () => GetTree().Quit());
         ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
         ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(816, 617, 403, 30), 15, Palette.Gold);
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
@@ -59,7 +61,7 @@ public partial class GameRoot
     {
         var panel = Modal("help", "FIELD NOTES  /  行走须知", "把注意力留给走位。", 1000, 566);
         ui.Label(panel, "01   行", new(36, 135, 260, 40), 26, Palette.Gold, true);
-        ui.Label(panel, "WASD / 方向键  移动\nShift  慢移，显示判定点\nSpace  闪身，短暂无敌\nEsc  暂停    F11  全屏", new(36, 188, 290, 148), 18);
+        ui.Label(panel, "WASD / 方向键  移动\nShift  慢移，显示判定点\nSpace  闪身，短暂无敌\nEsc / P  暂停    E  构筑\nF11  全屏", new(36, 188, 290, 172), 18);
         ui.Label(panel, "02   悟", new(355, 135, 270, 40), 26, Palette.Jade, true);
         ui.Label(panel, "飞剑自动寻找目标。\n拾取青色灵光，升级三选一。\n按 1 / 2 / 3 或点击选择。\n武学五重时产生形态变化。", new(355, 188, 293, 148), 18);
         ui.Label(panel, "03   破", new(676, 135, 280, 40), 26, Palette.Red, true);
@@ -71,20 +73,43 @@ public partial class GameRoot
 
     private void ShowSettings()
     {
-        var panel = Modal("settings", "SETTINGS  /  音画设置", "按自己的节奏。", 700, 510);
-        ui.Button(panel, $"背景音乐                  {(profile.Data.MusicEnabled ? "开启" : "关闭")}", new(36, 143, 628, 53), () => { profile.Data.MusicEnabled = !profile.Data.MusicEnabled; SaveSettings(); });
-        ui.Button(panel, $"战斗音效                  {(profile.Data.SoundEnabled ? "开启" : "关闭")}", new(36, 212, 628, 53), () => { profile.Data.SoundEnabled = !profile.Data.SoundEnabled; SaveSettings(); });
-        ui.Button(panel, $"减少震屏                  {(profile.Data.ReducedMotion ? "开启" : "关闭")}", new(36, 281, 628, 53), () => { profile.Data.ReducedMotion = !profile.Data.ReducedMotion; SaveSettings(); });
-        ui.Label(panel, "F11 切换全屏 · 设置自动保存到本机，不改变角色强度。", new(36, 359, 628, 42), 15, Palette.Muted);
-        if (profile.Warning.Length > 0) ui.Label(panel, profile.Warning, new(36, 398, 628, 30), 13, Palette.Red);
-        ui.Button(panel, "返回", new(36, 439, 628, 43), () => { if (run == null) ShowTitle(); else ShowPause(); }, true).GrabFocus();
+        var panel = Modal("settings", "SETTINGS  /  音画设置", "按自己的节奏。", 820, 600);
+        AddVolumeSlider(panel, "总音量", "master_volume", 144, profile.Data.MasterVolume, value => profile.Data.MasterVolume = value);
+        AddVolumeSlider(panel, "音乐音量", "music_volume", 208, profile.Data.MusicVolume, value => profile.Data.MusicVolume = value);
+        AddVolumeSlider(panel, "音效音量", "sound_volume", 272, profile.Data.SoundVolume, value => profile.Data.SoundVolume = value);
+        ui.Button(panel, $"音乐：{(profile.Data.MusicEnabled ? "开启" : "静音")}", new(36, 347, 230, 45), () => { profile.Data.MusicEnabled = !profile.Data.MusicEnabled; SaveSettings(); });
+        ui.Button(panel, $"音效：{(profile.Data.SoundEnabled ? "开启" : "静音")}", new(294, 347, 230, 45), () => { profile.Data.SoundEnabled = !profile.Data.SoundEnabled; SaveSettings(); });
+        ui.Button(panel, $"减少震屏：{(profile.Data.ReducedMotion ? "开" : "关")}", new(552, 347, 232, 45), () => { profile.Data.ReducedMotion = !profile.Data.ReducedMotion; SaveSettings(); });
+        ui.Label(panel, "音量即时生效并自动保存；静音开关保留各自音量。\nTab 选择控件，左右键微调音量 · F11 切换全屏", new(36, 415, 748, 59), 16, Palette.Muted);
+        settingsWarning = ui.Label(panel, profile.Warning, new(36, 480, 748, 30), 13, Palette.Red);
+        ui.Button(panel, "返回", new(36, 531, 748, 43), NavigateBack, true).GrabFocus();
     }
 
-    private void SaveSettings()
+    private void AddVolumeSlider(Control panel, string title, string name, int vertical, float value, Action<float> update)
+    {
+        ui.Label(panel, title, new(36, vertical, 130, 35), 19, Palette.Paper);
+        var percentage = ui.Label(panel, $"{value * 100:0}%", new(690, vertical, 94, 35), 18, Palette.Gold);
+        var slider = new HSlider
+        {
+            Name = name, Position = new(190, vertical + 5), Size = new(469, 30),
+            MinValue = 0, MaxValue = 100, Step = 1, Value = Math.Round(value * 100),
+            FocusMode = Control.FocusModeEnum.All, TooltipText = title
+        };
+        slider.ValueChanged += volume =>
+        {
+            update((float)volume / 100);
+            percentage.Text = $"{volume:0}%";
+            SaveSettings(false);
+        };
+        panel.AddChild(slider);
+    }
+
+    private void SaveSettings(bool refresh = true)
     {
         profile.Save();
+        if (IsInstanceValid(settingsWarning)) settingsWarning!.Text = profile.Warning;
         audio.Apply(profile.Data);
         canvas.ReducedMotion = profile.Data.ReducedMotion;
-        ShowSettings();
+        if (refresh) ShowSettings();
     }
 }

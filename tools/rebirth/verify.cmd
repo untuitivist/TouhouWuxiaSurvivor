@@ -20,6 +20,8 @@ if errorlevel 1 goto ui_failed
 type artifacts\ui-smoke.log
 findstr /c:"REBIRTH_UI_SMOKE_PASS" artifacts\ui-smoke.log > nul
 if errorlevel 1 exit /b 1
+findstr /b /c:"ERROR:" artifacts\ui-smoke.log > nul
+if not errorlevel 1 exit /b 1
 echo REBIRTH_VALIDATION_PASS
 exit /b 0
 :build_failed

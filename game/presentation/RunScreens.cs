@@ -21,13 +21,14 @@ public partial class GameRoot
             ui.Label(card, $"0{index + 1}    /    {art.School}", new(19, 16, 294, 30), 14, color);
             ui.Label(card, art.Name, new(17, 59, 300, 49), 29, Palette.Paper, true);
             ui.Label(card, ArtCatalog.RankText(art.Id, rank), new(20, 112, 294, 24), 14, color);
-            ui.Label(card, art.Description, new(20, 147, 294, 70), 17, Palette.Paper);
+            ui.Label(card, ArtCatalog.UpgradeText(art.Id, rank), new(20, 147, 294, 70), 17, Palette.Paper);
             var footer = rank == art.MaxRank - 1 && art.Mastery.Length > 0 ? art.Mastery : rank == 0 ? "新得武学 · 开辟新的制敌方式" : "精进此道 · 强化已有构筑";
             ui.Label(card, footer, new(20, 219, 294, 40), 13, color);
             var button = ui.Button(card, $"[{index + 1}]  领悟", new(19, 263, 296, 30), () => SelectArt(selectedIndex), true);
             first ??= button;
         }
-        ui.Label(panel, "御剑破阵  /  阴阳护身  /  灵符散华  /  紫电连锁", new(36, 486, 1018, 28), 14, Palette.Muted);
+        ui.Button(panel, "查看构筑 [E]", new(36, 486, 232, 36), OpenBuild);
+        ui.Label(panel, "查看不会消耗选择，也不会刷新候选武学。", new(296, 490, 766, 28), 14, Palette.Muted);
         first?.GrabFocus();
     }
 
@@ -38,8 +39,10 @@ public partial class GameRoot
         ui.Label(panel, $"行走 {GameCanvas.FormatTime(run.Time)}   ·   第 {run.Level} 境   ·   退治 {run.Kills}", new(36, 132, 840, 32), 19, Palette.Gold);
         var build = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && run.Ranks[(int)art.Id] > 0).Select(art => $"{art.Name}  {run.Ranks[(int)art.Id]} 重");
         ui.Label(panel, string.Join("     ", build), new(36, 188, 844, 116), 20, Palette.Paper);
-        ui.Label(panel, $"威力 ×{run.Power:0.00}   ·   施法 ×{run.CastSpeed:0.00}   ·   闪身 {run.DashInterval:0.00}s\n古印 {run.PurifiedSeals}/3   ·   擦弹 {run.Grazes}   ·   剑意爆发 {run.Bursts}", new(36, 311, 844, 64), 16, Palette.Muted);
-        ui.Button(panel, "继续行走", new(36, 426, 270, 49), () => { run.TogglePause(); RefreshRunScreen(); }, true).GrabFocus();
+        ui.Button(panel, "属性与构筑 [E]", new(36, 325, 410, 45), OpenBuild);
+        ui.Button(panel, "更新记录", new(466, 325, 416, 45), ShowChangelog);
+        ui.Label(panel, "Esc / P 继续 · 子页面先返回此处，不直接恢复战斗", new(36, 382, 844, 28), 14, Palette.Muted);
+        ui.Button(panel, "继续行走", new(36, 426, 270, 49), NavigateBack, true).GrabFocus();
         ui.Button(panel, "音画设置", new(324, 426, 270, 49), ShowSettings);
         ui.Button(panel, "结束本局", new(612, 426, 270, 49), ShowAbandonConfirmation);
     }

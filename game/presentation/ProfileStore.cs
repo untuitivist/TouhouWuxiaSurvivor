@@ -16,6 +16,9 @@ public sealed class PlayerProfile
     public bool MusicEnabled { get; set; } = true;
     public bool SoundEnabled { get; set; } = true;
     public bool ReducedMotion { get; set; }
+    public float MasterVolume { get; set; } = 1;
+    public float MusicVolume { get; set; } = 1;
+    public float SoundVolume { get; set; } = 1;
 }
 
 public sealed class ProfileStore
@@ -33,6 +36,9 @@ public sealed class ProfileStore
             var loaded = JsonSerializer.Deserialize<PlayerProfile>(System.IO.File.ReadAllText(path, Encoding.UTF8));
             if (loaded == null || loaded.Version != 1 || loaded.CompletedRuns < 0 || loaded.Victories < 0 || loaded.BestKills < 0 || !float.IsFinite(loaded.FastestVictory))
                 throw new InvalidDataException("Unsupported or invalid profile");
+            loaded.MasterVolume = NormalizeVolume(loaded.MasterVolume);
+            loaded.MusicVolume = NormalizeVolume(loaded.MusicVolume);
+            loaded.SoundVolume = NormalizeVolume(loaded.SoundVolume);
             Data = loaded;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidDataException)
@@ -41,6 +47,8 @@ public sealed class ProfileStore
             GD.PushWarning($"{Warning} {error.Message}");
         }
     }
+
+    private static float NormalizeVolume(float value) => float.IsFinite(value) ? Math.Clamp(value, 0, 1) : 1;
 
     public void Record(RunState run)
     {

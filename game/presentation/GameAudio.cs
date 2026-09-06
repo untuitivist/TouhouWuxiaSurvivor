@@ -10,6 +10,7 @@ public partial class GameAudio : Node
     private readonly Dictionary<EffectKind, AudioStream> clips = [];
     private double lastHit;
     public bool SoundEnabled = true;
+    private float soundVolume = 1;
 
     public override void _Ready()
     {
@@ -39,8 +40,24 @@ public partial class GameAudio : Node
     public void Apply(PlayerProfile profile)
     {
         SoundEnabled = profile.SoundEnabled;
+        soundVolume = profile.SoundVolume;
+        AudioServer.SetBusVolumeDb(0, Mathf.LinearToDb(Math.Max(profile.MasterVolume, 0.0001f)));
+        AudioServer.SetBusMute(0, profile.MasterVolume <= 0);
+        music.VolumeLinear = Mathf.DbToLinear(-17) * profile.MusicVolume;
+        foreach (var voice in voices)
+        {
+            if (!SoundEnabled) voice.Stop();
+            voice.VolumeLinear = Mathf.DbToLinear(voice.GetMeta("base_volume", -16).AsSingle()) * soundVolume;
+        }
         if (profile.MusicEnabled && !music.Playing) music.Play();
         if (!profile.MusicEnabled) music.Stop();
+    }
+
+    public override void _ExitTree()
+    {
+        music.Stop();
+        music.Stream = null;
+        foreach (var voice in voices) { voice.Stop(); voice.Stream = null; }
     }
 
     public void PlayEvents(IReadOnlyList<CombatEvent> events)
@@ -55,7 +72,9 @@ public partial class GameAudio : Node
             var voice = voices.Find(candidate => !candidate.Playing);
             if (voice == null) continue;
             voice.Stream = clip;
-            voice.VolumeDb = entry.Kind == EffectKind.Hit ? -26 : -16;
+            var baseVolume = entry.Kind == EffectKind.Hit ? -26 : -16;
+            voice.SetMeta("base_volume", baseVolume);
+            voice.VolumeLinear = Mathf.DbToLinear(baseVolume) * soundVolume;
             voice.PitchScale = entry.Kind == EffectKind.Dash ? 1.4f : 1;
             voice.Play();
         }

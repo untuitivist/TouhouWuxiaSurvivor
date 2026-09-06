@@ -1,5 +1,15 @@
 # Progress Log
 
+## 2026-09-06 — Value-driven Iteration
+
+- User authorized implementation after clarifying that each restored feature must justify its value and improved form.
+- Started bounded usability iteration; no old files or released executables will be deleted or overwritten.
+- Implemented action-based input, context-preserving E inspection, consistent Escape/P navigation, rank-specific upgrade previews, volume sliders and embedded history. Preparing core/UI/render validation; no balance changes.
+- First validation: build clean and 20/20 core tests passed; headless input injection via Input.ParseInputEvent did not reach the viewport synchronously. Changed the UI harness to Viewport.PushInput to exercise real input dispatch directly rather than calling handlers by hand.
+- Viewport-dispatched navigation, stored offers, sliders and legacy profile tests passed. Real-render screenshots covered 12 screens plus 960x540 choices; build/settings layouts inspected.
+- Audio exit warning persisted after explicit cleanup and a 100 ms delay. Reassessed the test: headless UI checks should not restart music as a side effect of moving sliders. Smoke profiles now keep audio disabled while verifying bus gain/mute, slider events and persistence; real audio listening is not claimed. Removed the ineffective delay. Verification rejects engine ERROR lines even when a PASS marker exists.
+- Inspection correction: the diagnostic file is Diagnostics.cs, not GameDiagnostics.cs; used the actual tracked path. Initial outer-directory AGENTS search returned no files; no scoped instructions were found.
+
 ## 2026-09-06 — Web and Version Assessment
 
 - Completed `docs/web_feasibility.md` using official stable/latest Godot Web documentation and the current C# project configuration.

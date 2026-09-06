@@ -30,6 +30,7 @@ public partial class GameRoot : Node
         AddChild(audio);
         ui = new(body, title);
         profile = new();
+        GameControls.Configure();
         audio.Apply(profile.Data);
         canvas.ReducedMotion = profile.Data.ReducedMotion;
         var layer = new CanvasLayer();
@@ -45,11 +46,11 @@ public partial class GameRoot : Node
     {
         if (diagnosticMode) return;
         if (run == null) return;
-        canvas.Focused = Input.IsPhysicalKeyPressed(Key.Shift);
+        canvas.Focused = Input.IsActionPressed(GameControls.Focus);
         if (run.Phase == RunPhase.Playing)
         {
-            float horizontal = (Pressed(Key.D, Key.Right) ? 1 : 0) - (Pressed(Key.A, Key.Left) ? 1 : 0);
-            float vertical = (Pressed(Key.S, Key.Down) ? 1 : 0) - (Pressed(Key.W, Key.Up) ? 1 : 0);
+            float horizontal = Input.GetAxis(GameControls.Left, GameControls.Right);
+            float vertical = Input.GetAxis(GameControls.Up, GameControls.Down);
             run.Step(new(new NumericsVector(horizontal, vertical), canvas.Focused, dashRequested));
             canvas.ReceiveEvents();
             audio.PlayEvents(run.Events);
@@ -62,29 +63,13 @@ public partial class GameRoot : Node
     {
         if (input is not InputEventKey { Pressed: true, Echo: false } key) return;
         var code = key.PhysicalKeycode == Key.None ? key.Keycode : key.PhysicalKeycode;
-        if (code == Key.F11)
-        {
-            var mode = DisplayServer.WindowGetMode();
-            DisplayServer.WindowSetMode(mode == DisplayServer.WindowMode.Fullscreen ? DisplayServer.WindowMode.Windowed : DisplayServer.WindowMode.Fullscreen);
-            GetViewport().SetInputAsHandled();
-            return;
-        }
-        if (code == Key.Escape)
-        {
-            if (run == null) { ShowTitle(); return; }
-            if (currentScreen == "settings") { ShowPause(); return; }
-            if (run.Phase is RunPhase.Playing or RunPhase.Paused) { run.TogglePause(); RefreshRunScreen(); }
-            GetViewport().SetInputAsHandled();
-        }
-        if (run?.Phase == RunPhase.Playing && code == Key.Space) { dashRequested = true; GetViewport().SetInputAsHandled(); }
-        if (run?.Phase == RunPhase.Choosing)
+        if (run?.Phase == RunPhase.Playing && input.IsActionPressed(GameControls.Dash)) { dashRequested = true; GetViewport().SetInputAsHandled(); }
+        if (run?.Phase == RunPhase.Choosing && currentScreen == "choices")
         {
             var index = code switch { Key.Key1 or Key.Kp1 => 0, Key.Key2 or Key.Kp2 => 1, Key.Key3 or Key.Kp3 => 2, _ => -1 };
             if (index >= 0) { SelectArt(index); GetViewport().SetInputAsHandled(); }
         }
     }
-
-    private static bool Pressed(Key first, Key second) => Input.IsPhysicalKeyPressed(first) || Input.IsPhysicalKeyPressed(second);
 
     public override void _Notification(int notification)
     {
@@ -114,6 +99,7 @@ public partial class GameRoot : Node
 
     private Control Modal(string name, string eyebrow, string heading, int width = 1080, int height = 540)
     {
+        dashRequested = false;
         ClearScreen(name);
         var shade = new ColorRect { Color = new(0.025f, 0.045f, 0.06f, 0.83f), Size = new(1280, 720), MouseFilter = Control.MouseFilterEnum.Stop };
         screen!.AddChild(shade);

@@ -1,5 +1,14 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Iteration alpha-0.0.7 — 2026-09-06
+
+1. [complete] Inspect input, UI, profile and diagnostic seams; retain useful habits rather than legacy architecture.
+2. [complete] Implement consistent pause/back navigation, character/build inspection, volume controls and embedded historical changelog.
+3. [in_progress] Extend regression/smoke coverage, verify actual rendering and preserve historical changelog text.
+4. [pending] Export and isolate-test a new self-contained EXE; commit all source/document changes without replacing previous releases.
+
+Scope excludes infinite maps, content inventory migration, permanent stat progression and Web migration. New combat mechanics remain experimental, not endorsed by this usability iteration.
+
 ## Active Assessment — 2026-09-06
 
 1. [complete] Verify official Godot Web/C# constraints and this project's actual platform assumptions.

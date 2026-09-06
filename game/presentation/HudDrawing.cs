@@ -54,7 +54,7 @@ public partial class GameCanvas
         {
             DrawRect(new(383, 551, 514, 65), Palette.Alpha(Palette.Deep, 0.8f));
             CenterText("无需瞄准，飞剑会为你开路。", new(640, 578), 20, Palette.Paper, TitleFont);
-            CenterText("WASD 移动  ·  沿路寻找三座古印", new(640, 603), 15, Palette.Muted);
+            CenterText("WASD / 方向键 移动  ·  E 构筑  ·  Esc / P 暂停", new(640, 603), 15, Palette.Muted);
         }
         if (Run.BurstGlow > 0) CenterText("剑 意  ·  归 一", new(640, 213), 32, Palette.Alpha(Palette.Gold, Run.BurstGlow / 0.65f), TitleFont);
         if (Run.Health < Run.MaxHealth * 0.25f)

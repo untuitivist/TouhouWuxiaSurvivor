@@ -1,5 +1,14 @@
 # Findings and Decisions
 
+## Value-driven Iteration — 2026-09-06
+
+- Current runtime polls physical keys directly; Escape navigation and settings return paths are scattered. Improve navigation centrally before adding inspection screens.
+- Restore E for meaningful build inspection and P for pause. Do not add an empty M map or F3 panel merely to match the old key list.
+- Existing profile version 1 can receive backward-compatible optional volume fields; preserve current records and mute preferences.
+- In-game release notes should read the exported CHANGELOG.md, avoiding a second manually maintained history.
+- Real-render review found the initial raw changelog spent most of its first screen on developer version conventions. Changed it to default to the current release with a version selector and a complete-history option, retaining the source text unchanged.
+- Headless verbose output localized the exit warning to active Ogg playback, not input events; explicitly stop and detach audio streams when the audio node exits.
+
 ## Web and Version Assessment — 2026-09-06
 
 - Historical CHANGELOG tail from alpha-0.0.5 through alpha-0.0.0 matches d229b36 exactly (line-ending normalization only).

@@ -6,6 +6,7 @@ using Rebirth.Diagnostics;
 var tests = new (string Name, Action Body)[]
 {
     ("hero identities and initial weapons", HeroIdentity),
+    ("upgrade descriptions expose real milestones", UpgradeDescriptions),
     ("focus movement preserves precise control", FocusMovement),
     ("normalized movement and finite arena", Movement),
     ("pause freezes the complete simulation", Pause),
@@ -46,6 +47,30 @@ static RunState NewRun(HeroKind hero = HeroKind.Reimu) => new(hero, 260906);
 static void Resolve(RunState run)
 {
     RunPilot.ResolveChoices(run);
+}
+
+static void UpgradeDescriptions()
+{
+    foreach (var art in ArtCatalog.All.Take(8))
+    {
+        for (var rank = 0; rank < art.MaxRank; rank++)
+            Check(!string.IsNullOrWhiteSpace(ArtCatalog.UpgradeText(art.Id, rank)), $"Missing preview for {art.Id} {rank}");
+        Check(ArtCatalog.UpgradeText(art.Id, art.MaxRank).Contains("已达圆满"), "Maxed arts do not promise another rank");
+    }
+    for (var rank = 1; rank <= 5; rank++)
+    {
+        var run = NewRun();
+        run.Ranks[(int)ArtKind.Sword] = rank;
+        run.SpawnEnemy(EnemyKind.Boss, new Vector2(400, 0));
+        run.Step(default);
+        var swords = run.Projectiles.Where(projectile => projectile.Art == ArtKind.Sword && !projectile.Hostile).ToArray();
+        var expectedCount = new[] { 1, 2, 2, 3, 5 }[rank - 1];
+        Check(swords.Length == expectedCount, "Sword preview milestones match emitted projectiles");
+        Check(swords.All(sword => sword.Pierce == (rank >= 5 ? 3 : rank >= 3 ? 1 : 0)), "Sword pierce matches the described total targets");
+    }
+    Check(ArtCatalog.UpgradeText(ArtKind.Sword, 4).Contains("3 → 5"), "Sword mastery explains the count change");
+    Check(ArtCatalog.UpgradeText(ArtKind.Lightning, 4).Contains("5 → 9"), "Lightning mastery explains the target change");
+    Check(ArtCatalog.UpgradeText(ArtKind.Recovery, 0) == ArtCatalog.Get(ArtKind.Recovery).Description, "Recovery remains an immediate effect");
 }
 
 static void HeroIdentity()

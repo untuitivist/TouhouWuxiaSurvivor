@@ -18,5 +18,24 @@ public static class ArtCatalog
     ];
 
     public static ArtDefinition Get(ArtKind kind) => All[(int)kind];
+    public static string UpgradeText(ArtKind kind, int rank)
+    {
+        if (rank >= Get(kind).MaxRank) return "已达圆满；可转向其他武学或补强生存。";
+        return kind switch
+        {
+            ArtKind.Sword => rank switch
+            {
+                0 => "习得自动追敌飞剑，建立远程攻击。",
+                1 => "每轮飞剑 1 → 2；单剑伤害提高。",
+                2 => "飞剑可贯穿 2 个敌人；单剑伤害提高。",
+                3 => "每轮飞剑 2 → 3；单剑伤害提高。",
+                _ => "每轮飞剑 3 → 5，可贯穿 4 敌；伤害提高。"
+            },
+            ArtKind.Orbit => rank == 0 ? "习得两枚绕身阴阳玉，击退靠近的敌人。" : rank == 4 ? "阴阳玉 5 → 6；回旋半径 85 → 115，伤害提高。" : $"阴阳玉 {rank + 1} → {rank + 2}；近身伤害提高。",
+            ArtKind.Talisman => rank == 0 ? "习得命中爆破的灵符，补充范围攻击。" : rank is 2 or 4 ? $"每轮灵符 {(rank == 2 ? "1 → 2" : "2 → 3")}；爆破范围与伤害提高。" : "爆破范围与单符伤害提高；本重不增加灵符数量。",
+            ArtKind.Lightning => rank == 0 ? "习得雷光，最多连锁 2 敌。" : rank == 4 ? "最多连锁 5 → 9 敌；基础间隔 1.65 → 1.05 秒，伤害提高。" : $"最多连锁 {rank + 1} → {rank + 2} 敌；单次伤害提高。",
+            _ => Get(kind).Description
+        };
+    }
     public static string RankText(ArtKind kind, int rank) => kind == ArtKind.Recovery ? "即时生效" : $"第 {rank + 1} 重 / {Get(kind).MaxRank}";
 }
