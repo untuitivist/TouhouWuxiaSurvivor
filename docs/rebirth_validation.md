@@ -1,5 +1,20 @@
 # Rebirth validation — 2026-09-06
 
+## Exported delivery: alpha-0.0.7
+
+- Value-driven usability iteration: context-preserving E build inspection, Esc/P navigation, rank-specific upgrade descriptions, volume controls and per-version embedded history. Combat formulas, maps and content counts are unchanged.
+- Source checks: clean Debug build (0 warnings/errors), 20/20 core regressions, real viewport input dispatch, unchanged upgrade offers across inspection, volume/profile persistence, backward-compatible version-1 profiles and corrupt-file preservation.
+- Rendering: 12 primary screens plus five 960x540 checks (choices, build, maximum-rank build, settings, changelog). Build/settings/history screens visually reviewed, including exported 960x540 build output.
+- File: `release/TouhouWuxiaSurvivor_alpha-0.0.7.exe`; 192,466,816 bytes; Windows file/product version `0.0.7.0`.
+- SHA-256: `23FD603D815CD0FBC60034BC2365D8B3B30CD176FDEB9908E7B3FF6C1413516B`.
+- Embedded PCK and self-contained Microsoft.NETCore.App 8.0.6. The executable alone was copied outside the project, with SDK/Godot removed from child PATH and DOTNET_ROOT pointed at a nonexistent directory.
+- That copy passed six checks: UI/profile smoke, title, Boss, build, settings and changelog. The three new screens also rendered at 960x540; no external CHANGELOG.md was present, and current/historical entries loaded from the embedded resource.
+- Logs/screenshots/report: `artifacts/alpha-0.0.7-export-validation/`; source logs: `artifacts/alpha-0.0.7-verify.log` and `artifacts/alpha-0.0.7-captures.log`.
+- Historical alpha-0.0.0 through alpha-0.0.6 changelog sections are unchanged. All seven earlier release EXEs remain; alpha-0.0.6 SHA-256 still matches its prior delivery record below.
+- Audio smoke checks validate control values, master bus mute/gain and stored preferences with playback disabled. They are not a listening test. An early test that restarted Ogg playback inside one headless frame produced an engine exit-resource warning; stream cleanup and delay alone did not resolve that test condition. The harness no longer starts playback as a slider-test side effect and rejects engine ERROR lines.
+
+This verifies same-machine portable execution, not a clean Windows VM, browser compatibility, public asset licensing, or improved fun. No Web migration or full legacy-system restoration is included.
+
 ## Exported delivery: alpha-0.0.6
 
 The user subsequently requested the actual self-contained Windows EXE and reaffirmed the historical

@@ -2,6 +2,8 @@
 
 ## 2026-09-06 — Value-driven Iteration
 
+- Delivery complete: alpha-0.0.7 EXE, 192,466,816 bytes, SHA-256 23FD603D815CD0FBC60034BC2365D8B3B30CD176FDEB9908E7B3FF6C1413516B. Six standalone checks passed with only the executable in the external test directory. Exported build screen visually reviewed.
+- Old alpha-0.0.6 checksum remains unchanged; all seven earlier executables retained. No push, file deletion, balance change or Web deployment performed. Godot-generated UIDs are included with the source.
 - User authorized implementation after clarifying that each restored feature must justify its value and improved form.
 - Started bounded usability iteration; no old files or released executables will be deleted or overwritten.
 - Implemented action-based input, context-preserving E inspection, consistent Escape/P navigation, rank-specific upgrade previews, volume sliders and embedded history. Preparing core/UI/render validation; no balance changes.
