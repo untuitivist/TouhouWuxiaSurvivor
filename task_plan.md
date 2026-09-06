@@ -16,6 +16,8 @@ Long validation runs use a CMD log window and wait for completion. Do not export
 
 ### Current Session Errors
 
+- New piercing regression exposed rank-zero swords still firing because only other weapons checked unlock rank. Add the same explicit unlock guard to sword casting; the failed run stopped before fresh UI tests.
+
 - Camera clamp introduced an ambiguous Godot Vector2 overload with target-typed `new`; use explicit `new Vector2` arguments. This validation stopped at build, so prior core/UI logs were stale and not new evidence.
 
 - CMD quoted commit messages split unexpectedly in the preceding turn; use ASCII hyphenated messages.

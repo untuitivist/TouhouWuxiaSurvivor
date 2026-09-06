@@ -11,7 +11,7 @@ public sealed partial class RunState
         talismanTimer -= StepSeconds * CastSpeed;
         lightningTimer -= StepSeconds * CastSpeed;
         var target = NearestEnemy(PlayerPosition, 680);
-        if (swordTimer <= 0 && target != null)
+        if (Ranks[(int)ArtKind.Sword] > 0 && swordTimer <= 0 && target != null)
         {
             CastSwords(target);
             swordTimer = 0.53f;
