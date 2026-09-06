@@ -1,5 +1,19 @@
 # Findings and Decisions
 
+## CSharp Web Probe — 2026-09-06
+
+- Two real C# exports succeeded. 4.7.1 / Edge 152.0.4191.62 gives 48 WebGL buffer/upload warnings and missing panels; 4.7.1 / Chromium 143 renders combat. 4.6.1 control / same Edge renders title, Reimu movement/dash/F3 and Marisa/choices previews without those warnings.
+- Browser UI regressions fail with JsonSerializerIsReflectionDisabled; Chinese system fonts are absent. Touch emulation reaches hero selection but has no movement controls. Boss fast-forward fixture exceeded the 30-second startup budget. Physical Android/iOS and persistent browser saves remain unverified.
+- No production gameplay or engine migration: source Windows regression still passes 26/26 plus UI/settings/profile; alpha-0.0.9 EXE hash remains unchanged. Web output totals are 100128938 and 97610195 bytes before compression/optimization.
+
+- Patched Browser.targets requires threads, exception handling and SIMD; this route requires cross-origin isolation. It is not the stock single-thread Web route.
+- Isolated editor C# build passed with no warnings/errors after OutputType=Exe. Export initially rejected configuration: upstream Web exporter checks mobile texture imports separately and reports the generic experimental warning. Enable ETC2/ASTC imports in the isolated project because the Web preset targets mobile too.
+
+- Production uses Godot.NET.Sdk 4.7.1 and net8.0; system SDK is 8.0.302. Working tree began clean at c56e1ef.
+- GitHub release API and README were retrieved with curl after web.run returned empty results. ComplexRobot/godot-dotnet-web-export tag 4.7.1-stable requires net9.0, wasm-tools, a compiled top-level Program.cs and modified SDK packages/templates.
+- Archive: Godot_v4.7.1-stable_mono_web_export_win64.zip, 165325203 bytes; upstream digest ad76e72610187b13e83229e863928c32689b1ba5dda34f5210940d563b89e473. Do not execute install.bat because it modifies global templates/NuGet/workloads.
+- Upstream warns about invariant globalization, missing BCL/crypto APIs and unsupported GDExtensions. Treat threading/isolation requirements as experiment-specific, not stock single-thread Godot behavior.
+
 ## Character-faithful Runtime Implementation — 2026-09-06
 
 - Use three exclusive ability tracks per hero plus common non-weapon training, rather than keeping four universal weapon slots under new names.

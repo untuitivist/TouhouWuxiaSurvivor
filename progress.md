@@ -1,5 +1,26 @@
 # Progress Log
 
+## 2026-09-06 — CSharp Web Probe
+
+- Final browser rerun reproduced the same eight-case outcome with explicit exit 2 for not-deployable. PowerShell/Node syntax, strict UTF-8 without BOM, git whitespace, unchanged published changelog sections, unchanged production runtime/config, and system SDK 8.0.302 checks passed. Validation services/browsers closed; experimental files retained. Prepared the local daily commit only.
+
+- Completed baseline/control Web exports and eight reproducible Edge cases. Reviewed rendering screenshots, including actual movement/dash/F3, deterministic spell/choices previews and touch-menu entry. Overall result is not-deployable, not a language rejection. Boss fixture timed out and full UI regression failed on JSON/reflection plus a later binding assertion.
+- Verified the original Windows build, 26/26 core tests and UI/settings/profile suite again; existing EXE SHA-256 unchanged. No production version bump, runtime changes, push or deployment. Added detailed report and unreleased changelog, preserving release history.
+- Browser tooling: ESM import failed; CommonJS package loading worked. Bundled browser revision was absent; used the installed Edge explicitly. Existing Firefox protocol did not match the newer automation library, then navigation failed; no Firefox compatibility verdict claimed. Proxy GitHub API rate limit was bypassed by the normal direct read-only API connection for pinned 4.6.1 metadata.
+
+- Exporter returned exit 0 and generated HTML despite missing .sln and failed C# embedding. Added the snapshot solution and explicit export-log error checks. This intermediate HTML is not a successful C# Web build.
+
+- Private .NET 9.0.317 / wasm-tools 9.0.19 installed. First-use SDK output reports an ASP.NET development certificate was installed (not explicitly trusted); added DOTNET_GENERATE_ASPNET_CERTIFICATE=false for subsequent executions. No certificate deletion was attempted.
+- First C# build failed CS8805 because the experimental top-level Program.cs requires OutputType=Exe. Corrected only the probe project and its preparation recipe, not production.
+
+- Existing system proxy resolved the transfer slowdown; both archives passed pinned hashes. Windows tar cannot extract this editor's Deflate64 ZIP; switched to PowerShell 7 Expand-Archive, preserving partial extraction.
+
+- Initial archive download stalled after 30,298,112 bytes. Stopped only this probe's curl process; preserved partial file and added bounded low-speed timeout/resume. Upstream HEAD confirms range requests are supported.
+- Resumed direct connection remained about 12 KB/s; detected the existing Windows system proxy, which curl does not automatically use. Bootstrap now honors that configured proxy without changing machine settings. Upstream raw install.bat returned 404; inspect the actual archive instead. A cmd quoting failure affected only a diagnostic range request; use PowerShell 7 for structured native arguments.
+
+- User authorized bounded verification retaining C#. Inspected production configuration and experimental upstream metadata. No runtime/export configuration changed.
+- web.run returned no usable content; curl against GitHub succeeded. Broad historical log read was truncated; subsequent reads are bounded. apply_patch batch wrapper lost multiline quoting; switched to its native codex executable.
+
 ## 2026-09-06 — alpha-0.0.8 Implementation
 
 - Delivery complete: alpha-0.0.8, 192,484,304 bytes, SHA-256 881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B. All 13 isolated-executable checks passed; exported 960x540 Marisa beam visually reviewed. Previous eight EXEs and historical log sections remain intact.

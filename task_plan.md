@@ -1,5 +1,13 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active CSharp Web Feasibility Probe — 2026-09-06
+
+1. [complete] Verify experimental upstream, pin binaries and isolate the SDK/editor/project from the Windows release toolchain.
+2. [complete] Real C# exports and browser/control probes finished. 4.6.1 control renders in current Edge; baseline 4.7.1 does not. JSON/fonts/touch/Boss and physical-mobile limits are explicitly recorded; no engine repair or production migration.
+3. [complete] Report/unreleased notes and reproducible scripts finished; repeated browser probe confirms no-go (exit 2), script syntax/UTF-8/history checks pass, Windows regression and original SDK/EXE preserved. Save as a local daily commit, without version bump, release export or push.
+
+Scope: C# remains preferred. No engine migration, production deployment, deletion or replacement of historical builds. Mobile simulation is not physical Android/iPhone validation.
+
 ## Active Release alpha-0.0.9 — 2026-09-06
 
 1. [complete] Promote settings/pixel UI/F3 changes into release notes and align runtime/PE/export metadata.
