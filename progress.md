@@ -2,6 +2,13 @@
 
 ## 2026-09-06 — Web and Version Assessment
 
+- Completed `docs/web_feasibility.md` using official stable/latest Godot Web documentation and the current C# project configuration.
+- Completed `docs/version_comparison.md` with 24 comparison dimensions, code evidence and explicit inventory-versus-completion caveats.
+- Expanded alpha-0.0.6 release notes to include genuine additions, behavior changes, removed/unmigrated features and verification limits.
+- Historical alpha-0.0.5 through alpha-0.0.0 sections match d229b36 exactly after line-ending normalization.
+- Added a matching full `release/CHANGELOG.md` beside the executable. No game code, server deployment, existing executable or old log section was modified.
+- The already exported EXE still embeds its original shorter log and has no in-game changelog browser; this documentation-only update is explicitly distinguished from a new binary release.
+
 - Started official-document verification and a code-backed comparison between alpha-0.0.5 and alpha-0.0.6.
 - No new gameplay implementation, browser port or server deployment is authorized by this analysis request.
 

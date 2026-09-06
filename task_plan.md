@@ -2,10 +2,14 @@
 
 ## Active Assessment — 2026-09-06
 
-1. [in_progress] Verify official Godot Web/C# constraints and this project's actual platform assumptions.
-2. [in_progress] Compare pre-rewrite snapshot d229b36 (alpha-0.0.5 runtime) against 41a893a (alpha-0.0.6).
-3. [pending] Separate genuinely new mechanics from retained, removed, simplified and unverified capabilities.
-4. [pending] Deliver a source-backed comparison and bounded deployment recommendation; no gameplay or deployment changes.
+1. [complete] Verify official Godot Web/C# constraints and this project's actual platform assumptions.
+2. [complete] Compare pre-rewrite snapshot d229b36 (alpha-0.0.5 runtime) against 41a893a (alpha-0.0.6).
+3. [complete] Separate genuinely new mechanics from retained, removed, simplified and unverified capabilities.
+4. [complete] Deliver a source-backed comparison and bounded deployment recommendation; no gameplay or deployment changes.
+
+User additionally reaffirmed append-only historical release notes. The six previous version sections were
+verified identical to d229b36; alpha-0.0.6 now documents actual additions, simplifications and removed features.
+The complete changelog is also attached as release/CHANGELOG.md without replacing the exported executable.
 
 ## Active Delivery Plan — 2026-09-06
 
