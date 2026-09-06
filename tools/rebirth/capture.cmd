@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0..\.."
 if not exist artifacts mkdir artifacts
 set "GODOT_EXE=D:\_soft\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe"
-for %%S in (title heroes help settings changelog build build-max combat choices pause boss result reimu-spell reimu-field marisa-stars marisa-warmup marisa-beam marisa-build marisa-choices) do (
+for %%S in (title heroes help settings settings-video settings-controls settings-confirm changelog build build-max combat choices pause boss result reimu-spell reimu-field marisa-stars marisa-warmup marisa-beam marisa-build marisa-choices debug-title debug-combat) do (
     echo Capturing %%S
     "%GODOT_EXE%" --path . --audio-driver Dummy -- --rebirth-screen=%%S --rebirth-capture=res://artifacts/%%S.png > artifacts\capture-%%S.log 2>&1
     if errorlevel 1 exit /b 1
@@ -13,7 +13,7 @@ for %%S in (title heroes help settings changelog build build-max combat choices 
     findstr /b /c:"ERROR:" artifacts\capture-%%S.log > nul
     if not errorlevel 1 exit /b 1
 )
-for %%S in (choices build build-max settings changelog marisa-build marisa-choices marisa-beam) do (
+for %%S in (choices build build-max settings settings-controls changelog marisa-build marisa-choices marisa-beam debug-combat) do (
     echo Capturing %%S at 960x540
     "%GODOT_EXE%" --path . --resolution 960x540 --audio-driver Dummy -- --rebirth-screen=%%S --rebirth-capture=res://artifacts/%%S-960.png > artifacts\capture-%%S-960.log 2>&1
     if errorlevel 1 exit /b 1

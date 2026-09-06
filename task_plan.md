@@ -1,5 +1,12 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Pixel UI And Debug Overlay — 2026-09-06
+
+1. [complete] Audit current UI and attempt reference access; document unreliable web/Steam access and do not claim an exact visual match.
+2. [complete] Create an original warm pixel UI skin and consistent menu/control/HUD presentation without copying reference assets.
+3. [complete] Restore rebindable F3 diagnostic overlay with honest performance/world/combat information and no cheats.
+4. [complete] Regression/rendered checks and validation notes finished; save as a daily commit without version bump/export/push.
+
 ## Active Settings Restoration — 2026-09-06
 
 1. [complete] Audit legacy audio/video/dual-slot bindings and current runtime integration.

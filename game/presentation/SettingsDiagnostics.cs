@@ -44,7 +44,7 @@ public partial class GameRoot
 
         PressButton("操作");
         AssertUiBounds();
-        Require(bindingButtons.Count == 24, "All twelve current actions have two slots");
+        Require(bindingButtons.Count == GameControls.Actions.Length * 2, "All current actions have two slots");
         BeginBindingCapture(GameControls.Dash, 0);
         PressKey(Key.Tab);
         Require(settingsMessage.Contains("保留"), "UI navigation keys cannot be bound");
@@ -138,11 +138,11 @@ public partial class GameRoot
         var legacy = Path.Combine(directory, "legacy.json");
         System.IO.File.WriteAllText(legacy, "{\"Version\":1,\"BestKills\":87,\"MasterVolume\":0.25,\"ReducedMotion\":true}", new UTF8Encoding(false));
         var migrated = new ProfileStore(legacy);
-        Require(migrated.Data.BestKills == 87 && migrated.Data.MasterVolume == 0.25f && migrated.Data.ReducedMotion && migrated.Data.Video.MaxFps == 60 && migrated.Data.Bindings.Count == 12, "Old rebirth profile gains defaults without losing preferences");
+        Require(migrated.Data.BestKills == 87 && migrated.Data.MasterVolume == 0.25f && migrated.Data.ReducedMotion && migrated.Data.Video.MaxFps == 60 && migrated.Data.Bindings.Count == GameControls.Actions.Length, "Old rebirth profile gains defaults without losing preferences");
         var invalid = Path.Combine(directory, "invalid.json");
         System.IO.File.WriteAllText(invalid, "{\"Version\":1,\"BestKills\":87,\"Video\":{\"WindowMode\":-5,\"Width\":3,\"Height\":2,\"MaxFps\":-100},\"Bindings\":null}", new UTF8Encoding(false));
         var repaired = new ProfileStore(invalid);
-        Require(repaired.Data.BestKills == 87 && repaired.Data.Video.WindowMode == 0 && repaired.Data.Video.Width == 1280 && repaired.Data.Video.MaxFps == 30 && repaired.Data.Bindings.Count == 12, "Invalid display values and null bindings repair without discarding records");
+        Require(repaired.Data.BestKills == 87 && repaired.Data.Video.WindowMode == 0 && repaired.Data.Video.Width == 1280 && repaired.Data.Video.MaxFps == 30 && repaired.Data.Bindings.Count == GameControls.Actions.Length, "Invalid display values and null bindings repair without discarding records");
         var malformed = GameControls.DefaultBindings();
         malformed[GameControls.Up] = [-10, long.MaxValue];
         malformed[GameControls.Dash] = [(long)Key.W, (long)Key.W];

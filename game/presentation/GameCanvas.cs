@@ -14,12 +14,14 @@ public partial class GameCanvas : Node2D
     private Vector2 camera;
     private float shake;
     private readonly Dictionary<string, Texture2D> textures = [];
+    private Texture2D titleLandscape = null!;
     private readonly List<VisualEvent> effects = [];
     private const string BaseArt = "res://assets/internal_original/base/";
 
     public override void _Ready()
     {
         TextureFilter = TextureFilterEnum.Nearest;
+        titleLandscape = PixelLandscape.Create();
         foreach (var name in new[] { "players/reimu", "players/marisa", "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai", "actors/yin_yang_orb" })
             textures[name] = GD.Load<Texture2D>($"{BaseArt}{name}.png");
         textures["grass"] = GD.Load<Texture2D>("res://assets/world/tiles/hakurei_shrine/shrine_grass_base.png");

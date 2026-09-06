@@ -117,37 +117,14 @@ public partial class GameCanvas
 
     private void DrawTitleLandscape()
     {
-        DrawRect(new(0, 0, 1280, 720), new Color("101f27"));
-        for (var index = 0; index < 90; index++)
+        DrawTextureRect(titleLandscape, new(0, 0, 1280, 720), false);
+        Sprite("players/reimu", new(949, 539), 3);
+        Sprite("players/marisa", new(1037, 559), 3, 1);
+        if (!ReducedMotion) for (var index = 0; index < 18; index++)
         {
-            var position = new Vector2(TileHash(index, 3) % 1280, TileHash(index, 8) % 550);
-            DrawCircle(position, index % 4 == 0 ? 1.5f : 0.8f, Palette.Alpha(Palette.Paper, 0.15f + 0.12f * MathF.Sin(Clock + index)));
+            var horizontal = MathF.Floor(((index * 193 + Clock * 12) % 1280) / 4) * 4;
+            var vertical = MathF.Floor(((index * 113 + Clock * 17) % 720) / 4) * 4;
+            DrawRect(new(horizontal, vertical, 4, 4), new Color("dfa5a1"));
         }
-        DrawCircle(new(954, 233), 140, new Color("192e36"));
-        DrawCircle(new(954, 233), 124, new Color("607973"));
-        DrawCircle(new(954, 233), 120, new Color("b2b7a0"));
-        for (var layer = 0; layer < 4; layer++)
-        {
-            var points = new List<Vector2> { new(-50, 720) };
-            for (var index = 0; index < 17; index++)
-                points.Add(new(index * 90 - 50, 380 + layer * 72 + MathF.Sin(index * 1.34f + layer) * (70 - layer * 9)));
-            points.Add(new(1400, 720));
-            DrawColoredPolygon(points.ToArray(), new Color(0.075f + layer * 0.004f, 0.16f - layer * 0.018f, 0.18f - layer * 0.018f));
-        }
-        DrawArc(new(953, 406), 187, 0, MathF.Tau, 96, Palette.Alpha(Palette.Gold, 0.22f), 1);
-        DrawArc(new(953, 406), 176, -Clock * 0.08f, 3.9f - Clock * 0.08f, 72, Palette.Alpha(Palette.Gold, 0.35f), 2);
-        DrawTorii(new(953, 474), 1.35f);
-        DrawTree(new(1220, 620), 1.8f, true);
-        DrawTree(new(705, 627), 1.0f, true);
-        Sprite("players/reimu", new(939, 532 + MathF.Sin(Clock * 1.5f) * 5), 2.9f);
-        Sprite("players/marisa", new(1043, 547 + MathF.Sin(Clock * 1.5f + 1) * 5), 2.6f, 1);
-        for (var index = 0; index < 28; index++)
-        {
-            var position = new Vector2((index * 193 + Clock * 18) % 1280, (index * 113 + Clock * 24) % 720);
-            DrawLine(position, position + new Vector2(5, 2), Palette.Alpha(new Color("d59fa8"), 0.5f), 2);
-        }
-        DrawRect(new(0, 0, 650, 720), new Color(0.035f, 0.075f, 0.095f, 0.65f));
-        DrawLine(new(48, 35), new(1232, 35), Palette.Alpha(Palette.Gold, 0.25f), 1);
-        DrawLine(new(48, 670), new(1232, 670), Palette.Alpha(Palette.Gold, 0.25f), 1);
     }
 }

@@ -1,5 +1,14 @@
 # Rebirth validation — 2026-09-06
 
+## Unreleased pixel UI and F3 diagnostics
+
+- Original runtime-generated PixelSkin / PixelTheme frames and icons, cached 320x180 PixelLandscape title art, warm paper menus and dark battle HUD. No reference-game asset downloads or copied UI textures. Requested Mystia/Minecraft direction was used as inspiration; web responses and Steam screenshot access were unreliable, so this is not represented as a verified screenshot-by-screenshot match.
+- Debug build: 0 warnings/errors; core 26/26 and previous settings/profile/navigation tests pass. New PIXEL_DEBUG_PASS checks pixel styles for all five button states, nearest texture filtering, safe title display, truthful seed/XY data, unchanged simulation and inspection state, hidden refresh suppression, capture conflicts, rebinding, and old custom F3 bindings retaining ownership when the new action is added.
+- `tools/rebirth/capture.cmd` now captures 24 full-size screens and 10 at 960x540, including controls, display confirmation and both menu/combat F3 overlays. `tools/rebirth/verify_settings.cmd` additionally passes real-window transitions and eight captures at 1280x720/640x360. Logs: artifacts/pixel-ui-verify.log, artifacts/pixel-ui-captures.log, artifacts/pixel-ui-small.log.
+- Visual review covered title, key bindings, upgrades and combat diagnostics at 1280, plus key bindings at 640. Fixed the new divider overlapping upgrade instructions; changed hard-aliased body text to gray-antialiased Chinese after small-window review, while retaining pixel title glyphs and nearest-filtered artwork. The 640 layout fits, but dense small text remains less comfortable than the default 1280.
+- F3 samples text at 4 Hz and actual visible-frame intervals into a 120-frame history. Hidden overlay stops sampling/formatting; reopening resets history. It does not pause, mutate combat or capture mouse input. Godot static memory and .NET managed heap are not process total; release engines show N/A for debug-only static memory. Controlled fast-forward screenshots include startup costs in FPS/timings and must not be treated as live-game performance benchmarks.
+- No core combat changes, release bump, export or push. Released changelog entries remain identical and alpha-0.0.8 EXE still hashes to `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`.
+
 ## Unreleased settings restoration
 
 - No release bump/export/push. project.godot remains alpha-0.0.8; the existing EXE retains SHA-256 `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`. The entire released changelog tail from alpha-0.0.8 through older releases matches HEAD before this work; new entries live under Unreleased.

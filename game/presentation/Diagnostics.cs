@@ -24,6 +24,8 @@ public partial class GameRoot
         canvas.ReducedMotion = profile.Data.ReducedMotion;
         audio.Apply(new PlayerProfile { MusicEnabled = false, SoundEnabled = false });
         var mode = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-screen=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "title";
+        if (mode == "debug-title") { ShowTitle(); ToggleDebug(); return; }
+        if (mode == "debug-combat") { PrepareBattlePreview("boss"); ToggleDebug(); return; }
         if (mode == "title") return;
         if (mode == "heroes") { ShowHeroes(); return; }
         if (mode == "help") { ShowHelp(); return; }
@@ -107,6 +109,7 @@ public partial class GameRoot
 
     public override void _Process(double delta)
     {
+        UpdateDebugState();
         TickVideoPreview(delta);
         if (!diagnosticMode || diagnosticFinished) return;
         diagnosticFrames++;
@@ -140,6 +143,7 @@ public partial class GameRoot
 
     private void RunUiSmokeTests()
     {
+        TestPixelUiAndDebug();
         ShowTitle();
         AssertUiBounds();
         PressButton("踏入夜境     →");

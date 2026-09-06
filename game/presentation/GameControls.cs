@@ -13,6 +13,7 @@ public static class GameControls
     public const string Pause = "run_pause";
     public const string Inspect = "run_inspect";
     public const string Fullscreen = "run_fullscreen";
+    public const string Debug = "run_debug";
     public const string ChoiceOne = "run_choice_one";
     public const string ChoiceTwo = "run_choice_two";
     public const string ChoiceThree = "run_choice_three";
@@ -25,6 +26,7 @@ public static class GameControls
         (Focus, "慢移 / 判定点", Key.Shift, Key.None), (Dash, "闪身", Key.Space, Key.None),
         (Pause, "暂停 / 返回", Key.Escape, Key.P), (Inspect, "属性与构筑", Key.E, Key.None),
         (Fullscreen, "切换全屏", Key.F11, Key.None),
+        (Debug, "诊断信息", Key.F3, Key.None),
         (ChoiceOne, "选择第一项", Key.Key1, Key.Kp1), (ChoiceTwo, "选择第二项", Key.Key2, Key.Kp2), (ChoiceThree, "选择第三项", Key.Key3, Key.Kp3)
     ];
 

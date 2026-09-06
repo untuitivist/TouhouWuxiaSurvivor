@@ -70,7 +70,7 @@ public partial class GameRoot
                 var content = line.TrimEnd('\r');
                 var heading = content.StartsWith('#');
                 history.PushFontSize(heading ? 20 : 17);
-                history.PushColor(heading ? Palette.Gold : Palette.Paper);
+                history.PushColor(heading ? PixelSkin.Red : PixelSkin.Ink);
                 history.AddText((heading ? content.TrimStart('#', ' ') : content).Replace("`", "") + "\n");
                 history.Pop();
                 history.Pop();

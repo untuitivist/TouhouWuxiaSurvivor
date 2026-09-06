@@ -13,7 +13,8 @@ public partial class GameRoot
         if (CaptureBinding(key)) { GetViewport().SetInputAsHandled(); return; }
         if (!key.Pressed || key.Echo) return;
         var code = key.PhysicalKeycode == Key.None ? key.Keycode : key.PhysicalKeycode;
-        if (currentScreen == "video_confirm")
+        if (input.IsActionPressed(GameControls.Debug)) ToggleDebug();
+        else if (currentScreen == "video_confirm")
         {
             if (code != Key.Escape && !input.IsActionPressed(GameControls.Fullscreen)) return;
             FinishVideoPreview(false);

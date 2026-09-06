@@ -8,10 +8,8 @@ public partial class GameCanvas
     private void DrawHud()
     {
         if (Run == null) return;
-        DrawRect(new(0, 0, 1280, 92), Palette.Alpha(Palette.Deep, 0.93f));
-        DrawLine(new(24, 91), new(1256, 91), Palette.Alpha(Palette.Gold, 0.3f), 1);
-        DrawRect(new(0, 650, 1280, 70), Palette.Alpha(Palette.Deep, 0.94f));
-        DrawLine(new(24, 650), new(1256, 650), Palette.Alpha(Palette.Gold, 0.3f), 1);
+        DrawStyleBox(PixelSkin.Frame("dark"), new(0, 0, 1280, 94));
+        DrawStyleBox(PixelSkin.Frame("dark"), new(0, 650, 1280, 70));
         Text(Run.Hero == HeroKind.Reimu ? "博丽灵梦" : "雾雨魔理沙", new(28, 32), 22, Palette.Paper, TitleFont);
         Text($"修习 {Run.Level}", new(178, 31), 16, Palette.Gold);
         Bar(new(28, 45, 222, 9), Run.Health / Run.MaxHealth, Palette.Red);
@@ -32,8 +30,7 @@ public partial class GameCanvas
         {
             var rank = Run.Ranks[(int)art.Id];
             var color = new Color(art.Color);
-            DrawRect(new(horizontal, 663, 39, 39), Palette.Alpha(color, rank > 0 ? 0.12f : 0.025f));
-            DrawRect(new(horizontal, 663, 39, 39), Palette.Alpha(color, rank > 0 ? 0.7f : 0.13f), false, 1);
+            DrawStyleBox(PixelSkin.Frame("dark"), new(horizontal - 2, 661, 43, 43));
             CenterText(art.Symbol, new(horizontal + 20, 689), 22, rank > 0 ? color : Palette.Muted, TitleFont);
             for (var dot = 0; dot < 5; dot++) DrawRect(new(horizontal + dot * 8, 708, 5, 3), Palette.Alpha(color, dot < rank ? 1 : 0.12f));
             horizontal += 58;
@@ -67,7 +64,7 @@ public partial class GameCanvas
     private void DrawObjective()
     {
         if (Run == null) return;
-        DrawRect(new(24, 108, 233, 78), Palette.Alpha(Palette.Deep, 0.8f));
+        DrawStyleBox(PixelSkin.Frame("dark"), new(24, 108, 233, 78));
         Text($"净化古印  {Run.PurifiedSeals} / 3", new(39, 136), 18, Palette.Gold);
         Text(Run.BossSpawned ? "击破雾中来客，平息异变" : $"距终章  {FormatTime(RunState.BossArrival - Run.Time)}", new(39, 164), 14, Palette.Muted);
         var nearest = Run.Seals.Where(seal => !seal.Complete).OrderBy(seal => System.Numerics.Vector2.DistanceSquared(seal.Position, Run.PlayerPosition)).FirstOrDefault();
@@ -85,8 +82,7 @@ public partial class GameCanvas
     {
         if (Run == null) return;
         var bounds = new Rect2(1111, 108, 141, 111);
-        DrawRect(bounds, Palette.Alpha(Palette.Deep, 0.85f));
-        DrawRect(bounds.Grow(-5), Palette.Alpha(Palette.Gold, 0.2f), false, 1);
+        DrawStyleBox(PixelSkin.Frame("dark"), bounds);
         Vector2 Map(System.Numerics.Vector2 position) => bounds.GetCenter() + new Vector2(position.X / RunState.ArenaHalfWidth * 62, position.Y / RunState.ArenaHalfHeight * 46);
         foreach (var seal in Run.Seals) Diamond(Map(seal.Position), 3, seal.Complete ? Palette.Jade : Palette.Gold);
         if (Run.Boss != null) DrawCircle(Map(Run.Boss.Position), 3, Palette.Red);
@@ -96,8 +92,11 @@ public partial class GameCanvas
 
     private void Bar(Rect2 rectangle, float fraction, Color color)
     {
-        DrawRect(rectangle, new Color("293638"));
-        DrawRect(new(rectangle.Position, new(rectangle.Size.X * Math.Clamp(fraction, 0, 1), rectangle.Size.Y)), color);
+        DrawRect(rectangle.Grow(2), new Color("1d2425"));
+        DrawRect(rectangle, new Color("655340"));
+        var width = MathF.Floor(rectangle.Size.X * Math.Clamp(fraction, 0, 1) / 2) * 2;
+        DrawRect(new(rectangle.Position, new(width, rectangle.Size.Y)), color);
+        if (rectangle.Size.Y >= 7 && width > 0) DrawRect(new(rectangle.Position, new(width, 2)), color.Lightened(0.2f));
     }
 
     public static string FormatTime(float seconds) => $"{(int)Math.Max(0, seconds) / 60:00}:{(int)Math.Max(0, seconds) % 60:00}";

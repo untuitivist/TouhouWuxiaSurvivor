@@ -9,7 +9,7 @@ public partial class GameRoot
     {
         if (run == null) return;
         var panel = Modal("choices", $"ENLIGHTENMENT  /  修习 {run.Level}", "此刻，悟得一式。", 1100, 546);
-        ui.Label(panel, "时间已停。选择角色能力或通用修习，决定下一步打法。", new(37, 111, 1018, 30), 16, Palette.Muted);
+        ui.Label(panel, "时间已停。选择角色能力或通用修习，决定下一步打法。", new(37, 126, 1018, 25), 15, Palette.Muted);
         Button? first = null;
         for (var index = 0; index < run.Choices.Count; index++)
         {

@@ -23,8 +23,8 @@ public partial class GameRoot : Node
     public override void _Ready()
     {
         DisplayServer.WindowSetTitle("幻想乡 · 夜境异闻");
-        var body = new SystemFont { FontNames = ["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"], Antialiasing = TextServer.FontAntialiasing.Lcd };
-        var title = new SystemFont { FontNames = ["KaiTi", "STKaiti", "Noto Serif CJK SC", "serif"], Antialiasing = TextServer.FontAntialiasing.Lcd };
+        var body = new SystemFont { FontNames = ["Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"], Antialiasing = TextServer.FontAntialiasing.Gray };
+        var title = new SystemFont { FontNames = ["Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"], FontWeight = 700, Antialiasing = TextServer.FontAntialiasing.None };
         canvas.BodyFont = body;
         canvas.TitleFont = title;
         AddChild(canvas);
@@ -43,6 +43,8 @@ public partial class GameRoot : Node
         layer.AddChild(interfaceRoot);
         interfaceRoot.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         interfaceRoot.Theme = ui.CreateTheme();
+        interfaceRoot.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
+        InitializeDebugOverlay(layer, body);
         ShowTitle();
         InitializeDiagnostics();
     }
@@ -97,6 +99,11 @@ public partial class GameRoot : Node
         var shade = new ColorRect { Color = new(0.025f, 0.045f, 0.06f, 0.83f), Size = new(1280, 720), MouseFilter = Control.MouseFilterEnum.Stop };
         screen!.AddChild(shade);
         var panel = ui.Panel(screen, new((1280 - width) / 2, (720 - height) / 2, width, height));
+        var bookmark = new ColorRect { Position = new(width - 80, 16), Size = new(28, 36), Color = PixelSkin.Red, MouseFilter = Control.MouseFilterEnum.Ignore };
+        panel.AddChild(bookmark);
+        ui.Label(bookmark, "夜", new(6, 6, 18, 23), 14).AddThemeColorOverride("font_color", PixelSkin.Light);
+        var stitch = new ColorRect { Position = new(36, 117), Size = new(width - 72, 2), Color = new("c7ab79"), MouseFilter = Control.MouseFilterEnum.Ignore };
+        panel.AddChild(stitch);
         ui.Label(panel, eyebrow, new(36, 24, width - 72, 25), 13, Palette.Gold);
         ui.Label(panel, heading, new(34, 60, width - 68, 55), 38, Palette.Paper, true);
         return panel;

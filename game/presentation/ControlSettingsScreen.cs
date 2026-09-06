@@ -14,9 +14,9 @@ public partial class GameRoot
         for (var index = 0; index < GameControls.Actions.Length; index++)
         {
             var action = GameControls.Actions[index];
-            var horizontal = index < 6 ? 36 : 548;
-            var vertical = 226 + index % 6 * 43;
-            if (index % 6 == 0)
+            var horizontal = index < 7 ? 36 : 548;
+            var vertical = 218 + index % 7 * 39;
+            if (index % 7 == 0)
             {
                 ui.Label(panel, "操作", new(horizontal, 190, 154, 25), 14, Palette.Muted);
                 ui.Label(panel, "主键", new(horizontal + 160, 190, 135, 25), 14, Palette.Gold);

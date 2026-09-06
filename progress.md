@@ -740,3 +740,10 @@
 
 - Started audit against legacy src/settings and current game/presentation. Worktree was clean at 7d63194.
 - Shell lookup of a guessed smoke filename failed and cmd quoted search parsed incorrectly; switched complex reads to installed PowerShell 7. No files deleted.
+## Pixel UI And F3 — 2026-09-06
+
+- Final visual suite: 34 general captures plus eight settings captures and native window transitions passed. Core 26/26, UI/settings/profile/F3 regressions pass; no compiler warnings. Existing release log tail and alpha-0.0.8 EXE hash unchanged. Gray-antialiased body text is more legible at 640x360 than the first hard-edge body prototype; title glyphs and artwork remain pixel-styled.
+
+- First pixel/F3 runtime verification passed core and UI tests, plus full captures. Visual review found a divider crossing upgrade text (fixed) and hard-aliased Chinese too rough at 640x360; kept pixel titles/frames but restored gray-antialiased body text. Build caught the guessed Grayscale enum name; verified installed GodotSharp XML uses FontAntialiasing.Gray and corrected it.
+
+- Started reference and runtime audit. Scope extended by user to F3 diagnostics inspired by Minecraft. Daily commit only; preserve current version and exported artifacts.

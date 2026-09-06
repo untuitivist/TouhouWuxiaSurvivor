@@ -988,3 +988,12 @@
 - Legacy settings contain three audio sliders; windowed/borderless/fullscreen, seven resolutions (640x360 through 3840x2160), VSync, FPS 30/60/120/144/unlimited; dual-slot keyboard bindings and binding reset.
 - Current runtime retains audio sliders/mutes/reduced motion but hardcodes controls and F11, with no video persistence. Old src settings are not compiled.
 - Current logical canvas is 1280x720 with content scaling; settings must be inspected at small window sizes. Keep legacy files intact and integrate through game/presentation.
+## Pixel UI And F3 — 2026-09-06
+
+- 已检查本地真实渲染：标题、设置键位、升级和 F3 战斗画面。暖纸/木框与冷色夜景形成对比，战斗危险色保留。发现升级副标题与通用分隔线重叠，已将副标题移到分隔线下。
+- F3 显示真实 2D XY、Seed/Tick、敌我弹/敌人/掉落、FPS/帧间隔、引擎主循环/物理耗时、渲染与内存指标；不虚构 Minecraft 的三维区块或本作已移除的旧压力档。隐藏时停止采样和文字重建；重新开启清空帧图避免跨隐藏期拼接。
+- Steam API 连接被远端关闭，web 工具多次返回空载荷；THBWiki API 成功确认页面重定向。参考图获取仍有限，不能宣称已经逐图核对夜雀食堂 UI。本轮是原创暖色像素方向稿，不提取该作图片、字体或音频。
+
+- Worktree initially clean at eea0d48. Current UI uses flat dark panels, thin outlines and system fonts. Old deterministic UI generator remains available, but new runtime does not use its theme.
+- UI layer and combat rendering share Palette values; a warm menu skin must not accidentally reduce enemy/bullet/HUD contrast by globally replacing combat colors.
+- Public web search/open calls returned empty payloads; retrieving official Steam app metadata for reference links, without inventing image observations.

@@ -11,8 +11,9 @@ public partial class GameRoot
         canvas.Run = null;
         canvas.ResetView();
         ClearScreen("title");
-        ui.Label(screen!, "TOUHOU  /  WUXIA  /  SURVIVOR", new(83, 68, 500, 30), 13, Palette.Gold);
-        ui.Label(screen!, "幻想乡", new(77, 118, 490, 105), 82, Palette.Paper, true);
+        ui.Panel(screen!, new(48, 52, 548, 601));
+        ui.Label(screen!, "夜 境 手 帖    /    TOUHOU SURVIVOR", new(83, 76, 462, 30), 14, Palette.Gold);
+        ui.Label(screen!, "幻想乡", new(77, 121, 490, 105), 74, Palette.Paper, true);
         ui.Label(screen!, "夜境异闻", new(81, 220, 510, 75), 53, Palette.Gold, true);
         ui.Label(screen!, "一段夜行，一场尚未平息的异变。", new(85, 312, 495, 38), 20, Palette.Muted, true);
         var first = ui.Button(screen!, "踏入夜境     →", new(86, 380, 362, 58), ShowHeroes, true);
@@ -21,10 +22,10 @@ public partial class GameRoot
         ui.Button(screen!, "更新记录", new(86, 507, 173, 43), ShowChangelog);
         ui.Button(screen!, "暂别夜境", new(275, 507, 173, 43), () => GetTree().Quit());
         ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
-        ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(816, 617, 403, 30), 15, Palette.Gold);
+        ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(790, 617, 445, 30), 15, Palette.Gold).AddThemeColorOverride("font_color", Palette.Paper);
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
-        ui.Label(screen!, $"{version}  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted);
-        ui.Label(screen!, "东方同人内部原型 · 素材未经公开发行授权", new(841, 681, 395, 26), 12, Palette.Muted);
+        ui.Label(screen!, $"{version}  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted).AddThemeColorOverride("font_color", Palette.Paper);
+        ui.Label(screen!, "东方同人内部原型 · 素材未经公开发行授权", new(841, 681, 395, 26), 12, Palette.Muted).AddThemeColorOverride("font_color", Palette.Paper);
         if (profile.Warning.Length > 0) ui.Label(screen!, profile.Warning, new(86, 621, 510, 36), 13, Palette.Red);
         first.GrabFocus();
     }
@@ -66,7 +67,7 @@ public partial class GameRoot
         ui.Label(panel, "03   破", new(676, 135, 280, 40), 26, Palette.Red, true);
         ui.Label(panel, "擦弹与退治积累符卡蓄势。\n灵梦：梦想封印追踪灵光。\n魔理沙：锁向持续魔炮。\n发动时清弹、吸取经验。", new(676, 188, 290, 148), 18);
         ui.Label(panel, "路上有三个古印。净化进度会保留，遇险可以先退；不净化也能迎战终局。", new(36, 370, 925, 60), 20, Palette.Gold, true);
-        ui.Label(panel, "符卡取材于原作，本作改为自动施放并调整数值；不是逐帧复刻。四分钟后击破结界残影获胜。", new(36, 444, 925, 45), 14, Palette.Muted);
+        ui.Label(panel, $"符卡为本作改编，四分钟后击破结界残影获胜。{GameControls.Hint(GameControls.Debug)} 显示只读诊断；可在操作设置中改键。", new(36, 444, 925, 45), 14, Palette.Muted);
         ui.Button(panel, "明白了，回到夜境", new(36, 504, 924, 39), ShowTitle, true).GrabFocus();
     }
 
