@@ -4,6 +4,7 @@
 /release/
 /-e
 /stdout
+/artifacts/
 
 # .NET build artifacts
 **/bin/

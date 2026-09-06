@@ -37,7 +37,7 @@ public partial class GameCanvas
         for (var index = 0; index < 72; index++)
         {
             var hash = TileHash(index, 7);
-            var location = new Vector2((hash % 2800) - 1400, (TileHash(index, 12) % 2000) - 1000);
+            var location = new Vector2((int)(hash % 2800) - 1400, (int)(TileHash(index, 12) % 2000) - 1000);
             if (Math.Abs(location.X) < 150 || Math.Abs(location.Y) < 100 || Math.Abs(location.X - location.Y * 1.45f) < 100) continue;
             if (location.DistanceSquaredTo(camera) > 900 * 900 || Run.Seals.Any(seal => Palette.Vector(seal.Position).DistanceSquaredTo(location) < 180 * 180)) continue;
             DrawTree(location, 0.7f + hash % 4 * 0.1f, false);

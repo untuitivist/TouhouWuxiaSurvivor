@@ -112,7 +112,6 @@ public sealed partial class RunState
         if (enemy.Kind == EnemyKind.Boss && Phase != RunPhase.Lost)
         {
             Phase = RunPhase.Won;
-            Projectiles.RemoveAll(projectile => projectile.Hostile);
             Emit(EffectKind.Victory, enemy.Position);
         }
     }

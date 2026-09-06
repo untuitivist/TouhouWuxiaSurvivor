@@ -43,6 +43,7 @@ public partial class GameRoot : Node
 
     public override void _PhysicsProcess(double delta)
     {
+        if (diagnosticMode) return;
         if (run == null) return;
         canvas.Focused = Input.IsPhysicalKeyPressed(Key.Shift);
         if (run.Phase == RunPhase.Playing)

@@ -10,24 +10,22 @@ config_version=5
 
 [application]
 
-config/name="Touhou-Wuxia-Survivor"
-config/version="alpha-0.0.5"
-run/main_scene="res://src/ui/menu/MainMenu.tscn"
+config/name="幻想乡 · 剑雨异闻"
+config/version="rebirth-0.1.0"
+run/main_scene="res://game/Main.tscn"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://assets/branding/icon.png"
 
-[autoload]
-
-PerformanceDiagnostics="*res://src/diagnostics/performance/PerformanceDiagnosticsHost.tscn"
-
 [display]
 
-window/size/viewport_width=640
-window/size/viewport_height=360
+window/size/viewport_width=1280
+window/size/viewport_height=720
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/size/min_width=960
+window/size/min_height=540
+window/stretch/aspect="keep"
 
 [dotnet]
 
@@ -85,7 +83,8 @@ pause_menu={
 [physics]
 
 3d/physics_engine="Jolt Physics"
-common/physics_interpolation=true
+common/physics_ticks_per_second=60
+common/physics_interpolation=false
 
 [rendering]
 

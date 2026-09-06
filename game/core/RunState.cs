@@ -92,6 +92,7 @@ public sealed partial class RunState
         grid.Rebuild(Enemies);
         UpdateWeapons();
         UpdateProjectiles();
+        if (Phase == RunPhase.Won) Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Phase == RunPhase.Playing) UpdatePickupsAndSeals();
         Enemies.RemoveAll(enemy => enemy.Health <= 0);
         if (Qi >= 100 && Phase == RunPhase.Playing) ReleaseBurst();

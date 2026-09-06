@@ -35,7 +35,7 @@ public sealed class ProfileStore
                 throw new InvalidDataException("Unsupported or invalid profile");
             Data = loaded;
         }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidDataException)
         {
             Warning = "记录读取失败，本次使用默认设置；原文件保留。";
             GD.PushWarning($"{Warning} {error.Message}");
