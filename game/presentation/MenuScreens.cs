@@ -1,0 +1,89 @@
+using Godot;
+using Rebirth.Core;
+
+namespace Rebirth.Presentation;
+
+public partial class GameRoot
+{
+    private void ShowTitle()
+    {
+        run = null;
+        canvas.Run = null;
+        canvas.ResetView();
+        ClearScreen("title");
+        ui.Label(screen!, "TOUHOU  /  WUXIA  /  SURVIVOR", new(83, 68, 500, 30), 13, Palette.Gold);
+        ui.Label(screen!, "幻想乡", new(77, 118, 490, 105), 82, Palette.Paper, true);
+        ui.Label(screen!, "剑雨异闻", new(81, 220, 510, 75), 53, Palette.Gold, true);
+        ui.Label(screen!, "一人，一剑，一场尚未平息的异变。", new(85, 312, 495, 38), 20, Palette.Muted, true);
+        var first = ui.Button(screen!, "踏入夜境     →", new(86, 380, 362, 58), ShowHeroes, true);
+        ui.Button(screen!, "行走须知", new(86, 450, 173, 45), ShowHelp);
+        ui.Button(screen!, "音画设置", new(275, 450, 173, 45), ShowSettings);
+        ui.Button(screen!, "收剑离去", new(86, 507, 362, 43), () => GetTree().Quit());
+        ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
+        ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(816, 617, 403, 30), 15, Palette.Gold);
+        ui.Label(screen!, "RE:01  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted);
+        ui.Label(screen!, "东方同人内部原型 · 素材未经公开发行授权", new(841, 681, 395, 26), 12, Palette.Muted);
+        if (profile.Warning.Length > 0) ui.Label(screen!, profile.Warning, new(86, 621, 510, 36), 13, Palette.Red);
+        first.GrabFocus();
+    }
+
+    private void ShowHeroes()
+    {
+        var panel = Modal("heroes", "CHOOSE YOUR PATH  /  选择行者", "今夜，由谁来平息异变？", 1080, 570);
+        var heroes = new[]
+        {
+            (HeroKind.Reimu, "博丽灵梦", "乐园的巫女", "稳守 · 擦弹 · 结界", "110 点生命\n初始：御剑诀 + 阴阳两仪\n每次擦弹获得 5 点剑意", "适合初次行走。让阴阳玉护住近身，\n在弹隙中寻找反击的时机。", Palette.Red, "灵"),
+            (HeroKind.Marisa, "雾雨魔理沙", "普通的魔法使", "疾行 · 雷法 · 进攻", "85 点生命，伤害 +16%\n初始：御剑诀 + 紫电游龙\n移动更快，擦弹获得 3.8 点剑意", "以进为退。借雷光穿透妖群，\n用更快的步法占住有利的空隙。", Palette.Violet, "魔")
+        };
+        Button? first = null;
+        for (var index = 0; index < heroes.Length; index++)
+        {
+            var hero = heroes[index];
+            var card = ui.Panel(panel, new(35 + index * 515, 136, 495, 351), new Color("14272d"));
+            ui.Label(card, hero.Item8, new(361, 10, 114, 103), 78, Palette.Alpha(hero.Item7, 0.28f), true);
+            ui.Label(card, hero.Item3, new(23, 22, 350, 24), 14, hero.Item7);
+            ui.Label(card, hero.Item2, new(20, 53, 345, 50), 35, Palette.Paper, true);
+            ui.Label(card, hero.Item4, new(24, 111, 440, 25), 14, Palette.Gold);
+            ui.Label(card, hero.Item5, new(24, 152, 445, 88), 18, Palette.Paper);
+            ui.Label(card, hero.Item6, new(24, 244, 445, 56), 15, Palette.Muted);
+            var button = ui.Button(card, $"执此道 · {hero.Item2}", new(23, 302, 449, 38), () => StartRun(hero.Item1), true);
+            first ??= button;
+        }
+        ui.Button(panel, "返回", new(35, 507, 115, 37), ShowTitle);
+        ui.Label(panel, "没有局外数值加成。每一次异闻，都从第一剑重新开始。", new(210, 511, 820, 30), 15, Palette.Muted);
+        first?.GrabFocus();
+    }
+
+    private void ShowHelp()
+    {
+        var panel = Modal("help", "FIELD NOTES  /  行走须知", "把注意力留给走位。", 1000, 566);
+        ui.Label(panel, "01   行", new(36, 135, 260, 40), 26, Palette.Gold, true);
+        ui.Label(panel, "WASD / 方向键  移动\nShift  慢移，显示判定点\nSpace  闪身，短暂无敌\nEsc  暂停    F11  全屏", new(36, 188, 290, 148), 18);
+        ui.Label(panel, "02   悟", new(355, 135, 270, 40), 26, Palette.Jade, true);
+        ui.Label(panel, "飞剑自动寻找目标。\n拾取青色灵光，升级三选一。\n按 1 / 2 / 3 或点击选择。\n武学五重时产生形态变化。", new(355, 188, 293, 148), 18);
+        ui.Label(panel, "03   破", new(676, 135, 280, 40), 26, Palette.Red, true);
+        ui.Label(panel, "擦过敌弹，积蓄剑意。\n满槽自动爆发、清弹、吸取。\n站入古印七秒：悟道、回血。\n四分钟后击破来客，即胜。", new(676, 188, 290, 148), 18);
+        ui.Label(panel, "路上有三个古印。净化进度会保留，遇险可以先退；不净化也能迎战终局。", new(36, 370, 925, 60), 20, Palette.Gold, true);
+        ui.Label(panel, "这是一次新的玩法原型，不是东方正作弹幕的逐帧复刻。已有内部素材仅用于本地开发验证。", new(36, 444, 925, 45), 14, Palette.Muted);
+        ui.Button(panel, "明白了，回到夜境", new(36, 504, 924, 39), ShowTitle, true).GrabFocus();
+    }
+
+    private void ShowSettings()
+    {
+        var panel = Modal("settings", "SETTINGS  /  音画设置", "按自己的节奏。", 700, 510);
+        ui.Button(panel, $"背景音乐                  {(profile.Data.MusicEnabled ? "开启" : "关闭")}", new(36, 143, 628, 53), () => { profile.Data.MusicEnabled = !profile.Data.MusicEnabled; SaveSettings(); });
+        ui.Button(panel, $"战斗音效                  {(profile.Data.SoundEnabled ? "开启" : "关闭")}", new(36, 212, 628, 53), () => { profile.Data.SoundEnabled = !profile.Data.SoundEnabled; SaveSettings(); });
+        ui.Button(panel, $"减少震屏                  {(profile.Data.ReducedMotion ? "开启" : "关闭")}", new(36, 281, 628, 53), () => { profile.Data.ReducedMotion = !profile.Data.ReducedMotion; SaveSettings(); });
+        ui.Label(panel, "F11 切换全屏 · 设置自动保存到本机，不改变角色强度。", new(36, 359, 628, 42), 15, Palette.Muted);
+        if (profile.Warning.Length > 0) ui.Label(panel, profile.Warning, new(36, 398, 628, 30), 13, Palette.Red);
+        ui.Button(panel, "返回", new(36, 439, 628, 43), () => { if (run == null) ShowTitle(); else ShowPause(); }, true).GrabFocus();
+    }
+
+    private void SaveSettings()
+    {
+        profile.Save();
+        audio.Apply(profile.Data);
+        canvas.ReducedMotion = profile.Data.ReducedMotion;
+        ShowSettings();
+    }
+}
