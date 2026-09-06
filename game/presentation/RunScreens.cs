@@ -23,9 +23,9 @@ public partial class GameRoot
             ui.Label(card, ArtCatalog.RankText(art.Id, rank), new(20, 112, 294, 24), 14, color);
             ui.Label(card, ArtCatalog.UpgradeText(art.Id, rank), new(20, 147, 294, 70), 17, Palette.Paper);
             var footer = art.Source.Length > 0 ? art.Source : "通用修习 · 不改变角色的能力归属";
-            ui.Label(card, footer, new(20, 219, 294, 40), 13, color);
+            if (!TouchLayout) ui.Label(card, footer, new(20, 219, 294, 40), 13, color);
             var action = new[] { GameControls.ChoiceOne, GameControls.ChoiceTwo, GameControls.ChoiceThree }[index];
-            var button = ui.Button(card, $"[{GameControls.Hint(action)}]  领悟", new(19, 263, 296, 30), () => SelectArt(selectedIndex), true);
+            var button = ui.Button(card, TouchLayout ? "领悟此式" : $"[{GameControls.Hint(action)}]  领悟", new(19, TouchLayout ? 219 : 263, 296, TouchLayout ? 78 : 30), () => SelectArt(selectedIndex), true);
             first ??= button;
         }
         ui.Button(panel, $"查看构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 486, 232, 36), OpenBuild);
@@ -43,9 +43,9 @@ public partial class GameRoot
         ui.Button(panel, $"属性与构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 325, 410, 45), OpenBuild);
         ui.Button(panel, "更新记录", new(466, 325, 416, 45), ShowChangelog);
         ui.Label(panel, $"{GameControls.Hint(GameControls.Pause, true)} 继续 · 子页面先返回此处，不直接恢复战斗", new(36, 382, 844, 28), 14, Palette.Muted);
-        ui.Button(panel, "继续行走", new(36, 426, 270, 49), NavigateBack, true).GrabFocus();
-        ui.Button(panel, "游戏设置", new(324, 426, 270, 49), ShowSettings);
-        ui.Button(panel, "结束本局", new(612, 426, 270, 49), ShowAbandonConfirmation);
+        ui.Button(panel, "继续行走", new(36, 426, 270, TouchLayout ? 82 : 49), NavigateBack, true).GrabFocus();
+        ui.Button(panel, "游戏设置", new(324, 426, 270, TouchLayout ? 82 : 49), ShowSettings);
+        ui.Button(panel, "结束本局", new(612, 426, 270, TouchLayout ? 82 : 49), ShowAbandonConfirmation);
     }
 
     private void ShowAbandonConfirmation()

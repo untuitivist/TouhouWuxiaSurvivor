@@ -19,22 +19,23 @@ public partial class GameRoot
     {
         captureAction = null;
         var panel = Modal("settings", "SETTINGS  /  游戏设置", "按自己的节奏。", 1060, 660);
-        var tabs = new[] { "声音", "画面", "操作" };
+        var tabs = new[] { "声音", "画面", "操作", "触控" };
         for (var index = 0; index < tabs.Length; index++)
         {
             var selected = index;
-            ui.Button(panel, tabs[index], new(36 + index * 335, 130, 318, 42), () => { settingsTab = selected; settingsMessage = ""; BuildSettings(); }, index == settingsTab);
+            ui.Button(panel, tabs[index], new(36 + index * 250, TouchLayout ? 104 : 130, 238, TouchLayout ? 82 : 42), () => { settingsTab = selected; settingsMessage = ""; BuildSettings(); }, index == settingsTab);
         }
         switch (settingsTab)
         {
             case 0: BuildAudioSettings(panel); break;
             case 1: BuildVideoSettings(panel); break;
             case 2: BuildControlSettings(panel); break;
+            case 3: BuildTouchSettings(panel); break;
         }
-        settingsWarning = ui.Label(panel, profile.Warning.Length > 0 ? profile.Warning : settingsMessage, new(36, 548, 988, 35), 14, Palette.Gold);
-        ui.Button(panel, "返回", new(36, 599, 210, 40), NavigateBack, true).GrabFocus();
-        ui.Button(panel, "恢复本页默认", new(766, 599, 258, 40), ConfirmSettingsReset);
-        ui.Label(panel, "Tab 切换控件 · Esc 安全返回", new(274, 606, 465, 28), 15, Palette.Muted);
+        settingsWarning = ui.Label(panel, profile.Notice.Length > 0 ? profile.Notice : settingsMessage, new(36, 548, 988, 28), 14, Palette.Gold);
+        ui.Button(panel, "返回", new(36, TouchLayout ? 578 : 599, 210, TouchLayout ? 74 : 40), NavigateBack, true).GrabFocus();
+        ui.Button(panel, "恢复本页默认", new(766, TouchLayout ? 578 : 599, 258, TouchLayout ? 74 : 40), ConfirmSettingsReset);
+        ui.Label(panel, TouchLayout ? "触控点选 · 横屏体验更佳" : "Tab 切换控件 · Esc 安全返回", new(274, 606, 465, 28), 15, Palette.Muted);
     }
 
     private void BuildAudioSettings(Control panel)
@@ -53,7 +54,7 @@ public partial class GameRoot
         var percentage = ui.Label(panel, $"{value * 100:0}%", new(930, vertical, 94, 35), 18, Palette.Gold);
         var slider = new HSlider
         {
-            Name = name, Position = new(210, vertical + 5), Size = new(682, 30),
+            Name = name, Position = new(210, TouchLayout ? vertical - 12 : vertical + 5), Size = new(682, TouchLayout ? 64 : 30),
             MinValue = 0, MaxValue = 100, Step = 1, Value = Math.Round(value * 100),
             FocusMode = Control.FocusModeEnum.All, TooltipText = title
         };
@@ -64,9 +65,10 @@ public partial class GameRoot
     private void SaveSettings(bool refresh = true)
     {
         profile.Save();
-        if (IsInstanceValid(settingsWarning)) settingsWarning!.Text = profile.Warning.Length > 0 ? profile.Warning : settingsMessage;
+        if (IsInstanceValid(settingsWarning)) settingsWarning!.Text = profile.Notice.Length > 0 ? profile.Notice : settingsMessage;
         audio.Apply(profile.Data, !diagnosticMode);
         canvas.ReducedMotion = profile.Data.ReducedMotion;
+        touchHud.SetContext(currentScreen == "playing", profile.Data.TouchMode);
         if (refresh) BuildSettings();
     }
 
@@ -74,18 +76,25 @@ public partial class GameRoot
     {
         captureAction = null;
         var panel = Modal("settings_reset", "RESET  /  恢复默认", "只重置当前页，不清除成绩。", 880, 365);
-        ui.Label(panel, "声音恢复音量与静音开关；画面恢复显示选项与震屏；操作恢复双槽默认键位。\n只处理刚才所在的页。画面仍需预览确认。", new(36, 143, 808, 75), 18, Palette.Muted);
+        ui.Label(panel, "声音恢复音量与静音；操作恢复默认键位；触控恢复自动检测。\n画面恢复帧率与震屏，桌面显示选项仍需预览确认。只处理当前页。", new(36, 143, 808, 75), 18, Palette.Muted);
         ui.Button(panel, "取消", new(36, 267, 385, 44), BuildSettings, true).GrabFocus();
         ui.Button(panel, "确认恢复", new(449, 267, 395, 44), () =>
         {
-            if (settingsTab == 1) { BeginVideoPreview(new(), true, false); return; }
-            if (settingsTab == 0)
+            if (settingsTab == 1)
+            {
+                if (!GamePlatform.IsWeb) { BeginVideoPreview(new(), true, false); return; }
+                profile.Data.Video.MaxFps = 60;
+                profile.Data.ReducedMotion = false;
+                profile.Data.Video.Apply();
+            }
+            else if (settingsTab == 0)
             {
                 profile.Data.MasterVolume = profile.Data.MusicVolume = profile.Data.SoundVolume = 1;
                 profile.Data.MusicEnabled = true;
                 profile.Data.SoundEnabled = true;
             }
-            else { profile.Data.Bindings = GameControls.DefaultBindings(); GameControls.Configure(profile.Data.Bindings); }
+            else if (settingsTab == 2) { profile.Data.Bindings = GameControls.DefaultBindings(); GameControls.Configure(profile.Data.Bindings); }
+            else profile.Data.TouchMode = 0;
             settingsMessage = "当前页已恢复默认，成绩与其他页保持不变。";
             SaveSettings();
         });

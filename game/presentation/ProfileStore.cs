@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using Godot;
 using Rebirth.Core;
@@ -21,12 +20,14 @@ public sealed class PlayerProfile
     public float SoundVolume { get; set; } = 1;
     public VideoPreferences Video { get; set; } = new();
     public Dictionary<string, long[]> Bindings { get; set; } = GameControls.DefaultBindings();
+    public int TouchMode { get; set; }
 }
 
 public sealed class ProfileStore
 {
     public PlayerProfile Data { get; private set; } = new();
     public string Warning { get; private set; } = "";
+    public string Notice => Warning.Length > 0 ? Warning : GamePlatform.StorageNotice;
     private readonly string path;
 
     public ProfileStore(string? customPath = null)
@@ -34,8 +35,10 @@ public sealed class ProfileStore
         path = customPath ?? ProjectSettings.GlobalizePath("user://rebirth/profile.json");
         try
         {
-            if (!System.IO.File.Exists(path)) return;
-            var loaded = JsonSerializer.Deserialize<PlayerProfile>(System.IO.File.ReadAllText(path, Encoding.UTF8));
+            if (!Godot.FileAccess.FileExists(path)) return;
+            using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
+            if (file == null) throw new IOException($"Profile open failed: {Godot.FileAccess.GetOpenError()}");
+            var loaded = JsonSerializer.Deserialize(file.GetAsText(), ProfileJsonContext.Default.PlayerProfile);
             if (loaded == null || loaded.Version != 1 || loaded.CompletedRuns < 0 || loaded.Victories < 0 || loaded.BestKills < 0 || !float.IsFinite(loaded.FastestVictory))
                 throw new InvalidDataException("Unsupported or invalid profile");
             loaded.MasterVolume = NormalizeVolume(loaded.MasterVolume);
@@ -44,6 +47,7 @@ public sealed class ProfileStore
             loaded.Video ??= new();
             loaded.Video.Normalize();
             loaded.Bindings = GameControls.NormalizeBindings(loaded.Bindings);
+            loaded.TouchMode = Math.Clamp(loaded.TouchMode, 0, 2);
             Data = loaded;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidDataException)
@@ -74,10 +78,20 @@ public sealed class ProfileStore
         if (Warning.Length > 0) return;
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var separator = path.LastIndexOfAny(['/', '\\']);
+            var directory = separator < 0 ? "." : path[..separator];
+            var created = DirAccess.MakeDirRecursiveAbsolute(directory);
+            if (created != Error.Ok) throw new IOException($"Profile directory failed: {created}");
             var temporary = path + ".tmp";
-            System.IO.File.WriteAllText(temporary, JsonSerializer.Serialize(Data, new JsonSerializerOptions { WriteIndented = true }), new UTF8Encoding(false));
-            System.IO.File.Move(temporary, path, true);
+            using (var file = Godot.FileAccess.Open(temporary, Godot.FileAccess.ModeFlags.Write))
+            {
+                if (file == null) throw new IOException($"Profile write failed: {Godot.FileAccess.GetOpenError()}");
+                file.StoreString(JsonSerializer.Serialize(Data, ProfileJsonContext.Default.PlayerProfile));
+                file.Flush();
+                if (file.GetError() != Error.Ok) throw new IOException($"Profile flush failed: {file.GetError()}");
+            }
+            var renamed = DirAccess.RenameAbsolute(temporary, path);
+            if (renamed != Error.Ok) throw new IOException($"Profile replace failed: {renamed}");
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {

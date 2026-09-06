@@ -4,8 +4,11 @@
 /release/
 /-e
 /stdout
-/artifacts/
+/artifacts/*
+!/artifacts/.gdignore
 
 # .NET build artifacts
 **/bin/
 **/obj/
+/TouhouWuxiaSurvivor.csproj.old
+/TouhouWuxiaSurvivor.csproj.old.*

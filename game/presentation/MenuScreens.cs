@@ -11,6 +11,7 @@ public partial class GameRoot
         canvas.Run = null;
         canvas.ResetView();
         ClearScreen("title");
+        if (TouchLayout) { BuildTouchTitle(); return; }
         ui.Panel(screen!, new(48, 52, 548, 601));
         ui.Label(screen!, "夜 境 手 帖    /    TOUHOU SURVIVOR", new(83, 76, 462, 30), 14, Palette.Gold);
         ui.Label(screen!, "幻想乡", new(77, 121, 490, 105), 74, Palette.Paper, true);
@@ -20,13 +21,13 @@ public partial class GameRoot
         ui.Button(screen!, "行走须知", new(86, 450, 173, 45), ShowHelp);
         ui.Button(screen!, "游戏设置", new(275, 450, 173, 45), ShowSettings);
         ui.Button(screen!, "更新记录", new(86, 507, 173, 43), ShowChangelog);
-        ui.Button(screen!, "暂别夜境", new(275, 507, 173, 43), () => GetTree().Quit());
+        ui.Button(screen!, GamePlatform.IsWeb ? "切换全屏" : "暂别夜境", new(275, 507, 173, 43), () => { if (GamePlatform.IsWeb) ToggleWebFullscreen(); else GetTree().Quit(); });
         ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
         ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(790, 617, 445, 30), 15, Palette.Gold).AddThemeColorOverride("font_color", Palette.Paper);
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
         ui.Label(screen!, $"{version}  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted).AddThemeColorOverride("font_color", Palette.Paper);
         ui.Label(screen!, "东方同人内部原型 · 素材未经公开发行授权", new(841, 681, 395, 26), 12, Palette.Muted).AddThemeColorOverride("font_color", Palette.Paper);
-        if (profile.Warning.Length > 0) ui.Label(screen!, profile.Warning, new(86, 621, 510, 36), 13, Palette.Red);
+        if (profile.Notice.Length > 0) ui.Label(screen!, profile.Notice, new(86, 621, 510, 36), 13, Palette.Red);
         first.GrabFocus();
     }
 
@@ -48,8 +49,8 @@ public partial class GameRoot
             ui.Label(card, hero.Item2, new(20, 53, 345, 50), 35, Palette.Paper, true);
             ui.Label(card, hero.Item4, new(24, 111, 440, 25), 14, Palette.Gold);
             ui.Label(card, hero.Item5, new(24, 152, 445, 88), 18, Palette.Paper);
-            ui.Label(card, hero.Item6, new(24, 244, 445, 56), 15, Palette.Muted);
-            var button = ui.Button(card, $"执此道 · {hero.Item2}", new(23, 302, 449, 38), () => StartRun(hero.Item1), true);
+            if (!TouchLayout) ui.Label(card, hero.Item6, new(24, 244, 445, 56), 15, Palette.Muted);
+            var button = ui.Button(card, $"执此道 · {hero.Item2}", new(23, TouchLayout ? 269 : 302, 449, TouchLayout ? 76 : 38), () => StartRun(hero.Item1), true);
             first ??= button;
         }
         ui.Button(panel, "返回", new(35, 507, 115, 37), ShowTitle);

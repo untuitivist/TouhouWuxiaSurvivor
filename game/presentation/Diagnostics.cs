@@ -109,6 +109,8 @@ public partial class GameRoot
 
     public override void _Process(double delta)
     {
+        UpdatePlatformLayout();
+        UpdateWebChecks(delta);
         UpdateDebugState();
         TickVideoPreview(delta);
         if (!diagnosticMode || diagnosticFinished) return;
@@ -143,6 +145,7 @@ public partial class GameRoot
 
     private void RunUiSmokeTests()
     {
+        TestSharedPlatform();
         TestPixelUiAndDebug();
         ShowTitle();
         AssertUiBounds();

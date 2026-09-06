@@ -1,5 +1,16 @@
 # Progress Log
 
+## 2026-09-06 — Shared CSharp Windows And Web Runtime
+
+- Stable shared build now succeeds with generated SDK/framework metadata overrides only; original root csproj survives desktop import, and source hashes match in Web staging. Historical editor backups and all experimental build outputs are retained.
+- Added licensed deterministic 472604-byte Chinese font, source-generated/Godot-owned profile persistence, browser-gesture audio activation, platform-specific video settings, multi-touch controls, portrait pause and safe-area CSS. Desktop core/UI/profile/display/settings regressions pass; all five final browser scenarios pass with zero console events or failed requests. Reimu and Marisa both reached the boss and won (265.47 / 272.20 simulated seconds, seed 42).
+- Final verification build: artifacts/web-builds/20260906-235133-689, Edge 152.0.4191.62. Source fingerprints match the maintained game/assets/export inputs; no release EXE change, no historical published changelog change, UTF-8 no BOM and git diff checks pass. The system SDK remains 8.0.302. Browser/server test resources closed normally. Local daily commit only.
+- Added shared-platform build/hosting/acceptance documentation and unreleased changelog entries while preserving all published history and the original alpha-0.0.9 EXE hash. No version bump, Windows release export, push or server upload.
+
+- User confirmed one maintained project for both platforms. Implementing conditional SDK/target framework selection, unchanged build staging, generated JSON metadata and Godot-owned file storage, bundled subset font and multi-touch input.
+- Initial explicit SDK imports used root-attribute syntax incorrectly; official MSBuild documentation confirmed Import uses a separate Version attribute. Windows compilation then resolved the original SDK. Font license is at the tagged repository root, not Sans/LICENSE; source font lacks C1-control/replacement codepoints, so the subset covers printable Latin plus actual source/changelog text instead.
+- Added artifacts/.gdignore to prevent Godot from importing private SDK/cache/staging trees. The bundled font is approximately 470 KB rather than the 16.4 MB upstream font. Desktop notification pattern matching required ordinary comparisons because generated constants are long.
+
 ## 2026-09-06 — CSharp Web Probe
 
 - Final browser rerun reproduced the same eight-case outcome with explicit exit 2 for not-deployable. PowerShell/Node syntax, strict UTF-8 without BOM, git whitespace, unchanged published changelog sections, unchanged production runtime/config, and system SDK 8.0.302 checks passed. Validation services/browsers closed; experimental files retained. Prepared the local daily commit only.

@@ -19,12 +19,12 @@ public partial class GameRoot : Node
     private bool dashRequested;
     private bool recorded;
     private int seedCounter;
+    private readonly TouchHud touchHud = new();
 
     public override void _Ready()
     {
         DisplayServer.WindowSetTitle("幻想乡 · 夜境异闻");
-        var body = new SystemFont { FontNames = ["Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"], Antialiasing = TextServer.FontAntialiasing.Gray };
-        var title = new SystemFont { FontNames = ["Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"], FontWeight = 700, Antialiasing = TextServer.FontAntialiasing.None };
+        var (body, title) = GameFonts.Load();
         canvas.BodyFont = body;
         canvas.TitleFont = title;
         AddChild(canvas);
@@ -32,7 +32,7 @@ public partial class GameRoot : Node
         ui = new(body, title);
         var arguments = OS.GetCmdlineUserArgs();
         diagnosticMode = arguments.Contains("--rebirth-smoke") || arguments.Contains("--rebirth-video-smoke") || arguments.Any(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal));
-        profile = diagnosticMode ? new ProfileStore(ProjectSettings.GlobalizePath($"user://rebirth/diagnostics/sessions/{Guid.NewGuid():N}/profile.json")) : new();
+        profile = CreateProfile(arguments);
         if (!diagnosticMode) profile.Data.Video.Apply();
         else { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }
         GameControls.Configure(profile.Data.Bindings);
@@ -44,20 +44,26 @@ public partial class GameRoot : Node
         interfaceRoot.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         interfaceRoot.Theme = ui.CreateTheme();
         interfaceRoot.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
+        touchHud.BodyFont = body;
+        touchHud.DashPressed = () => dashRequested = true;
+        touchHud.PausePressed = NavigateBack;
+        touchHud.InspectPressed = OpenBuild;
+        layer.AddChild(touchHud);
         InitializeDebugOverlay(layer, body);
         ShowTitle();
         InitializeDiagnostics();
+        InitializeWebChecks();
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        if (diagnosticMode) return;
+        if (diagnosticMode || webPilot) return;
         if (run == null) return;
-        canvas.Focused = Input.IsActionPressed(GameControls.Focus);
+        canvas.Focused = Input.IsActionPressed(GameControls.Focus) || touchHud.FocusHeld;
         if (run.Phase == RunPhase.Playing)
         {
-            float horizontal = Input.GetAxis(GameControls.Left, GameControls.Right);
-            float vertical = Input.GetAxis(GameControls.Up, GameControls.Down);
+            float horizontal = Input.GetAxis(GameControls.Left, GameControls.Right) + touchHud.Movement.X;
+            float vertical = Input.GetAxis(GameControls.Up, GameControls.Down) + touchHud.Movement.Y;
             run.Step(new(new NumericsVector(horizontal, vertical), canvas.Focused, dashRequested));
             canvas.ReceiveEvents();
             audio.PlayEvents(run.Events);
@@ -68,7 +74,10 @@ public partial class GameRoot : Node
 
     public override void _Notification(int notification)
     {
-        if (notification != NotificationWMWindowFocusOut || diagnosticMode || run?.Phase != RunPhase.Playing) return;
+        if (notification != NotificationWMWindowFocusOut && notification != NotificationApplicationPaused) return;
+        touchHud.ResetPointers();
+        dashRequested = false;
+        if (diagnosticMode || run?.Phase != RunPhase.Playing) return;
         run.TogglePause();
         RefreshRunScreen();
     }
@@ -86,10 +95,11 @@ public partial class GameRoot : Node
 
     private void ClearScreen(string name)
     {
-        if (screen != null) { interfaceRoot.RemoveChild(screen); screen.QueueFree(); }
+        if (screen != null) { screen.Hide(); screen.QueueFree(); }
         screen = new Control { Size = new(1280, 720), MouseFilter = Control.MouseFilterEnum.Ignore };
         interfaceRoot.AddChild(screen);
         currentScreen = name;
+        touchHud.SetContext(name == "playing", profile?.Data.TouchMode ?? 0);
     }
 
     private Control Modal(string name, string eyebrow, string heading, int width = 1080, int height = 540)

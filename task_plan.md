@@ -1,5 +1,14 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Shared Windows And Web Project — 2026-09-06
+
+1. [complete] Establish shared C# project/build settings with isolated Web build caches; preserve Windows SDK and historical artifacts.
+2. [complete] Implement portable font/profile storage, platform-aware settings/audio and multi-touch controls using the same runtime.
+3. [complete] Windows 26/26 core/UI/profile/full settings pass; Web desktop/touch/save-reload/upgrade and both asynchronous boss-to-victory journeys pass. Physical-device limits documented.
+4. [complete] Intent/design/unreleased records and final source/history/encoding audits complete; save as a local daily commit without release version bump, Windows release export, push or deployment.
+
+Confirmed scope: one maintained game project and one C# gameplay implementation. Generated build staging is disposable build input, never a second maintained game. No game-rule changes or new account/backend features.
+
 ## Active CSharp Web Feasibility Probe — 2026-09-06
 
 1. [complete] Verify experimental upstream, pin binaries and isolate the SDK/editor/project from the Windows release toolchain.

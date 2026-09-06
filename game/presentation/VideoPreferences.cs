@@ -26,7 +26,7 @@ public sealed class VideoPreferences
     {
         Normalize();
         Engine.MaxFps = MaxFps;
-        if (DisplayServer.GetName() == "headless") return;
+        if (!GamePlatform.CanResizeWindow) return;
         DisplayServer.WindowSetVsyncMode(Vsync ? DisplayServer.VSyncMode.Enabled : DisplayServer.VSyncMode.Disabled);
         var window = ((SceneTree)Engine.GetMainLoop()).Root;
         var monitor = window.CurrentScreen;

@@ -9,6 +9,8 @@ public partial class GameRoot
 
     public override void _Input(InputEvent input)
     {
+        if (input is InputEventScreenTouch { Pressed: true } or InputEventMouseButton { Pressed: true } or InputEventKey { Pressed: true }) audio.Activate(profile.Data, !diagnosticMode);
+        if (touchHud.Handle(input)) { GetViewport().SetInputAsHandled(); return; }
         if (input is not InputEventKey key) return;
         if (CaptureBinding(key)) { GetViewport().SetInputAsHandled(); return; }
         if (!key.Pressed || key.Echo) return;
@@ -26,6 +28,7 @@ public partial class GameRoot
         }
         else if (input.IsActionPressed(GameControls.Fullscreen))
         {
+            if (GamePlatform.IsWeb) { ToggleWebFullscreen(); GetViewport().SetInputAsHandled(); return; }
             var candidate = profile.Data.Video.Copy();
             candidate.WindowMode = candidate.WindowMode == 2 ? 0 : 2;
             BeginVideoPreview(candidate, currentScreen == "settings");

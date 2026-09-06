@@ -14,6 +14,7 @@ public partial class GameRoot
 
     private void BuildVideoSettings(Control panel)
     {
+        if (GamePlatform.IsWeb) { BuildWebVideoSettings(panel); return; }
         videoDraft = profile.Data.Video.Copy();
         OptionButton? resolution = null;
         AddVideoOption(panel, "窗口模式", "window_mode", 199, ["窗口化", "无边框窗口", "全屏"], videoDraft.WindowMode,

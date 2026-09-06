@@ -111,7 +111,10 @@ public partial class GameCanvas : Node2D
     }
 
     private void Diamond(Vector2 position, float size, Color color)
-        => DrawColoredPolygon([position + new Vector2(0, -size), position + new Vector2(size, 0), position + new Vector2(0, size), position + new Vector2(-size, 0)], color);
+    {
+        if (size < 0.25f || color.A <= 0) return;
+        DrawColoredPolygon([position + new Vector2(0, -size), position + new Vector2(size, 0), position + new Vector2(0, size), position + new Vector2(-size, 0)], color);
+    }
 
     private sealed class VisualEvent(CombatEvent entry, float duration)
     {

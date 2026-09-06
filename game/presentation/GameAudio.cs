@@ -11,6 +11,14 @@ public partial class GameAudio : Node
     private double lastHit;
     public bool SoundEnabled = true;
     private float soundVolume = 1;
+    private bool activated = !GamePlatform.IsWeb;
+
+    public void Activate(PlayerProfile profile, bool allowPlayback)
+    {
+        if (activated) return;
+        activated = true;
+        Apply(profile, allowPlayback);
+    }
 
     public override void _Ready()
     {
@@ -40,6 +48,7 @@ public partial class GameAudio : Node
 
     public void Apply(PlayerProfile profile, bool allowPlayback = true)
     {
+        allowPlayback &= activated;
         SoundEnabled = profile.SoundEnabled;
         soundVolume = profile.SoundVolume;
         AudioServer.SetBusVolumeDb(0, Mathf.LinearToDb(Math.Max(profile.MasterVolume, 0.0001f)));

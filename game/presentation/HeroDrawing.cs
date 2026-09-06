@@ -49,6 +49,7 @@ public partial class GameCanvas
 
     private void Star(Vector2 position, float radius, Color color, float rotation)
     {
+        if (radius < 0.25f || color.A <= 0) return;
         var points = new Vector2[10];
         for (var index = 0; index < points.Length; index++)
             points[index] = position + Vector2.FromAngle(rotation + index * MathF.PI / 5) * (index % 2 == 0 ? radius : radius * 0.43f);

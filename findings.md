@@ -1,5 +1,16 @@
 # Findings and Decisions
 
+## Shared Windows / Web Runtime — 2026-09-06
+
+- Final result: all five browser scenarios pass in Edge 152.0.4191.62, zero console events/failed requests; both deterministic seed-42 characters see a live boss and reach Won plus persisted result counters. Reimu wins at 265.47 simulated seconds, Marisa at 272.20. This verifies execution, not player feel, real-network readiness or physical-phone performance.
+
+- Keep a normal root Project SDK attribute and unconditional default net8.0. Explicit conditional SDK imports or only conditional frameworks cause Godot's editor upgrader to rewrite the maintained csproj. Generated backups are preserved and ignored, not deleted. Web staging alone resolves SDK 4.6.1, GodotWebBuild=true and a single net9.0 framework; all game sources remain hash-identical.
+- Windows build/core/UI/profile and full display/settings captures pass after switching to Godot FileAccess and source-generated JSON. Web desktop save/reload persists changed volume in the same browser context, with no reflection error; new multi-touch and upgrade scenarios pass in current Edge.
+- First browser-test failures included two harness mistakes: CDP touchEnd lists ending pointers, not the remaining pointers; the 30-XP fixture creates two consecutive upgrade selections. Corrected tests after observing actual telemetry, without changing gameplay to satisfy the assertions.
+- Real Web runtime fixes: defer old menu destruction until frame end to keep touch-generated mouse events inside the tree; do not triangulate near-zero-size fading diamond/star particles. Final browser assertions reject all console errors rather than hiding these errors.
+- Asynchronous pilot has a 16 ms per-frame simulation budget and does not block startup; headless software rendering is not a physical-mobile FPS measurement. Original 8 ms pilot reached 220 simulated seconds before a 180-second test timeout, so full-journey waits allow 300 seconds per milestone instead of claiming a deadlock.
+- Bundled renamed Noto subset: 472604 bytes, 1164 required characters, source hash verified and repeat generation produces identical bytes. Final raw Web site is 98190767 bytes; real-network startup and compression/CDN tuning remain deployment work, not solved by local HTTP success.
+
 ## CSharp Web Probe — 2026-09-06
 
 - Two real C# exports succeeded. 4.7.1 / Edge 152.0.4191.62 gives 48 WebGL buffer/upload warnings and missing panels; 4.7.1 / Chromium 143 renders combat. 4.6.1 control / same Edge renders title, Reimu movement/dash/F3 and Marisa/choices previews without those warnings.

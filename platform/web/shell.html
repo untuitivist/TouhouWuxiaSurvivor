@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#17272d">
+  <title>幻想乡 · 夜境异闻</title>
+  $GODOT_HEAD_INCLUDE
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101c20;color:#f2e3b9;font-family:system-ui,sans-serif;touch-action:none;overscroll-behavior:none}
+    #canvas{display:block;width:100%;height:100%;outline:none;touch-action:none}
+    body{box-sizing:border-box;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+    #loading,#rotate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#17272d;padding:24px;text-align:center;box-sizing:border-box}
+    h1{font-size:clamp(20px,4vw,34px);color:#e8c17a;margin:0}
+    p{max-width:640px;line-height:1.7;margin:0;white-space:pre-line}
+    progress{width:min(420px,80vw);accent-color:#96ba80}
+    #rotate{display:none;z-index:3}
+    @media (orientation:portrait){#rotate{display:flex}}
+  </style>
+</head>
+<body>
+  <canvas id="canvas" tabindex="0" aria-label="幻想乡夜境异闻游戏画面"></canvas>
+  <div id="loading"><h1>幻想乡 · 夜境异闻</h1><p id="notice">正在准备夜境，请稍候。首次加载需要下载游戏资源。</p><progress id="progress"></progress><p>进入游戏后点击或按键启用声音。记录保存在此浏览器中。</p></div>
+  <div id="rotate"><h1>请横屏游玩</h1><p>转动手机，或将浏览器窗口调宽。
+正在进行的战斗会暂停，不会自动继续。</p></div>
+  <script src="$GODOT_URL"></script>
+  <script>
+    const GODOT_CONFIG = $GODOT_CONFIG;
+    const engine = new Engine(GODOT_CONFIG);
+    const notice = document.getElementById('notice');
+    const progress = document.getElementById('progress');
+    const missing = Engine.getMissingFeatures({threads:true});
+    if (missing.length) {
+      notice.textContent = '浏览器或服务器配置尚不满足运行条件：\n' + missing.join('\n');
+      progress.hidden = true;
+    } else {
+      engine.startGame({onProgress(current,total){if(total>0){progress.max=total;progress.value=current;}}})
+        .then(()=>document.getElementById('loading').remove())
+        .catch(error=>{notice.textContent='加载失败，请刷新后重试。\n'+String(error);progress.hidden=true;console.error(error);});
+    }
+  </script>
+</body>
+</html>
