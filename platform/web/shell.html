@@ -13,31 +13,58 @@
     #loading,#rotate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#17272d;padding:24px;text-align:center;box-sizing:border-box}
     h1{font-size:clamp(20px,4vw,34px);color:#e8c17a;margin:0}
     p{max-width:640px;line-height:1.7;margin:0;white-space:pre-line}
-    progress{width:min(420px,80vw);accent-color:#96ba80}
+    #loading{overflow:auto;background:radial-gradient(ellipse at top,#2b4443,#101c20)}
+    .load-card{width:min(660px,100%);box-sizing:border-box;padding:28px;background:#eee2ba;color:#443728;border:4px solid #a47a4b;outline:2px solid #e3c589;box-shadow:8px 8px 0 #081316;text-align:left}
+    .load-card h1{color:#64442e;font-size:clamp(22px,4vw,32px);margin:10px 0 14px}
+    .load-card p{font-size:15px;line-height:1.65}
+    #phase{color:#805b38;font-size:13px;letter-spacing:1px}
+    .progress-line{display:flex;justify-content:space-between;gap:12px;margin-top:24px;font-size:14px;font-variant-numeric:tabular-nums}
+    progress{display:block;appearance:none;width:100%;height:20px;margin:10px 0 18px;border:2px solid #705333;background:#cbbb92;accent-color:#78986b}
+    progress::-webkit-progress-bar{background:#cbbb92}
+    progress::-webkit-progress-value{background:#78986b}
+    progress::-moz-progress-bar{background:#78986b}
+    .load-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .load-stat{background:#e1d1a6;border:2px solid #b59665;padding:12px}
+    .load-stat.wide{grid-column:1/-1}
+    .load-stat span{display:block;color:#705b40;font-size:13px;margin-bottom:5px}
+    .load-stat strong{font-size:clamp(18px,4vw,24px);font-variant-numeric:tabular-nums}
+    #download-note{margin-top:16px;font-size:12px;color:#79664c}
+    #retry{margin-top:16px;padding:10px 22px;font:inherit;color:#443728;background:#bdcd9e;border:2px solid #705333;cursor:pointer}
+    #retry[hidden]{display:none}
+    .load-footer{font-size:12px;max-width:640px;color:#b4c5bc}
     #rotate{display:none;z-index:3}
-    @media (orientation:portrait){#rotate{display:flex}}
+    @media (orientation:portrait){body[data-game-ready="true"] #rotate{display:flex}}
+    @media (max-height:520px){#loading{justify-content:flex-start;padding:16px}.load-card{padding:14px 20px}.load-card h1{margin:6px 0;font-size:22px}.load-card p{font-size:13px}.progress-line{margin-top:12px}.load-stats{grid-template-columns:1.4fr 1fr 1fr;gap:8px}.load-stat.wide{grid-column:auto}.load-stat{padding:8px}.load-stat strong{font-size:18px}#download-note{margin-top:10px}.load-footer{display:none}}
   </style>
 </head>
 <body>
   <canvas id="canvas" tabindex="0" aria-label="幻想乡夜境异闻游戏画面"></canvas>
-  <div id="loading"><h1>幻想乡 · 夜境异闻</h1><p id="notice">正在准备夜境，请稍候。首次加载需要下载游戏资源。</p><progress id="progress"></progress><p>进入游戏后点击或按键启用声音。记录保存在此浏览器中。</p></div>
+  <div id="loading" aria-busy="true">
+    <section class="load-card" aria-label="游戏加载进度">
+      <div id="phase" role="status">00 / 准备连接</div>
+      <h1>幻想乡 · 夜境异闻</h1>
+      <p id="notice">正在读取资源清单。首次加载需要下载游戏资源，后续可复用浏览器缓存。</p>
+      <div class="progress-line"><span id="download-total">正在确认核心资源总量</span><strong id="percentage">0.0%</strong></div>
+      <progress id="progress" max="1" value="0" aria-label="核心资源接收进度"></progress>
+      <div class="load-stats">
+        <div class="load-stat wide"><span>已接收 / 总量</span><strong id="amount">等待资源清单</strong></div>
+        <div class="load-stat"><span>实时接收速度</span><strong id="speed">正在测量</strong></div>
+        <div class="load-stat"><span>预计剩余下载时间</span><strong id="remaining">正在估算</strong></div>
+      </div>
+      <p id="download-note">接收完成后还需要初始化引擎，不会用假进度代替。</p>
+      <button id="retry" type="button" hidden>重新加载</button>
+    </section>
+    <p class="load-footer">手机可先下载，进入游戏后请横屏。点击或按键启用声音；记录保存在此浏览器中。</p>
+  </div>
   <div id="rotate"><h1>请横屏游玩</h1><p>转动手机，或将浏览器窗口调宽。
 正在进行的战斗会暂停，不会自动继续。</p></div>
-  <script src="$GODOT_URL"></script>
   <script>
     const GODOT_CONFIG = $GODOT_CONFIG;
-    const engine = new Engine(GODOT_CONFIG);
-    const notice = document.getElementById('notice');
-    const progress = document.getElementById('progress');
-    const missing = Engine.getMissingFeatures({threads:true});
-    if (missing.length) {
-      notice.textContent = '浏览器或服务器配置尚不满足运行条件：\n' + missing.join('\n');
-      progress.hidden = true;
-    } else {
-      engine.startGame({onProgress(current,total){if(total>0){progress.max=total;progress.value=current;}}})
-        .then(()=>document.getElementById('loading').remove())
-        .catch(error=>{notice.textContent='加载失败，请刷新后重试。\n'+String(error);progress.hidden=true;console.error(error);});
-    }
+    const TOUHOU_DOWNLOADS = null;
   </script>
+  <script src="index.loader.js" onerror="document.getElementById('notice').textContent='加载器下载失败，请检查网络后重试。'; document.getElementById('retry').hidden=false; document.getElementById('retry').onclick=()=>location.reload();"></script>
+  <script>const loading = globalThis.TouhouLoading ? TouhouLoading.create(GODOT_CONFIG, TOUHOU_DOWNLOADS) : null;</script>
+  <script src="$GODOT_URL" onerror="if(loading) loading.fail(new Error('引擎脚本下载失败，请检查网络后重试。'))"></script>
+  <script>if(loading) loading.start();</script>
 </body>
 </html>

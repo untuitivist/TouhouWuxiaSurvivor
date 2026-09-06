@@ -29,6 +29,18 @@ async function main() {
         assert.equal(entry.headers.get('cross-origin-opener-policy'), 'same-origin');
         assert.equal(entry.headers.get('cross-origin-embedder-policy'), 'require-corp');
         assert.ok(html.includes('/releases/' + deployment.releaseId + '/index'));
+        const downloads = JSON.parse(html.match(/const TOUHOU_DOWNLOADS = (\[[^\n]+\]);/)[1]);
+        assert.equal(downloads.length, 2);
+        for (const file of downloads) {
+            assert.equal(file.compressed, true);
+            assert.ok(file.download.startsWith('/TouhouSurvivor/releases/' + deployment.releaseId + '/'));
+            const response = await fetch(origin + file.download, { method: 'HEAD', headers: { 'Accept-Encoding': 'gzip, deflate, br' } });
+            assert.equal(response.status, 200);
+            assert.equal(response.headers.get('content-encoding'), null);
+            assert.equal(Number(response.headers.get('content-length')), file.bytes);
+            assert.ok(response.headers.get('cache-control').includes('immutable'));
+            report.checks.push({ name: 'counted-download', file: file.download, bytes: file.bytes });
+        }
         for (const name of ['index.wasm', 'index.pck', 'index.js']) {
             const response = await fetch(deployment.url + 'releases/' + deployment.releaseId + '/' + name, { method: 'HEAD', headers: { 'Accept-Encoding': 'gzip' } });
             assert.equal(response.status, 200);

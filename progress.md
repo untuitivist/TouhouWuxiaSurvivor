@@ -1,5 +1,16 @@
 # Progress Log
 
+## Web Loading Experience
+
+- Implemented a responsive loading card with exact core-resource totals, received bytes, rolling reception speed, percentage and ETA. Explicit gzip bodies are counted before streaming decompression; unsupported browsers clearly use decoded-resource accounting instead. Network silence does not manufacture progress, and initialization remains a separate phase.
+- HTTP/stream/script failures expose a reload action. Failed engine resource URLs remain gated to stop automatic engine retries bypassing the counters; unrelated requests pass through. Final success restores the original Fetch. No generated engine code or shared C# gameplay was edited.
+- Final build: `artifacts/web-builds/20260907-012047-021`. Source-manifest hashes match current inputs. Core compressed body total in the loading verification is 32,781,622 bytes (32.78 MB), excluding small page/script/protocol overhead. This is a local fixture measurement, not an updated online bundle or a network-speed guarantee.
+- Five Node counter tests and seven Python deployment protection/manifest tests pass. Six real-export browser loading scenarios pass: normal plus cached revisit, portrait stall and recovery, stream interruption and retry, HTTP 503 with no bypass downloads, loader-script failure and engine-script failure. Screenshots of desktop, narrow landscape and portrait were inspected. Known upstream engine rejection messages during deliberately failed requests are recorded separately; successful and recovered startup has no page errors.
+- Final isolated broad Web regression passes all five scenarios: desktop settings/save-reload/F3, touch controls/rotation, consecutive upgrades, and Reimu/Marisa full Boss-to-victory runs. An earlier broad run under concurrent browser load reported one aborted PCK request; the final isolated rerun passes without failed requests. A colliding shared log prevented one attempted rerun from starting; it was not counted as a pass.
+- Reports: `artifacts/web-builds/20260907-012047-021/loading-verification/2026-09-06T17-22-57-400Z/report.json` and `artifacts/web-builds/20260907-012047-021/verification/report.json`. No Android/iPhone physical-device test performed.
+- Updated unreleased notes while preserving all published changelog sections. Font coverage remains 1164 characters; original alpha-0.0.9 EXE SHA256 is unchanged at E21BFEDEC06B3DD1F2E730A97776C5B14BF609F7361FC73D4854509C42043AE8. No new EXE, version bump, GitHub push or server deployment; only a read-only existing gzip-response check was made.
+
+
 ## Initial Caddy Domain Deployment
 
 - User supplied allinagent.top / 170.106.119.27 and ljy.pem, then explicitly authorized GitHub push plus clone/pull. Located the key without printing its content, backed up its ACL metadata and restricted overbroad file permissions so Windows OpenSSH could use it. Ubuntu login and Caddy identified; existing routes captured before changes.

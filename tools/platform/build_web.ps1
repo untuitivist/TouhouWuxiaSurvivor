@@ -80,6 +80,7 @@ try {
     }
     if (-not (Test-Path "$site/index.html") -or -not (Select-String -Path "$build/export.log" -SimpleMatch 'TouhouWuxiaSurvivor.dll' -Quiet)) { throw 'Web output is incomplete.' }
     Copy-Item -LiteralPath "$root/assets/fonts/OFL.txt" -Destination "$site/FONT_LICENSE.txt"
+    Copy-Item -LiteralPath "$root/platform/web/loader.js" -Destination "$site/index.loader.js"
     if ((Get-FileHash -LiteralPath $projectPath).Hash -ne $projectHash) { throw 'Editor modified staged project configuration.' }
     $summary = @{ sourceCommit = (& git -C $root rev-parse HEAD).Trim(); sourceDirty = [bool](& git -C $root status --porcelain); sourceFiles = $manifest.ToArray(); sourceUnmodifiedInStage = $true; projectOverrides = @('SDK 4.7.1 -> 4.6.1', 'Resolve GodotWebBuild=true and TargetFramework=net9.0 for exporter parser'); generatedMetadataExcluded = @('*.import', '*.uid'); webToolchain = 'Godot C# experimental 4.6.1 / .NET 9.0.317'; files = @(Get-ChildItem $site -File | ForEach-Object { @{ name=$_.Name; bytes=$_.Length; sha256=(Get-FileHash $_.FullName).Hash } }) }
     [IO.File]::WriteAllText("$build/build-manifest.json", ($summary | ConvertTo-Json -Depth 6), $encoding)

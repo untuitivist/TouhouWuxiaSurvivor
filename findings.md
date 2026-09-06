@@ -1,5 +1,14 @@
 # Findings and Decisions
 
+## Web Loading Counters
+
+- The exported Godot preloader counts Fetch-decoded chunks, so its progress cannot represent compressed network bytes. The new loader counts explicit gzip response bodies before streaming decompression and receives exact sizes from the deployment script. The total explicitly covers the engine and pack, not page/script/protocol overhead.
+- A read-only HEAD against the existing Caddy WASM gzip sidecar, with browser-style Accept-Encoding, returns application/gzip, Content-Length 13080800, immutable caching and no Content-Encoding. No server files were changed.
+- Initialization may finish between 100 ms test samples; browser assertions observe data-stage mutations instead of imposing an artificial minimum loading delay. Cache-reuse verification uses a persistent test profile with a 256 MB cache budget and a separate navigation; ephemeral contexts did not retain these large files. This is not a claim that every browser or reload will avoid network traffic.
+- During deliberate mid-stream disconnect, the exported engine's Preloader onloadprogress promise lacks a rejection handler and emits `BodyStreamBuffer was aborted` / `network error`. The new loader still catches its own stream failure, freezes progress and enables a working full reload. The browser test records only those expected interruption messages and requires zero errors after retry; it does not mask arbitrary errors or modify the generated engine.
+- The engine also automatically retries failed HTTP requests. On failure, keep the two resource URLs gated until the user reloads, rather than restoring Fetch immediately and allowing those retries to bypass accounting and download original files behind the error screen. Unrelated URLs still pass through; successful startup restores the original Fetch implementation. The HTTP 503 test records the engine's additional unhandled rejection of the explicit stopped-download error, verifies no bypass requests after the retry window, and requires a clean startup after user retry.
+
+
 ## Real Domain Deployment
 
 - The authorized server uses Caddy 2.11.4, not Nginx. Preserve its primary reverse proxy and existing /tusharedata import. A dedicated game import adds COOP/COEP, gzip files, MIME-aware static serving and immutable resource caching only under /TouhouSurvivor/.

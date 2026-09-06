@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Web Loading Progress
+
+1. [complete] Inspect actual Godot progress semantics; distinguish decoded engine counters from compressed transfers.
+2. [complete] Implement exact compressed-body totals/received bytes/speed/ETA, separate initialization, stall/retry UI and failed-request gating without changing gameplay.
+3. [complete] Five counter tests, seven deployment tests, six real-export loading scenarios and five full game scenarios pass on the final local build. Desktop/portrait/landscape captures inspected; history/version/EXE preserved. Daily development only, no push or deployment.
+
 ## Initial Domain Deployment
 
 1. [complete] Confirm authorized target, SSH identity, DNS, Caddy and existing routes without changing the website.

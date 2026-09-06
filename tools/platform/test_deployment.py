@@ -24,7 +24,7 @@ class DeploymentTests(unittest.TestCase):
         self.new_snippet.write_text('handle /TouhouSurvivor/* { respond 200 }\n', encoding='utf-8')
         self.original = self.main.read_text(encoding='utf-8')
         self.arguments = SimpleNamespace(release='alpha-0.0.9-fixture', archive=self.work / 'site.tar.gz', snippet=self.new_snippet, config_sha256=deployment.sha256(self.main))
-        self.html = '<script src="index.js"></script>\n<link href="index.icon.png">\nconst GODOT_CONFIG = {"args":[],"executable":"index","fileSizes":{"index.wasm":7}};\n'
+        self.html = '<script src="index.js"></script>\n<link href="index.icon.png">\nconst GODOT_CONFIG = {"args":[],"executable":"index","fileSizes":{"index.wasm":7}};\nconst TOUHOU_DOWNLOADS = null;\n'
         self.files = {'index.html': self.html.encode(), 'index.wasm': b'fixture'}
         self.prepare()
 
@@ -53,6 +53,14 @@ class DeploymentTests(unittest.TestCase):
         release = self.root / 'public/releases' / self.arguments.release
         self.assertEqual((release / 'index.html').read_bytes(), self.files['index.html'])
         self.assertEqual(gzip.decompress((release / 'index.wasm.gz').read_bytes()), b'fixture')
+        transfers = json.loads(entry.split('const TOUHOU_DOWNLOADS = ')[1].split(';')[0])
+        self.assertEqual(transfers, [{
+            'url': '/TouhouSurvivor/releases/alpha-0.0.9-fixture/index.wasm',
+            'download': '/TouhouSurvivor/releases/alpha-0.0.9-fixture/index.wasm.gz',
+            'bytes': (release / 'index.wasm.gz').stat().st_size,
+            'decodedBytes': 7,
+            'compressed': True,
+        }])
         self.assertEqual((self.root / 'backups' / self.arguments.release / 'Caddyfile').read_text(encoding='utf-8'), self.original)
         self.assertIn('reverse_proxy 127.0.0.1:8080', self.main.read_text(encoding='utf-8'))
 
@@ -61,6 +69,10 @@ class DeploymentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'configuration changed'):
             self.activate()
         self.assertFalse(self.root.exists())
+
+    def test_missing_download_manifest_placeholder_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'placeholder missing'):
+            deployment.entry_html(self.html.replace('const TOUHOU_DOWNLOADS = null;', ''), 'fixture', [])
 
     def test_upload_corruption_aborts_before_modifying_site(self):
         self.arguments.sha256 = '0' * 64

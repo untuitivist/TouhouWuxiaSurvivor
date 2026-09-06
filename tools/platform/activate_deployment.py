@@ -32,7 +32,7 @@ def atomic_text(filename, content):
     os.replace(temporary, filename)
 
 
-def entry_html(html, release_id):
+def entry_html(html, release_id, transfers=None):
     prefix = '/TouhouSurvivor/releases/' + release_id + '/'
     match = re.search(r'const GODOT_CONFIG = (\{[^\n]+\});', html)
     if match is None:
@@ -43,6 +43,11 @@ def entry_html(html, release_id):
     configuration['executable'] = prefix + 'index'
     configuration['fileSizes'] = {prefix + name: size for name, size in configuration['fileSizes'].items()}
     html = html[:match.start(1)] + json.dumps(configuration, separators=(',', ':')) + html[match.end(1):]
+    if transfers is not None:
+        marker = 'const TOUHOU_DOWNLOADS = null;'
+        if marker not in html:
+            raise ValueError('Download manifest placeholder missing')
+        html = html.replace(marker, 'const TOUHOU_DOWNLOADS = ' + json.dumps(transfers, separators=(',', ':')) + ';', 1)
     return re.sub(r'((?:src|href)=")(?=index[.])', lambda match: match.group(1) + prefix, html)
 
 
@@ -86,13 +91,18 @@ def activate(arguments):
             if destination.stat().st_size != item['bytes'] or sha256(destination) != item['sha256'].lower():
                 raise ValueError('Artifact checksum mismatch: ' + name)
     prefix = '/TouhouSurvivor/releases/' + arguments.release + '/'
-    html = entry_html((release / 'index.html').read_text(encoding='utf-8'), arguments.release)
     for filename in release.iterdir():
         if filename.suffix not in {'.wasm', '.pck', '.js', '.html', '.txt'}:
             continue
         with filename.open('rb') as source, filename.with_name(filename.name + '.gz').open('wb') as destination:
             with gzip.GzipFile(filename='', mode='wb', compresslevel=9, fileobj=destination, mtime=0) as compressor:
                 shutil.copyfileobj(source, compressor)
+    transfers = [{
+        'url': prefix + item['name'], 'download': prefix + item['name'] + '.gz',
+        'bytes': (release / (item['name'] + '.gz')).stat().st_size,
+        'decodedBytes': item['bytes'], 'compressed': True,
+    } for item in metadata['files'] if item['name'].endswith(('.wasm', '.pck'))]
+    html = entry_html((release / 'index.html').read_text(encoding='utf-8'), arguments.release, transfers)
     candidate = old_main
     if IMPORT.strip() not in old_main:
         opening = 'allinagent.top, www.allinagent.top {'
