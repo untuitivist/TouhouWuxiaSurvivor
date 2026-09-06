@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set "GODOT_EXE=D:\_soft\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe"
+if not defined GODOT_EXE set "GODOT_EXE=D:\_soft\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe"
 set "PROJECT_DIR=%~dp0."
 set "OUTPUT_DIR=%~dp0release"
 
@@ -20,8 +20,19 @@ if not exist "%GODOT_EXE%" (
 )
 
 if not exist "%OUTPUT_DIR%" mkdir "%OUTPUT_DIR%"
-"%GODOT_EXE%" --headless --quiet --path "%PROJECT_DIR%" --export-release "Windows Release" "%OUTPUT_EXE%"
+if exist "%OUTPUT_EXE%" (
+    echo Existing release is preserved: %OUTPUT_EXE%
+    echo Update the project version before exporting another release.
+    exit /b 1
+)
+cd /d "%~dp0"
+if not exist artifacts mkdir artifacts
+set DOTNET_CLI_UI_LANGUAGE=en
+echo Exporting %GAME_VERSION%. Log: artifacts\export-engine.log
+"%GODOT_EXE%" --headless --path . --log-file artifacts\export-engine.log --export-release "Windows Release" "%OUTPUT_EXE%"
 if errorlevel 1 exit /b %errorlevel%
+if not exist "%OUTPUT_EXE%" exit /b 1
 
 echo Release exported: %OUTPUT_EXE%
 endlocal
+exit /b 0
