@@ -1,5 +1,25 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Plan: Clean Rewrite — 2026-09-06
+
+Old sections below are historical. Current product authority: `docs/rebirth_design.md`.
+
+1. [complete] Preserve the old project in Git; confirm only Touhou + wuxia + survivor is immutable.
+2. [in_progress] Design a compact complete game; inspect local Godot, .NET and reusable art.
+3. [pending] Implement independent deterministic combat, progression, encounters and tests in `game/`.
+4. [pending] Implement presentation, menus, audio, persistence and the new entry scene.
+5. [pending] Build, run deterministic tests, verify real Godot rendering and correct regressions.
+6. [pending] Record results, commit every coherent change and deliver a playable local version.
+
+No files are deleted. Legacy implementation stays out of the new compile graph.
+Long validation runs use a CMD log window and wait for completion. Do not export or publish.
+
+### Current Session Errors
+
+- CMD quoted commit messages split unexpectedly in the preceding turn; use ASCII hyphenated messages.
+- Multiline apply_patch through its batch shim lost the final line; invoke the same bundled patch engine directly via PowerShell 7.
+- PowerShell mixed object table formatting hid asset paths; emit paths as strings.
+
 ## Current Goal - 2026-08-17
 
 Optimize the playable game against the canonical documents in `docs/`. Close code-backed gaps in the

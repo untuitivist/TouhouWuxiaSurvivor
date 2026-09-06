@@ -1,5 +1,13 @@
 # Findings and Decisions
 
+## Clean Rewrite — 2026-09-06
+
+- Actual repository is the inner `touhou-wuxia-survivor/` directory; snapshot `d229b36` preserves the former runtime.
+- Local engine reports `4.7.1.stable.mono.official.a13da4feb`; .NET SDK is `8.0.302`.
+- Existing base assets contain Reimu/Marisa sprite strips, generic enemies, scenery and internally sourced audio. Reuse does not grant redistribution rights.
+- New runtime will separate engine-independent simulation from Godot presentation; old runtime and old content-pack system will not be dependencies.
+- Use a finite five-minute encounter rather than open-ended procedural inventory; prioritize readable bullets, responsive movement, meaningful builds and a definite victory condition.
+
 ## Runtime Alignment Outcome - 2026-08-17
 
 - All 21 manifests now carry the strict v1 identity header. Base and TH06 alone declare the first

@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-09-06 — Clean Rewrite
+
+- Saved previous implementation as `d229b36`; intent record committed as `2814b1e`.
+- User authorized redesign of all product details except Touhou + wuxia + survivor.
+- Verified local Godot and .NET executables; selected independent `game/` runtime without deleting legacy files.
+- Design and implementation underway; no new gameplay validation claimed yet.
+
 ## 2026-08-17 - Runtime Alignment Continuation
 
 - Shared endless-pressure projection raised long-run upgrade counts as intended and exposed one stale
