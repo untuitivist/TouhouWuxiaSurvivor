@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Release alpha-0.0.9 — 2026-09-06
+
+1. [complete] Promote settings/pixel UI/F3 changes into release notes and align runtime/PE/export metadata.
+2. [complete] Source regressions passed; exported a new standalone EXE without overwriting history.
+3. [complete] Twenty isolated EXE checks passed including settings/F3; inspected captures, recorded hash and prepared final local release commit without push.
+
 ## Active Pixel UI And Debug Overlay — 2026-09-06
 
 1. [complete] Audit current UI and attempt reference access; document unreliable web/Steam access and do not claim an exact visual match.

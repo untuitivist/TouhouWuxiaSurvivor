@@ -205,7 +205,9 @@ public partial class GameRoot
         var versions = Descendants(screen!).OfType<OptionButton>().Single();
         Require(versions.ItemCount >= 9, "Historical releases are individually selectable");
         versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 2);
-        Require(history.GetParsedText().Contains("完整设置回归"), "Daily changes remain separately accessible without changing release version");
+        Require(history.GetParsedText().Contains("未发布"), "Unreleased bucket remains separately accessible after release promotion");
+        versions.EmitSignal(OptionButton.SignalName.ItemSelected, 0);
+        Require(history.GetParsedText().Contains("完整设置回归") && history.GetParsedText().Contains("F3"), "Current release includes promoted settings and debug notes");
         versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 1);
         Require(history.GetParsedText().Contains("alpha-0.0.0") && history.GetParsedText().Contains("alpha-0.0.5"), "Embedded complete history remains accessible");
         PressKey(Key.Escape);

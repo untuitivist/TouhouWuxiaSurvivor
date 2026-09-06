@@ -66,3 +66,9 @@ alpha-0.0.8 后续增量：改为每人三条专属能力与四类公共修习�
 - 新规则：`game/core/RunState.cs`、`game/core/RunEncounters.cs`、`game/core/RunProgression.cs`、`game/core/RunWeapons.cs`、`game/core/ArtCatalog.cs`。
 - 新界面与存档：`game/presentation/GameRoot.cs`、`game/presentation/MenuScreens.cs`、`game/presentation/RunScreens.cs`、`game/presentation/ProfileStore.cs`。
 - 编译与交付边界：`TouhouWuxiaSurvivor.csproj`、`export_presets.cfg`、`docs/rebirth_validation.md`。
+## alpha-0.0.9 增量
+
+- 新增：完整视频设置、十三项双槽键位、15 秒画面确认回退、每页默认恢复、只读 F3 诊断。
+- 改变：菜单改为暖色像素皮肤与像素夜景，HUD 边框统一；无边框模式保留任务栏，F11 经预览确认后保存；按键提示随绑定变化。
+- 不变：alpha-0.0.8 的两位角色能力、数值、地图与终局流程；已有重写版成绩和偏好保留。
+- 未补回：完整地图/图鉴/无尽/永久成长/Web；不自动导入重写前 settings.json，不新增作弊命令。没有删减旧 EXE 或已发行日志。

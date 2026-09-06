@@ -997,3 +997,10 @@
 - Worktree initially clean at eea0d48. Current UI uses flat dark panels, thin outlines and system fonts. Old deterministic UI generator remains available, but new runtime does not use its theme.
 - UI layer and combat rendering share Palette values; a warm menu skin must not accidentally reduce enemy/bullet/HUD contrast by globally replacing combat colors.
 - Public web search/open calls returned empty payloads; retrieving official Steam app metadata for reference links, without inventing image observations.
+## Release alpha-0.0.9 — 2026-09-06
+
+- Export verified: 192,542,872 bytes, 0.0.9.0 PE version, embedded .NET 8.0.6; twenty isolated checks pass, including release-only F3 N/A handling and real display rollback. Export title and diagnostic screenshots inspected. All ten historical/current EXEs retained; aggregate release changelog matches source.
+
+- Clean baseline 7fa2a23; latest local release is alpha-0.0.8 and no alpha-0.0.9 EXE exists. Release includes daily settings + pixel UI + F3 commits without new gameplay scope.
+- Export presets have both release/debug paths and PE fields pinned to 0.0.8; update both consistently. Existing standalone verifier covers combat but lacks the new video/control/F3 captures, so extend this release's checks.
+- Changelog UI test currently assumes unreleased section contains settings; release promotion must preserve an empty unreleased bucket and test release content separately.

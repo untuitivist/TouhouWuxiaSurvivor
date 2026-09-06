@@ -55,12 +55,15 @@ function Invoke-ReleaseCheck([string]$Name, [string[]]$GameArguments, [string]$E
 }
 
 Invoke-ReleaseCheck 'standalone-smoke' @('--headless', '--', '--rebirth-smoke') 'REBIRTH_UI_SMOKE_PASS'
+Invoke-ReleaseCheck 'standalone-display' @('--audio-driver', 'Dummy', '--', '--rebirth-video-smoke') 'REBIRTH_DISPLAY_PASS'
 Invoke-ReleaseCheck 'standalone-title' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=title', "--rebirth-capture=$(Join-Path $logs 'title.png')") 'REBIRTH_CAPTURE_PASS'
 Invoke-ReleaseCheck 'standalone-boss' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=boss', "--rebirth-capture=$(Join-Path $logs 'boss.png')") 'REBIRTH_CAPTURE_PASS'
-$screens = @('build', 'settings', 'changelog', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'marisa-build', 'marisa-choices')
+$screens = @('build', 'settings', 'settings-video', 'settings-controls', 'settings-confirm', 'debug-title', 'debug-combat', 'changelog', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'marisa-build', 'marisa-choices')
 foreach ($screen in $screens) {
     Invoke-ReleaseCheck "standalone-$screen" @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', "--rebirth-screen=$screen", "--rebirth-capture=$(Join-Path $logs "$screen.png")") 'REBIRTH_CAPTURE_PASS'
 }
+Invoke-ReleaseCheck 'standalone-controls-small' @('--resolution', '640x360', '--audio-driver', 'Dummy', '--', '--rebirth-screen=settings-controls', "--rebirth-capture=$(Join-Path $logs 'controls-small.png')") 'REBIRTH_CAPTURE_PASS'
+if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must still contain only the EXE after all checks.' }
 $checksum = (Get-FileHash -LiteralPath $source.FullName -Algorithm SHA256).Hash
 $report = [ordered]@{
     version = $version
@@ -71,7 +74,7 @@ $report = [ordered]@{
     isolated_directory = $isolated
     isolated_files = @(Get-ChildItem -LiteralPath $isolated -Force | ForEach-Object { $_.Name })
     embedded_runtime = $configuration.runtimeOptions.includedFrameworks
-    checks = @('standalone-smoke', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" })
+    checks = @('standalone-smoke', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small')
 }
 [System.IO.File]::WriteAllText((Join-Path $logs 'report.json'), ($report | ConvertTo-Json -Depth 5), $encoding)
 Write-Output "SINGLE_EXE_VALIDATION_PASS version=$version bytes=$($source.Length) sha256=$checksum"

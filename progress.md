@@ -747,3 +747,10 @@
 - First pixel/F3 runtime verification passed core and UI tests, plus full captures. Visual review found a divider crossing upgrade text (fixed) and hard-aliased Chinese too rough at 640x360; kept pixel titles/frames but restored gray-antialiased body text. Build caught the guessed Grayscale enum name; verified installed GodotSharp XML uses FontAntialiasing.Gray and corrected it.
 
 - Started reference and runtime audit. Scope extended by user to F3 diagnostics inspired by Minecraft. Daily commit only; preserve current version and exported artifacts.
+## Release alpha-0.0.9 — 2026-09-06
+
+- Delivery finished: alpha-0.0.9 EXE exported and twenty isolated checks passed. Recorded SHA-256 E21BFEDEC06B3DD1F2E730A97776C5B14BF609F7361FC73D4854509C42043AE8 and exact byte count in validation notes; copied complete CHANGELOG to release directory; visually inspected exported title and F3. No deletion/overwrite of old EXEs, no push. Final local release commit ready.
+
+- Release metadata aligned and daily notes promoted into alpha-0.0.9, leaving an empty unreleased bucket. Source core 26/26 and full UI/settings/F3/profile regressions passed; export in progress. Confirmed alpha-0.0.8 and older log text unchanged and prior EXE hash unchanged.
+
+- Started release preparation from a clean worktree. Preserve nine existing EXEs and all released log entries; no push or deletion authorized.

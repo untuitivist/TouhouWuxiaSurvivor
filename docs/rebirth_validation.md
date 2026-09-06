@@ -1,6 +1,17 @@
 # Rebirth validation — 2026-09-06
 
-## Unreleased pixel UI and F3 diagnostics
+## Exported delivery: alpha-0.0.9
+
+- Contains complete settings, original pixel UI and rebindable F3 diagnostics from daily commits eea0d48 and 7fa2a23. Runtime/export/Windows metadata aligned; prerelease notes promoted into alpha-0.0.9, with an empty unreleased bucket retained for future work.
+- EXE: release/TouhouWuxiaSurvivor_alpha-0.0.9.exe; 192,542,872 bytes (183.62 MiB); file/product version 0.0.9.0; embedded PCK and self-contained Microsoft.NETCore.App 8.0.6.
+- SHA-256: `E21BFEDEC06B3DD1F2E730A97776C5B14BF609F7361FC73D4854509C42043AE8`.
+- Source validation: Debug build 0 warnings/errors; 26/26 core regressions; UI/settings/F3/profile checks and six existing character balance journeys pass. Log: artifacts/alpha-0.0.9-verify.log. No combat rebalance in this release.
+- Export succeeded with no ERROR lines in export log. Isolated single EXE launched with restricted PATH, nonexistent DOTNET_ROOT/DOTNET_ROOT_X64 and multilevel lookup disabled. Twenty checks pass: full smoke, real window modes/rollback, title/boss/build, audio/video/controls/confirmation, F3 menu/combat, changelog, both heroes' spell scenes and small controls at 640x360. Directory contains only the EXE before and after checks.
+- Visually inspected exported title and F3 combat capture. F3 correctly reports debug-only Godot static memory as N/A in the release engine. Captures use controlled/fast-forward scenes and include startup effects in FPS readings; they are not natural-play performance benchmarks or human audio tests.
+- Evidence: artifacts/alpha-0.0.9-export.log, artifacts/alpha-0.0.9-standalone.log and artifacts/alpha-0.0.9-export-validation/report.json. This is same-machine isolation, not clean-Windows-VM certification.
+- release/CHANGELOG.md matches the repository's complete changelog. Alpha-0.0.8 and older released log entries are unchanged; all ten formal EXEs remain on disk. Previous alpha-0.0.8 SHA-256 remains `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`. No files deleted and no push performed.
+
+## Pre-release pixel UI and F3 diagnostics (included in alpha-0.0.9)
 
 - Original runtime-generated PixelSkin / PixelTheme frames and icons, cached 320x180 PixelLandscape title art, warm paper menus and dark battle HUD. No reference-game asset downloads or copied UI textures. Requested Mystia/Minecraft direction was used as inspiration; web responses and Steam screenshot access were unreliable, so this is not represented as a verified screenshot-by-screenshot match.
 - Debug build: 0 warnings/errors; core 26/26 and previous settings/profile/navigation tests pass. New PIXEL_DEBUG_PASS checks pixel styles for all five button states, nearest texture filtering, safe title display, truthful seed/XY data, unchanged simulation and inspection state, hidden refresh suppression, capture conflicts, rebinding, and old custom F3 bindings retaining ownership when the new action is added.
@@ -9,7 +20,7 @@
 - F3 samples text at 4 Hz and actual visible-frame intervals into a 120-frame history. Hidden overlay stops sampling/formatting; reopening resets history. It does not pause, mutate combat or capture mouse input. Godot static memory and .NET managed heap are not process total; release engines show N/A for debug-only static memory. Controlled fast-forward screenshots include startup costs in FPS/timings and must not be treated as live-game performance benchmarks.
 - No core combat changes, release bump, export or push. Released changelog entries remain identical and alpha-0.0.8 EXE still hashes to `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`.
 
-## Unreleased settings restoration
+## Pre-release settings restoration (included in alpha-0.0.9)
 
 - No release bump/export/push. project.godot remains alpha-0.0.8; the existing EXE retains SHA-256 `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`. The entire released changelog tail from alpha-0.0.8 through older releases matches HEAD before this work; new entries live under Unreleased.
 - `tools/rebirth/verify.cmd`: Debug build 0 warnings/errors; 26/26 core regressions; six unchanged balance journeys; expanded UI smoke passes settings and existing navigation/choice/history/profile checks. Logs: artifacts/settings-verify.log. Deliberately corrupt JSON still produces the expected warning without overwriting its original file.

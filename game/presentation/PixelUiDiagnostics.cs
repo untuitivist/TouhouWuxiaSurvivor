@@ -21,6 +21,7 @@ public partial class GameRoot
         Require(!debugOverlay.Visible && debugOverlay.RefreshCount == count, "Hidden debug overlay does not rebuild text");
         PressKey(Key.F3);
         Require(debugOverlay.Visible && debugOverlay.Summary.Contains("尚未开始"), "F3 opens safely in title without a run");
+        if (!OS.IsDebugBuild()) Require(debugOverlay.Summary.Contains("N/A（发行引擎不提供）"), "Release F3 does not invent debug-only memory metrics");
         PressKey(Key.F3);
         StartRun(Rebirth.Core.HeroKind.Reimu, 197);
         var ticks = run!.Ticks;
