@@ -80,7 +80,7 @@ public partial class GameCanvas : Node2D
     private Vector2 CameraTarget()
     {
         if (Run == null) return Vector2.Zero;
-        return Palette.Vector(Run.PlayerPosition).Clamp(new(-RunState.ArenaHalfWidth + 640, -RunState.ArenaHalfHeight + 282), new(RunState.ArenaHalfWidth - 640, RunState.ArenaHalfHeight - 282));
+        return Palette.Vector(Run.PlayerPosition).Clamp(new Vector2(-RunState.ArenaHalfWidth + 640, -RunState.ArenaHalfHeight + 282), new Vector2(RunState.ArenaHalfWidth - 640, RunState.ArenaHalfHeight - 282));
     }
 
     private void Text(string text, Vector2 position, int size, Color color, Font? font = null)

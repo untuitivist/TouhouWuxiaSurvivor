@@ -16,6 +16,8 @@ Long validation runs use a CMD log window and wait for completion. Do not export
 
 ### Current Session Errors
 
+- Camera clamp introduced an ambiguous Godot Vector2 overload with target-typed `new`; use explicit `new Vector2` arguments. This validation stopped at build, so prior core/UI logs were stale and not new evidence.
+
 - CMD quoted commit messages split unexpectedly in the preceding turn; use ASCII hyphenated messages.
 - Multiline apply_patch through its batch shim lost the final line; invoke the same bundled patch engine directly via PowerShell 7.
 - PowerShell mixed object table formatting hid asset paths; emit paths as strings.

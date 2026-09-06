@@ -75,7 +75,7 @@ public partial class GameCanvas
         var direction = Palette.Vector(nearest.Position - Run.PlayerPosition);
         if (direction.Length() < 140) return;
         var arrow = new Vector2(640, 370) + Palette.Vector(Run.PlayerPosition) - camera + direction.Normalized() * 160;
-        arrow = arrow.Clamp(new(275, 193), new(1070, 580));
+        arrow = arrow.Clamp(new Vector2(275, 193), new Vector2(1070, 580));
         var heading = direction.Normalized();
         DrawColoredPolygon([arrow + heading * 11, arrow - heading * 5 + heading.Orthogonal() * 6, arrow - heading * 5 - heading.Orthogonal() * 6], Palette.Gold);
         CenterText(nearest.Name, arrow + new Vector2(0, 27), 14, Palette.Gold);
