@@ -2,6 +2,9 @@
 
 ## Clean Rewrite — 2026-09-06
 
+- Real OpenGL captures succeed for all nine screens. First visual inspection: title hierarchy is readable; battle camera at the arena edge exposes excessive empty out-of-bounds space. Clamp the camera to the visible playfield independently of player movement.
+- The initial circle-walking capture underlevels because it ignores objectives and leaves experience behind. Replace preview movement with the same goal-seeking behavior used by the unassisted balance probe; do not confuse screenshot preparation with a human playtest.
+
 - New project builds with zero warnings/errors; 15/15 pure simulation tests and headless UI smoke pass.
 - Existing player and generic-enemy strips are four square frames (192 x 48); rendering derives frame size from texture height.
 - Initial six unassisted automated runs win around 246–249 seconds, leaving too little time for the Boss patterns. Increase the final encounter's durability, then remeasure rather than claiming the first balance is finished.
