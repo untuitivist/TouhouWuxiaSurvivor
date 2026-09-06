@@ -4,8 +4,8 @@
 
 1. [complete] Inspect input, UI, profile and diagnostic seams; retain useful habits rather than legacy architecture.
 2. [complete] Implement consistent pause/back navigation, character/build inspection, volume controls and embedded historical changelog.
-3. [in_progress] Extend regression/smoke coverage, verify actual rendering and preserve historical changelog text.
-4. [pending] Export and isolate-test a new self-contained EXE; commit all source/document changes without replacing previous releases.
+3. [complete] Extend regression/smoke coverage, verify actual rendering and preserve historical changelog text.
+4. [in_progress] Export and isolate-test a new self-contained EXE; commit all source/document changes without replacing previous releases.
 
 Scope excludes infinite maps, content inventory migration, permanent stat progression and Web migration. New combat mechanics remain experimental, not endorsed by this usability iteration.
 
