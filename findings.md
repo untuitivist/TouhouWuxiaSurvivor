@@ -2,6 +2,9 @@
 
 ## Clean Rewrite — 2026-09-06
 
+- Second screenshots verify upgrade descriptions now wrap within each card, and the real 04:15 Boss scene shows readable radial/fan bullets, player hitbox and complete HUD.
+- Rebalanced unassisted runs finish at 263.7–279.8 seconds (six seeds/hero combinations), giving approximately 24–40 seconds of Boss combat. Regression and UI suites remain green.
+
 - Upgrade-card screenshot caught text crossing card edges despite whole-viewport assertions. Root cause: Label size was assigned before text wrapping and theme minimum-size updates. Reapply intended bounds after parenting and add parent-panel containment assertions.
 - Increase Boss health from 6,200 to 26,000 to allow phase transitions and multiple volleys; reuse one diagnostic pilot for balance reports and realistic captures.
 

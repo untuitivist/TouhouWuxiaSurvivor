@@ -125,12 +125,34 @@ public partial class GameRoot
         RefreshRunScreen();
         Require(currentScreen == "result" && run.Phase == RunPhase.Won, "Boss defeat opens victory");
         AssertUiBounds();
+        TestProfilePersistence(run);
         PressButton("再行一局");
         Require(run!.Kills == 0 && run.Time == 0 && run.Health == run.MaxHealth, "Replay creates clean state");
         ShowTitle();
         ShowHelp();
         AssertUiBounds();
         GD.Print("UI: title, heroes, start, dash, pause, settings, queued upgrades, victory, replay, help, viewport bounds");
+    }
+
+    private static void TestProfilePersistence(RunState victory)
+    {
+        var directory = ProjectSettings.GlobalizePath($"res://artifacts/profile-tests/{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, "profile.json");
+        var store = new ProfileStore(path);
+        store.Data.MusicEnabled = false;
+        store.Record(victory);
+        var restored = new ProfileStore(path);
+        Require(restored.Data.Victories == 1 && restored.Data.CompletedRuns == 1 && !restored.Data.MusicEnabled, "Profile round trip");
+        var bytes = System.IO.File.ReadAllBytes(path);
+        Require(bytes.Length > 3 && !(bytes[0] == 239 && bytes[1] == 187 && bytes[2] == 191), "Profile UTF-8 without BOM");
+        var corruptPath = Path.Combine(directory, "corrupt.json");
+        System.IO.File.WriteAllText(corruptPath, "{broken", new System.Text.UTF8Encoding(false));
+        var corrupt = new ProfileStore(corruptPath);
+        Require(corrupt.Warning.Length > 0, "Corrupt profile falls back with warning");
+        corrupt.Save();
+        Require(System.IO.File.ReadAllText(corruptPath, System.Text.Encoding.UTF8) == "{broken", "Corrupt original remains intact");
+        GD.Print("PROFILE_PASS: round trip, preferences, victory count, UTF-8, malformed-file preservation");
     }
 
     private void PressButton(string text)

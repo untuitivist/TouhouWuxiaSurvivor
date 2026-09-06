@@ -6,15 +6,19 @@ using Rebirth.Diagnostics;
 var tests = new (string Name, Action Body)[]
 {
     ("hero identities and initial weapons", HeroIdentity),
+    ("focus movement preserves precise control", FocusMovement),
     ("normalized movement and finite arena", Movement),
     ("pause freezes the complete simulation", Pause),
     ("queued upgrades freeze and resolve once", Choices),
     ("upgrade ranks cap and recover safely", UpgradeCaps),
     ("dash invulnerability and cooldown", Dash),
     ("each bullet grants graze only once", Graze),
+    ("full qi clears bullets and attracts experience", QiBurst),
     ("swept collision catches fast projectiles", SweptCollision),
     ("seal retains progress and rewards once", SealReward),
     ("enemy death rewards exactly once", DeathReward),
+    ("piercing projectile cannot repeatedly hit one target", Piercing),
+    ("lightning chain visits distinct targets", Lightning),
     ("boss defeat yields victory and freezes time", Victory),
     ("player death cannot turn into victory", Defeat),
     ("same seed and input reproduce state", Determinism),
@@ -59,6 +63,48 @@ static void Movement()
     Near(run.PlayerPosition.Length(), run.MoveSpeed * RunState.StepSeconds);
     for (var index = 0; index < 1600; index++) { Resolve(run); run.Enemies.Clear(); run.Step(new(new(1, 1))); }
     Check(run.PlayerPosition.X < RunState.ArenaHalfWidth && run.PlayerPosition.Y < RunState.ArenaHalfHeight, "Arena clamp");
+}
+
+static void FocusMovement()
+{
+    var run = NewRun();
+    run.Step(new(Vector2.UnitX, true));
+    Near(run.PlayerPosition.X, run.MoveSpeed * 0.48f * RunState.StepSeconds);
+}
+
+static void QiBurst()
+{
+    var run = NewRun();
+    for (var index = 0; index < 20; index++)
+        run.Projectiles.Add(new() { Position = Geometry.Angle(index * MathF.Tau / 20) * 25, Hostile = true, Radius = 5, Life = 2 });
+    run.Pickups.Add(new() { Position = new(500, 0), Value = 4 });
+    var enemy = run.SpawnEnemy(EnemyKind.Elite, new(350, 0));
+    var health = enemy.Health;
+    run.Step(default);
+    Check(run.Bursts == 1 && run.Qi == 0 && run.Invulnerability > 0, "Burst state");
+    Check(run.Projectiles.All(projectile => !projectile.Hostile) && run.Pickups.All(pickup => pickup.Attracted), "Bullet clear and magnet");
+    Check(enemy.Health < health, "Burst deals damage");
+}
+
+static void Piercing()
+{
+    var run = NewRun(HeroKind.Marisa);
+    Array.Clear(run.Ranks);
+    var enemy = run.SpawnEnemy(EnemyKind.Elite, new(120, 0));
+    var health = enemy.Health;
+    run.Projectiles.Add(new() { Position = enemy.Position, Damage = 7, Radius = 40, Pierce = 5, Life = 0.15f });
+    for (var index = 0; index < 8; index++) run.Step(default);
+    Near(enemy.Health, health - 7);
+}
+
+static void Lightning()
+{
+    var run = NewRun(HeroKind.Marisa);
+    run.Ranks[(int)ArtKind.Lightning] = 5;
+    for (var index = 0; index < 9; index++) run.SpawnEnemy(EnemyKind.Elite, new(180 + index * 15, 70));
+    run.Step(default);
+    var lightning = run.Events.Where(entry => entry.Kind == EffectKind.Lightning).ToArray();
+    Check(lightning.Length == 9 && lightning.Select(entry => entry.Target).Distinct().Count() == 9, "Nine distinct chain targets");
 }
 
 static void Pause()
