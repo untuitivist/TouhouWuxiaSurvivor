@@ -4,8 +4,13 @@ using Rebirth.Core;
 using Rebirth.Diagnostics;
 using Rebirth.Tests;
 
+if (args.Contains("--performance")) return PerformanceBenchmarks.Run(args);
+
 var tests = new (string Name, Action Body)[]
 {
+    ("dense component lifecycle preserves order and state", EcsTests.Storage),
+    ("inline hit history retains overflow and duplicate safety", EcsTests.History),
+    ("spatial identity lookup and allocation-free queries", EcsTests.Queries),
     ("hero identities and initial weapons", HeroIdentity),
     ("upgrade descriptions match shared ability tuning", HeroTests.UpgradeDescriptions),
     ("character-owned upgrade pools and validation", HeroTests.Ownership),

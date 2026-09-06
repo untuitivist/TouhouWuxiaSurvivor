@@ -10,11 +10,11 @@ config_version=5
 
 [application]
 
-config/name="幻想乡 · 剑雨异闻"
+config/name="幻想乡 · 夜境异闻"
 config/version="alpha-0.0.9"
 run/main_scene="res://game/Main.tscn"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
-config/icon="res://assets/branding/icon.png"
+config/icon="res://assets/branding/night_journal.png"
 
 [display]
 
@@ -25,7 +25,6 @@ window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/size/min_width=640
 window/size/min_height=360
-window/stretch/aspect="keep"
 
 [dotnet]
 
@@ -83,8 +82,6 @@ pause_menu={
 [physics]
 
 3d/physics_engine="Jolt Physics"
-common/physics_ticks_per_second=60
-common/physics_interpolation=false
 
 [rendering]
 

@@ -11,9 +11,10 @@ public sealed partial class RunState
     public const int EnemyLimit = 320;
     public const int ProjectileLimit = 1600;
     public const int PickupLimit = 700;
-    public readonly List<Enemy> Enemies = [];
-    public readonly List<Projectile> Projectiles = [];
-    public readonly List<Pickup> Pickups = [];
+    public CombatWorld World { get; } = new();
+    public ComponentStore<Enemy> Enemies => World.Enemies;
+    public ComponentStore<Projectile> Projectiles => World.Projectiles;
+    public ComponentStore<Pickup> Pickups => World.Pickups;
     public readonly List<CombatEvent> Events = [];
     public readonly List<ArtKind> Choices = [];
     public readonly int[] Ranks = new int[ArtCatalog.All.Length];
@@ -59,7 +60,7 @@ public sealed partial class RunState
     public float OrbitAngle => Time * 2.9f;
     public float OrbitRadius => Ranks[(int)ArtKind.YinYang] >= 5 ? 115 : 85;
     private readonly Random random;
-    private readonly EnemyGrid grid = new();
+    private EnemyGrid grid => World.Grid;
     private int nextEnemyId;
     private float spawnTimer = 0.4f;
     private float nextElite = 55;
@@ -93,10 +94,10 @@ public sealed partial class RunState
         SpellFlash = Math.Max(0, SpellFlash - StepSeconds);
         MovePlayer(input);
         UpdateEncounters();
-        UpdateEnemies();
+        EnemySystem.Step(this);
         grid.Rebuild(Enemies);
         UpdateWeapons();
-        UpdateProjectiles();
+        ProjectileSystem.Step(this);
         if (Phase == RunPhase.Won) Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Phase == RunPhase.Playing) UpdatePickupsAndSeals();
         Enemies.RemoveAll(enemy => enemy.Health <= 0);
@@ -127,7 +128,7 @@ public sealed partial class RunState
         else if (Phase == RunPhase.Paused) Phase = RunPhase.Playing;
     }
 
-    private void Hurt(float damage)
+    internal void Hurt(float damage)
     {
         if (Invulnerability > 0 || Phase != RunPhase.Playing) return;
         Health = Math.Max(0, Health - damage);
@@ -139,5 +140,5 @@ public sealed partial class RunState
     private void Heal(float amount) => Health = Math.Min(MaxHealth, Health + amount);
     private void Emit(EffectKind kind, Vector2 position, float value = 0) => Events.Add(new(kind, position, position, value));
     private float RandomFloat() => (float)random.NextDouble();
-    private static Vector2 ClampToArena(Vector2 position) => Vector2.Clamp(position, new(-ArenaHalfWidth + 28, -ArenaHalfHeight + 28), new(ArenaHalfWidth - 28, ArenaHalfHeight - 28));
+    internal static Vector2 ClampToArena(Vector2 position) => Vector2.Clamp(position, new(-ArenaHalfWidth + 28, -ArenaHalfHeight + 28), new(ArenaHalfWidth - 28, ArenaHalfHeight - 28));
 }

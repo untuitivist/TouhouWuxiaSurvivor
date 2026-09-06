@@ -5,6 +5,7 @@ namespace Rebirth.Presentation;
 
 public partial class DebugOverlay : Control
 {
+    public GameCanvas? Canvas;
     public Font BodyFont = null!;
     public RunState? Run;
     public string ScreenName = "title";
@@ -76,6 +77,7 @@ public partial class DebugOverlay : Control
             $"Draw calls: {Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame):0}   Objects: {Performance.GetMonitor(Performance.Monitor.ObjectCount):0}",
             $"Godot 静态内存: {(OS.IsDebugBuild() ? $"{Performance.GetMonitor(Performance.Monitor.MemoryStatic) / 1048576:0.0} MiB" : "N/A（发行引擎不提供）")}",
             $".NET 托管堆: {GC.GetTotalMemory(false) / 1048576.0:0.0} MiB",
+            $"Batch: {Canvas?.VisibleBatchInstances ?? 0}   Upload CPU: {Canvas?.BatchBuildMilliseconds ?? 0:0.00} ms   Target: {GetViewport().GetTexture().GetSize()}",
             "内存值不是进程总占用；主循环耗时不是 GPU 耗时。"
         ];
     }

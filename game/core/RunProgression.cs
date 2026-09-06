@@ -53,23 +53,7 @@ public sealed partial class RunState
 
     private void UpdatePickupsAndSeals()
     {
-        for (var index = Pickups.Count - 1; index >= 0; index--)
-        {
-            var pickup = Pickups[index];
-            var distance = Vector2.DistanceSquared(pickup.Position, PlayerPosition);
-            if (distance < PickupRadius * PickupRadius) pickup.Attracted = true;
-            if (pickup.Attracted)
-            {
-                var offset = PlayerPosition - pickup.Position;
-                pickup.Position += Geometry.Direction(offset) * Math.Min(offset.Length(), 540 * StepSeconds);
-                if (Vector2.DistanceSquared(pickup.Position, PlayerPosition) < 20 * 20)
-                {
-                    if (pickup.Healing) Heal(pickup.Value);
-                    else AddExperience(pickup.Value);
-                    Pickups.RemoveAt(index);
-                }
-            }
-        }
+        PickupSystem.Step(this);
         foreach (var seal in Seals)
         {
             if (seal.Complete || Vector2.DistanceSquared(seal.Position, PlayerPosition) > 90 * 90) continue;
@@ -79,17 +63,23 @@ public sealed partial class RunState
             Heal(35);
             PendingChoices++;
             SpellCharge = Math.Min(100, SpellCharge + 35);
-            foreach (var pickup in Pickups) pickup.Attracted = true;
+            foreach (ref var pickup in Pickups.Active) pickup.Attracted = true;
             Emit(EffectKind.Seal, seal.Position);
         }
+    }
+
+    internal void CollectPickup(Pickup pickup)
+    {
+        if (pickup.Healing) Heal(pickup.Value);
+        else AddExperience(pickup.Value);
     }
 
     private void DropPickup(Vector2 position, int value, bool healing = false)
     {
         if (Pickups.Count >= PickupLimit)
         {
-            var existing = Pickups.Find(pickup => pickup.Healing == healing);
-            if (existing != null) { existing.Value += value; return; }
+            var existing = Pickups.FindIndex(pickup => pickup.Healing == healing);
+            if (existing >= 0) { Pickups[existing].Value += value; return; }
             if (!healing) { AddExperience(value); return; }
             Heal(value);
             return;
@@ -97,7 +87,7 @@ public sealed partial class RunState
         Pickups.Add(new() { Position = position, Value = value, Healing = healing });
     }
 
-    private void DamageEnemy(Enemy enemy, float damage, Vector2 knockback)
+    internal void DamageEnemy(Enemy enemy, float damage, Vector2 knockback)
     {
         if (enemy.Health <= 0) return;
         enemy.Health -= damage;
@@ -126,7 +116,7 @@ public sealed partial class RunState
         Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Hero == HeroKind.Reimu) CastDreamSeal();
         else StartBeam(true);
-        foreach (var pickup in Pickups) pickup.Attracted = true;
+        foreach (ref var pickup in Pickups.Active) pickup.Attracted = true;
         Emit(EffectKind.Spell, PlayerPosition);
     }
 }

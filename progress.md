@@ -1,5 +1,13 @@
 # Progress Log
 
+## Mobile Performance, Hybrid Runtime And Original Assets
+
+- Replaced active object-list combat updates with dense component stores and dedicated enemy/projectile/pickup systems; retained OOP presentation/menus/encounters and stable seeded update order. Legacy `src` ECS was not compiled into the rewritten game.
+- Added retained drawing layers, bulk MultiMesh sprite/terrain batches, render-only culling, fixed Web render resolution and F3 batch telemetry. Equal desktop render fixtures improve from 6971 to 806 draw calls and from 58.67 to 5.03 ms mean frame interval. High-pressure simulation allocation drops from 122508 to 158 bytes per tick. These are not phone FPS claims.
+- Added original-pack TH10 combat/grass assets with source/output hashes, changed project/Windows export icons, preserved the old icon and formal EXE, and extended the existing unreleased changelog without rewriting history.
+- Validation: 29 core tests, deterministic journey comparisons, desktop UI/settings/profile/F3/render-cache smoke, five rendered fixtures and final six Web loading scenarios pass. Final shared Web build is `artifacts/web-builds/20260907-024930-329`.
+- Open acceptance issue: strict Web gameplay/performance suites still capture intermittent full-body `index.pck net::ERR_ABORTED`. A no-game streamed-response probe reproduces it with matching bytes/SHA-256; native arrayBuffer comparison passed 16 attempts. Failed workaround hypotheses were reverted, production loader remains unchanged and request-error assertions are not weakened. Physical phone/tablet validation and this Web gate remain open; this is a daily development handoff, not a release.
+
 ## Web Loading Experience
 
 - Implemented a responsive loading card with exact core-resource totals, received bytes, rolling reception speed, percentage and ETA. Explicit gzip bodies are counted before streaming decompression; unsupported browsers clearly use decoded-resource accounting instead. Network silence does not manufacture progress, and initialization remains a separate phase.

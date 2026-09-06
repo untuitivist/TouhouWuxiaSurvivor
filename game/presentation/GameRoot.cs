@@ -24,6 +24,7 @@ public partial class GameRoot : Node
     public override void _Ready()
     {
         DisplayServer.WindowSetTitle("幻想乡 · 夜境异闻");
+        if (GamePlatform.IsWeb) GetWindow().ContentScaleMode = Window.ContentScaleModeEnum.Viewport;
         var (body, title) = GameFonts.Load();
         canvas.BodyFont = body;
         canvas.TitleFont = title;
@@ -57,7 +58,7 @@ public partial class GameRoot : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        if (diagnosticMode || webPilot) return;
+        if (diagnosticMode || webPilot || webPerformance) return;
         if (run == null) return;
         canvas.Focused = Input.IsActionPressed(GameControls.Focus) || touchHud.FocusHeld;
         if (run.Phase == RunPhase.Playing)

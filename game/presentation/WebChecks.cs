@@ -10,6 +10,7 @@ public partial class GameRoot
 {
     private bool webChecks;
     private bool webPilot;
+    private bool webPerformance;
     private double webCheckSeconds;
 
     private ProfileStore CreateProfile(string[] arguments)
@@ -26,11 +27,13 @@ public partial class GameRoot
         if (!webChecks) return;
         webPilot = arguments.Contains("--web-pilot");
         var fixture = arguments.FirstOrDefault(argument => argument.StartsWith("--web-fixture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
+        webPerformance = fixture == "performance";
         if (webPilot || fixture.Length > 0)
         {
             StartRun(arguments.Contains("--web-marisa") ? HeroKind.Marisa : HeroKind.Reimu, 42);
             if (fixture == "choices") { run!.AddExperience(30); run.Step(default); RefreshRunScreen(); }
             if (fixture == "boss") { run!.SpawnEnemy(EnemyKind.Boss, new(350, 0)); RefreshRunScreen(); }
+            if (webPerformance) PreparePerformancePreview();
         }
         GD.Print("SHARED_WEB_CHECKS_READY");
     }
@@ -54,6 +57,9 @@ public partial class GameRoot
         webCheckSeconds = 0;
         var state = new WebCheckState
         {
+            RenderWidth = (int)GetViewport().GetTexture().GetSize().X, RenderHeight = (int)GetViewport().GetTexture().GetSize().Y,
+            Fps = Engine.GetFramesPerSecond(), DrawCalls = Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame),
+            BatchMilliseconds = canvas.BatchBuildMilliseconds, BatchInstances = canvas.VisibleBatchInstances,
             Screen = currentScreen, Hero = run?.Hero.ToString() ?? "", Phase = run?.Phase.ToString() ?? "",
             Tick = run?.Ticks ?? 0, Time = run?.Time ?? 0, X = run?.PlayerPosition.X ?? 0, Y = run?.PlayerPosition.Y ?? 0,
             Focused = run?.Focused ?? false, DashCooldown = run?.DashCooldown ?? 0, MoveX = touchHud.Movement.X, MoveY = touchHud.Movement.Y,

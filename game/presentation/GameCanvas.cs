@@ -14,6 +14,7 @@ public partial class GameCanvas : Node2D
     private Vector2 camera;
     private float shake;
     private readonly Dictionary<string, Texture2D> textures = [];
+    private readonly Dictionary<string, (int Size, int Frames)> spriteFrames = [];
     private Texture2D titleLandscape = null!;
     private readonly List<VisualEvent> effects = [];
     private const string BaseArt = "res://assets/internal_original/base/";
@@ -26,6 +27,8 @@ public partial class GameCanvas : Node2D
             textures[name] = GD.Load<Texture2D>($"{BaseArt}{name}.png");
         textures["grass"] = GD.Load<Texture2D>("res://assets/world/tiles/hakurei_shrine/shrine_grass_base.png");
         textures["path"] = GD.Load<Texture2D>("res://assets/world/tiles/common/stone_base.png");
+        foreach (var entry in textures) spriteFrames[entry.Key] = (entry.Value.GetHeight(), Math.Max(1, entry.Value.GetWidth() / entry.Value.GetHeight()));
+        InitializeRenderLayers();
     }
 
     public void ResetView()
@@ -33,6 +36,7 @@ public partial class GameCanvas : Node2D
         camera = CameraTarget();
         effects.Clear();
         shake = 0;
+        renderDirty = true;
     }
 
     public void ReceiveEvents()
@@ -62,21 +66,14 @@ public partial class GameCanvas : Node2D
             }
         }
         shake = Math.Max(0, shake - elapsed * 25);
-        QueueRedraw();
+        UpdateRenderLayers(elapsed);
     }
 
     public override void _Draw()
     {
         if (BodyFont == null) return;
-        DrawRect(new(0, 0, 1280, 720), Palette.Deep);
+        surface.DrawRect(new(0, 0, 1280, 720), Palette.Deep);
         if (Run == null) { DrawTitleLandscape(); return; }
-        var offset = new Vector2(640, 370) - camera;
-        if (!ReducedMotion) offset += new Vector2(MathF.Sin(Clock * 71), MathF.Cos(Clock * 57)) * shake;
-        DrawSetTransform(offset);
-        DrawBattlefield();
-        DrawCombat();
-        DrawSetTransform(Vector2.Zero);
-        DrawHud();
     }
 
     private Vector2 CameraTarget()
@@ -86,12 +83,12 @@ public partial class GameCanvas : Node2D
     }
 
     private void Text(string text, Vector2 position, int size, Color color, Font? font = null)
-        => DrawString(font ?? BodyFont, position, text, HorizontalAlignment.Left, -1, size, color);
+        => surface.DrawString(font ?? BodyFont, position, text, HorizontalAlignment.Left, -1, size, color);
 
     private void FittedText(string text, Vector2 position, float width, int size, Color color)
     {
         while (size > 10 && BodyFont.GetStringSize(text, fontSize: size).X > width) size--;
-        DrawString(BodyFont, position, text, HorizontalAlignment.Left, width, size, color);
+        surface.DrawString(BodyFont, position, text, HorizontalAlignment.Left, width, size, color);
     }
 
     private void CenterText(string text, Vector2 position, int size, Color color, Font? font = null)
@@ -107,13 +104,13 @@ public partial class GameCanvas : Node2D
         var size = texture.GetHeight();
         var frameCount = Math.Max(1, texture.GetWidth() / size);
         var frame = (int)(Clock * 9 + phase) % frameCount;
-        DrawTextureRectRegion(texture, new(position - new Vector2(size * scale / 2, size * scale * 0.75f), new(size * scale, size * scale)), new(frame * size, 0, size, size), tint ?? Colors.White);
+        surface.DrawTextureRectRegion(texture, new(position - new Vector2(size * scale / 2, size * scale * 0.75f), new(size * scale, size * scale)), new(frame * size, 0, size, size), tint ?? Colors.White);
     }
 
     private void Diamond(Vector2 position, float size, Color color)
     {
         if (size < 0.25f || color.A <= 0) return;
-        DrawColoredPolygon([position + new Vector2(0, -size), position + new Vector2(size, 0), position + new Vector2(0, size), position + new Vector2(-size, 0)], color);
+        surface.DrawColoredPolygon([position + new Vector2(0, -size), position + new Vector2(size, 0), position + new Vector2(0, size), position + new Vector2(-size, 0)], color);
     }
 
     private sealed class VisualEvent(CombatEvent entry, float duration)

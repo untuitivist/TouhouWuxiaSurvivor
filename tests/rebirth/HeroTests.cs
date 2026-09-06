@@ -86,10 +86,12 @@ internal static class HeroTests
         var initialVertical = ofuda.Velocity.Y;
         first.Position = new(240, 250);
         run.Step(default);
+        ofuda = run.Projectiles[0];
         Check(ofuda.Velocity.Y > initialVertical && ofuda.TurnRate > 0, "Ofuda bends toward moving target");
         first.Health = 0;
         var second = Target(run, new(300, -250));
         run.Step(default);
+        ofuda = run.Projectiles[0];
         Check(ofuda.TargetId == second.Id, "Ofuda reacquires a live target after death");
     }
 
@@ -123,7 +125,7 @@ internal static class HeroTests
         run.Projectiles.Add(bullet); run.Projectiles.Add(safeBullet);
         run.Step(default);
         Check(inside.Health < inside.MaxHealth && outside.Health == outside.MaxHealth && behind.Health == behind.MaxHealth, "Beam damages its forward corridor only");
-        Check(!run.Projectiles.Contains(bullet) && run.Projectiles.Contains(safeBullet), "Only bullets inside the beam are cleared");
+        Check(!run.Projectiles.Any(projectile => projectile.Hostile && projectile.Position == bullet.Position) && run.Projectiles.Any(projectile => projectile.Hostile && projectile.Position == safeBullet.Position), "Only bullets inside the beam are cleared");
         var afterPulse = inside.Health;
         run.Step(default);
         Check(inside.Health == afterPulse, "Beam uses pulse interval rather than per-frame damage");

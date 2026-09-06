@@ -29,7 +29,7 @@ public sealed class Enemy
     public bool Charging;
 }
 
-public sealed class Projectile
+public struct Projectile
 {
     public Vector2 Position;
     public Vector2 Velocity;
@@ -45,7 +45,7 @@ public sealed class Projectile
     public int TargetId;
     public bool DreamOrb;
     public int TintIndex;
-    public readonly HashSet<int> HitIds = [];
+    public HitHistory HitIds;
 }
 
 public sealed class BeamState
@@ -69,12 +69,13 @@ public sealed class BoundaryField
     public float Damage;
 }
 
-public sealed class Pickup
+public struct Pickup
 {
     public Vector2 Position;
     public int Value;
     public bool Healing;
     public bool Attracted;
+    public bool Collected;
 }
 
 public sealed class Seal

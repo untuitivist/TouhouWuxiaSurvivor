@@ -24,6 +24,12 @@ internal sealed class WebCheckState
     public bool Pilot { get; set; }
     public bool HasChineseGlyphs { get; set; }
     public bool TouchFocus { get; set; }
+    public int RenderWidth { get; set; }
+    public int RenderHeight { get; set; }
+    public double Fps { get; set; }
+    public double DrawCalls { get; set; }
+    public double BatchMilliseconds { get; set; }
+    public int BatchInstances { get; set; }
     public WebCheckControl[] Controls { get; set; } = [];
 }
 

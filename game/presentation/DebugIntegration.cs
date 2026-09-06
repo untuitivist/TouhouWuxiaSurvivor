@@ -17,6 +17,7 @@ public partial class GameRoot
         debugOverlay.Run = run;
         debugOverlay.ScreenName = currentScreen;
         debugOverlay.Video = profile.Data.Video;
+        debugOverlay.Canvas = canvas;
     }
 
     private void ToggleDebug()

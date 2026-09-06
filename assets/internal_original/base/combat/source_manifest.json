@@ -1,0 +1,143 @@
+{
+  "usage": "User-supplied original-game pack; internal prototype only, no public redistribution clearance implied.",
+  "sources": [
+    {
+      "file": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "sha256": "2eee95a7b590c5311b647e748b0d2a63e276d3605697f330f87d640443809889"
+    },
+    {
+      "file": "TH10 东方风神录/ANM/ANM/bullet/etama2.png",
+      "sha256": "e8d5b6873c1e2e1129b79cef520ac32275167ee6967dd5a73c7604e2feff628d"
+    },
+    {
+      "file": "TH10 东方风神录/ANM/ANM/enemy/enemy.png",
+      "sha256": "05d32554b0b589a5f5d635dbaeeeb2b1d15da9d2e872e7900358163eeb52ec0d"
+    },
+    {
+      "file": "TH10 东方风神录/ANM/ANM/background/stg1bg.png",
+      "sha256": "ad441fa2e94d4e98e7579e6fea8450a58dd2517de885f5b40b979dbe012ad41d"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "assets/internal_original/base/combat/red_pellet.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "crop": [
+        16,
+        32,
+        32,
+        48
+      ],
+      "sha256": "bff67555a060cb00780924a4c6a9bf7ce7d6d11cc6e1e7cf74bf0b430ac548cc"
+    },
+    {
+      "file": "assets/internal_original/base/combat/violet_pellet.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "crop": [
+        64,
+        32,
+        80,
+        48
+      ],
+      "sha256": "6fc018317eb49e5571e22c960c3c42a4d5199a60b3101f5d649b451aab5063fb"
+    },
+    {
+      "file": "assets/internal_original/base/combat/ofuda.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "crop": [
+        16,
+        112,
+        32,
+        128
+      ],
+      "sha256": "6c8e67f575b2957b6b194e5d5d32aae9335dd267006096452d49b687af855ceb"
+    },
+    {
+      "file": "assets/internal_original/base/combat/star.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "crop": [
+        208,
+        160,
+        224,
+        176
+      ],
+      "sha256": "98a068fd7bd22088722b68177764e63d557f1a016e3a4cf1cfda9838716c46f5"
+    },
+    {
+      "file": "assets/internal_original/base/combat/stardust.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "crop": [
+        64,
+        160,
+        80,
+        176
+      ],
+      "sha256": "b5355b9bd7feab450276bc82ebcdbb4a21c28250b72be08698589c31bd56e1af"
+    },
+    {
+      "file": "assets/internal_original/base/combat/dream.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama.png",
+      "crop": [
+        32,
+        208,
+        64,
+        240
+      ],
+      "sha256": "1bcb746e8af26bd1036f775d6c2f212a59c48863064505c81dcbea93f5a24fcf"
+    },
+    {
+      "file": "assets/internal_original/base/combat/experience.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama2.png",
+      "crop": [
+        16,
+        208,
+        32,
+        224
+      ],
+      "sha256": "e08350c9ebf190f8353f57339d4eb7747c07d207f8e0369b6dc045f33c21c035"
+    },
+    {
+      "file": "assets/internal_original/base/combat/healing.png",
+      "source": "TH10 东方风神录/ANM/ANM/bullet/etama2.png",
+      "crop": [
+        64,
+        208,
+        80,
+        224
+      ],
+      "sha256": "d7fb821deb1f8edb7a3d7a585f1f32b01558945c04b712a0e42f4b118ec72182"
+    },
+    {
+      "file": "assets/internal_original/base/combat/orb.png",
+      "source": "TH10 东方风神录/ANM/ANM/enemy/enemy.png",
+      "crop": [
+        0,
+        192,
+        32,
+        224
+      ],
+      "sha256": "d104fe455101846bb47cf7ee5ede6105c8e911dc8d22b77e56d7005885176c80"
+    },
+    {
+      "file": "assets/internal_original/base/combat/grass.png",
+      "source": "TH10 东方风神录/ANM/ANM/background/stg1bg.png",
+      "crop": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "sha256": "1a4d0c016c1496eb947ab826addbec83c7186a83eb834136d070705ff993f05a"
+    },
+    {
+      "file": "assets/branding/night_journal.png",
+      "derivedFrom": [
+        "orb",
+        "ofuda",
+        "star"
+      ],
+      "composition": "192px original yin-yang orb, ofuda and star with an original pixel frame; no official-logo claim",
+      "sha256": "274a9f6cc261611c1c394424b2bc59776263903236e13002d83130148b195f98"
+    }
+  ]
+}

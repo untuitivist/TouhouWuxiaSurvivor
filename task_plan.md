@@ -1,5 +1,13 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Mobile Performance, Hybrid Runtime And Original Assets
+
+1. [complete] Audited the actual compiled runtime versus legacy ECS; measured equal-size simulation/render fixtures and inventoried source assets.
+2. [complete] Added dense component storage and batch systems plus retained/MultiMesh rendering, preserving one C# project, OOP presentation and seeded mechanics.
+3. [complete] Integrated traceable original TH10 combat/terrain crops and a new source-derived icon; preserved old assets and export versions.
+4. [partial] Desktop/core/visual and six Web loading scenarios pass; final strict Web gameplay/performance gates still report an intermittent complete-body ERR_ABORTED also reproduced without the game. Preserve failing assertions and diagnostic evidence; save daily work without publishing. Physical-device FPS remains unverified.
+
+
 ## Web Loading Progress
 
 1. [complete] Inspect actual Godot progress semantics; distinguish decoded engine counters from compressed transfers.

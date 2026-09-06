@@ -27,6 +27,7 @@ public partial class GameRoot
         if (mode == "debug-title") { ShowTitle(); ToggleDebug(); return; }
         if (mode == "debug-combat") { PrepareBattlePreview("boss"); ToggleDebug(); return; }
         if (mode == "title") return;
+        if (mode == "performance") { PreparePerformancePreview(); return; }
         if (mode == "heroes") { ShowHeroes(); return; }
         if (mode == "help") { ShowHelp(); return; }
         if (mode == "settings") { ShowSettings(); return; }
@@ -115,7 +116,8 @@ public partial class GameRoot
         TickVideoPreview(delta);
         if (!diagnosticMode || diagnosticFinished) return;
         diagnosticFrames++;
-        if (diagnosticFrames < 24) return;
+        RecordRenderFrame(delta);
+        if (performancePreview ? performanceSeconds < 4 : diagnosticFrames < 24) return;
         diagnosticFinished = true;
         if (OS.GetCmdlineUserArgs().Contains("--rebirth-video-smoke")) { RunDisplaySmokeTests(); return; }
         if (smokeMode)
@@ -137,6 +139,7 @@ public partial class GameRoot
             using var image = GetViewport().GetTexture().GetImage();
             var result = image.SavePng(path);
             if (result != Error.Ok) throw new IOException($"Screenshot failed: {result}");
+            SaveRenderReport(path);
             GD.Print($"REBIRTH_CAPTURE_PASS {path}");
             GetTree().Quit();
         }
@@ -147,6 +150,7 @@ public partial class GameRoot
     {
         TestSharedPlatform();
         TestPixelUiAndDebug();
+        TestRenderInvalidation();
         ShowTitle();
         AssertUiBounds();
         PressButton("踏入夜境     →");
