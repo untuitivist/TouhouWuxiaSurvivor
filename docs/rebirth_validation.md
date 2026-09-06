@@ -1,5 +1,22 @@
 # Rebirth validation — 2026-09-06
 
+## Exported delivery: alpha-0.0.8
+
+- Character-faithful combat iteration, implementation commit `a40b2af`: three exclusive tracks per hero, shared tuning, homing/retargeting ofuda, stationary sealing field, star spread/focus, stardust and sustained Master Spark with separate signatures.
+- Clean Debug build: 0 warnings/errors. Core regression: 26/26. Added checks cover owner-filtered offers and application, shared description/count/damage values, tracking and reacquisition, focus without extra damage, finite beam corridor, harmless warmup, pulse intervals, selective bullet clear, stationary fields and ability-state freezing during pause/choices.
+- UI smoke retains Esc/P/E navigation, queued-offer preservation, settings, profile compatibility and complete embedded history; it additionally checks Marisa's own build and offer contents.
+- Six ordinary navigation-pilot journeys (three seeds per hero) won without injected healing: Reimu 261.9–265.5 seconds; Marisa 268.2–276.6 seconds. The separate healing-assisted soak remains labeled as such; neither proves human difficulty balance or improved fun.
+- Source render suite: 19 main/ability views plus eight 960x540 views. Reviewed dream orbs, sealing field, Marisa's beam and her 960x540 build panel. Ability fixture captures deliberately set ranks and stationary enemies to expose behavior; they are not ordinary player-run screenshots.
+- File: `release/TouhouWuxiaSurvivor_alpha-0.0.8.exe`; 192,484,304 bytes; Windows file/product version `0.0.8.0`.
+- SHA-256: `881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B`.
+- Embedded PCK and self-contained Microsoft.NETCore.App 8.0.6. Only this EXE was copied outside the repository; the child PATH excluded SDK/Godot and DOTNET_ROOT pointed at a nonexistent location. The isolated directory still contained only that executable after testing.
+- All 13 standalone checks passed: smoke, title, boss, build, settings, changelog, Reimu field/spell, Marisa stars/warmup/beam/build/choices. New ability views also rendered from the exported executable at 960x540; the exported beam view was visually reviewed.
+- Logs/report/screenshots: `artifacts/alpha-0.0.8-export-validation/`; source logs: `artifacts/alpha-0.0.8-verify.log` and `artifacts/alpha-0.0.8-captures.log`.
+- Historical alpha-0.0.0 through alpha-0.0.7 changelog sections are unchanged. All eight earlier EXEs remain; alpha-0.0.7 SHA-256 still matches its previous record.
+- Display name changes to 夜境异闻 while the application/config/name storage namespace stays unchanged. Existing preferences and scores remain in the same user:// location; no in-progress build was persisted by previous versions.
+
+This is same-machine isolated-directory verification, not clean-VM certification, a listening test, public-release licensing approval, browser support or exact reproduction of original Touhou spell behavior. No public deployment or remote Git push was performed.
+
 ## Exported delivery: alpha-0.0.7
 
 - Value-driven usability iteration: context-preserving E build inspection, Esc/P navigation, rank-specific upgrade descriptions, volume controls and per-version embedded history. Combat formulas, maps and content counts are unchanged.

@@ -2,6 +2,7 @@
 
 ## 2026-09-06 — alpha-0.0.8 Implementation
 
+- Delivery complete: alpha-0.0.8, 192,484,304 bytes, SHA-256 881FB896745E0F61C80BDA9F648185CA018EEA1BC04A51D52065E58681304C2B. All 13 isolated-executable checks passed; exported 960x540 Marisa beam visually reviewed. Previous eight EXEs and historical log sections remain intact.
 - User requested the next playable release after the source audit. Started character-owned combat refactor, not a cosmetic rename. Old files/releases remain preserved.
 - Replaced the catalog and implemented separate projectile/field/beam behavior and signatures. Catalog patch context mismatch was corrected; an oversized multi-file Windows patch command was split into small per-file hunks. A case-insensitive PowerShell dictionary duplicate was replaced by explicit case-sensitive string replacements.
 - First build identified a C# local-name collision in field/beam opacity; renamed the field-local value before continuing verification.
