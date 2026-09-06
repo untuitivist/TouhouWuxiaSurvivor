@@ -1,5 +1,10 @@
 # Progress Log
 
+## 2026-09-06 — Exported EXE Delivery
+
+- Rechecked historical release commits and alpha-0.0.0 through alpha-0.0.5 binaries.
+- Restoring established alpha-0.0.6 / 0.0.6.0 naming and preparing a single-EXE export. Export and isolated verification are pending.
+
 ## 2026-09-06 — Clean Rewrite
 
 ### Final delivery validation

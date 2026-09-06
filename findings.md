@@ -1,5 +1,13 @@
 # Findings and Decisions
 
+## Export Delivery — 2026-09-06
+
+- Verified six existing standalone executables: TouhouWuxiaSurvivor_alpha-0.0.0.exe through alpha-0.0.5.exe.
+- CHANGELOG and old version parser define stage-major.release.optimization, with alpha/beta/rc/stable only; PE version is major.release.optimization.0.
+- Existing Windows preset already enables embedded PCK and dotnet/embed_build_outputs. Local Windows release export template is installed.
+- Correct the unauthorized rebirth version prefix to alpha-0.0.6. The user requires the exported executable as the deliverable, not run_game.cmd.
+- Exported diagnostics must write fixtures under user://, not the packed read-only res:// filesystem.
+
 ## Clean Rewrite — 2026-09-06
 
 - Final validation: 19/19 core tests, real-engine UI/profile suite, actual launcher smoke and ten render captures pass. The 960 x 540 layout remains readable after scaling.

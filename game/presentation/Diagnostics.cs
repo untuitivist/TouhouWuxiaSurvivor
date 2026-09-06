@@ -136,7 +136,7 @@ public partial class GameRoot
 
     private static void TestProfilePersistence(RunState victory)
     {
-        var directory = ProjectSettings.GlobalizePath($"res://artifacts/profile-tests/{Guid.NewGuid():N}");
+        var directory = ProjectSettings.GlobalizePath($"user://rebirth/diagnostics/profile-tests/{Guid.NewGuid():N}");
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, "profile.json");
         var store = new ProfileStore(path);

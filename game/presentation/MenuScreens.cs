@@ -21,7 +21,8 @@ public partial class GameRoot
         ui.Button(screen!, "收剑离去", new(86, 507, 362, 43), () => GetTree().Quit());
         ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
         ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(816, 617, 403, 30), 15, Palette.Gold);
-        ui.Label(screen!, "RE:01  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted);
+        var version = ProjectSettings.GetSetting("application/config/version").AsString();
+        ui.Label(screen!, $"{version}  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted);
         ui.Label(screen!, "东方同人内部原型 · 素材未经公开发行授权", new(841, 681, 395, 26), 12, Palette.Muted);
         if (profile.Warning.Length > 0) ui.Label(screen!, profile.Warning, new(86, 621, 510, 36), 13, Palette.Red);
         first.GrabFocus();

@@ -1,5 +1,14 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Delivery Plan — 2026-09-06
+
+1. [complete] Verify historical executable naming and release/version policy against Git and CHANGELOG.
+2. [in_progress] Restore alpha-0.0.6 naming, update export metadata and preserve all previous binaries.
+3. [pending] Export a self-contained Windows x86_64 executable with embedded resources and .NET outputs.
+4. [pending] Copy only the executable to an isolated directory, test headless/UI and real rendering, then deliver its exact path.
+
+The user now explicitly authorizes export. No deletion, remote push or public distribution is authorized.
+
 ## Active Plan: Clean Rewrite — 2026-09-06
 
 Old sections below are historical. Current product authority: `docs/rebirth_design.md`.
@@ -12,7 +21,7 @@ Old sections below are historical. Current product authority: `docs/rebirth_desi
 6. [complete] Record results, commit every coherent change and deliver a playable local version.
 
 No files are deleted. Legacy implementation stays out of the new compile graph.
-Long validation runs use a CMD log window and wait for completion. Do not export or publish.
+Long validation runs use a CMD log window and wait for completion. Export was initially deferred; the active delivery request above now explicitly authorizes it.
 
 ### Current Session Errors
 
