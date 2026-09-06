@@ -1,5 +1,12 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Initial Domain Deployment
+
+1. [complete] Confirm authorized target, SSH identity, DNS, Caddy and existing routes without changing the website.
+2. [in_progress] Prepare verified immutable assets, limited game route and recoverable activation; deploy without replacing other applications.
+3. [pending] Verify real HTTPS headers, desktop/mobile-emulated browser startup and preserved existing routes.
+4. [pending] Record exact deployment/rollback state and two-deliverable release contract; commit without new EXE, version bump or Git push.
+
 ## Active Shared Windows And Web Project — 2026-09-06
 
 1. [complete] Establish shared C# project/build settings with isolated Web build caches; preserve Windows SDK and historical artifacts.

@@ -82,10 +82,11 @@ A release is only complete after both deliverables and their verification succee
 otherwise report a partial release explicitly. Preserve old artifacts and a Web
 rollback target. A Git push is still a separate action, not implied by deployment.
 
-The user has authorized an initial Web deployment attempt, but the real domain,
-SSH target and existing hosting configuration have not yet been supplied. Do not
-guess the website server from unrelated local SSH profiles. This first deployment
-trial does not itself authorize a version bump or a new Windows release export.
+The user has authorized an initial Web deployment to
+`https://allinagent.top/TouhouSurvivor/` on the existing Caddy server, plus GitHub
+push and server-side clone/pull. The concrete workflow and rollback rules are in
+`docs/deployment.md`. This first deployment trial does not itself authorize a
+version bump or a new Windows release export.
 Earlier no-deployment statements in this document describe the completed local
 validation, not a prohibition on this newly authorized trial.
 
