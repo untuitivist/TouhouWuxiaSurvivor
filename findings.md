@@ -1,5 +1,13 @@
 # Findings and Decisions
 
+## Character Identity Audit — 2026-09-06
+
+- User rejects wuxia as forced sword/lightning weapon substitutions. Identity and canon-backed ability language take precedence; wuxia should guide style and meaningful choices.
+- Browser search/open returned no source payloads. Direct THBWiki MediaWiki API reads work; its red-mist manual page explicitly identifies Reimu's weapons as ofuda and yin-yang orbs.
+- Guessed Character/符卡 pages do not exist; discover the real spell-list structure from character entries and site search rather than treating guessed URLs as evidence.
+- Resolved actual spell pages and recorded fixed revisions: Dream Seal, Evil-Sealing Circle, Duplex Barrier, Stardust Reverie, Master Spark and Milky Way; expanded the site's name templates rather than inventing Chinese prefixes/translations.
+- Core cause confirmed in current code: both heroes start with Sword; Marisa additionally starts with Lightning; OfferChoices draws from the same global catalog. Fixing the initial loadout alone would not fix later upgrades.
+
 ## Value-driven Iteration — 2026-09-06
 
 - Current runtime polls physical keys directly; Escape navigation and settings return paths are scattered. Improve navigation centrally before adding inspection screens.

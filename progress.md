@@ -1,5 +1,12 @@
 # Progress Log
 
+## 2026-09-06 — Character Identity Audit
+
+- Interpreting the user's speech transcription in context; the request concerns spell cards, ofuda and Marisa, not the literal homophones.
+- Started source-backed review of the currently playable Reimu and Marisa. Existing alpha-0.0.7 gameplay is not yet corrected; no new build is claimed in this audit.
+- Completed docs/character_identity.md with 11 fixed-revision sources, representative spell names, explicit canon/adaptation distinctions and a runtime-root-cause audit. Updated the design authority and recorded speech-input handling preferences.
+- Research errors corrected: guessed spell subpages were missing; discovered actual landing pages through template expansion. A PowerShell array-range expression initially failed to parse and was replaced with a separate upper-bound variable. No gameplay code or exported executable was changed.
+
 ## 2026-09-06 — Value-driven Iteration
 
 - Delivery complete: alpha-0.0.7 EXE, 192,466,816 bytes, SHA-256 23FD603D815CD0FBC60034BC2365D8B3B30CD176FDEB9908E7B3FF6C1413516B. Six standalone checks passed with only the executable in the external test directory. Exported build screen visually reviewed.

@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Character Identity Audit — 2026-09-06
+
+1. [complete] Read THBWiki character entries and source-linked spell/shot documentation for the two currently playable characters.
+2. [complete] Audit the current shared sword/lightning loadouts against those sources and define character-faithful replacements.
+3. [complete] Record the corrected creative direction and source-backed redesign boundaries; preserve the released EXE and history, without pretending the implementation is already fixed.
+
 ## Active Iteration alpha-0.0.7 — 2026-09-06
 
 1. [complete] Inspect input, UI, profile and diagnostic seams; retain useful habits rather than legacy architecture.
