@@ -1,5 +1,12 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Assessment — 2026-09-06
+
+1. [in_progress] Verify official Godot Web/C# constraints and this project's actual platform assumptions.
+2. [in_progress] Compare pre-rewrite snapshot d229b36 (alpha-0.0.5 runtime) against 41a893a (alpha-0.0.6).
+3. [pending] Separate genuinely new mechanics from retained, removed, simplified and unverified capabilities.
+4. [pending] Deliver a source-backed comparison and bounded deployment recommendation; no gameplay or deployment changes.
+
 ## Active Delivery Plan — 2026-09-06
 
 1. [complete] Verify historical executable naming and release/version policy against Git and CHANGELOG.

@@ -1,5 +1,10 @@
 # Progress Log
 
+## 2026-09-06 — Web and Version Assessment
+
+- Started official-document verification and a code-backed comparison between alpha-0.0.5 and alpha-0.0.6.
+- No new gameplay implementation, browser port or server deployment is authorized by this analysis request.
+
 ## 2026-09-06 — Exported EXE Delivery
 
 - Export completed with exit code 0: `release/TouhouWuxiaSurvivor_alpha-0.0.6.exe`, 192,443,224 bytes; PE file/product version both `0.0.6.0`.

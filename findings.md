@@ -1,5 +1,12 @@
 # Findings and Decisions
 
+## Web and Version Assessment — 2026-09-06
+
+- Official stable and latest Godot Web-export documentation both explicitly state that Godot 4 C# projects currently cannot be exported to Web through the supported export path.
+- Current project targets Godot.NET.Sdk 4.7.1 / net8.0 and compiles only game/**/*.cs. A self-contained Windows EXE is not a browser build.
+- `git diff d229b36 HEAD -- src content assets tests/integration` is empty: the preserved legacy sources/data can be inspected directly without checking out or overwriting the live project.
+- Comparison must not count menus, victory/retry, automatic combat or single-file EXE delivery as newly introduced; the old project already had those paths.
+
 ## Export Delivery — 2026-09-06
 
 - Isolated validation passes with only the 192,443,224-byte EXE present. The bundled runtime is Microsoft.NETCore.App 8.0.6; no neighboring DLL, PCK or project file is required for tested startup and gameplay rendering.
