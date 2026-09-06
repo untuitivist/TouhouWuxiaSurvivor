@@ -2,8 +2,15 @@
 
 ## 2026-09-06 — Exported EXE Delivery
 
+- Export completed with exit code 0: `release/TouhouWuxiaSurvivor_alpha-0.0.6.exe`, 192,443,224 bytes; PE file/product version both `0.0.6.0`.
+- Copied only the EXE into a new directory outside the project. With PATH restricted to Windows and DOTNET_ROOT pointing to a nonexistent location, headless UI/profile smoke and real OpenGL title/Boss captures all pass.
+- The isolated directory still contains exactly one EXE after verification. Export publish metadata confirms bundled Microsoft.NETCore.App 8.0.6.
+- Manually inspected the actual exported title and Boss screenshots; the title displays alpha-0.0.6 and required art is present.
+- SHA-256: `C89225B7C86132FBE7175DC82361CEBA39E632BEE2FA42356177697716954072`.
+- Previous alpha-0.0.0 through alpha-0.0.5 executable files remain in place. No public upload, remote push or file deletion occurred.
+
 - Rechecked historical release commits and alpha-0.0.0 through alpha-0.0.5 binaries.
-- Restoring established alpha-0.0.6 / 0.0.6.0 naming and preparing a single-EXE export. Export and isolated verification are pending.
+- Restored established alpha-0.0.6 / 0.0.6.0 naming; single-EXE export and isolated verification are complete.
 
 ## 2026-09-06 — Clean Rewrite
 

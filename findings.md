@@ -2,6 +2,9 @@
 
 ## Export Delivery — 2026-09-06
 
+- Isolated validation passes with only the 192,443,224-byte EXE present. The bundled runtime is Microsoft.NETCore.App 8.0.6; no neighboring DLL, PCK or project file is required for tested startup and gameplay rendering.
+- The console-wrapper wait was caused by the export's remaining shared compiler server, not by failed packaging. Graceful compiler-server shutdown yielded export exit code 0; subsequent export environments disable shared compilation.
+
 - Verified six existing standalone executables: TouhouWuxiaSurvivor_alpha-0.0.0.exe through alpha-0.0.5.exe.
 - CHANGELOG and old version parser define stage-major.release.optimization, with alpha/beta/rc/stable only; PE version is major.release.optimization.0.
 - Existing Windows preset already enables embedded PCK and dotnet/embed_build_outputs. Local Windows release export template is installed.

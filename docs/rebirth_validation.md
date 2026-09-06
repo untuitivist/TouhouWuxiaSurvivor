@@ -1,9 +1,28 @@
 # Rebirth validation — 2026-09-06
 
+## Exported delivery: alpha-0.0.6
+
+The user subsequently requested the actual self-contained Windows EXE and reaffirmed the historical
+stage-major.release.optimization naming rule. The earlier source-only delivery notes below are historical.
+
+- File: `release/TouhouWuxiaSurvivor_alpha-0.0.6.exe`.
+- Size: 192,443,224 bytes. Windows file/product version: `0.0.6.0`.
+- SHA-256: `C89225B7C86132FBE7175DC82361CEBA39E632BEE2FA42356177697716954072`.
+- PCK and .NET publish outputs are embedded; publish metadata identifies included Microsoft.NETCore.App 8.0.6.
+- `tools/rebirth/verify_release.ps1` copies only the EXE into a unique temporary directory outside the repository,
+  removes SDK/Godot locations from the child PATH and points DOTNET_ROOT to a nonexistent directory.
+- That copy passes UI/profile smoke, a real OpenGL title capture and a real Boss-scene capture; the isolated
+  directory still contains only the executable afterward. Actual exported screenshots were visually reviewed.
+- Logs, screenshots and machine-readable report: `artifacts/alpha-0.0.6-export-validation/`.
+- All six previous EXEs remain in `release/`. Export is for local internal validation, not public distribution.
+
+This is a same-machine isolated-directory test, not a clean Windows virtual-machine certification.
+
 ## Scope
 
 The old project is preserved at `d229b36`. The new compile graph contains only `game/**/*.cs`.
-No old source, assets, build outputs or archive files were deleted. Nothing was pushed or exported.
+No old source, assets, build outputs or archive files were deleted. Nothing was pushed. Export was initially
+deferred and is now explicitly authorized and verified as described above.
 
 ## Commands
 
