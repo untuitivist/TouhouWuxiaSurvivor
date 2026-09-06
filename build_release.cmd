@@ -28,6 +28,8 @@ if exist "%OUTPUT_EXE%" (
 cd /d "%~dp0"
 if not exist artifacts mkdir artifacts
 set DOTNET_CLI_UI_LANGUAGE=en
+set DOTNET_CLI_USE_MSBUILD_SERVER=0
+set UseSharedCompilation=false
 echo Exporting %GAME_VERSION%. Log: artifacts\export-engine.log
 "%GODOT_EXE%" --headless --path . --log-file artifacts\export-engine.log --export-release "Windows Release" "%OUTPUT_EXE%"
 if errorlevel 1 exit /b %errorlevel%

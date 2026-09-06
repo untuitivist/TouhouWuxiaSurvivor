@@ -3,11 +3,14 @@
 ## Active Delivery Plan — 2026-09-06
 
 1. [complete] Verify historical executable naming and release/version policy against Git and CHANGELOG.
-2. [in_progress] Restore alpha-0.0.6 naming, update export metadata and preserve all previous binaries.
-3. [pending] Export a self-contained Windows x86_64 executable with embedded resources and .NET outputs.
-4. [pending] Copy only the executable to an isolated directory, test headless/UI and real rendering, then deliver its exact path.
+2. [complete] Restore alpha-0.0.6 naming, update export metadata and preserve all previous binaries.
+3. [complete] Export a self-contained Windows x86_64 executable with embedded resources and .NET outputs.
+4. [in_progress] Copy only the executable to an isolated directory, test headless/UI and real rendering, then deliver its exact path.
 
 The user now explicitly authorizes export. No deletion, remote push or public distribution is authorized.
+
+Export note: packaging completed but the console wrapper remained attached to its shared C# compiler server.
+A graceful `dotnet build-server shutdown --vbcscompiler` released it with exit code 0. Future export disables shared compilation.
 
 ## Active Plan: Clean Rewrite — 2026-09-06
 
