@@ -42,6 +42,10 @@ Real OpenGL captures cover title, heroes, help, settings, combat, upgrades, paus
 The reduced-window capture uses 960 x 540. Screenshot generation alone does not establish visual acceptance;
 the final review record is in `progress.md`.
 
+Final visual review inspected the overview of all nine screens and full-size key captures, including the
+960 x 540 upgrade screen. Upgrade descriptions stay inside their cards. The result-screen capture uses a
+constructed victory to review layout; it is not presented as evidence of a 75-second normal completion.
+
 ## Unassisted navigation-bot runs
 
 These runs use normal health, damage and progression. The pilot navigates toward seals, repels away from

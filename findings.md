@@ -2,6 +2,9 @@
 
 ## Clean Rewrite — 2026-09-06
 
+- Final validation: 19/19 core tests, real-engine UI/profile suite, actual launcher smoke and ten render captures pass. The 960 x 540 layout remains readable after scaling.
+- Final manual image review covers all nine main screens using `artifacts/rebirth-overview.png`, plus full-size key screens. Future iteration should be led by human play feedback, not adding more legacy systems.
+
 - Second screenshots verify upgrade descriptions now wrap within each card, and the real 04:15 Boss scene shows readable radial/fan bullets, player hitbox and complete HUD.
 - Rebalanced unassisted runs finish at 263.7–279.8 seconds (six seeds/hero combinations), giving approximately 24–40 seconds of Boss combat. Regression and UI suites remain green.
 

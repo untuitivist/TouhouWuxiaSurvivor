@@ -8,8 +8,8 @@ Old sections below are historical. Current product authority: `docs/rebirth_desi
 2. [complete] Design a compact complete game; inspect local Godot, .NET and reusable art.
 3. [complete] Implement independent deterministic combat, progression, encounters and tests in `game/`.
 4. [complete] Implement presentation, menus, audio, persistence and the new entry scene.
-5. [in_progress] Build, run deterministic tests, verify real Godot rendering and correct regressions.
-6. [pending] Record results, commit every coherent change and deliver a playable local version.
+5. [complete] Build, run deterministic tests, verify real Godot rendering and correct regressions.
+6. [complete] Record results, commit every coherent change and deliver a playable local version.
 
 No files are deleted. Legacy implementation stays out of the new compile graph.
 Long validation runs use a CMD log window and wait for completion. Do not export or publish.

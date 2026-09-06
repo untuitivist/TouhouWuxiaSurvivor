@@ -2,6 +2,18 @@
 
 ## 2026-09-06 — Clean Rewrite
 
+### Final delivery validation
+
+- Debug build passes with 0 warnings and 0 errors; pure core tests pass 19/19.
+- Real-engine UI smoke and profile tests pass. The malformed-profile fixture intentionally emits one warning; it does not touch the normal user profile.
+- Actual `run_game.cmd --headless -- --rebirth-smoke` launcher path passes, including automatic build and runtime logging.
+- Real OpenGL capture suite passes for nine screens plus a 960 x 540 upgrade view.
+- Visually inspected the nine-screen overview and full-size title, heroes, upgrades, combat, Boss and 960 x 540 upgrade capture. Corrected text overflow and arena-edge framing; no remaining overlapping upgrade text was seen.
+- Six normal-health navigation-bot runs win at 263.7–279.8 seconds. No human playtest or guarantee of subjective enjoyment is claimed.
+- UTF-8 without BOM audit passes for all 36 changed text files; `git diff --check` passes.
+- README, current design, validation record, project intent and launcher are updated. No deletion, remote push or distribution export occurred.
+- Diagnostic result screenshots use a constructed victory for layout review; ordinary full-run victories are measured separately in the core runner.
+
 ### First validation
 
 - `dotnet build`: PASS, 0 warnings, 0 errors.
