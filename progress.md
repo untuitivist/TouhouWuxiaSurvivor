@@ -1,5 +1,16 @@
 # Progress Log
 
+## 2026-09-06 — alpha-0.0.8 Implementation
+
+- User requested the next playable release after the source audit. Started character-owned combat refactor, not a cosmetic rename. Old files/releases remain preserved.
+- Replaced the catalog and implemented separate projectile/field/beam behavior and signatures. Catalog patch context mismatch was corrected; an oversized multi-file Windows patch command was split into small per-file hunks. A case-insensitive PowerShell dictionary duplicate was replaced by explicit case-sensitive string replacements.
+- First build identified a C# local-name collision in field/beam opacity; renamed the field-local value before continuing verification.
+- Clean build and 26/26 core checks passed, including ownership, retargeting, star focus, beam warmup/corridor/pulses, stationary fields and signature identity. Existing UI/profile smoke also passed with Marisa-specific inspection added.
+- Six unassisted navigation-pilot runs won: Reimu 261.9–265.5 s; Marisa 268.2–276.6 s. This demonstrates solvability for that pilot, not superior fun or balanced human difficulty.
+- Display title is now 夜境异闻, while application/config/name remains the legacy storage namespace; WindowSetTitle changes presentation without relocating user:// preferences and records.
+- Final source verify passed after version metadata update. Render suite passed 19 primary/ability screens plus eight 960x540 screens. Visually reviewed Marisa's beam, Reimu's dream orbs/field and Marisa's 960x540 character-only build panel.
+- Ability demonstration captures use controlled enemies/ranks to expose the actual runtime effect; they are not presented as unmodified live-run balance evidence. The six separate navigation runs use ordinary progression without injected healing.
+
 ## 2026-09-06 — Character Identity Audit
 
 - Interpreting the user's speech transcription in context; the request concerns spell cards, ofuda and Marisa, not the literal homophones.

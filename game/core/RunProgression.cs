@@ -19,7 +19,7 @@ public sealed partial class RunState
     private void OfferChoices()
     {
         Choices.Clear();
-        var candidates = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && Ranks[(int)art.Id] < art.MaxRank)
+        var candidates = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && ArtCatalog.Available(Hero, art.Id) && Ranks[(int)art.Id] < art.MaxRank)
             .Select(art => art.Id).ToList();
         while (Choices.Count < 3 && candidates.Count > 0)
         {
@@ -36,12 +36,13 @@ public sealed partial class RunState
     {
         if (Phase != RunPhase.Choosing || index < 0 || index >= Choices.Count) return false;
         var art = Choices[index];
+        if (!ArtCatalog.Available(Hero, art) || Ranks[(int)art] >= ArtCatalog.Get(art).MaxRank) return false;
         if (art != ArtKind.Recovery) Ranks[(int)art]++;
         if (art == ArtKind.Vitality) Heal(35);
         if (art == ArtKind.Recovery)
         {
             Heal(40);
-            Qi = Math.Min(100, Qi + 25);
+            SpellCharge = Math.Min(100, SpellCharge + 25);
         }
         PendingChoices--;
         Choices.Clear();
@@ -77,7 +78,7 @@ public sealed partial class RunState
             seal.Complete = true;
             Heal(35);
             PendingChoices++;
-            Qi = Math.Min(100, Qi + 35);
+            SpellCharge = Math.Min(100, SpellCharge + 35);
             foreach (var pickup in Pickups) pickup.Attracted = true;
             Emit(EffectKind.Seal, seal.Position);
         }
@@ -105,7 +106,7 @@ public sealed partial class RunState
         Emit(EffectKind.Hit, enemy.Position, damage);
         if (enemy.Health > 0) return;
         Kills++;
-        Qi = Math.Min(100, Qi + (enemy.Kind == EnemyKind.Elite ? 8 : 0.42f));
+        SpellCharge = Math.Min(100, SpellCharge + (enemy.Kind == EnemyKind.Elite ? 8 : 0.42f));
         DropPickup(enemy.Position, enemy.Kind == EnemyKind.Elite ? 20 : enemy.Kind == EnemyKind.Kedama ? 1 : 2);
         if (enemy.Kind == EnemyKind.Elite) DropPickup(enemy.Position + new Vector2(18, 0), 30, true);
         Emit(EffectKind.Defeat, enemy.Position);
@@ -116,17 +117,16 @@ public sealed partial class RunState
         }
     }
 
-    private void ReleaseBurst()
+    private void CastSignatureSpell()
     {
-        Qi = 0;
-        Bursts++;
-        BurstGlow = 0.65f;
+        SpellCharge = 0;
+        SpellsCast++;
+        SpellFlash = 0.65f;
         Invulnerability = Math.Max(Invulnerability, 0.6f);
         Projectiles.RemoveAll(projectile => projectile.Hostile);
-        foreach (var enemy in Enemies)
-            if (Vector2.DistanceSquared(enemy.Position, PlayerPosition) < 540 * 540)
-                DamageEnemy(enemy, (100 + Level * 6) * Power, Geometry.Direction(enemy.Position - PlayerPosition) * 45);
+        if (Hero == HeroKind.Reimu) CastDreamSeal();
+        else StartBeam(true);
         foreach (var pickup in Pickups) pickup.Attracted = true;
-        Emit(EffectKind.Burst, PlayerPosition);
+        Emit(EffectKind.Spell, PlayerPosition);
     }
 }

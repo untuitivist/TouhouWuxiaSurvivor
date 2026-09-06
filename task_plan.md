@@ -1,5 +1,14 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Active Delivery alpha-0.0.8 — 2026-09-06
+
+1. [complete] Replace shared sword/lightning identities with character-owned ability catalogs and shared, inspectable tuning.
+2. [complete] Implement homing ofuda, yin-yang orbs, sealing field, star volleys, stardust and a telegraphed sustained Master Spark; differentiate signature spells and visuals.
+3. [complete] Update character/build/HUD text, add ownership/geometry/pause regressions, run full journeys and inspect real render captures for both heroes.
+4. [in_progress] Preserve old changelog and releases, export alpha-0.0.8 as a standalone EXE, isolate-test it and commit the delivery.
+
+Canon sources are recorded in docs/character_identity.md. This is an explicitly labeled survivor adaptation, not a frame-accurate reproduction. No new mandatory attack buttons or unrelated world expansion.
+
 ## Active Character Identity Audit — 2026-09-06
 
 1. [complete] Read THBWiki character entries and source-linked spell/shot documentation for the two currently playable characters.

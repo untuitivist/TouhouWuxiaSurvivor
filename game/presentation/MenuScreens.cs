@@ -14,13 +14,13 @@ public partial class GameRoot
         ClearScreen("title");
         ui.Label(screen!, "TOUHOU  /  WUXIA  /  SURVIVOR", new(83, 68, 500, 30), 13, Palette.Gold);
         ui.Label(screen!, "幻想乡", new(77, 118, 490, 105), 82, Palette.Paper, true);
-        ui.Label(screen!, "剑雨异闻", new(81, 220, 510, 75), 53, Palette.Gold, true);
-        ui.Label(screen!, "一人，一剑，一场尚未平息的异变。", new(85, 312, 495, 38), 20, Palette.Muted, true);
+        ui.Label(screen!, "夜境异闻", new(81, 220, 510, 75), 53, Palette.Gold, true);
+        ui.Label(screen!, "一段夜行，一场尚未平息的异变。", new(85, 312, 495, 38), 20, Palette.Muted, true);
         var first = ui.Button(screen!, "踏入夜境     →", new(86, 380, 362, 58), ShowHeroes, true);
         ui.Button(screen!, "行走须知", new(86, 450, 173, 45), ShowHelp);
         ui.Button(screen!, "音画设置", new(275, 450, 173, 45), ShowSettings);
         ui.Button(screen!, "更新记录", new(86, 507, 173, 43), ShowChangelog);
-        ui.Button(screen!, "收剑离去", new(275, 507, 173, 43), () => GetTree().Quit());
+        ui.Button(screen!, "暂别夜境", new(275, 507, 173, 43), () => GetTree().Quit());
         ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
         ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(816, 617, 403, 30), 15, Palette.Gold);
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
@@ -35,8 +35,8 @@ public partial class GameRoot
         var panel = Modal("heroes", "CHOOSE YOUR PATH  /  选择行者", "今夜，由谁来平息异变？", 1080, 570);
         var heroes = new[]
         {
-            (HeroKind.Reimu, "博丽灵梦", "乐园的巫女", "稳守 · 擦弹 · 结界", "110 点生命\n初始：御剑诀 + 阴阳两仪\n每次擦弹获得 5 点剑意", "适合初次行走。让阴阳玉护住近身，\n在弹隙中寻找反击的时机。", Palette.Red, "灵"),
-            (HeroKind.Marisa, "雾雨魔理沙", "普通的魔法使", "疾行 · 雷法 · 进攻", "85 点生命，伤害 +16%\n初始：御剑诀 + 紫电游龙\n移动更快，擦弹获得 3.8 点剑意", "以进为退。借雷光穿透妖群，\n用更快的步法占住有利的空隙。", Palette.Violet, "魔")
+            (HeroKind.Reimu, "博丽灵梦", "乐园的巫女", "御札 · 阴阳玉 · 封魔", "110 点生命\n初始：追踪御札 + 阴阳玉\n满蓄势：灵符「梦想封印」", "御札追踪，阴阳玉护身，留阵迎敌。\n从容穿行弹隙，守住进退之路。", Palette.Red, "灵"),
+            (HeroKind.Marisa, "雾雨魔理沙", "普通的魔法使", "星屑 · 光热 · 魔炮", "85 点生命，伤害 +16%\n初始：星光射击 + Master Spark\n满蓄势：强化魔炮", "星弹散射，Shift 慢移时收束。\n魔炮蓄势锁向，走位可平移火线。", Palette.Violet, "魔")
         };
         Button? first = null;
         for (var index = 0; index < heroes.Length; index++)
@@ -53,7 +53,7 @@ public partial class GameRoot
             first ??= button;
         }
         ui.Button(panel, "返回", new(35, 507, 115, 37), ShowTitle);
-        ui.Label(panel, "没有局外数值加成。每一次异闻，都从第一剑重新开始。", new(210, 511, 820, 30), 15, Palette.Muted);
+        ui.Label(panel, "没有局外数值加成。每一次异闻，都从一次新的出发开始。", new(210, 511, 820, 30), 15, Palette.Muted);
         first?.GrabFocus();
     }
 
@@ -63,11 +63,11 @@ public partial class GameRoot
         ui.Label(panel, "01   行", new(36, 135, 260, 40), 26, Palette.Gold, true);
         ui.Label(panel, "WASD / 方向键  移动\nShift  慢移，显示判定点\nSpace  闪身，短暂无敌\nEsc / P  暂停    E  构筑\nF11  全屏", new(36, 188, 290, 172), 18);
         ui.Label(panel, "02   悟", new(355, 135, 270, 40), 26, Palette.Jade, true);
-        ui.Label(panel, "飞剑自动寻找目标。\n拾取青色灵光，升级三选一。\n按 1 / 2 / 3 或点击选择。\n武学五重时产生形态变化。", new(355, 188, 293, 148), 18);
+        ui.Label(panel, "攻击自动寻找目标。\n各自三条能力 + 通用修习。\n升级按 1 / 2 / 3 或点击。\nE 查看效果与原作出处。", new(355, 188, 293, 148), 18);
         ui.Label(panel, "03   破", new(676, 135, 280, 40), 26, Palette.Red, true);
-        ui.Label(panel, "擦过敌弹，积蓄剑意。\n满槽自动爆发、清弹、吸取。\n站入古印七秒：悟道、回血。\n四分钟后击破来客，即胜。", new(676, 188, 290, 148), 18);
+        ui.Label(panel, "擦弹与退治积累符卡蓄势。\n灵梦：梦想封印追踪灵光。\n魔理沙：锁向持续魔炮。\n发动时清弹、吸取经验。", new(676, 188, 290, 148), 18);
         ui.Label(panel, "路上有三个古印。净化进度会保留，遇险可以先退；不净化也能迎战终局。", new(36, 370, 925, 60), 20, Palette.Gold, true);
-        ui.Label(panel, "这是一次新的玩法原型，不是东方正作弹幕的逐帧复刻。已有内部素材仅用于本地开发验证。", new(36, 444, 925, 45), 14, Palette.Muted);
+        ui.Label(panel, "符卡取材于原作，本作改为自动施放并调整数值；不是逐帧复刻。四分钟后击破结界残影获胜。", new(36, 444, 925, 45), 14, Palette.Muted);
         ui.Button(panel, "明白了，回到夜境", new(36, 504, 924, 39), ShowTitle, true).GrabFocus();
     }
 

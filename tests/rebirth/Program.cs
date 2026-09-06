@@ -2,11 +2,18 @@ using System.Diagnostics;
 using System.Numerics;
 using Rebirth.Core;
 using Rebirth.Diagnostics;
+using Rebirth.Tests;
 
 var tests = new (string Name, Action Body)[]
 {
     ("hero identities and initial weapons", HeroIdentity),
-    ("upgrade descriptions expose real milestones", UpgradeDescriptions),
+    ("upgrade descriptions match shared ability tuning", HeroTests.UpgradeDescriptions),
+    ("character-owned upgrade pools and validation", HeroTests.Ownership),
+    ("ofuda tracks and reacquires targets", HeroTests.Homing),
+    ("star focus changes spread not damage", HeroTests.StarFocus),
+    ("sealing field remains at its cast location", HeroTests.StationaryBoundary),
+    ("signature spells have distinct mechanics", HeroTests.SignatureIdentity),
+    ("pause and choices freeze persistent abilities", HeroTests.AbilityPause),
     ("focus movement preserves precise control", FocusMovement),
     ("normalized movement and finite arena", Movement),
     ("pause freezes the complete simulation", Pause),
@@ -14,12 +21,12 @@ var tests = new (string Name, Action Body)[]
     ("upgrade ranks cap and recover safely", UpgradeCaps),
     ("dash invulnerability and cooldown", Dash),
     ("each bullet grants graze only once", Graze),
-    ("full qi clears bullets and attracts experience", QiBurst),
+    ("full spell charge clears bullets and attracts experience", QiBurst),
     ("swept collision catches fast projectiles", SweptCollision),
     ("seal retains progress and rewards once", SealReward),
     ("enemy death rewards exactly once", DeathReward),
     ("piercing projectile cannot repeatedly hit one target", Piercing),
-    ("lightning chain visits distinct targets", Lightning),
+    ("sustained beam respects warmup geometry and pulse rate", HeroTests.BeamGeometry),
     ("boss defeat yields victory and freezes time", Victory),
     ("player death cannot turn into victory", Defeat),
     ("same seed and input reproduce state", Determinism),
@@ -49,36 +56,13 @@ static void Resolve(RunState run)
     RunPilot.ResolveChoices(run);
 }
 
-static void UpgradeDescriptions()
-{
-    foreach (var art in ArtCatalog.All.Take(8))
-    {
-        for (var rank = 0; rank < art.MaxRank; rank++)
-            Check(!string.IsNullOrWhiteSpace(ArtCatalog.UpgradeText(art.Id, rank)), $"Missing preview for {art.Id} {rank}");
-        Check(ArtCatalog.UpgradeText(art.Id, art.MaxRank).Contains("已达圆满"), "Maxed arts do not promise another rank");
-    }
-    for (var rank = 1; rank <= 5; rank++)
-    {
-        var run = NewRun();
-        run.Ranks[(int)ArtKind.Sword] = rank;
-        run.SpawnEnemy(EnemyKind.Boss, new Vector2(400, 0));
-        run.Step(default);
-        var swords = run.Projectiles.Where(projectile => projectile.Art == ArtKind.Sword && !projectile.Hostile).ToArray();
-        var expectedCount = new[] { 1, 2, 2, 3, 5 }[rank - 1];
-        Check(swords.Length == expectedCount, "Sword preview milestones match emitted projectiles");
-        Check(swords.All(sword => sword.Pierce == (rank >= 5 ? 3 : rank >= 3 ? 1 : 0)), "Sword pierce matches the described total targets");
-    }
-    Check(ArtCatalog.UpgradeText(ArtKind.Sword, 4).Contains("3 → 5"), "Sword mastery explains the count change");
-    Check(ArtCatalog.UpgradeText(ArtKind.Lightning, 4).Contains("5 → 9"), "Lightning mastery explains the target change");
-    Check(ArtCatalog.UpgradeText(ArtKind.Recovery, 0) == ArtCatalog.Get(ArtKind.Recovery).Description, "Recovery remains an immediate effect");
-}
 
 static void HeroIdentity()
 {
     var reimu = NewRun();
     var marisa = NewRun(HeroKind.Marisa);
     Check(reimu.MaxHealth > marisa.MaxHealth && marisa.MoveSpeed > reimu.MoveSpeed, "Different strengths");
-    Check(reimu.Ranks[(int)ArtKind.Orbit] == 1 && marisa.Ranks[(int)ArtKind.Lightning] == 1, "Different starter arts");
+    Check(reimu.Ranks[(int)ArtKind.Ofuda] == 1 && reimu.Ranks[(int)ArtKind.YinYang] == 1 && marisa.Ranks[(int)ArtKind.Stars] == 1 && marisa.Ranks[(int)ArtKind.MasterSpark] == 1 && marisa.Ranks[(int)ArtKind.Ofuda] == 0, "Different starter arts");
 }
 
 static void Movement()
@@ -106,9 +90,11 @@ static void QiBurst()
     var enemy = run.SpawnEnemy(EnemyKind.Elite, new(350, 0));
     var health = enemy.Health;
     run.Step(default);
-    Check(run.Bursts == 1 && run.Qi == 0 && run.Invulnerability > 0, "Burst state");
+    Check(run.SpellsCast == 1 && run.SpellCharge == 0 && run.Invulnerability > 0, "Burst state");
     Check(run.Projectiles.All(projectile => !projectile.Hostile) && run.Pickups.All(pickup => pickup.Attracted), "Bullet clear and magnet");
-    Check(enemy.Health < health, "Burst deals damage");
+    Check(run.Projectiles.Count(projectile => projectile.DreamOrb) == 7, "Signature creates real projectiles");
+    for (var index = 0; index < 60; index++) run.Step(default);
+    Check(enemy.Health < health, "Dream orbs reach enemies after travel");
 }
 
 static void Piercing()
@@ -122,15 +108,6 @@ static void Piercing()
     Near(enemy.Health, health - 7);
 }
 
-static void Lightning()
-{
-    var run = NewRun(HeroKind.Marisa);
-    run.Ranks[(int)ArtKind.Lightning] = 5;
-    for (var index = 0; index < 9; index++) run.SpawnEnemy(EnemyKind.Elite, new(180 + index * 15, 70));
-    run.Step(default);
-    var lightning = run.Events.Where(entry => entry.Kind == EffectKind.Lightning).ToArray();
-    Check(lightning.Length == 9 && lightning.Select(entry => entry.Target).Distinct().Count() == 9, "Nine distinct chain targets");
-}
 
 static void Pause()
 {
@@ -192,7 +169,7 @@ static void Graze()
     run.Projectiles.Add(new() { Position = new(24, 0), Hostile = true, Radius = 5, Damage = 10, Life = 5 });
     for (var index = 0; index < 12; index++) run.Step(default);
     Check(run.Grazes == 1, "One graze per bullet");
-    Near(run.Qi, 5);
+    Near(run.SpellCharge, 5);
     Near(run.Health, run.MaxHealth);
 }
 
@@ -280,7 +257,7 @@ static void Restart()
     old.Step(default);
     Resolve(old);
     var fresh = NewRun();
-    Check(fresh.Ticks == 0 && fresh.Level == 1 && fresh.Enemies.Count == 0 && fresh.Ranks.Sum() == 2 && fresh.Qi == 0, "Independent state");
+    Check(fresh.Ticks == 0 && fresh.Level == 1 && fresh.Enemies.Count == 0 && fresh.Ranks.Sum() == 2 && fresh.SpellCharge == 0, "Independent state");
 }
 
 static void FullTimeline()

@@ -40,9 +40,9 @@ public partial class GameCanvas : Node2D
         {
             if (effects.Count >= 180) break;
             if (entry.Kind == EffectKind.Hit && effects.Count > 75) continue;
-            var duration = entry.Kind switch { EffectKind.Hit => 0.48f, EffectKind.Lightning => 0.2f, EffectKind.Burst => 0.65f, EffectKind.Seal => 1.2f, _ => 0.4f };
+            var duration = entry.Kind switch { EffectKind.Hit => 0.48f, EffectKind.Beam => 0.2f, EffectKind.Spell => 0.65f, EffectKind.Seal => 1.2f, _ => 0.4f };
             effects.Add(new(entry, duration));
-            if (entry.Kind is EffectKind.Hurt or EffectKind.Burst) shake = entry.Kind == EffectKind.Hurt ? 6 : 9;
+            if (entry.Kind is EffectKind.Hurt or EffectKind.Spell) shake = entry.Kind == EffectKind.Hurt ? 6 : 9;
         }
     }
 

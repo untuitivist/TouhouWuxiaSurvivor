@@ -1,0 +1,27 @@
+namespace Rebirth.Core;
+
+public readonly record struct AbilityStats(int Count, float Damage, float Interval, float Range, float Duration = 0);
+
+public static class AbilityTuning
+{
+    public const float BeamWarmup = 0.45f;
+    public const float BeamPulse = 0.12f;
+    public const float BoundaryPulse = 0.35f;
+
+    public static AbilityStats Get(ArtKind kind, int rank)
+    {
+        if (rank is < 1 or > 5) throw new ArgumentOutOfRangeException(nameof(rank));
+        return kind switch
+        {
+            ArtKind.Ofuda => new(rank + 1, 13 + rank * 7, 0.57f, 760),
+            ArtKind.YinYang => new(rank + 1, 8 + rank * 5, 0.22f, rank == 5 ? 115 : 85),
+            ArtKind.Boundary => new(1, 12 + rank * 7, 5.5f, 105 + rank * 15, 2.1f + rank * 0.2f),
+            ArtKind.Stars => new(rank + 2, 10 + rank * 5, 0.48f, 700),
+            ArtKind.Stardust => new(8 + rank * 3, 14 + rank * 7, 2.4f, 460),
+            ArtKind.MasterSpark => new(1, 11 + rank * 6, 5.0f, 820 + rank * 30, 1.05f + rank * 0.17f),
+            _ => throw new ArgumentException("Not a character ability", nameof(kind))
+        };
+    }
+
+    public static float BeamHalfWidth(int rank) => 21 + rank * 5;
+}

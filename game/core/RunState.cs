@@ -16,7 +16,7 @@ public sealed partial class RunState
     public readonly List<Pickup> Pickups = [];
     public readonly List<CombatEvent> Events = [];
     public readonly List<ArtKind> Choices = [];
-    public readonly int[] Ranks = new int[9];
+    public readonly int[] Ranks = new int[ArtCatalog.All.Length];
     public readonly Seal[] Seals =
     [
         new() { Name = "天之印", Position = new(-680, -430) },
@@ -24,6 +24,9 @@ public sealed partial class RunState
         new() { Name = "人之印", Position = new(100, 650) }
     ];
     public HeroKind Hero { get; }
+    public bool Focused { get; private set; }
+    public BeamState? Beam { get; private set; }
+    public BoundaryField? Field { get; private set; }
     public int Seed { get; }
     public RunPhase Phase { get; private set; } = RunPhase.Playing;
     public Vector2 PlayerPosition { get; private set; }
@@ -41,11 +44,11 @@ public sealed partial class RunState
     public float DashCooldown { get; private set; }
     public float DashInterval => 2.8f - Ranks[(int)ArtKind.Flow] * 0.35f;
     public float Invulnerability { get; private set; }
-    public float Qi { get; private set; }
-    public float BurstGlow { get; private set; }
+    public float SpellCharge { get; private set; }
+    public float SpellFlash { get; private set; }
     public int Kills { get; private set; }
     public int Grazes { get; private set; }
-    public int Bursts { get; private set; }
+    public int SpellsCast { get; private set; }
     public int Level { get; private set; } = 1;
     public int Experience { get; private set; }
     public int NextLevelExperience => 7 + Level * 4;
@@ -54,16 +57,17 @@ public sealed partial class RunState
     public Enemy? Boss => Enemies.Find(enemy => enemy.Kind == EnemyKind.Boss && enemy.Health > 0);
     public bool BossSpawned { get; private set; }
     public float OrbitAngle => Time * 2.9f;
-    public float OrbitRadius => Ranks[(int)ArtKind.Orbit] >= 5 ? 115 : 85;
+    public float OrbitRadius => Ranks[(int)ArtKind.YinYang] >= 5 ? 115 : 85;
     private readonly Random random;
     private readonly EnemyGrid grid = new();
     private int nextEnemyId;
     private float spawnTimer = 0.4f;
     private float nextElite = 55;
-    private float swordTimer;
+    private float primaryTimer;
     private float orbitTimer;
-    private float talismanTimer;
-    private float lightningTimer;
+    private float fieldTimer;
+    private float stardustTimer;
+    private float beamCooldown;
     private Vector2 dashDirection;
 
     public RunState(HeroKind hero, int seed)
@@ -72,20 +76,21 @@ public sealed partial class RunState
         Seed = seed;
         random = new Random(seed);
         Health = MaxHealth;
-        Ranks[(int)ArtKind.Sword] = 1;
-        if (hero == HeroKind.Reimu) Ranks[(int)ArtKind.Orbit] = 1;
-        else Ranks[(int)ArtKind.Lightning] = 1;
+        Ranks[(int)(hero == HeroKind.Reimu ? ArtKind.Ofuda : ArtKind.Stars)] = 1;
+        if (hero == HeroKind.Reimu) Ranks[(int)ArtKind.YinYang] = 1;
+        else Ranks[(int)ArtKind.MasterSpark] = 1;
     }
 
     public void Step(FrameInput input)
     {
         Events.Clear();
         if (Phase != RunPhase.Playing) return;
+        Focused = input.Focus;
         Ticks++;
         Invulnerability = Math.Max(0, Invulnerability - StepSeconds);
         DashDuration = Math.Max(0, DashDuration - StepSeconds);
         DashCooldown = Math.Max(0, DashCooldown - StepSeconds);
-        BurstGlow = Math.Max(0, BurstGlow - StepSeconds);
+        SpellFlash = Math.Max(0, SpellFlash - StepSeconds);
         MovePlayer(input);
         UpdateEncounters();
         UpdateEnemies();
@@ -95,7 +100,7 @@ public sealed partial class RunState
         if (Phase == RunPhase.Won) Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Phase == RunPhase.Playing) UpdatePickupsAndSeals();
         Enemies.RemoveAll(enemy => enemy.Health <= 0);
-        if (Qi >= 100 && Phase == RunPhase.Playing) ReleaseBurst();
+        if (SpellCharge >= 100 && Phase == RunPhase.Playing) CastSignatureSpell();
         if (PendingChoices > 0 && Phase == RunPhase.Playing) OfferChoices();
     }
 

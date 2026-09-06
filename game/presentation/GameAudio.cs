@@ -29,7 +29,8 @@ public partial class GameAudio : Node
             [EffectKind.Hurt] = "player_hurt.wav",
             [EffectKind.Level] = "pickup.wav",
             [EffectKind.Seal] = "pickup.wav",
-            [EffectKind.Burst] = "explosion.wav",
+            [EffectKind.Spell] = "explosion.wav",
+            [EffectKind.Beam] = "shot.wav",
             [EffectKind.Dash] = "shot.wav",
             [EffectKind.Victory] = "pickup.wav"
         };

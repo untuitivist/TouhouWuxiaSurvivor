@@ -13,28 +13,28 @@ public partial class GameCanvas
         DrawRect(new(0, 650, 1280, 70), Palette.Alpha(Palette.Deep, 0.94f));
         DrawLine(new(24, 650), new(1256, 650), Palette.Alpha(Palette.Gold, 0.3f), 1);
         Text(Run.Hero == HeroKind.Reimu ? "博丽灵梦" : "雾雨魔理沙", new(28, 32), 22, Palette.Paper, TitleFont);
-        Text($"第 {Run.Level} 境", new(178, 31), 16, Palette.Gold);
+        Text($"修习 {Run.Level}", new(178, 31), 16, Palette.Gold);
         Bar(new(28, 45, 222, 9), Run.Health / Run.MaxHealth, Palette.Red);
         Text($"{MathF.Ceiling(Run.Health)} / {Run.MaxHealth}", new(28, 76), 14, Palette.Muted);
         Text($"退治  {Run.Kills}", new(165, 76), 14, Palette.Muted);
         CenterText(FormatTime(Run.Time), new(640, 37), 29, Palette.Paper);
         CenterText(Run.BossSpawned ? "终章 · 雾中来客" : Run.Time < 60 ? "一之卷 · 夜行" : Run.Time < 150 ? "二之卷 · 妖潮" : "三之卷 · 破阵", new(640, 64), 15, Palette.Gold);
         Bar(new(430, 76, 420, 3), Math.Min(1, Run.Time / RunState.BossArrival), Palette.Gold);
-        Text("剑意", new(989, 31), 17, Palette.Jade);
-        Text($"{(int)Run.Qi} / 100", new(1162, 31), 15, Palette.Paper);
-        Bar(new(989, 45, 263, 8), Run.Qi / 100, Palette.Jade);
+        Text("符卡蓄势", new(989, 31), 17, Palette.Jade);
+        Text($"{(int)Run.SpellCharge} / 100", new(1162, 31), 15, Palette.Paper);
+        Bar(new(989, 45, 263, 8), Run.SpellCharge / 100, Palette.Jade);
         Text("擦弹蓄势 · 满槽自动清弹", new(989, 77), 14, Palette.Muted);
-        Text("修 为", new(28, 679), 13, Palette.Jade);
+        Text("历 练", new(28, 679), 13, Palette.Jade);
         Bar(new(84, 668, 242, 7), (float)Run.Experience / Run.NextLevelExperience, Palette.Jade);
         Text($"{Run.Experience} / {Run.NextLevelExperience}", new(84, 699), 13, Palette.Muted);
         var horizontal = 370;
-        for (var index = 0; index < 4; index++)
+        foreach (var art in ArtCatalog.Abilities(Run.Hero))
         {
-            var rank = Run.Ranks[index];
-            var color = new Color(ArtCatalog.All[index].Color);
+            var rank = Run.Ranks[(int)art.Id];
+            var color = new Color(art.Color);
             DrawRect(new(horizontal, 663, 39, 39), Palette.Alpha(color, rank > 0 ? 0.12f : 0.025f));
             DrawRect(new(horizontal, 663, 39, 39), Palette.Alpha(color, rank > 0 ? 0.7f : 0.13f), false, 1);
-            CenterText(new[] { "剑", "阵", "符", "雷" }[index], new(horizontal + 20, 689), 22, rank > 0 ? color : Palette.Muted, TitleFont);
+            CenterText(art.Symbol, new(horizontal + 20, 689), 22, rank > 0 ? color : Palette.Muted, TitleFont);
             for (var dot = 0; dot < 5; dot++) DrawRect(new(horizontal + dot * 8, 708, 5, 3), Palette.Alpha(color, dot < rank ? 1 : 0.12f));
             horizontal += 58;
         }
@@ -47,16 +47,16 @@ public partial class GameCanvas
         if (boss != null)
         {
             DrawRect(new(395, 108, 490, 54), Palette.Alpha(Palette.Deep, 0.85f));
-            CenterText("雾中魔理沙  /  借一场弹幕，试你的剑", new(640, 129), 15, Palette.Violet);
+            CenterText("结界残影  /  异变的回声", new(640, 129), 15, Palette.Violet);
             Bar(new(413, 142, 454, 5), boss.Health / boss.MaxHealth, Palette.Violet);
         }
         if (Run.Time < 10)
         {
             DrawRect(new(383, 551, 514, 65), Palette.Alpha(Palette.Deep, 0.8f));
-            CenterText("无需瞄准，飞剑会为你开路。", new(640, 578), 20, Palette.Paper, TitleFont);
+            CenterText(Run.Hero == HeroKind.Reimu ? "御札追敌，阴阳护身。" : "星弹开路，魔炮锁向。", new(640, 578), 20, Palette.Paper, TitleFont);
             CenterText("WASD / 方向键 移动  ·  E 构筑  ·  Esc / P 暂停", new(640, 603), 15, Palette.Muted);
         }
-        if (Run.BurstGlow > 0) CenterText("剑 意  ·  归 一", new(640, 213), 32, Palette.Alpha(Palette.Gold, Run.BurstGlow / 0.65f), TitleFont);
+        if (Run.SpellFlash > 0) CenterText(ArtCatalog.SignatureName(Run.Hero), new(640, 213), 30, Palette.Alpha(Palette.Gold, Run.SpellFlash / 0.65f), TitleFont);
         if (Run.Health < Run.MaxHealth * 0.25f)
         {
             DrawRect(new(0, 93, 7, 557), Palette.Alpha(Palette.Red, 0.5f));

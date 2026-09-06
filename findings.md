@@ -1,5 +1,14 @@
 # Findings and Decisions
 
+## Character-faithful Runtime Implementation — 2026-09-06
+
+- Use three exclusive ability tracks per hero plus common non-weapon training, rather than keeping four universal weapon slots under new names.
+- Both HUD and inspection must enumerate the hero's catalog, not the first four ArtKind values. Shared tuning must drive numerical descriptions and actual attacks.
+- Reimu's signature creates homing dream orbs; Marisa's signature creates a sustained directional beam. A common activation clear/brief safety window is a survivor adaptation, not proof of identical canon behavior.
+- Keep the previous usability paths and profile schema; no in-progress run is persisted, so replacing transient rank IDs does not require migrating a saved build.
+- Rendering keeps enemy bullets above the beam/field layers. Real captures confirm the new effects and source labels are visible at 1280x720 and the checked 960x540 screens.
+- Three attack tracks per hero is an intentional reduction from the former four universal tracks; six distinct tracks across both heroes replace the old shared catalog. Release notes record this tradeoff explicitly.
+
 ## Character Identity Audit — 2026-09-06
 
 - User rejects wuxia as forced sword/lightning weapon substitutions. Identity and canon-backed ability language take precedence; wuxia should guide style and meaningful choices.

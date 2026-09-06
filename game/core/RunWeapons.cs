@@ -4,81 +4,6 @@ namespace Rebirth.Core;
 
 public sealed partial class RunState
 {
-    private void UpdateWeapons()
-    {
-        swordTimer -= StepSeconds * CastSpeed;
-        orbitTimer -= StepSeconds * CastSpeed;
-        talismanTimer -= StepSeconds * CastSpeed;
-        lightningTimer -= StepSeconds * CastSpeed;
-        var target = NearestEnemy(PlayerPosition, 680);
-        if (Ranks[(int)ArtKind.Sword] > 0 && swordTimer <= 0 && target != null)
-        {
-            CastSwords(target);
-            swordTimer = 0.53f;
-        }
-        var orbitRank = Ranks[(int)ArtKind.Orbit];
-        if (orbitRank > 0 && orbitTimer <= 0)
-        {
-            for (var index = 0; index < orbitRank + 1; index++)
-            {
-                var position = PlayerPosition + Geometry.Angle(OrbitAngle + index * MathF.Tau / (orbitRank + 1)) * OrbitRadius;
-                foreach (var enemy in grid.Query(position, 75))
-                    if (Vector2.DistanceSquared(position, enemy.Position) < MathF.Pow(enemy.Radius + 28, 2))
-                        DamageEnemy(enemy, (8 + orbitRank * 5) * Power, Geometry.Direction(enemy.Position - PlayerPosition) * 9);
-            }
-            orbitTimer = 0.19f;
-        }
-        var talismanRank = Ranks[(int)ArtKind.Talisman];
-        if (talismanRank > 0 && talismanTimer <= 0 && target != null)
-        {
-            var count = talismanRank >= 5 ? 3 : talismanRank >= 3 ? 2 : 1;
-            for (var index = 0; index < count; index++)
-                AddProjectile(new() { Position = PlayerPosition, Velocity = Geometry.Rotate(Geometry.Direction(target.Position - PlayerPosition), (index - (count - 1) / 2f) * 0.19f) * 400, Radius = 10, Damage = (28 + talismanRank * 14) * Power, Life = 2, Art = ArtKind.Talisman });
-            talismanTimer = 1.8f;
-        }
-        var lightningRank = Ranks[(int)ArtKind.Lightning];
-        if (lightningRank > 0 && lightningTimer <= 0 && target != null)
-        {
-            CastLightning(target, lightningRank);
-            lightningTimer = lightningRank >= 5 ? 1.05f : 1.65f;
-        }
-    }
-
-    private void CastSwords(Enemy target)
-    {
-        var rank = Ranks[(int)ArtKind.Sword];
-        var count = rank >= 5 ? 5 : 1 + rank / 2;
-        var travel = Vector2.Distance(target.Position, PlayerPosition) / 680;
-        var direction = Geometry.Direction(target.Position + target.Velocity * travel - PlayerPosition);
-        for (var index = 0; index < count; index++)
-        {
-            AddProjectile(new()
-            {
-                Position = PlayerPosition,
-                Velocity = Geometry.Rotate(direction, (index - (count - 1) / 2f) * 0.11f) * 680,
-                Radius = 7,
-                Damage = (17 + rank * 8) * Power,
-                Life = 1.3f,
-                Pierce = rank >= 5 ? 3 : rank >= 3 ? 1 : 0,
-                Art = ArtKind.Sword
-            });
-        }
-    }
-
-    private void CastLightning(Enemy target, int rank)
-    {
-        var visited = new HashSet<int>();
-        var origin = PlayerPosition;
-        Enemy? current = target;
-        for (var index = 0; index < (rank >= 5 ? 9 : rank + 1) && current != null; index++)
-        {
-            visited.Add(current.Id);
-            Events.Add(new(EffectKind.Lightning, origin, current.Position));
-            DamageEnemy(current, (22 + rank * 9) * Power, Vector2.Zero);
-            origin = current.Position;
-            current = NearestEnemy(origin, 240, visited);
-        }
-    }
 
     private Enemy? NearestEnemy(Vector2 origin, float range, HashSet<int>? excluded = null)
     {
@@ -100,6 +25,21 @@ public sealed partial class RunState
         for (var index = Projectiles.Count - 1; index >= 0; index--)
         {
             var projectile = Projectiles[index];
+            if (projectile.TurnRate > 0 && !projectile.Hostile)
+            {
+                var target = Enemies.Find(enemy => enemy.Id == projectile.TargetId && enemy.Health > 0 && !projectile.HitIds.Contains(enemy.Id));
+                target ??= NearestEnemy(projectile.Position, 1100, projectile.HitIds);
+                projectile.TargetId = target?.Id ?? 0;
+                if (target != null)
+                {
+                    var speed = projectile.Velocity.Length();
+                    var currentAngle = MathF.Atan2(projectile.Velocity.Y, projectile.Velocity.X);
+                    var delta = target.Position - projectile.Position;
+                    var angle = MathF.Atan2(delta.Y, delta.X) - currentAngle;
+                    angle = MathF.Atan2(MathF.Sin(angle), MathF.Cos(angle));
+                    projectile.Velocity = Geometry.Angle(currentAngle + Math.Clamp(angle, -projectile.TurnRate * StepSeconds, projectile.TurnRate * StepSeconds)) * speed;
+                }
+            }
             var previous = projectile.Position;
             projectile.Position += projectile.Velocity * StepSeconds;
             projectile.Life -= StepSeconds;
@@ -115,7 +55,7 @@ public sealed partial class RunState
                 {
                     projectile.Grazed = true;
                     Grazes++;
-                    Qi = Math.Min(100, Qi + (Hero == HeroKind.Reimu ? 5 : 3.8f));
+                    SpellCharge = Math.Min(100, SpellCharge + (Hero == HeroKind.Reimu ? 5 : 3.8f));
                     Emit(EffectKind.Graze, PlayerPosition);
                 }
             }
@@ -125,7 +65,7 @@ public sealed partial class RunState
                 {
                     if (projectile.HitIds.Contains(enemy.Id) || Geometry.SegmentDistanceSquared(enemy.Position, previous, projectile.Position) >= MathF.Pow(enemy.Radius + projectile.Radius, 2)) continue;
                     projectile.HitIds.Add(enemy.Id);
-                    if (projectile.Art == ArtKind.Talisman) Explode(projectile.Position, projectile.Damage);
+                    if (projectile.DreamOrb) Explode(projectile.Position, projectile.Damage);
                     else DamageEnemy(enemy, projectile.Damage, Geometry.Direction(projectile.Velocity) * 4);
                     if (projectile.Pierce-- <= 0) { projectile.Life = 0; break; }
                 }
@@ -136,8 +76,7 @@ public sealed partial class RunState
 
     private void Explode(Vector2 position, float damage)
     {
-        var rank = Ranks[(int)ArtKind.Talisman];
-        var radius = 65 + rank * 13;
+        const float radius = 72;
         Emit(EffectKind.Explosion, position, radius);
         foreach (var enemy in grid.Query(position, radius + 35))
             if (Vector2.DistanceSquared(position, enemy.Position) < MathF.Pow(radius + enemy.Radius, 2))

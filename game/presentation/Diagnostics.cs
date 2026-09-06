@@ -35,7 +35,7 @@ public partial class GameRoot
 
     private void PrepareBattlePreview(string mode)
     {
-        StartRun(HeroKind.Reimu, 260906);
+        StartRun(mode.StartsWith("marisa", StringComparison.Ordinal) ? HeroKind.Marisa : HeroKind.Reimu, 260906);
         var targetTicks = mode == "boss" ? 15300 : 4500;
         for (var index = 0; index < targetTicks; index++)
         {
@@ -43,7 +43,7 @@ public partial class GameRoot
             run!.Step(RunPilot.Input(run, index));
             if (run.Phase is RunPhase.Won or RunPhase.Lost) break;
         }
-        if (mode == "choices")
+        if (mode is "choices" or "marisa-choices")
         {
             while (run!.Phase == RunPhase.Choosing) run.Choose(0);
             run.AddExperience(run.NextLevelExperience);
@@ -63,14 +63,35 @@ public partial class GameRoot
         canvas.Focused = true;
         canvas.ReceiveEvents();
         RefreshRunScreen();
-        if (mode is "build" or "build-max")
+        if (mode is "build" or "build-max" or "marisa-build")
         {
             while (run.Phase == RunPhase.Choosing) run.Choose(0);
             if (mode == "build-max")
-                foreach (var art in ArtCatalog.All.Take(8)) run.Ranks[(int)art.Id] = art.MaxRank;
+                foreach (var art in ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && ArtCatalog.Available(run.Hero, art.Id))) run.Ranks[(int)art.Id] = art.MaxRank;
             RefreshRunScreen();
             OpenBuild();
         }
+        if (mode is "reimu-spell" or "reimu-field" or "marisa-beam" or "marisa-stars" or "marisa-warmup") PrepareAbilityPreview(mode);
+    }
+
+    private void PrepareAbilityPreview(string mode)
+    {
+        StartRun(mode.StartsWith("marisa", StringComparison.Ordinal) ? HeroKind.Marisa : HeroKind.Reimu, 260906);
+        foreach (var art in ArtCatalog.Abilities(run!.Hero)) run.Ranks[(int)art.Id] = 3;
+        foreach (var offset in new[] { new NumericsVector(230, -80), new NumericsVector(420, -140), new NumericsVector(-180, 110) })
+        {
+            var enemy = run.SpawnEnemy(EnemyKind.Elite, offset);
+            enemy.Health = enemy.MaxHealth = 10000;
+            enemy.Speed = 0;
+        }
+        if (mode == "reimu-spell")
+            for (var index = 0; index < 20; index++) run.Projectiles.Add(new() { Position = Geometry.Angle(index * MathF.Tau / 20) * 25, Hostile = true, Radius = 1, Life = 2 });
+        var ticks = mode == "marisa-warmup" ? 8 : mode == "reimu-spell" ? 14 : mode == "marisa-stars" ? 18 : 45;
+        for (var index = 0; index < ticks; index++) run.Step(new(mode == "reimu-field" ? new NumericsVector(0, 1) : NumericsVector.Zero));
+        canvas.Clock = run.Time;
+        canvas.ResetView();
+        canvas.ReceiveEvents();
+        RefreshRunScreen();
     }
 
     public override void _Process(double delta)
@@ -169,6 +190,19 @@ public partial class GameRoot
         Require(history.GetParsedText().Contains("alpha-0.0.0") && history.GetParsedText().Contains("alpha-0.0.5"), "Embedded complete history remains accessible");
         PressKey(Key.Escape);
         Require(currentScreen == "title", "Changelog returns to title");
+        ShowHeroes();
+        PressButton("执此道 · 雾雨魔理沙");
+        PressKey(Key.E);
+        var buildText = string.Join(" ", Descendants(screen!).OfType<Label>().Select(label => label.Text));
+        Require(buildText.Contains("Master Spark") && buildText.Contains("星光射击") && !buildText.Contains("追踪御札"), "Marisa inspection displays only her abilities");
+        AssertUiBounds();
+        PressKey(Key.Escape);
+        run!.AddExperience(30);
+        run.Step(default);
+        RefreshRunScreen();
+        Require(run.Choices.All(art => ArtCatalog.Available(HeroKind.Marisa, art)), "Marisa choices are character-owned");
+        AssertUiBounds();
+        ShowTitle();
         GD.Print("UI: navigation, inspection, preserved offers, audio sliders, embedded history, title, heroes, dash, victory, replay, help, viewport bounds");
     }
 

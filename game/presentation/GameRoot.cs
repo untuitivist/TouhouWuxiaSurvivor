@@ -22,6 +22,7 @@ public partial class GameRoot : Node
 
     public override void _Ready()
     {
+        DisplayServer.WindowSetTitle("幻想乡 · 夜境异闻");
         var body = new SystemFont { FontNames = ["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"], Antialiasing = TextServer.FontAntialiasing.Lcd };
         var title = new SystemFont { FontNames = ["KaiTi", "STKaiti", "Noto Serif CJK SC", "serif"], Antialiasing = TextServer.FontAntialiasing.Lcd };
         canvas.BodyFont = body;

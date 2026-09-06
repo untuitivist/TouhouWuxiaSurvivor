@@ -1,41 +1,46 @@
 namespace Rebirth.Core;
 
-public sealed record ArtDefinition(ArtKind Id, string Name, string School, string Description, string Mastery, string Color, int MaxRank);
+public sealed record ArtDefinition(ArtKind Id, string Name, string School, string Description, string Mastery, string Color, int MaxRank, HeroKind? Owner = null, string Source = "", string Symbol = "");
 
 public static class ArtCatalog
 {
     public static readonly ArtDefinition[] All =
     [
-        new(ArtKind.Sword, "御剑诀", "御剑 · 破阵", "飞剑自动追敌。每重提高剑伤，二、四重增加飞剑，三重开始穿透。", "万剑归宗：五剑齐发，贯穿四敌。", "e6c786", 5),
-        new(ArtKind.Orbit, "阴阳两仪", "结界 · 护身", "阴阳玉绕身旋转，持续击退近敌。每重增加玉数与伤害。", "太极无相：回旋半径扩大，近身伤害大增。", "8cdcc8", 5),
-        new(ArtKind.Talisman, "灵符·散华", "符术 · 爆破", "向妖群投出灵符，命中后范围爆破。每重扩大爆破并提高伤害。", "梦想散华：三符齐出，爆破覆盖更大范围。", "ef9fb3", 5),
-        new(ArtKind.Lightning, "紫电游龙", "雷法 · 连锁", "雷光在邻近敌人间跳跃。每重增加伤害和连锁目标。", "九霄雷劫：连锁九敌，施法间隔缩短。", "bab0f0", 5),
-        new(ArtKind.Power, "破军心法", "心法 · 威力", "全部武学伤害 +18%。剑意爆发同样受益。", "", "e6c786", 3),
-        new(ArtKind.Haste, "行云流水", "心法 · 节奏", "全部武学施放频率 +14%。", "", "8cdcc8", 3),
-        new(ArtKind.Vitality, "长生真经", "心法 · 生存", "生命上限 +25，立即恢复 35 点生命。", "", "ef9fb3", 3),
-        new(ArtKind.Flow, "踏雪无痕", "身法 · 游走", "移动 +6%，拾取半径 +35，闪身冷却减少 0.35 秒。", "", "a9cadb", 3),
-        new(ArtKind.Recovery, "调息归元", "调息 · 恢复", "立即恢复 40 点生命，获得 25 点剑意。", "", "8cdcc8", int.MaxValue)
+        new(ArtKind.Ofuda, "追踪御札", "灵梦 · 追踪", "符纸自动追踪妖怪；目标消失后寻找新目标。", "六张御札追踪，目标消失后重新索敌。", "ef9fb3", 5, HeroKind.Reimu, "红魔乡/永夜抄说明书：御札；本作追踪转译", "札"),
+        new(ArtKind.YinYang, "阴阳玉", "灵梦 · 护身", "阴阳玉绕身，击退近敌；走位决定接触范围。", "六枚阴阳玉，回旋半径扩大至 115。", "8cdcc8", 5, HeroKind.Reimu, "红魔乡说明书：阴阳玉；本作回旋转译", "玉"),
+        new(ArtKind.Boundary, "封魔阵", "灵梦 · 留阵", "在脚下留下方形封魔阵，持续伤害阵内敌人；离开后阵地不跟随。", "更大的驻留阵地；进退之间引敌入阵。", "efb7bf", 5, HeroKind.Reimu, "红魔乡：梦符「封魔阵」；本作驻留转译", "阵"),
+        new(ArtKind.Stars, "星光射击", "魔理沙 · 散射", "星弹自动朝妖群散射；慢移时收束角度，不增加弹数或伤害。", "七星齐发；散射覆盖与慢移集中自由切换。", "e6c786", 5, HeroKind.Marisa, "永夜抄说明书/求闻史纪：星尘与光热魔法", "星"),
+        new(ArtKind.Stardust, "星尘幻想", "魔理沙 · 扩散", "星屑向四周扩散，贯穿少量敌人；近处覆盖更密集。", "二十三枚星屑扩散，贯穿两敌。", "bab0f0", 5, HeroKind.Marisa, "红魔乡：魔符「Stardust Reverie」；本作转译", "尘"),
+        new(ArtKind.MasterSpark, "Master Spark", "魔理沙 · 魔炮", "自动锁向，蓄势后发射持续光束；方向锁定，走位可平移火线。", "更宽、更持久的魔炮；发射时仍可移动。", "a9cadb", 5, HeroKind.Marisa, "红魔乡：恋符「Master Spark」；本作自动施放", "炮"),
+        new(ArtKind.Power, "威力修习", "修习 · 威力", "威力系数增加基础值的 18%；符卡同样受益。", "", "e6c786", 3),
+        new(ArtKind.Haste, "施法精进", "修习 · 节奏", "施放频率系数 +0.14；魔炮只缩短休整，不加快光束伤害脉冲。", "", "8cdcc8", 3),
+        new(ArtKind.Vitality, "体魄修习", "修习 · 生存", "生命上限 +25，立即恢复 35 点生命。", "", "ef9fb3", 3),
+        new(ArtKind.Flow, "步法调息", "修习 · 游走", "移动增加基础值的 6%，拾取半径 +35，闪身冷却减少 0.35 秒。", "", "a9cadb", 3),
+        new(ArtKind.Recovery, "调息", "调息 · 恢复", "立即恢复 40 点生命，获得 25 点符卡蓄势。", "", "8cdcc8", int.MaxValue)
     ];
 
     public static ArtDefinition Get(ArtKind kind) => All[(int)kind];
+    public static IEnumerable<ArtDefinition> Abilities(HeroKind hero) => All.Where(art => art.Owner == hero);
+    public static IEnumerable<ArtDefinition> Training => All.Where(art => art.Owner == null && art.Id != ArtKind.Recovery);
+    public static bool Available(HeroKind hero, ArtKind kind) => Get(kind).Owner is not { } owner || owner == hero;
+    public static string SignatureName(HeroKind hero) => hero == HeroKind.Reimu ? "灵符「梦想封印」" : "恋符「Master Spark」";
+
     public static string UpgradeText(ArtKind kind, int rank)
     {
-        if (rank >= Get(kind).MaxRank) return "已达圆满；可转向其他武学或补强生存。";
-        return kind switch
+        if (rank >= Get(kind).MaxRank) return "已达圆满；可转向其他能力或补强生存。";
+        if (Get(kind).Owner == null) return Get(kind).Description;
+        var next = AbilityTuning.Get(kind, rank + 1);
+        var prefix = rank == 0 ? "习得：" : "下一重：";
+        return prefix + (kind switch
         {
-            ArtKind.Sword => rank switch
-            {
-                0 => "习得自动追敌飞剑，建立远程攻击。",
-                1 => "每轮飞剑 1 → 2；单剑伤害提高。",
-                2 => "飞剑可贯穿 2 个敌人；单剑伤害提高。",
-                3 => "每轮飞剑 2 → 3；单剑伤害提高。",
-                _ => "每轮飞剑 3 → 5，可贯穿 4 敌；伤害提高。"
-            },
-            ArtKind.Orbit => rank == 0 ? "习得两枚绕身阴阳玉，击退靠近的敌人。" : rank == 4 ? "阴阳玉 5 → 6；回旋半径 85 → 115，伤害提高。" : $"阴阳玉 {rank + 1} → {rank + 2}；近身伤害提高。",
-            ArtKind.Talisman => rank == 0 ? "习得命中爆破的灵符，补充范围攻击。" : rank is 2 or 4 ? $"每轮灵符 {(rank == 2 ? "1 → 2" : "2 → 3")}；爆破范围与伤害提高。" : "爆破范围与单符伤害提高；本重不增加灵符数量。",
-            ArtKind.Lightning => rank == 0 ? "习得雷光，最多连锁 2 敌。" : rank == 4 ? "最多连锁 5 → 9 敌；基础间隔 1.65 → 1.05 秒，伤害提高。" : $"最多连锁 {rank + 1} → {rank + 2} 敌；单次伤害提高。",
-            _ => Get(kind).Description
-        };
+            ArtKind.Ofuda => $"每轮 {next.Count} 张追踪御札，单札基础伤害 {next.Damage:0}。",
+            ArtKind.YinYang => $"{next.Count} 枚阴阳玉，基础伤害 {next.Damage:0}，回旋半径 {next.Range:0}。",
+            ArtKind.Boundary => $"半边长 {next.Range:0}，留阵 {next.Duration:0.0} 秒；每次基础伤害 {next.Damage:0}。",
+            ArtKind.Stars => $"每轮 {next.Count} 枚星弹，单弹基础伤害 {next.Damage:0}；Shift 收束。",
+            ArtKind.Stardust => $"每轮 {next.Count} 枚扩散星屑，基础伤害 {next.Damage:0}，贯穿两敌。",
+            _ => $"光束宽 {AbilityTuning.BeamHalfWidth(rank + 1) * 2:0}，持续 {next.Duration:0.00} 秒；每次基础伤害 {next.Damage:0}。"
+        });
     }
+
     public static string RankText(ArtKind kind, int rank) => kind == ArtKind.Recovery ? "即时生效" : $"第 {rank + 1} 重 / {Get(kind).MaxRank}";
 }

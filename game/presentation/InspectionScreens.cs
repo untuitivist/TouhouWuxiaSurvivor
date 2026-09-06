@@ -8,24 +8,25 @@ public partial class GameRoot
     private void ShowBuild()
     {
         if (run == null) return;
-        var panel = Modal("build", "YOUR PATH  /  属性与构筑", "看清这一剑，再决定下一式。", 1120, 620);
+        var panel = Modal("build", "YOUR PATH  /  属性与构筑", "知己所长，进退有度。", 1120, 620);
         var hero = run.Hero == HeroKind.Reimu ? "博丽灵梦" : "雾雨魔理沙";
-        ui.Label(panel, $"{hero}  ·  第 {run.Level} 境", new(36, 132, 292, 32), 22, Palette.Gold);
-        ui.Label(panel, $"生命  {run.Health:0.#} / {run.MaxHealth:0}\n武学威力  ×{run.Power:0.00}\n施放频率  ×{run.CastSpeed:0.00}\n移动速度  {run.MoveSpeed:0.#}\n拾取半径  {run.PickupRadius:0}\n闪身冷却  {run.DashInterval:0.00} 秒", new(36, 180, 280, 202), 18);
-        ui.Label(panel, "数值包含角色与本局心法加成。\n移动速度为正常走位，不含慢移或闪身。\n施放频率不等于总伤害。", new(36, 397, 281, 79), 14, Palette.Muted);
-        for (var index = 0; index < 4; index++)
+        ui.Label(panel, $"{hero}  ·  修习 {run.Level}", new(36, 132, 292, 32), 22, Palette.Gold);
+        ui.Label(panel, $"生命  {run.Health:0.#} / {run.MaxHealth:0}\n术式威力  ×{run.Power:0.00}\n施放频率  ×{run.CastSpeed:0.00}\n移动速度  {run.MoveSpeed:0.#}\n拾取半径  {run.PickupRadius:0}\n闪身冷却  {run.DashInterval:0.00} 秒", new(36, 180, 280, 202), 18);
+        ui.Label(panel, $"符卡：{ArtCatalog.SignatureName(run.Hero)}\n蓄势满后自动施放，无额外按键。\n数值含本局修习；频率不等于总伤害。", new(36, 397, 281, 79), 14, Palette.Muted);
+        var abilities = ArtCatalog.Abilities(run.Hero).ToArray();
+        for (var index = 0; index < abilities.Length; index++)
         {
-            var art = ArtCatalog.All[index];
-            var rank = run.Ranks[index];
+            var art = abilities[index];
+            var rank = run.Ranks[(int)art.Id];
             var color = rank > 0 ? new Color(art.Color) : Palette.Muted;
-            var card = ui.Panel(panel, new(344 + index % 2 * 369, 132 + index / 2 * 179, 354, 165), new Color("172a31"));
-            ui.Label(card, art.Name, new(16, 12, 230, 31), 23, color, true);
-            ui.Label(card, rank == 0 ? "未习得" : $"{rank} / {art.MaxRank} 重", new(263, 17, 79, 25), 14, color);
-            ui.Label(card, art.School, new(17, 49, 318, 23), 14, Palette.Muted);
-            ui.Label(card, (rank >= art.MaxRank ? "圆满：" + art.Mastery : "下一重：" + ArtCatalog.UpgradeText(art.Id, rank)), new(17, 84, 319, 66), 16, Palette.Paper);
+            var card = ui.Panel(panel, new(344, 132 + index * 115, 723, 110), new Color("172a31"));
+            ui.Label(card, art.Name, new(16, 8, 570, 31), 23, color, true);
+            ui.Label(card, rank == 0 ? "未习得" : $"{rank} / {art.MaxRank} 重", new(617, 14, 92, 25), 14, color);
+            ui.Label(card, art.Source, new(17, 42, 689, 23), 12, Palette.Muted);
+            ui.Label(card, rank >= art.MaxRank ? "圆满：" + art.Mastery : ArtCatalog.UpgradeText(art.Id, rank), new(17, 68, 689, 36), 15, Palette.Paper);
         }
-        var training = ArtCatalog.All.Skip(4).Take(4).Select(art => $"{art.Name} {run.Ranks[(int)art.Id]}/{art.MaxRank}");
-        ui.Label(panel, "心法 / 身法    " + string.Join("    ·    ", training), new(36, 496, 1048, 34), 16, Palette.Jade);
+        var training = ArtCatalog.Training.Select(art => $"{art.Name} {run.Ranks[(int)art.Id]}/{art.MaxRank}");
+        ui.Label(panel, "通用修习    " + string.Join("    ·    ", training), new(36, 496, 1048, 34), 16, Palette.Jade);
         ui.Button(panel, "返回 [E / Esc]", new(36, 554, 276, 42), CloseBuild, true).GrabFocus();
         var destination = run.Phase == RunPhase.Choosing ? "返回后继续三选一，不改变候选项。" : resumeAfterInspection ? "返回后继续战斗。" : "返回暂停菜单，战斗仍暂停。";
         ui.Label(panel, "时间已停。" + destination, new(343, 561, 741, 30), 16, Palette.Muted);

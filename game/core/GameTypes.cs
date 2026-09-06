@@ -5,8 +5,8 @@ namespace Rebirth.Core;
 public enum HeroKind { Reimu, Marisa }
 public enum RunPhase { Playing, Choosing, Paused, Won, Lost }
 public enum EnemyKind { Kedama, Fairy, Charger, Elite, Boss }
-public enum ArtKind { Sword, Orbit, Talisman, Lightning, Power, Haste, Vitality, Flow, Recovery }
-public enum EffectKind { Hit, Defeat, Graze, Hurt, Dash, Burst, Seal, Lightning, Explosion, Level, Boss, Victory }
+public enum ArtKind { Ofuda, YinYang, Boundary, Stars, Stardust, MasterSpark, Power, Haste, Vitality, Flow, Recovery }
+public enum EffectKind { Hit, Defeat, Graze, Hurt, Dash, Spell, Seal, Beam, Explosion, Level, Boss, Victory }
 
 public readonly record struct FrameInput(Vector2 Move, bool Focus = false, bool Dash = false);
 public readonly record struct CombatEvent(EffectKind Kind, Vector2 Position, Vector2 Target, float Value = 0);
@@ -41,7 +41,32 @@ public sealed class Projectile
     public bool Hostile;
     public bool Grazed;
     public bool Alternate;
+    public float TurnRate;
+    public int TargetId;
+    public bool DreamOrb;
+    public int TintIndex;
     public readonly HashSet<int> HitIds = [];
+}
+
+public sealed class BeamState
+{
+    public Vector2 Direction;
+    public float Warmup;
+    public float Remaining;
+    public float PulseTimer;
+    public float Damage;
+    public float HalfWidth;
+    public float Length;
+    public bool Signature;
+}
+
+public sealed class BoundaryField
+{
+    public Vector2 Position;
+    public float Remaining;
+    public float PulseTimer;
+    public float HalfSize;
+    public float Damage;
 }
 
 public sealed class Pickup

@@ -8,6 +8,7 @@ public partial class GameCanvas
     private void DrawCombat()
     {
         if (Run == null) return;
+        DrawHeroFields();
         foreach (var pickup in Run.Pickups)
         {
             var position = Palette.Vector(pickup.Position);
@@ -28,7 +29,7 @@ public partial class GameCanvas
                 DrawLine(position, target, Palette.Alpha(Palette.Red, 0.65f), 2);
             }
             DrawCircle(position + new Vector2(0, 4), enemy.Radius, new Color(0, 0, 0, 0.2f));
-            var name = enemy.Kind switch { EnemyKind.Kedama => "actors/kedama", EnemyKind.Fairy => "actors/wild_fairy", EnemyKind.Charger => "actors/mountain_spirit", EnemyKind.Elite => "actors/great_youkai", _ => "players/marisa" };
+            var name = enemy.Kind switch { EnemyKind.Kedama => "actors/kedama", EnemyKind.Fairy => "actors/wild_fairy", EnemyKind.Charger => "actors/mountain_spirit", _ => "actors/great_youkai" };
             var scale = enemy.Kind switch { EnemyKind.Kedama => 0.95f, EnemyKind.Elite => 1.7f, EnemyKind.Boss => 2.0f, _ => 1.15f };
             if (enemy.Kind is EnemyKind.Elite or EnemyKind.Boss)
             {
@@ -42,8 +43,8 @@ public partial class GameCanvas
         }
         foreach (var projectile in Run.Projectiles.Where(projectile => !projectile.Hostile)) DrawProjectile(projectile);
         var player = Palette.Vector(Run.PlayerPosition);
-        var orbitRank = Run.Ranks[(int)ArtKind.Orbit];
-        if (orbitRank > 0)
+        var orbitRank = Run.Ranks[(int)ArtKind.YinYang];
+        if (Run.Hero == HeroKind.Reimu && orbitRank > 0)
         {
             DrawArc(player, Run.OrbitRadius, 0, MathF.Tau, 64, Palette.Alpha(Palette.Jade, 0.10f), 1);
             for (var index = 0; index < orbitRank + 1; index++)
@@ -84,19 +85,27 @@ public partial class GameCanvas
             DrawCircle(position, 5.5f, color);
             DrawCircle(position, 2.5f, Palette.Paper);
         }
-        else if (projectile.Art == ArtKind.Talisman)
+        else if (projectile.DreamOrb)
         {
-            DrawCircle(position, 14, Palette.Alpha(Palette.Red, 0.1f));
-            DrawLine(position - direction * 9, position + direction * 9, Palette.Paper, 7);
-            DrawLine(position - direction * 5, position + direction * 5, Palette.Red, 3);
+            var color = DreamColors[projectile.TintIndex % DreamColors.Length];
+            DrawCircle(position, 21, Palette.Alpha(color, 0.12f));
+            DrawLine(position - direction * 25, position, Palette.Alpha(color, 0.22f), 10);
+            DrawCircle(position, projectile.Radius, color);
+            DrawCircle(position, 5, Palette.Paper);
+        }
+        else if (projectile.Art == ArtKind.Ofuda)
+        {
+            var side = direction.Orthogonal() * 5;
+            DrawColoredPolygon([position + direction * 10 + side, position + direction * 10 - side, position - direction * 10 - side, position - direction * 10 + side], Palette.Paper);
+            DrawLine(position - direction * 6, position + direction * 6, Palette.Red, 2);
+            DrawLine(position - side * 0.7f, position + side * 0.7f, Palette.Red, 2);
         }
         else
         {
-            DrawLine(position - direction * 30, position, Palette.Alpha(Palette.Gold, 0.12f), 9);
-            DrawLine(position - direction * 19, position + direction * 10, Palette.Gold, 3);
-            DrawLine(position - direction * 5, position + direction * 10, Palette.Paper, 2);
-            var cross = direction.Orthogonal() * 5;
-            DrawLine(position - direction * 12 - cross, position - direction * 12 + cross, Palette.Gold, 2);
+            var color = projectile.Art == ArtKind.Stardust ? Palette.Violet : Palette.Gold;
+            DrawLine(position - direction * 18, position, Palette.Alpha(color, 0.16f), 5);
+            Star(position, projectile.Radius + 2, color, Clock * 3 + projectile.Life);
+            DrawCircle(position, 2, Palette.Paper);
         }
     }
 
@@ -112,18 +121,15 @@ public partial class GameCanvas
                 case EffectKind.Hit:
                     Text(((int)effect.Entry.Value).ToString(), position + new Vector2(-8, -30 - progress * 22), 13, Palette.Alpha(Palette.Gold, 1 - progress));
                     break;
-                case EffectKind.Lightning:
-                    var target = Palette.Vector(effect.Entry.Target);
-                    var middle = (position + target) / 2 + (target - position).Normalized().Orthogonal() * 18;
-                    DrawPolyline([position, middle, target], Palette.Alpha(Palette.Violet, 0.18f * (1 - progress)), 10);
-                    DrawPolyline([position, middle, target], color, 2);
+                case EffectKind.Beam:
+                    Star(position, 32 * (1 - progress), Palette.Alpha(Palette.Gold, 1 - progress), progress * 3);
                     break;
                 case EffectKind.Explosion:
                     DrawCircle(position, effect.Entry.Value * progress, Palette.Alpha(Palette.Red, 0.12f * (1 - progress)));
                     DrawArc(position, effect.Entry.Value * progress, 0, MathF.Tau, 40, Palette.Alpha(Palette.Red, 1 - progress), 2);
                     break;
-                case EffectKind.Burst:
-                    DrawArc(position, 540 * progress, 0, MathF.Tau, 96, Palette.Alpha(Palette.Gold, 1 - progress), ReducedMotion ? 2 : 5);
+                case EffectKind.Spell:
+                    DrawArc(position, 110 * progress, 0, MathF.Tau, 64, Palette.Alpha(Run?.Hero == HeroKind.Reimu ? Palette.Red : Palette.Gold, 1 - progress), ReducedMotion ? 2 : 3);
                     break;
                 case EffectKind.Seal:
                     DrawArc(position, 160 * progress, 0, MathF.Tau, 48, Palette.Alpha(Palette.Jade, 1 - progress), 3);
