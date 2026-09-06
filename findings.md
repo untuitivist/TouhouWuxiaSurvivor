@@ -2,6 +2,12 @@
 
 ## Web and Version Assessment — 2026-09-06
 
+- Historical CHANGELOG tail from alpha-0.0.5 through alpha-0.0.0 matches d229b36 exactly (line-ending normalization only).
+- Legacy manifests declare 20 optional packs: TH06 development and 19 inventory packs; 132 unique declared character names and 51 spell definitions, including six base spells. These are inventory/runtime-registration counts, not proof of full polish.
+- Legacy sources contain real character selection, compendium, meta-progression, settings, completion/endless and in-game changelog paths. Their absence in the new compile graph is a feature loss, not a newly achieved simplification without tradeoffs.
+- Old source count: 426 C# files under src, 80 integration-test files. New source count: 20 C# files under game. File counts measure scope, not relative quality or performance.
+- Deployment sources were fetched directly from official stable/latest Godot documentation on 2026-09-06 after the web tool returned no source payloads; both repeat the unsupported C# Web export warning. Single-threaded Web export is documented as the default; isolation headers are conditional on threads/extensions, not universally mandatory.
+
 - Official stable and latest Godot Web-export documentation both explicitly state that Godot 4 C# projects currently cannot be exported to Web through the supported export path.
 - Current project targets Godot.NET.Sdk 4.7.1 / net8.0 and compiles only game/**/*.cs. A self-contained Windows EXE is not a browser build.
 - `git diff d229b36 HEAD -- src content assets tests/integration` is empty: the preserved legacy sources/data can be inspected directly without checking out or overwriting the live project.
