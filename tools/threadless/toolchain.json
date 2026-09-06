@@ -1,0 +1,32 @@
+{
+  "engineRevision": "b94985982075d0c7d73bbced427516ce5f3e140f",
+  "emsdkRevision": "d49219d03a41cd12f95a33ba84273c20d41fd350",
+  "emsdkVersion": "4.0.11",
+  "sdkVersion": "9.0.317",
+  "downloads": [
+    {
+      "name": "engine.tar.gz",
+      "url": "https://codeload.github.com/ComplexRobot/godot/tar.gz/b94985982075d0c7d73bbced427516ce5f3e140f",
+      "algorithm": "SHA256",
+      "hash": "e9fb69096d3d469c22051785933fbe26d883f4a2dc474bec6423f9e2c3dfc185"
+    },
+    {
+      "name": "emsdk.tar.gz",
+      "url": "https://codeload.github.com/emscripten-core/emsdk/tar.gz/d49219d03a41cd12f95a33ba84273c20d41fd350",
+      "algorithm": "SHA256",
+      "hash": "dd4ade42e07560abed1bafe14e3bf5a9c2d5679bf1eacb4f4b408ee9c4795364"
+    },
+    {
+      "name": "dotnet.tar.gz",
+      "url": "https://builds.dotnet.microsoft.com/dotnet/Sdk/9.0.317/dotnet-sdk-9.0.317-linux-x64.tar.gz",
+      "algorithm": "SHA512",
+      "hash": "145bf69dcb88c4b905feb531cfdd7894a75fc875d2a030e958a13d1fb1131521c8cebd8a8a6e0fbd1a433ebae9cde86356b6adad07b1ad81efb92b36ff8a3333"
+    },
+    {
+      "name": "scons.whl",
+      "url": "https://files.pythonhosted.org/packages/45/92/50b739021983b131dcacd57aa8b04d31c5acc2e7e0eb4ed4a362f438c6b7/scons-4.9.1-py3-none-any.whl",
+      "algorithm": "SHA256",
+      "hash": "d2db1a22eb6039e97cbbb0106f18f435af033d0aad190299c9688378e2810a5e"
+    }
+  ]
+}

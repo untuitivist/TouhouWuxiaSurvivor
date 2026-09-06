@@ -2,14 +2,16 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 
-function startProbeServer(root, port = 0) {
+function startProbeServer(root, port = 0, { isolation = true, entryArguments = null } = {}) {
     const site = fs.realpathSync(root);
     const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.png': 'image/png' };
     const requests = [];
     const server = http.createServer((request, response) => {
         response.setHeader('Cache-Control', 'no-store');
-        response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-        response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+        if (isolation) {
+            response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+            response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+        }
         response.setHeader('X-Content-Type-Options', 'nosniff');
         let pathname;
         try { pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname); }
@@ -31,6 +33,13 @@ function startProbeServer(root, port = 0) {
             const stats = fs.statSync(real);
             if (!stats.isFile()) { response.writeHead(404).end(); return; }
             requests.push({ path: pathname, status: 200, bytes: stats.size });
+            if (entryArguments && path.extname(real) === '.html') {
+                const args = typeof entryArguments === 'function' ? entryArguments() : entryArguments;
+                const html = fs.readFileSync(real, 'utf8').replace('"args":[]', `"args":${JSON.stringify(args)}`);
+                response.writeHead(200, { 'Content-Type': types['.html'], 'Content-Length': Buffer.byteLength(html) });
+                response.end(request.method === 'HEAD' ? undefined : html);
+                return;
+            }
             response.writeHead(200, { 'Content-Type': types[path.extname(real)] || 'application/octet-stream', 'Content-Length': stats.size });
             if (request.method === 'HEAD') { response.end(); return; }
             const stream = fs.createReadStream(real);

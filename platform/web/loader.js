@@ -56,7 +56,7 @@
         }
     }
 
-    function create(configuration, transfers) {
+    function create(configuration, transfers, threads = true) {
         const compressed = Array.isArray(transfers) && typeof scope.DecompressionStream === 'function';
         const files = compressed ? transfers.map(file => ({ ...file })) : Object.entries(configuration.fileSizes)
             .filter(([file]) => /\.(wasm|pck)$/.test(file))
@@ -66,6 +66,7 @@
             .map(name => [name, document.getElementById(name)]));
         const originalFetch = scope.fetch;
         const abort = new AbortController();
+        const responses = new Set();
         let failed = false;
         let timer;
         let wrappedFetch;
@@ -79,6 +80,7 @@
 
         function restore() {
             if (scope.fetch === wrappedFetch) scope.fetch = originalFetch;
+            responses.clear();
         }
 
         function render() {
@@ -126,20 +128,27 @@
                 const download = new URL(file.download, document.baseURI).href;
                 const response = await originalFetch.call(scope, download, { ...options, signal: abort.signal });
                 if (!response.ok || !response.body) throw new Error(`资源请求失败：HTTP ${response.status}`);
+                responses.add(response);
                 if (file.compressed && response.headers.get('Content-Encoding')) throw new Error('压缩资源的服务器响应不符合加载要求。');
                 if (!file.compressed && response.headers.get('Content-Encoding')) decodedMode = true;
-                const tracked = response.body.pipeThrough(new TransformStream({
-                    transform(chunk, controller) {
-                        monitor.receive(file, chunk.byteLength);
-                        controller.enqueue(chunk);
-                    },
-                    flush() {
+                const sourceReader = response.body.getReader();
+                const tracked = new ReadableStream({
+                    async pull(controller) {
+                        const result = await sourceReader.read();
+                        if (!result.done) {
+                            monitor.receive(file, result.value.byteLength);
+                            controller.enqueue(result.value);
+                            return;
+                        }
                         const timings = performance.getEntriesByName(download);
                         const timing = timings[timings.length - 1];
                         monitor.complete(file, !!timing && timing.transferSize === 0 && timing.decodedBodySize > 0);
                         render();
-                    }
-                }));
+                        sourceReader.releaseLock();
+                        controller.close();
+                    },
+                    cancel(reason) { return sourceReader.cancel(reason); }
+                });
                 const decoded = file.compressed ? tracked.pipeThrough(new DecompressionStream('gzip')) : tracked;
                 const reader = decoded.getReader();
                 const body = new ReadableStream({
@@ -167,7 +176,7 @@
         return { fail, async start() {
             if (failed) return;
             try {
-                const missing = Engine.getMissingFeatures({ threads: true });
+                const missing = Engine.getMissingFeatures({ threads });
                 if (missing.length) throw new Error('浏览器或服务器不满足运行条件：' + missing.join('、'));
                 scope.fetch = wrappedFetch;
                 const engine = new Engine(configuration);

@@ -63,7 +63,7 @@
     const TOUHOU_DOWNLOADS = null;
   </script>
   <script src="index.loader.js" onerror="document.getElementById('notice').textContent='加载器下载失败，请检查网络后重试。'; document.getElementById('retry').hidden=false; document.getElementById('retry').onclick=()=>location.reload();"></script>
-  <script>const loading = globalThis.TouhouLoading ? TouhouLoading.create(GODOT_CONFIG, TOUHOU_DOWNLOADS) : null;</script>
+  <script>const loading = globalThis.TouhouLoading ? TouhouLoading.create(GODOT_CONFIG, TOUHOU_DOWNLOADS, $GODOT_THREADS_ENABLED) : null;</script>
   <script src="$GODOT_URL" onerror="if(loading) loading.fail(new Error('引擎脚本下载失败，请检查网络后重试。'))"></script>
   <script>if(loading) loading.start();</script>
 </body>

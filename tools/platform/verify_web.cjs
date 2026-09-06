@@ -3,11 +3,12 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const { startProbeServer } = require('../web_probe/server.cjs');
 
-async function verify(playwright, repository) {
-    const latest = JSON.parse(await fs.readFile(path.join(repository, 'artifacts/web-latest.json'), 'utf8'));
-    const output = path.join(latest.build, 'verification');
+async function verify(playwright, repository, { compatible = false, isolation = true } = {}) {
+    const latest = JSON.parse(await fs.readFile(path.join(repository, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
+    const output = path.join(latest.build, compatible ? `verification-compatible-${isolation ? 'isolated' : 'unisolated'}` : 'verification');
     await fs.mkdir(output, { recursive: true });
-    const host = await startProbeServer(latest.site);
+    let launchArguments = [];
+    const host = await startProbeServer(latest.site, 0, { isolation, entryArguments: () => launchArguments });
     const report = { physicalMobileTested: false, build: latest.build, checks: [] };
     let browser;
     async function scenario(name, mobile, args, actions) {
@@ -17,12 +18,7 @@ async function verify(playwright, repository) {
         page.on('console', message => { if (['warning', 'error'].includes(message.type())) entry.events.push({ type: message.type(), text: message.text() }); });
         page.on('pageerror', error => entry.events.push({ type: 'pageerror', text: String(error) }));
         page.on('requestfailed', request => entry.failedRequests.push({ url: request.url(), error: request.failure()?.errorText }));
-        await page.route('**/TouhouSurvivor/', async route => {
-            const response = await route.fetch();
-            const html = await response.text();
-            assert.ok(html.includes('"args":[]'), 'Recognize engine launch arguments');
-            await route.fulfill({ response, body: html.replace('"args":[]', `"args":${JSON.stringify(['--', '--web-validation', ...args])}`) });
-        });
+        launchArguments = ['--', '--web-validation', ...args];
         const wait = async predicate => {
             try { await page.waitForFunction(predicate, undefined, { timeout: 45000 }); }
             catch (error) { throw new Error(`${predicate}: ${error}`); }
@@ -46,7 +42,8 @@ async function verify(playwright, repository) {
         try {
             await page.goto(host.origin + '/TouhouSurvivor/', { waitUntil: 'domcontentloaded' });
             await wait(() => !!window.__touhouProbe && !document.querySelector('#loading'));
-            assert.equal(await page.evaluate(() => crossOriginIsolated), true);
+            assert.equal(await page.evaluate(() => crossOriginIsolated), isolation);
+            if (!isolation) assert.equal(await page.evaluate(() => typeof SharedArrayBuffer), 'undefined');
             assert.equal((await state()).HasChineseGlyphs, true);
             assert.equal((await state()).Persistent, true);
             await actions({ page, context, wait, state, point, click, screenshot, entry });
@@ -74,8 +71,8 @@ async function verify(playwright, repository) {
         assert.equal(redirect.status, 308);
         const wasm = await fetch(host.origin + '/TouhouSurvivor/index.wasm', { method: 'HEAD' });
         assert.equal(wasm.headers.get('content-type'), 'application/wasm');
-        assert.equal(wasm.headers.get('cross-origin-opener-policy'), 'same-origin');
-        assert.equal(wasm.headers.get('cross-origin-embedder-policy'), 'require-corp');
+        assert.equal(wasm.headers.get('cross-origin-opener-policy'), isolation ? 'same-origin' : null);
+        assert.equal(wasm.headers.get('cross-origin-embedder-policy'), isolation ? 'require-corp' : null);
         assert.equal((await fetch(host.origin + '/project.godot')).status, 404);
         report.hostingPassed = true;
         await scenario('desktop', false, [], async ({ page, wait, state, click, screenshot, entry }) => {

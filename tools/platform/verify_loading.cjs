@@ -9,7 +9,8 @@ const { setTimeout: delay } = require('node:timers/promises');
 const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../..');
-const build = JSON.parse(fs.readFileSync(path.join(root, 'artifacts/web-latest.json'), 'utf8'));
+const compatible = process.argv.includes('--compatible');
+const build = JSON.parse(fs.readFileSync(path.join(root, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
 const site = path.join(build.site, 'TouhouSurvivor');
 const output = path.join(build.build, 'loading-verification', new Date().toISOString().replace(/[:.]/g, '-'));
 fs.mkdirSync(output, { recursive: true });
@@ -32,8 +33,10 @@ const server = http.createServer(async (request, response) => {
     const pathname = new URL(request.url, 'http://localhost').pathname;
     const currentMode = mode;
     requests.push({ mode: currentMode, pathname });
-    response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    if (!compatible) {
+        response.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+        response.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    }
     response.setHeader('Cache-Control', 'no-store');
     try {
         if (pathname === '/TouhouSurvivor/') {

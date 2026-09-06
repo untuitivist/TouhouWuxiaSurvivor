@@ -1,6 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { DownloadProgress, bytes, duration } = require('../../platform/web/loader.js');
+const vm = require('node:vm');
+const fs = require('node:fs');
+const path = require('node:path');
 
 function fixture() {
     let time = 0;
@@ -76,3 +79,41 @@ test('unknown ETA and byte units never display Infinity or NaN', () => {
     assert.equal(bytes(0), '0 B');
     assert.equal(bytes(12345678), '12.35 MB');
 });
+
+for (const threads of [undefined, true, false]) {
+    test(`loader passes the actual thread requirement (${threads}) and drains raw downloads`, async () => {
+        const elements = new Map();
+        const document = {
+            baseURI: 'https://example.test/TouhouSurvivor/', body: { dataset: {} },
+            getElementById(name) {
+                if (!elements.has(name)) elements.set(name, { dataset: {}, addEventListener() {}, setAttribute() {}, remove() { this.removed = true; } });
+                return elements.get(name);
+            }
+        };
+        let requirements;
+        let drained = false;
+        let context;
+        const originalFetch = async () => new Response(new ReadableStream({
+            start(controller) { controller.enqueue(new Uint8Array([1, 2])); controller.enqueue(new Uint8Array([3, 4])); controller.close(); },
+            cancel() { assert.fail('Download must reach EOF rather than being cancelled'); }
+        }));
+        class Engine {
+            static getMissingFeatures(options) { requirements = options.threads; return []; }
+            async startGame() {
+                const response = await context.fetch('index.pck');
+                assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [1, 2, 3, 4]);
+                drained = true;
+            }
+        }
+        context = vm.createContext({ document, Engine, fetch: originalFetch, URL, Response, ReadableStream, AbortController, performance: { now: () => 0, getEntriesByName: () => [] }, setInterval, clearInterval });
+        vm.runInContext(fs.readFileSync(path.join(__dirname, '../../platform/web/loader.js'), 'utf8'), context);
+        const loader = context.TouhouLoading.create({ fileSizes: { 'index.pck': 4 } }, null, threads);
+        await loader.start();
+        assert.equal(requirements, threads ?? true);
+        assert.equal(drained, true);
+        assert.equal(document.body.dataset.gameReady, 'true');
+        assert.equal(elements.get('loading').dataset.loaded, '4');
+        assert.equal(elements.get('loading').removed, true);
+        assert.equal(context.fetch, originalFetch);
+    });
+}
