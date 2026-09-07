@@ -2,14 +2,17 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const { startProbeServer } = require('../web_probe/server.cjs');
+const { startDeploymentFixture } = require('./deployment_fixture.cjs');
 
-async function verify(playwright, repository, { compatible = false, isolation = true } = {}) {
+async function verify(playwright, repository, { compatible = false, isolation = true, deployment = false } = {}) {
     const latest = JSON.parse(await fs.readFile(path.join(repository, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
-    const output = path.join(latest.build, compatible ? `verification-compatible-${isolation ? 'isolated' : 'unisolated'}` : 'verification');
+    const raw = !deployment && (compatible || process.argv.includes('--raw'));
+    const output = path.join(latest.build, compatible ? `verification-compatible-${deployment ? 'deployment-' : ''}${isolation ? 'isolated' : 'unisolated'}` : raw ? 'verification-raw' : 'verification');
     await fs.mkdir(output, { recursive: true });
     let launchArguments = [];
-    const host = await startProbeServer(latest.site, 0, { isolation, entryArguments: () => launchArguments });
-    const report = { physicalMobileTested: false, build: latest.build, checks: [] };
+    const hostOptions = { isolation, entryArguments: () => launchArguments };
+    const host = raw ? await startProbeServer(latest.site, 0, hostOptions) : await startDeploymentFixture(latest, hostOptions);
+    const report = { physicalMobileTested: false, build: latest.build, transferMode: host.transferMode || 'raw', checks: [] };
     let browser;
     async function scenario(name, mobile, args, actions) {
         const context = await browser.newContext({ viewport: mobile ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: mobile, isMobile: mobile });
@@ -69,7 +72,7 @@ async function verify(playwright, repository, { compatible = false, isolation = 
         report.browser = browser.version();
         const redirect = await fetch(host.origin + '/TouhouSurvivor', { redirect: 'manual' });
         assert.equal(redirect.status, 308);
-        const wasm = await fetch(host.origin + '/TouhouSurvivor/index.wasm', { method: 'HEAD' });
+        const wasm = await fetch(host.origin + (host.wasmPath || '/TouhouSurvivor/index.wasm'), { method: 'HEAD' });
         assert.equal(wasm.headers.get('content-type'), 'application/wasm');
         assert.equal(wasm.headers.get('cross-origin-opener-policy'), isolation ? 'same-origin' : null);
         assert.equal(wasm.headers.get('cross-origin-embedder-policy'), isolation ? 'require-corp' : null);
@@ -173,6 +176,7 @@ async function verify(playwright, repository, { compatible = false, isolation = 
         report.passed = report.checks.every(entry => entry.passed);
     } finally {
         await browser?.close();
+        host.server.closeAllConnections();
         await new Promise(resolve => host.server.close(resolve));
         await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
     }

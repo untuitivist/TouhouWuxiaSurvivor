@@ -29,6 +29,7 @@ async function main() {
         assert.equal(entry.headers.get('cross-origin-opener-policy'), 'same-origin');
         assert.equal(entry.headers.get('cross-origin-embedder-policy'), 'require-corp');
         assert.ok(html.includes('/releases/' + deployment.releaseId + '/index'));
+        assert.ok(html.includes('TouhouLoading.create(GODOT_CONFIG, TOUHOU_DOWNLOADS, false)'), 'The published entry must select the genuine threadless engine');
         const downloads = JSON.parse(html.match(/const TOUHOU_DOWNLOADS = (\[[^\n]+\]);/)[1]);
         assert.equal(downloads.length, 2);
         for (const file of downloads) {
@@ -53,10 +54,10 @@ async function main() {
         assert.equal((await fetch(deployment.url + 'missing-deployment-probe.wasm')).status, 404);
         browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', args: ['--enable-unsafe-swiftshader'] });
         report.browser = browser.version();
-        for (const mobile of [false, true]) {
+        for (const { mobile, isolation } of [{ mobile: false, isolation: true }, { mobile: true, isolation: true }, { mobile: true, isolation: false }]) {
             const context = await browser.newContext({ viewport: mobile ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: mobile, isMobile: mobile });
             const page = await context.newPage();
-            const check = { name: mobile ? 'live-touch' : 'live-normal-desktop', errors: [], failedRequests: [] };
+            const check = { name: !isolation ? 'live-touch-no-isolation' : mobile ? 'live-touch' : 'live-normal-desktop', isolationHeadersRemovedForTest: !isolation, errors: [], failedRequests: [] };
             page.on('console', message => { if (message.type() === 'error' || /WebGL: INVALID|ArrayBufferView/.test(message.text())) check.errors.push(message.text()); });
             page.on('pageerror', error => check.errors.push(String(error)));
             page.on('requestfailed', request => check.failedRequests.push({ url: request.url(), error: request.failure()?.errorText }));
@@ -67,14 +68,20 @@ async function main() {
                         const response = await route.fetch();
                         const body = await response.text();
                         assert.ok(body.includes('"args":[]'));
-                        await route.fulfill({ response, body: body.replace('"args":[]', '"args":["--","--web-validation"]') });
+                        const headers = { ...response.headers() };
+                        if (!isolation) {
+                            delete headers['cross-origin-opener-policy'];
+                            delete headers['cross-origin-embedder-policy'];
+                        }
+                        await route.fulfill({ response, headers, body: body.replace('"args":[]', '"args":["--","--web-validation"]') });
                     });
                 }
                 await page.goto(deployment.url, { waitUntil: 'domcontentloaded', timeout: 120000 });
                 await page.waitForFunction(() => !document.querySelector('#loading'), undefined, { timeout: 180000 });
                 check.startupSeconds = (Date.now() - started) / 1000;
-                assert.equal(await page.evaluate(() => crossOriginIsolated), true);
-                assert.equal(await page.evaluate(() => typeof SharedArrayBuffer), 'function');
+                check.capabilities = await page.evaluate(() => ({ isolated: crossOriginIsolated, sharedArrayBuffer: typeof SharedArrayBuffer }));
+                assert.equal(check.capabilities.isolated, isolation);
+                assert.equal(check.capabilities.sharedArrayBuffer, isolation ? 'function' : 'undefined');
                 await page.screenshot({ path: path.join(output, check.name + '-title.png') });
                 if (!mobile) {
                     assert.equal(await page.evaluate(() => typeof window.__touhouProbe), 'undefined');

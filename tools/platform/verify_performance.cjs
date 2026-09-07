@@ -2,16 +2,16 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
-const { startProbeServer } = require('../web_probe/server.cjs');
+const { startDeploymentFixture } = require('./deployment_fixture.cjs');
 
 async function main() {
     const root = path.resolve(__dirname, '../..');
-    const build = JSON.parse(await fs.readFile(path.join(root, 'artifacts/web-latest.json'), 'utf8'));
+    const build = JSON.parse(await fs.readFile(path.join(root, process.argv.includes('--compatible') ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
     const output = path.join(build.build, 'performance-verification');
     await fs.mkdir(output, { recursive: true });
-    const host = await startProbeServer(build.site);
+    const host = await startDeploymentFixture(build);
     const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true, args: ['--enable-unsafe-swiftshader'] });
-    const report = { browser: browser.version(), physicalDeviceTested: false, scope: 'Desktop Edge with touch/DPR emulation, deterministic static stress fixture; not phone FPS.', checks: [] };
+    const report = { browser: browser.version(), transferMode: host.transferMode, physicalDeviceTested: false, scope: 'Desktop Edge with touch/DPR emulation, deterministic static stress fixture; not phone FPS.', checks: [] };
     try {
         for (const density of [1, 3]) {
             const context = await browser.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, deviceScaleFactor: density });

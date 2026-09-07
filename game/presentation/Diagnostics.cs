@@ -214,7 +214,10 @@ public partial class GameRoot
         versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 2);
         Require(history.GetParsedText().Contains("未发布"), "Unreleased bucket remains separately accessible after release promotion");
         versions.EmitSignal(OptionButton.SignalName.ItemSelected, 0);
-        Require(history.GetParsedText().Contains("完整设置回归") && history.GetParsedText().Contains("F3"), "Current release includes promoted settings and debug notes");
+        Require(history.GetParsedText().Contains(ProjectSettings.GetSetting("application/config/version").AsString()), "Selecting the current release restores its own notes");
+        var settingsRelease = Enumerable.Range(0, versions.ItemCount).Single(index => versions.GetItemText(index) == "alpha-0.0.9");
+        versions.EmitSignal(OptionButton.SignalName.ItemSelected, settingsRelease);
+        Require(history.GetParsedText().Contains("完整设置回归") && history.GetParsedText().Contains("F3"), "Historical settings and debug release notes remain available");
         versions.EmitSignal(OptionButton.SignalName.ItemSelected, versions.ItemCount - 1);
         Require(history.GetParsedText().Contains("alpha-0.0.0") && history.GetParsedText().Contains("alpha-0.0.5"), "Embedded complete history remains accessible");
         PressKey(Key.Escape);

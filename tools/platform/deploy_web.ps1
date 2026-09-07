@@ -1,20 +1,30 @@
-param([Parameter(Mandatory=$true)][string]$KeyPath)
+param([Parameter(Mandatory=$true)][string]$KeyPath, [switch]$Threadless)
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $encoding = [Text.UTF8Encoding]::new($false)
 $key = (Resolve-Path -LiteralPath $KeyPath).Path
-$latest = Get-Content -LiteralPath "$root/artifacts/web-latest.json" -Raw | ConvertFrom-Json
+$pointer = if ($Threadless) { 'web-compatible-latest.json' } else { 'web-latest.json' }
+$latest = Get-Content -LiteralPath "$root/artifacts/$pointer" -Raw | ConvertFrom-Json
 $manifest = Get-Content -LiteralPath $latest.manifest -Raw | ConvertFrom-Json
-$report = Get-Content -LiteralPath (Join-Path $latest.build 'verification/report.json') -Raw | ConvertFrom-Json
-if (-not $report.passed -or $report.build -ne $latest.build) { throw 'Matching successful browser verification required.' }
+$reports = if ($Threadless) { @('verification-compatible-deployment-isolated', 'verification-compatible-deployment-unisolated', 'verification-compatible-isolated', 'verification-compatible-unisolated') } else { @('verification') }
+foreach ($name in $reports) {
+    $report = Get-Content -LiteralPath (Join-Path $latest.build "$name/report.json") -Raw | ConvertFrom-Json
+    $transferMode = if ($name -match 'deployment' -or !$Threadless) { 'deployment-gzip' } else { 'raw' }
+    if (-not $report.passed -or $report.build -ne $latest.build -or $report.transferMode -ne $transferMode) { throw "Matching successful browser verification required: $name" }
+}
+if ($Threadless -and $manifest.threadSupport -ne $false) { throw 'The selected artifact is not threadless.' }
 foreach ($file in $manifest.sourceFiles) {
     if ((Get-FileHash -LiteralPath (Join-Path $root $file.path)).Hash -ne $file.sha256) { throw "Source changed since verified build: $($file.path)" }
 }
 $dirty = & git -C $root status --porcelain -- game assets project.godot export_presets.cfg TouhouWuxiaSurvivor.csproj CHANGELOG.md tools/platform/activate_deployment.py tools/platform/deploy_web.ps1 platform/web/touhou-survivor.caddy
 if ($dirty) { throw 'Commit game changes and rebuild/verify before deployment.' }
 $commit = (& git -C $root rev-parse HEAD).Trim()
+if ($manifest.sourceCommit -ne $commit -or $manifest.sourceDirty) { throw 'Rebuild from the exact clean release commit before deployment.' }
 $version = [regex]::Match([IO.File]::ReadAllText("$root/project.godot"), '(?m)^config/version="([A-Za-z0-9.-]+)"').Groups[1].Value
 if (-not $version) { throw 'Game version missing.' }
+$windows = Get-Content -LiteralPath "$root/artifacts/$version-export-validation/report.json" -Raw | ConvertFrom-Json
+if ($windows.version -ne $version -or $windows.source_commit -ne $commit) { throw 'Matching standalone Windows release verification is required.' }
+if ((Get-FileHash -LiteralPath $windows.executable).Hash -ne $windows.sha256) { throw 'Verified Windows artifact changed.' }
 $release = "$version-$($commit.Substring(0,7))-$([DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ'))"
 $output = Join-Path $root "artifacts/deployment/$release"
 $payload = Join-Path $output 'payload'
@@ -25,7 +35,8 @@ foreach ($file in $manifest.files) {
     if ((Get-FileHash -LiteralPath $source).Hash -ne $file.sha256) { throw "Artifact checksum mismatch: $($file.name)" }
     Copy-Item -LiteralPath $source -Destination (Join-Path $payload $file.name)
 }
-$metadata = @{ releaseId=$release; version=$version; sourceCommit=$commit; verifiedBuild=$latest.build; toolchain=$manifest.webToolchain; files=$manifest.files }
+$metadata = @{ releaseId=$release; version=$version; sourceCommit=$commit; verifiedBuild=$latest.build; toolchain=$manifest.webToolchain; threadSupport=$manifest.threadSupport; files=$manifest.files }
+$metadata.windows = @{ name=[IO.Path]::GetFileName($windows.executable); bytes=$windows.bytes; sha256=$windows.sha256 }
 [IO.File]::WriteAllText("$payload/deployment.json", ($metadata | ConvertTo-Json -Depth 5), $encoding)
 $archive = Join-Path $output 'site.tar.gz'
 & tar.exe -czf $archive -C $payload .

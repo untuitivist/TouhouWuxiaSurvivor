@@ -1,5 +1,12 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Compatible Dual-Target Release alpha-0.0.10
+
+1. [complete] Confirm publication authorization, existing local/remote alpha-0.0.9 and preserved historical artifacts.
+2. [complete] Promote release notes, connect the threadless deployment gate and correct version-independent changelog regression. Windows source smoke/core and seven deployment safety tests pass.
+3. [in_progress] Commit the release source; export and verify standalone Windows and the exact shared Web build.
+4. [pending] Push source, deploy with server pull/checks/backups, verify the public site and record delivery evidence.
+
 ## Mobile Performance, Hybrid Runtime And Original Assets
 
 1. [complete] Audited the actual compiled runtime versus legacy ECS; measured equal-size simulation/render fixtures and inventoried source assets.
@@ -587,3 +594,9 @@ Phase 5
 - Comment and export-boundary audits passed. Verify process cleanup, then run final smoke and OpenGL visual tests.
 - Final smoke passed. Inspect PIDs 72664/42000; terminate only if their command lines belong to this task, preserve user editor PID 17192.
 - Task-owned stale processes cleaned. Run final seven-state OpenGL capture and confirm it exits, leaving only PID 17192.
+## Dual-Target Release alpha-0.0.10
+
+1. [in_progress] Prepare the next optimization version and release notes while preserving all earlier releases; explicitly exclude unimplemented shared-memory-free compatibility from release claims.
+2. [pending] Validate the same committed gameplay revision for self-contained Windows export and Web, using the actual deployment resource path without hiding request failures.
+3. [pending] Export and smoke-test the new EXE, push the release source, deploy with server Git fast-forward and preserved rollback backups, and verify the live website.
+4. [pending] Record artifact checksums, deployed revision, limitations and rollback paths; commit/push the final delivery record.

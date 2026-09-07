@@ -66,6 +66,7 @@ Invoke-ReleaseCheck 'standalone-controls-small' @('--resolution', '640x360', '--
 if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must still contain only the EXE after all checks.' }
 $checksum = (Get-FileHash -LiteralPath $source.FullName -Algorithm SHA256).Hash
 $report = [ordered]@{
+    source_commit = (& git -C $root rev-parse HEAD).Trim()
     version = $version
     windows_version = $numericVersion
     executable = $source.FullName

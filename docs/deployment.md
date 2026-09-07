@@ -19,14 +19,19 @@
 在已配置的本机仓库根目录执行：
 
 ```bat
-build_web.cmd
-tools\platform\verify_web.cmd
+build_release.cmd
+pwsh -NoProfile -File tools/rebirth/verify_release.ps1
+build_web.cmd -Threadless
+tools\threadless\verify.cmd
+tools\platform\verify_loading.cmd --compatible
 git push origin main
-deploy_web.cmd -KeyPath "<private-key-path>"
+deploy_web.cmd -KeyPath "<private-key-path>" -Threadless
 tools\platform\verify_deployment.cmd
 ```
 
 游戏源文件必须先完成日常提交。若在构建后修改玩法、资源、导出配置或游戏更新日志，必须重新构建验证；部署工具校验源文件与产物 SHA-256，不会悄悄部署未经测试的内容。部署脚本本身也必须提交并推送，让服务器运行精确的同一提交。
+
+alpha-0.0.10 起本轮发布选择单线程兼容构建，入口取自 `artifacts/web-compatible-latest.json`。部署门禁要求原始/gzip、有隔离/无隔离四组完整游戏回归通过，并要求同版本、同源码提交的独立 Windows EXE 验收记录；不再把仅一端成功算作完整发布。服务器可以保留隔离响应头，但兼容产物自身不再依赖隔离或共享内存。公网回归另测移除页面隔离头的启动环境，不通过伪造浏览器能力完成测试。
 
 首次连接需先人工检查服务器身份并将 SSH 主机公钥记录到忽略目录 `artifacts/deployment/known_hosts`；部署命令使用严格校验，不关闭主机身份检查。不要提交私钥、SSH 登录信息导出、用户会话或产物目录。
 

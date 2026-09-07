@@ -1,5 +1,9 @@
 # Shared CSharp Threadless Web Validation
 
+## Publication Follow-Up
+
+The user subsequently authorized the alpha-0.0.10 dual-target release. The publication path now requires the same clean source commit for the standalone Windows EXE and threadless Web artifact, and four full browser suites (raw/gzip, isolated/unisolated). The stale Windows changelog smoke assertion is corrected to inspect settings/F3 in their historical alpha-0.0.9 entry; the current release is checked independently. Publication results are recorded in docs/deployment.md and local release receipts. The original validation-only scope and investigation below are preserved as history.
+
 ## Accepted Scope
 
 - One maintained Godot game project, one C# gameplay implementation and one set of content/settings/input semantics for Windows and Web. Build staging is generated input, not a second game.
