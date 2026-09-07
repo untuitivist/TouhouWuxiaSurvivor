@@ -42,15 +42,8 @@ public partial class GameCanvas
     {
         var position = Palette.Vector(seal.Position);
         var color = seal.Complete ? Palette.Jade : Palette.Gold;
-        surface.DrawCircle(position, 91, Palette.Alpha(color, 0.035f));
-        surface.DrawArc(position, 90, 0, MathF.Tau, 64, Palette.Alpha(color, 0.3f), 2);
+        OriginalEffect("ritual_array", position, Vector2.One * 184, Palette.Alpha(Colors.White, seal.Complete ? 0.18f : 0.38f), ReducedMotion ? 0 : Clock * 0.06f);
         surface.DrawArc(position, 74, -MathF.PI / 2, -MathF.PI / 2 + MathF.Tau * Math.Max(0.002f, seal.Charge), 64, color, 3);
-        for (var index = 0; index < 8; index++)
-        {
-            var angle = Clock * 0.12f + index * MathF.Tau / 8;
-            var point = position + Vector2.FromAngle(angle) * 81;
-            surface.DrawLine(point - Vector2.FromAngle(angle + MathF.PI / 2) * 6, point + Vector2.FromAngle(angle + MathF.PI / 2) * 6, Palette.Alpha(color, 0.6f), 2);
-        }
         surface.DrawRect(new(position + new Vector2(-15, -36), new(30, 44)), new Color("243638"));
         surface.DrawRect(new(position + new Vector2(-18, 5), new(36, 8)), new Color("6a7970"));
         CenterText(seal.Complete ? "定" : "封", position + new Vector2(0, -7), 23, color, TitleFont);

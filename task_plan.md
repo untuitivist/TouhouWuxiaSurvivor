@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Original Hero Art Integration
+
+1. [complete] Inventory the supplied original pack and inspect player/effect atlases. Capture unchanged native battle/ability baselines; identify the remaining procedural beam, charge-star and seal placeholders.
+2. [complete] Extract original textures with hashes and exact crop validation, integrate character-owned textures with correct blend/alpha handling, and compare actual game captures without changing combat.
+3. [complete] Validate native and threadless Web rendering and color/bounds regressions; retain unchanged gameplay, record remaining art debt and prepare before/after evidence for local-only delivery without publication.
+
 ## Release alpha-0.1.2 — 2026-09-07
 
 1. [complete] Promote the shared color repair to alpha-0.1.2 and preserve history; require color regressions of actual artifacts. Core 29/29, UI, font coverage, 18 JavaScript tests, deployment tests and PowerShell syntax pass.

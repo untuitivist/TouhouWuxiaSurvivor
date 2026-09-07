@@ -81,20 +81,19 @@ public partial class GameCanvas
                     Star(position, 32 * (1 - progress), Palette.Alpha(Palette.Gold, 1 - progress), progress * 3);
                     break;
                 case EffectKind.Explosion:
-                    surface.DrawCircle(position, effect.Entry.Value * progress, Palette.Alpha(Palette.Red, 0.12f * (1 - progress)));
-                    surface.DrawArc(position, effect.Entry.Value * progress, 0, MathF.Tau, 40, Palette.Alpha(Palette.Red, 1 - progress), 2);
+                    OriginalEffect("reimu_aura", position, Vector2.One * effect.Entry.Value * (0.3f + progress * 1.7f), Palette.Alpha(new Color("ffaec9"), 0.5f * (1 - progress)));
                     break;
                 case EffectKind.Spell:
-                    surface.DrawArc(position, 110 * progress, 0, MathF.Tau, 64, Palette.Alpha(Run?.Hero == HeroKind.Reimu ? Palette.Red : Palette.Gold, 1 - progress), ReducedMotion ? 2 : 3);
+                    OriginalEffect(Run?.Hero == HeroKind.Reimu ? "reimu_aura" : "marisa_cast", position, Vector2.One * (48 + 172 * progress), Palette.Alpha(Colors.White, 0.45f * (1 - progress)));
                     break;
                 case EffectKind.Seal:
-                    surface.DrawArc(position, 160 * progress, 0, MathF.Tau, 48, Palette.Alpha(Palette.Jade, 1 - progress), 3);
+                    OriginalEffect("ritual_array", position, Vector2.One * (150 + 170 * progress), Palette.Alpha(Colors.White, 0.35f * (1 - progress)));
                     break;
                 case EffectKind.Graze:
-                    surface.DrawArc(position, 20 + progress * 20, 0, MathF.Tau, 24, Palette.Alpha(Palette.Jade, 1 - progress), 1);
+                    Star(position, 8 + progress * 12, Palette.Alpha(Palette.Jade, 1 - progress), progress);
                     break;
                 case EffectKind.Defeat:
-                    for (var index = 0; index < 5; index++) Diamond(position + Vector2.FromAngle(index * MathF.Tau / 5) * progress * 25, 3 * (1 - progress), Palette.Alpha(Palette.Gold, 1 - progress));
+                    for (var index = 0; index < 5; index++) Star(position + Vector2.FromAngle(index * MathF.Tau / 5) * progress * 25, 4 * (1 - progress), Palette.Alpha(Palette.Gold, 1 - progress), index);
                     break;
             }
         }

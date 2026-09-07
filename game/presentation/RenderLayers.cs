@@ -26,7 +26,10 @@ public partial class GameCanvas
         BuildTerrainBatches();
         sceneryLayer = AddPass(worldLayer, 1, DrawScenery);
         animatedLayers.Add(AddPass(worldLayer, 2, DrawWorldDynamic));
-        animatedLayers.Add(AddPass(worldLayer, 4, DrawHeroFields));
+        animatedLayers.Add(AddPass(worldLayer, 4, DrawReimuField));
+        var beamLayer = AddPass(worldLayer, 4, DrawMarisaBeam);
+        beamLayer.Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add };
+        animatedLayers.Add(beamLayer);
         animatedLayers.Add(AddPass(worldLayer, 6, DrawEnemies));
         animatedLayers.Add(AddPass(worldLayer, 8, DrawPlayer));
         animatedLayers.Add(AddPass(worldLayer, 10, DrawEffects));

@@ -1,5 +1,15 @@
 # Progress Log
 
+## Original Hero Art Integration
+
+- Final extraction recheck exposed an encoded-PNG comparison mismatch despite identical decoded pixels and recorded output hashes. The checker now compares exact RGBA pixels and dimensions against the original crop, then validates source/output SHA-256 through the recorded manifest; this preserves tamper detection without depending on PNG recompression bytes.
+- Final native captures: artifacts/render-performance/hero-art-refined-20260908-011753; before/after evidence: artifacts/hero-art/beam-comparison.png and field-comparison.png. First-pass captures remain preserved. Reviewed final Web beam, warmup and field images: original textures are present, but the dense field pattern and procedural scenery remain visible art limitations.
+- Validation passes: 7/7 exact source crops, native build with no warnings/errors, 29/29 core checks plus UI/settings/profile/F3/render-cache checks, six unchanged seeded journeys, native batch colors and five native render scenes. Final threadless Web build artifacts/web-builds/20260908-011810-996 passes five fixed-tick art scenes, normal/injected batch colors and DPR 1/3 checks without cross-origin isolation or SharedArrayBuffer. This is not physical-phone performance verification or full release acceptance.
+- Current scope preserves gameplay, version and previous release history; no formal EXE export, push or deployment. The original-source audit and unreleased changelog document the art replacements.
+- User redirects priority to art and supplied original resources. Inspected TH07/TH08 player atlases and TH16 effect atlas: relevant beam, star-ring, talisman, sealing pattern and aura textures are present. Existing basic TH10 star projectiles already use originals; the procedural beam body, charge stars and seal patterns did not.
+- Preserved native before captures in artifacts/render-performance/hero-art-before-20260908-010354. Added deterministic extraction, exact source/crop checks, source hashes and an atlas contact sheet. No source-pack files are modified.
+- First integration captures reveal a neutral backing on the Reimu pattern and excessive additive beam exposure. Preserve the raw crop, derive only the rune alpha from its red ink, separate normal field blending from additive beam blending, and tune layered opacity before acceptance.
+
 ## Release alpha-0.1.2 — 2026-09-07
 
 - User requests an update after cb17c35. Preparing the authorized paired Windows/Web publication as alpha-0.1.2 / 0.1.2.0. Read-only SSH preflight confirms the server is still on alpha-0.1.1; the new EXE name is unused. Old artifacts and pinned host keys are retained.

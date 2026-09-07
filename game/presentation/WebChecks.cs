@@ -11,6 +11,7 @@ public partial class GameRoot
     private bool webChecks;
     private bool webPilot;
     private bool webPerformance;
+    private bool webArtPreview;
     private double webCheckSeconds;
 
     private ProfileStore CreateProfile(string[] arguments)
@@ -28,12 +29,14 @@ public partial class GameRoot
         webPilot = arguments.Contains("--web-pilot");
         var fixture = arguments.FirstOrDefault(argument => argument.StartsWith("--web-fixture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
         webPerformance = fixture == "performance";
+        webArtPreview = fixture is "reimu-field" or "reimu-spell" or "marisa-stars" or "marisa-warmup" or "marisa-beam";
         if (webPilot || fixture.Length > 0)
         {
             StartRun(arguments.Contains("--web-marisa") ? HeroKind.Marisa : HeroKind.Reimu, 42);
             if (fixture == "choices") { run!.AddExperience(30); run.Step(default); RefreshRunScreen(); }
             if (fixture == "boss") { run!.SpawnEnemy(EnemyKind.Boss, new(350, 0)); RefreshRunScreen(); }
             if (webPerformance) PreparePerformancePreview();
+            if (webArtPreview) PrepareAbilityPreview(fixture);
         }
         GD.Print("SHARED_WEB_CHECKS_READY");
     }

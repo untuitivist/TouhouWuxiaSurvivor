@@ -58,7 +58,7 @@ public partial class GameRoot : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        if (diagnosticMode || webPilot || webPerformance) return;
+        if (diagnosticMode || webPilot || webPerformance || webArtPreview) return;
         if (run == null) return;
         canvas.Focused = Input.IsActionPressed(GameControls.Focus) || touchHud.FocusHeld;
         if (run.Phase == RunPhase.Playing)

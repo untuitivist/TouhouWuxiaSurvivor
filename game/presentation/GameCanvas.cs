@@ -28,6 +28,7 @@ public partial class GameCanvas : Node2D
         textures["grass"] = GD.Load<Texture2D>("res://assets/world/tiles/hakurei_shrine/shrine_grass_base.png");
         textures["path"] = GD.Load<Texture2D>("res://assets/world/tiles/common/stone_base.png");
         foreach (var entry in textures) spriteFrames[entry.Key] = (entry.Value.GetHeight(), Math.Max(1, entry.Value.GetWidth() / entry.Value.GetHeight()));
+        LoadOriginalEffects();
         InitializeRenderLayers();
     }
 
