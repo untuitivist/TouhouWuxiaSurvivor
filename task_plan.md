@@ -3,8 +3,8 @@
 ## Release alpha-0.1.2 — 2026-09-07
 
 1. [complete] Promote the shared color repair to alpha-0.1.2 and preserve history; require color regressions of actual artifacts. Core 29/29, UI, font coverage, 18 JavaScript tests, deployment tests and PowerShell syntax pass.
-2. [in progress] Build standalone Windows EXE and threadless Web from the same clean commit; validate both artifacts and browser loading/isolation/color paths.
-3. [pending] Push, fast-forward server source, deploy with backups, verify public desktop/touch/unisolated play and record exact receipts.
+2. [complete] Clean cf5e5c5 builds both targets. Final EXE passes 22 checks; Web 20260907-180715-471 passes raw downloads, normal/injected pixel regressions, all four gameplay suites, six loading cases and DPR 1/3 checks. First failed editor import and pre-UID EXE candidate are preserved.
+3. [complete] Source pushed and server fast-forwarded. Backed-up deployment alpha-0.1.2-cf5e5c5-20260907T102610Z passes public desktop, touch/save and genuinely unisolated touch checks. Active metadata matches source and Windows hash; receipts recorded in docs/deployment.md.
 
 ## Black Sprite Follow-Up — 2026-09-07
 
