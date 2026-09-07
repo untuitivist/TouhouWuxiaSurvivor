@@ -23,6 +23,15 @@ if ($Threadless) {
         $checks = @($batchReport.checks | Where-Object { $_.hero -eq $hero })
         if ($checks.Count -ne 1 -or !$checks[0].passed -or $checks[0].capabilities.isolated -ne $false -or $checks[0].capabilities.sharedArrayBuffer -ne 'undefined') { throw "Missing unisolated batch verification: $hero" }
     }
+    if ($batchReport.injectedDefaultColor -ne $false) { throw 'Ordinary batch verification must not use injected color state.' }
+    $colorPointer = Get-Content -LiteralPath (Join-Path $latest.build 'batch-color-stress-latest.json') -Raw | ConvertFrom-Json
+    $colorReport = Get-Content -LiteralPath $colorPointer.report -Raw | ConvertFrom-Json
+    if ($colorPointer.build -ne $latest.build -or $colorReport.build -ne $latest.build -or !$colorReport.passed -or $colorReport.injectedDefaultColor -ne $true -or $colorReport.checks.Count -ne 2) { throw 'Matching injected color verification is required.' }
+    foreach ($hero in @('reimu', 'marisa')) {
+        $checks = @($colorReport.checks | Where-Object { $_.hero -eq $hero })
+        if ($checks.Count -ne 1 -or !$checks[0].passed -or $checks[0].capabilities.isolated -ne $false -or $checks[0].capabilities.sharedArrayBuffer -ne 'undefined') { throw "Missing unisolated color verification: $hero" }
+        if ($checks[0].colorState.draws -le 24 -or $checks[0].colorState.missingColor -ne 0 -or $checks[0].colorState.explicitColor -ne $checks[0].colorState.draws) { throw "Incomplete explicit color coverage: $hero" }
+    }
 }
 foreach ($file in $manifest.sourceFiles) {
     if ((Get-FileHash -LiteralPath (Join-Path $root $file.path)).Hash -ne $file.sha256) { throw "Source changed since verified build: $($file.path)" }

@@ -1,5 +1,11 @@
 # Progress Log
 
+## Release alpha-0.1.2 — 2026-09-07
+
+- User requests an update after cb17c35. Preparing the authorized paired Windows/Web publication as alpha-0.1.2 / 0.1.2.0. Read-only SSH preflight confirms the server is still on alpha-0.1.1; the new EXE name is unused. Old artifacts and pinned host keys are retained.
+- Color-state robustness is confirmed under controlled injection, not natural reproduction on the user device. The limitation remains in the release notes and the shared game remains unchanged apart from the version.
+- Source validation passes 29 core cases, UI/settings/profile/F3, 1182-character font coverage, 18 JavaScript tests, deployment safety tests and PowerShell syntax. Release gates now require 24 standalone color comparisons per hero and a separate successful unisolated Web injected-color report; ordinary and injected results cannot substitute for each other.
+
 ## Black Sprite Follow-Up — 2026-09-07
 
 - Inspected the supplied alpha-0.1.1 screenshot and the exact pinned GLES3 shader/mesh/polygon source. Added deliberate interleaving coverage; normal NVIDIA/Edge runs still passed with the old mesh, so no claim of natural reproduction was made.

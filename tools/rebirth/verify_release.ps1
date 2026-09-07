@@ -69,6 +69,7 @@ foreach ($hero in @('reimu', 'marisa')) {
     Invoke-ReleaseCheck "standalone-batch-$hero" $arguments 'SPRITE_BATCH_VISUAL_PASS'
     $batchLog = [IO.File]::ReadAllText((Join-Path $logs "standalone-batch-$hero.log"), $encoding)
     if ($batchLog -notmatch 'SPRITE_BATCH_VISUAL_PASS.+checks=72' -or [regex]::Matches($batchLog, 'BATTLE_BATCH_CHECK').Count -ne 12) { throw 'Incomplete standalone batch verification' }
+    if ($batchLog -notmatch 'BATCH_COLOR_VISUAL_PASS checks=24' -or [regex]::Matches($batchLog, 'BATCH_COLOR_CHECK').Count -ne 24) { throw 'Incomplete standalone color verification' }
 }
 if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must still contain only the EXE after all checks.' }
 $checksum = (Get-FileHash -LiteralPath $source.FullName -Algorithm SHA256).Hash

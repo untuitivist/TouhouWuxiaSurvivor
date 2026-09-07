@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Release alpha-0.1.2 — 2026-09-07
+
+1. [complete] Promote the shared color repair to alpha-0.1.2 and preserve history; require color regressions of actual artifacts. Core 29/29, UI, font coverage, 18 JavaScript tests, deployment tests and PowerShell syntax pass.
+2. [in progress] Build standalone Windows EXE and threadless Web from the same clean commit; validate both artifacts and browser loading/isolation/color paths.
+3. [pending] Push, fast-forward server source, deploy with backups, verify public desktop/touch/unisolated play and record exact receipts.
+
 ## Black Sprite Follow-Up — 2026-09-07
 
 1. [complete] Inspect alpha-0.1.1 screenshot and pinned GLES3 source. Ordinary polygon/batch interleaving passes locally; default-color fault injection fails on the original mesh (4926 pixels). Preserve this distinction from natural device reproduction.
