@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Shared Sprite Visibility Repair — 2026-09-07
+
+1. [complete] Reproduce missing entities with full-battle pixel comparisons; isolate the batch path from simulation/assets, preserving before-fix evidence.
+2. [complete] Maintain tight rotated instance bounds on submission and correct vertical UV mapping; keep batching and unchanged combat. Native core/UI/static and dual-hero dynamic rendering checks pass.
+3. [complete] Same C# fix passes native and genuinely unisolated Web checks: each platform has 144 sprite comparisons and 24 full-battle comparisons across Reimu/Marisa victories. Final Web build 20260907-113430-145 also passes DPR 1/3 render checks; core 29/29, UI and five native render fixtures pass. Daily commit only, no publication.
+
 ## Compatible Dual-Target Release alpha-0.1.0
 
 1. [complete] Confirm publication authorization, existing local/remote alpha-0.0.9 and preserved historical artifacts.

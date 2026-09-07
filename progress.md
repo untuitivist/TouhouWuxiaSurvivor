@@ -1,5 +1,12 @@
 # Progress Log
 
+## Shared Sprite Visibility Repair — 2026-09-07
+
+- Reproduced missing enemy textures during a seeded battle near 144 simulated seconds. Native/CPU instance data remained valid; immediate reference draws restored the missing fairy sprites (1461 differing pixels). Preserved evidence under artifacts/batch-validation-before-fix and artifacts/batch-state.log.
+- Fixed the shared SpriteBatch path by accumulating tight rotated bounds and submitting CustomAabb with current instance data; preserved batching, entity counts and simulation. Corrected vertical QuadMesh UV direction against ordinary Sprite2D rendering.
+- Added explicit diagnostic-only pixel regressions for capacity growth, zero/reuse, animation/tint, GC and full battles. Native and unisolated threadless Web each pass 144 sprite comparisons and 24 battle comparisons across Reimu/Marisa victories. Final Web build: 20260907-113430-145; native: artifacts/batch-render/20260907-113422. Core 29/29, UI, five native render fixtures and high-DPI Web fixtures pass.
+- Added unreleased changelog notes and the two needed bundled font glyphs. Black textures were not independently reproduced, so no blanket claim that every reported symptom is resolved. Daily local commit only; no version bump, formal EXE overwrite, push or server deployment.
+
 ## Unified Release alpha-0.1.0 — 2026-09-07
 
 - User promoted the dual-target release to alpha-0.1.0 / Windows 0.1.0.0. Preserve alpha-0.0.10 as an unshipped candidate and all older executables/history.

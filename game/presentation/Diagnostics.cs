@@ -18,11 +18,12 @@ public partial class GameRoot
         var arguments = OS.GetCmdlineUserArgs();
         smokeMode = arguments.Contains("--rebirth-smoke");
         capturePath = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
-        diagnosticMode = smokeMode || capturePath.Length > 0 || arguments.Contains("--rebirth-video-smoke");
+        diagnosticMode = smokeMode || capturePath.Length > 0 || arguments.Contains("--rebirth-video-smoke") || arguments.Contains("--rebirth-batch-smoke");
         if (!diagnosticMode) return;
         if (smokeMode) { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }
         canvas.ReducedMotion = profile.Data.ReducedMotion;
         audio.Apply(new PlayerProfile { MusicEnabled = false, SoundEnabled = false });
+        if (arguments.Contains("--rebirth-batch-smoke")) { diagnosticFinished = true; _ = TestSpriteBatchRendering(); return; }
         var mode = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-screen=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "title";
         if (mode == "debug-title") { ShowTitle(); ToggleDebug(); return; }
         if (mode == "debug-combat") { PrepareBattlePreview("boss"); ToggleDebug(); return; }

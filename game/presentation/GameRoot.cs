@@ -32,7 +32,7 @@ public partial class GameRoot : Node
         AddChild(audio);
         ui = new(body, title);
         var arguments = OS.GetCmdlineUserArgs();
-        diagnosticMode = arguments.Contains("--rebirth-smoke") || arguments.Contains("--rebirth-video-smoke") || arguments.Any(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal));
+        diagnosticMode = arguments.Contains("--rebirth-smoke") || arguments.Contains("--rebirth-video-smoke") || arguments.Contains("--rebirth-batch-smoke") || arguments.Any(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal));
         profile = CreateProfile(arguments);
         if (!diagnosticMode) profile.Data.Video.Apply();
         else { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }

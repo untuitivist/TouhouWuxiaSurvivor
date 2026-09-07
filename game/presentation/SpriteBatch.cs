@@ -7,6 +7,8 @@ public partial class SpriteBatch : MultiMeshInstance2D
     private static ShaderMaterial? animationMaterial;
     private float[] buffer = [];
     private int capacity;
+    private Vector2 boundsMinimum;
+    private Vector2 boundsMaximum;
     public int Count { get; private set; }
 
     public SpriteBatch() { }
@@ -15,7 +17,7 @@ public partial class SpriteBatch : MultiMeshInstance2D
     {
         Texture = texture;
         TextureFilter = TextureFilterEnum.Nearest;
-        animationMaterial ??= new ShaderMaterial { Shader = new Shader { Code = "shader_type canvas_item; void vertex() { UV.x = (UV.x + INSTANCE_CUSTOM.x) * INSTANCE_CUSTOM.y; }" } };
+        animationMaterial ??= new ShaderMaterial { Shader = new Shader { Code = "shader_type canvas_item; void vertex() { UV.x = (UV.x + INSTANCE_CUSTOM.x) * INSTANCE_CUSTOM.y; UV.y = 1.0 - UV.y; }" } };
         Material = animationMaterial;
         Multimesh = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform2D, UseColors = true, UseCustomData = true, Mesh = new QuadMesh { Size = Vector2.One } };
     }
@@ -39,6 +41,9 @@ public partial class SpriteBatch : MultiMeshInstance2D
         buffer[offset + 4] = sine * size.X;
         buffer[offset + 5] = cosine * size.Y;
         buffer[offset + 7] = position.Y;
+        var extent = new Vector2(MathF.Abs(buffer[offset]) + MathF.Abs(buffer[offset + 1]), MathF.Abs(buffer[offset + 4]) + MathF.Abs(buffer[offset + 5])) * 0.5f;
+        boundsMinimum = Count == 1 ? position - extent : boundsMinimum.Min(position - extent);
+        boundsMaximum = Count == 1 ? position + extent : boundsMaximum.Max(position + extent);
         buffer[offset + 8] = color.R;
         buffer[offset + 9] = color.G;
         buffer[offset + 10] = color.B;
@@ -50,6 +55,10 @@ public partial class SpriteBatch : MultiMeshInstance2D
     public void Submit()
     {
         Multimesh.VisibleInstanceCount = Count;
-        if (Count > 0) Multimesh.Buffer = buffer;
+        if (Count > 0)
+        {
+            Multimesh.CustomAabb = new(new(boundsMinimum.X, boundsMinimum.Y, -0.5f), new(boundsMaximum.X - boundsMinimum.X, boundsMaximum.Y - boundsMinimum.Y, 1));
+            Multimesh.Buffer = buffer;
+        }
     }
 }
