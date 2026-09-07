@@ -1,5 +1,12 @@
 # Findings and Decisions
 
+## Black Sprite Color Input — 2026-09-07
+
+- The supplied alpha-0.1.1 screenshot shows opaque black silhouettes while the player, some pellets and UI remain textured. F3 records seed 7211169, tick 2821, time 47.02, web/gl_compatibility and WebKit WebGL; this is evidence of the symptom, not an identification of the physical GPU or a complete input replay.
+- Pinned engine b94985982 canvas.glsl multiplies color_attrib by draw modulation and then instance color before sampling the texture. mesh_storage.cpp disables absent vertex attributes without supplying a per-mesh default. SpriteBatch previously used a QuadMesh with no ARRAY_COLOR. Single-color polygon drawing explicitly resets its generic color to white, so the initial theory that every black polygon necessarily leaks black was not supported.
+- Normal native NVIDIA and Edge interleaving tests passed before the patch. Controlled WebGL default-attribute injection before instanced draws made the old mesh fail at check zero with 4926 mismatching pixels; after explicit white vertex colors, the same injection passes. This establishes sensitivity to external default-color state and removes it, but does not establish the exact naturally occurring trigger on the user device.
+- Keep a shared immutable ArrayMesh plus the existing shared animation material. Do not override shader COLOR, remove instance tint/alpha, replace batching with per-entity nodes, or fork the Windows/Web game. Injection is installed only by the test browser, never shipped in the game page.
+
 ## Shared-Memory-Free Browser Compatibility Audit
 
 - User identifies Xiaomi's bundled browser as a failing environment and asks for a compatible route when cross-origin isolation/shared memory are unavailable. Device OS and browser versions are still unknown; no physical Xiaomi test was performed.

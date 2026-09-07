@@ -5,6 +5,7 @@ namespace Rebirth.Presentation;
 public partial class SpriteBatch : MultiMeshInstance2D
 {
     private static ShaderMaterial? animationMaterial;
+    private static ArrayMesh? spriteMesh;
     private float[] buffer = [];
     private int capacity;
     private Vector2 boundsMinimum;
@@ -19,7 +20,18 @@ public partial class SpriteBatch : MultiMeshInstance2D
         TextureFilter = TextureFilterEnum.Nearest;
         animationMaterial ??= new ShaderMaterial { Shader = new Shader { Code = "shader_type canvas_item; void vertex() { UV.x = (UV.x + INSTANCE_CUSTOM.x) * INSTANCE_CUSTOM.y; UV.y = 1.0 - UV.y; }" } };
         Material = animationMaterial;
-        Multimesh = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform2D, UseColors = true, UseCustomData = true, Mesh = new QuadMesh { Size = Vector2.One } };
+        Multimesh = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform2D, UseColors = true, UseCustomData = true, Mesh = spriteMesh ??= CreateSpriteMesh() };
+    }
+
+    private static ArrayMesh CreateSpriteMesh()
+    {
+        using var quad = new QuadMesh { Size = Vector2.One };
+        using var arrays = quad.GetMeshArrays();
+        var vertices = arrays[(int)Mesh.ArrayType.Vertex].AsVector3Array();
+        arrays[(int)Mesh.ArrayType.Color] = Enumerable.Repeat(Colors.White, vertices.Length).ToArray();
+        var mesh = new ArrayMesh();
+        mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
+        return mesh;
     }
 
     public void Begin() => Count = 0;

@@ -1,5 +1,14 @@
 # Progress Log
 
+## Black Sprite Follow-Up — 2026-09-07
+
+- Inspected the supplied alpha-0.1.1 screenshot and the exact pinned GLES3 shader/mesh/polygon source. Added deliberate interleaving coverage; normal NVIDIA/Edge runs still passed with the old mesh, so no claim of natural reproduction was made.
+- Default-color fault injection before actual WebGL instanced draws failed on the old mesh (4926 differing pixels; 26 observed missing-color draws). A shared quad-derived ArrayMesh with white vertex colors removes this dependency without changing gameplay, source textures, animation, transparency, node modulation, culling or batching. The identical injected test passes for both heroes; evidence and exact paths are in docs/performance.md.
+- Initial fixed native/normal Web/injected Web runs each pass 48 color comparisons, 144 sprite comparisons and 24 battle comparisons. Core 29/29 and UI pass. Five native render scenarios and Web DPR 1/3 checks pass, retaining native 806 / Web 817 stress draw calls. Four new injection-unit checks plus fourteen existing JavaScript tests pass.
+- Final-source native logs: artifacts/batch-render/20260907-155132. Final Web build 20260907-155139-559 passes normal report 2026-09-07T07-52-53-101Z and injected report 2026-09-07T07-54-59-155Z; each mode has zero above-tolerance pixel differences, runtime errors and request failures across both heroes. The injected run observes 1950/2307 draws with explicit colors and none without. Source, diagnostic, changelog and font hashes match the tested staged build.
+- Added the three missing changelog glyphs to the existing licensed font subset; final coverage is 1182 characters. Core 29/29, UI and DPR 1/3 pass after this update. Visually reviewed combat and both signature-attack captures. No full four-mode Web gameplay-suite rerun or standalone release-EXE validation is claimed for this daily fix.
+- No version increment, push, release EXE export or deployment was performed. All previous release files, update history and failure evidence are retained. The physical-device natural trigger remains unverified; local injection is not represented as device reproduction.
+
 ## Release alpha-0.1.1 — 2026-09-07
 
 - User authorized publication. Promoted the shared sprite fix to alpha-0.1.1 / 0.1.1.0, preserved all historical releases, and integrated dynamic batch checks into actual EXE/Web release verification and deployment gates. Diagnostic screenshots now support an external evidence directory so standalone verification leaves the portable directory with only the EXE.

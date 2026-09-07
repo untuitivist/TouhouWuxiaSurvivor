@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Black Sprite Follow-Up — 2026-09-07
+
+1. [complete] Inspect alpha-0.1.1 screenshot and pinned GLES3 source. Ordinary polygon/batch interleaving passes locally; default-color fault injection fails on the original mesh (4926 pixels). Preserve this distinction from natural device reproduction.
+2. [complete] Supply explicit white vertex colors on one shared ArrayMesh, preserving animation UVs, instance tint, bounds and batching. Native and injected unisolated Web dual-hero comparisons pass.
+3. [complete] Final-source core 29/29, UI, native dual-hero pixel checks, normal/injected Web dual-hero checks and DPR 1/3 checks pass. Native static captures visually reviewed; eighteen JavaScript tests pass. Document evidence and limitations for a local-only commit, without release or deployment.
+
 ## Release alpha-0.1.1 — 2026-09-07
 
 1. [complete] Promote shared sprite fixes to alpha-0.1.1, preserve released history and require dynamic batch validation of exported artifacts. Source core/UI, fourteen JavaScript tests, seven deployment tests and script syntax checks pass.
