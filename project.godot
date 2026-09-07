@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="幻想乡 · 夜境异闻"
-config/version="alpha-0.1.0"
+config/version="alpha-0.1.1"
 run/main_scene="res://game/Main.tscn"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://assets/branding/night_journal.png"

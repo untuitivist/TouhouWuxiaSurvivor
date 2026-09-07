@@ -16,6 +16,13 @@ if ($Threadless -and $manifest.threadSupport -ne $false) { throw 'The selected a
 if ($Threadless) {
     $rawLoading = Get-Content -LiteralPath (Join-Path $latest.build 'raw-loading-verification.json') -Raw | ConvertFrom-Json
     if (!$rawLoading.passed -or $rawLoading.build -ne $latest.build -or $rawLoading.checks.Count -ne 20) { throw 'Repeated raw loading verification is required.' }
+    $batchPointer = Get-Content -LiteralPath (Join-Path $latest.build 'batch-verification-latest.json') -Raw | ConvertFrom-Json
+    $batchReport = Get-Content -LiteralPath $batchPointer.report -Raw | ConvertFrom-Json
+    if ($batchPointer.build -ne $latest.build -or $batchReport.build -ne $latest.build -or !$batchReport.passed -or $batchReport.checks.Count -ne 2) { throw 'Matching dynamic batch verification is required.' }
+    foreach ($hero in @('reimu', 'marisa')) {
+        $checks = @($batchReport.checks | Where-Object { $_.hero -eq $hero })
+        if ($checks.Count -ne 1 -or !$checks[0].passed -or $checks[0].capabilities.isolated -ne $false -or $checks[0].capabilities.sharedArrayBuffer -ne 'undefined') { throw "Missing unisolated batch verification: $hero" }
+    }
 }
 foreach ($file in $manifest.sourceFiles) {
     if ((Get-FileHash -LiteralPath (Join-Path $root $file.path)).Hash -ne $file.sha256) { throw "Source changed since verified build: $($file.path)" }
@@ -28,6 +35,9 @@ $version = [regex]::Match([IO.File]::ReadAllText("$root/project.godot"), '(?m)^c
 if (-not $version) { throw 'Game version missing.' }
 $windows = Get-Content -LiteralPath "$root/artifacts/$version-export-validation/report.json" -Raw | ConvertFrom-Json
 if ($windows.version -ne $version -or $windows.source_commit -ne $commit) { throw 'Matching standalone Windows release verification is required.' }
+foreach ($check in @('standalone-batch-reimu', 'standalone-batch-marisa')) {
+    if ($windows.checks -notcontains $check) { throw "Missing standalone batch verification: $check" }
+}
 if ((Get-FileHash -LiteralPath $windows.executable).Hash -ne $windows.sha256) { throw 'Verified Windows artifact changed.' }
 $release = "$version-$($commit.Substring(0,7))-$([DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ'))"
 $output = Join-Path $root "artifacts/deployment/$release"

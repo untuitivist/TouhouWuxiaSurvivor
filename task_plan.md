@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Release alpha-0.1.1 — 2026-09-07
+
+1. [complete] Promote shared sprite fixes to alpha-0.1.1, preserve released history and require dynamic batch validation of exported artifacts. Source core/UI, fourteen JavaScript tests, seven deployment tests and script syntax checks pass.
+2. [in_progress] Commit clean source, export both targets, verify standalone EXE and threadless Web including full release suites.
+3. [pending] Push, server pull/deploy, public verification and final delivery receipts.
+
 ## Shared Sprite Visibility Repair — 2026-09-07
 
 1. [complete] Reproduce missing entities with full-battle pixel comparisons; isolate the batch path from simulation/assets, preserving before-fix evidence.

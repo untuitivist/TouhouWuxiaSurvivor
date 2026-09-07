@@ -51,7 +51,9 @@ async function main() {
         await browser.close();
         await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
     }
+    await fs.writeFile(path.join(build.build, 'batch-verification-latest.json'), JSON.stringify({ build: build.build, report: path.join(output, 'report.json') }) + '\n', 'utf8');
     console.log('WEB_BATCH_VALIDATION_PASS', output);
 }
 
-main().catch(error => { console.error(error); process.exitCode = 1; });
+module.exports = { verifyBatches: main };
+if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1; });

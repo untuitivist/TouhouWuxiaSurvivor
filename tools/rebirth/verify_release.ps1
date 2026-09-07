@@ -63,6 +63,13 @@ foreach ($screen in $screens) {
     Invoke-ReleaseCheck "standalone-$screen" @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', "--rebirth-screen=$screen", "--rebirth-capture=$(Join-Path $logs "$screen.png")") 'REBIRTH_CAPTURE_PASS'
 }
 Invoke-ReleaseCheck 'standalone-controls-small' @('--resolution', '640x360', '--audio-driver', 'Dummy', '--', '--rebirth-screen=settings-controls', "--rebirth-capture=$(Join-Path $logs 'controls-small.png')") 'REBIRTH_CAPTURE_PASS'
+foreach ($hero in @('reimu', 'marisa')) {
+    $arguments = @('--audio-driver', 'Dummy', '--', '--rebirth-batch-smoke', "--rebirth-batch-output=$logs")
+    if ($hero -eq 'marisa') { $arguments += '--rebirth-batch-marisa' }
+    Invoke-ReleaseCheck "standalone-batch-$hero" $arguments 'SPRITE_BATCH_VISUAL_PASS'
+    $batchLog = [IO.File]::ReadAllText((Join-Path $logs "standalone-batch-$hero.log"), $encoding)
+    if ($batchLog -notmatch 'SPRITE_BATCH_VISUAL_PASS.+checks=72' -or [regex]::Matches($batchLog, 'BATTLE_BATCH_CHECK').Count -ne 12) { throw 'Incomplete standalone batch verification' }
+}
 if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must still contain only the EXE after all checks.' }
 $checksum = (Get-FileHash -LiteralPath $source.FullName -Algorithm SHA256).Hash
 $report = [ordered]@{
@@ -75,7 +82,7 @@ $report = [ordered]@{
     isolated_directory = $isolated
     isolated_files = @(Get-ChildItem -LiteralPath $isolated -Force | ForEach-Object { $_.Name })
     embedded_runtime = $configuration.runtimeOptions.includedFrameworks
-    checks = @('standalone-smoke', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small')
+    checks = @('standalone-smoke', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small', 'standalone-batch-reimu', 'standalone-batch-marisa')
 }
 [System.IO.File]::WriteAllText((Join-Path $logs 'report.json'), ($report | ConvertTo-Json -Depth 5), $encoding)
 Write-Output "SINGLE_EXE_VALIDATION_PASS version=$version bytes=$($source.Length) sha256=$checksum"

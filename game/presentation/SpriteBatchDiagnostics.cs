@@ -71,9 +71,7 @@ public partial class GameRoot
                 {
                     if (!OS.HasFeature("web"))
                     {
-                        Directory.CreateDirectory("artifacts/batch-validation");
-                        actualImage.SavePng("artifacts/batch-validation/actual.png");
-                        expectedImage.SavePng("artifacts/batch-validation/expected.png");
+                        SaveBatchImages(actualImage, expectedImage, "sprite");
                     }
                     throw new InvalidOperationException($"Batch differs from ordinary sprites: cycle={cycle} count={count} mismatches={mismatches}/{covered}");
                 }
@@ -118,18 +116,14 @@ public partial class GameRoot
             GD.Print($"BATTLE_BATCH_CHECK check={check} time={run!.Time} batches={originals.Length} mismatches={mismatches}");
             if (check == 36 && !OS.HasFeature("web"))
             {
-                Directory.CreateDirectory("artifacts/batch-validation");
-                actual.SavePng($"artifacts/batch-validation/{run.Hero}-144-actual.png");
-                expected.SavePng($"artifacts/batch-validation/{run.Hero}-144-expected.png");
+                SaveBatchImages(actual, expected, $"{run.Hero}-144");
             }
             if (mismatches > 100)
             {
                 foreach (var batch in originals) batch.PrintRenderState();
                 if (!OS.HasFeature("web"))
                 {
-                    Directory.CreateDirectory("artifacts/batch-validation");
-                    actual.SavePng("artifacts/batch-validation/battle-actual.png");
-                    expected.SavePng("artifacts/batch-validation/battle-expected.png");
+                    SaveBatchImages(actual, expected, "battle");
                 }
                 throw new InvalidOperationException($"Battle batch image differs from independent immediate draws: {mismatches} pixels");
             }
@@ -140,6 +134,14 @@ public partial class GameRoot
             foreach (var batch in originals) batch.Show();
             ProcessMode = originalMode;
         }
+    }
+
+    private static void SaveBatchImages(Image actual, Image expected, string name)
+    {
+        var output = OS.GetCmdlineUserArgs().FirstOrDefault(argument => argument.StartsWith("--rebirth-batch-output=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "artifacts/batch-validation";
+        Directory.CreateDirectory(output);
+        if (actual.SavePng(Path.Combine(output, name + "-actual.png")) != Error.Ok || expected.SavePng(Path.Combine(output, name + "-expected.png")) != Error.Ok)
+            throw new IOException("Could not save batch render evidence");
     }
 
     private static int CompareRenderedImages(Image actual, Image expected, int tolerance, out int covered)
