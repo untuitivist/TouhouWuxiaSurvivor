@@ -5,6 +5,8 @@
 - User requests an update after cb17c35. Preparing the authorized paired Windows/Web publication as alpha-0.1.2 / 0.1.2.0. Read-only SSH preflight confirms the server is still on alpha-0.1.1; the new EXE name is unused. Old artifacts and pinned host keys are retained.
 - Color-state robustness is confirmed under controlled injection, not natural reproduction on the user device. The limitation remains in the release notes and the shared game remains unchanged apart from the version.
 - Source validation passes 29 core cases, UI/settings/profile/F3, 1182-character font coverage, 18 JavaScript tests, deployment safety tests and PowerShell syntax. Release gates now require 24 standalone color comparisons per hero and a separate successful unisolated Web injected-color report; ordinary and injected results cannot substitute for each other.
+- First Windows export passed 22 independent checks, but generated the new diagnostic script UID. Preserve that UID in Git and rebuild both targets from the resulting clean commit. The first EXE and its full validation are retained under artifacts/release-candidates/alpha-0.1.2-5707ddf, not overwritten or shipped as final.
+- First Web editor import terminated at 88 percent; Windows Application event records exception 0xc0000374 in ntdll.dll for the experimental 4.6.1 editor. Preserve the failed stage and import-failure.log under artifacts/web-builds/20260907-180431-348. No failing Web artifact is accepted or deployed; retry from a new isolated build and require full artifact tests.
 
 ## Black Sprite Follow-Up — 2026-09-07
 
