@@ -1,5 +1,13 @@
 # Progress Log
 
+## Unified Release alpha-0.1.0 — 2026-09-07
+
+- User promoted the dual-target release to alpha-0.1.0 / Windows 0.1.0.0. Preserve alpha-0.0.10 as an unshipped candidate and all older executables/history.
+- Shared clean source 07b96e7195283479ebb6c26a7ec7d2c2fb69ef1f produced both the 193108552-byte standalone EXE and genuine threadless Web build 20260907-101348-442. Twenty EXE checks, four five-scenario browser suites, twenty single-request raw downloads, six loading scenarios and DPR 1/3 fixtures pass.
+- Pushed main and deployed alpha-0.1.0-07b96e7-20260907T022831Z with server source/hash checks and rollback backup. Active metadata matches both artifacts.
+- Initial live check entered combat but treated periodic Emscripten WASM dependency-wait diagnostics as errors. Preserved the failed report/screenshots; added exact startup-only block classification with six tests, while retaining strict runtime/network failure gates. Final desktop, touch/save/reload and genuinely unisolated touch suites pass against the unchanged public artifact. Inspected title, desktop F3/combat and unisolated touch screenshots.
+- Core download is 30580142 bytes; observed public startup varies widely with network/cache, so neither instant loading nor real-phone FPS is claimed. Xiaomi/Android/iPhone physical-device acceptance remains open. Release receipts and rollback paths are recorded in docs/deployment.md.
+
 ## Mobile Performance, Hybrid Runtime And Original Assets
 
 - Replaced active object-list combat updates with dense component stores and dedicated enemy/projectile/pickup systems; retained OOP presentation/menus/encounters and stable seeded update order. Legacy `src` ECS was not compiled into the rewritten game.

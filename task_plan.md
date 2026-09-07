@@ -4,8 +4,8 @@
 
 1. [complete] Confirm publication authorization, existing local/remote alpha-0.0.9 and preserved historical artifacts.
 2. [complete] Promote release notes, connect the threadless deployment gate and correct version-independent changelog regression. Windows source smoke/core and seven deployment safety tests pass.
-3. [in_progress] Commit the release source; export and verify standalone Windows and the exact shared Web build.
-4. [pending] Push source, deploy with server pull/checks/backups, verify the public site and record delivery evidence.
+3. [complete] Build both targets from clean 07b96e7: twenty standalone EXE checks, twenty browser journey checks across four environments, twenty raw downloads, six loading scenarios and DPR 1/3 render fixtures pass.
+4. [complete] Push source, server fast-forward pull, checksum/backed-up activation and three public browser scenarios pass. Record alpha-0.1.0-07b96e7-20260907T022831Z, artifact hashes, preserved initial diagnostic failure and physical-device limitations in docs/deployment.md. Follow-up test/documentation commits do not change the release artifact source.
 
 ## Mobile Performance, Hybrid Runtime And Original Assets
 

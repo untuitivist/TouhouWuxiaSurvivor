@@ -3,6 +3,21 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
 
+function classifyBrowserConsole(events) {
+    const errors = [];
+    const startupDiagnostics = [];
+    const waiting = ['still waiting on run dependencies:', 'dependency: wasm-instantiate', '(end of list)'];
+    for (let index = 0; index < events.length; index++) {
+        if (waiting.every((text, offset) => events[index + offset]?.startup === true && events[index + offset]?.type === 'error' && events[index + offset]?.text === text)) {
+            startupDiagnostics.push(events.slice(index, index + waiting.length));
+            index += waiting.length - 1;
+        } else if (events[index].type === 'error' || /WebGL: INVALID|ArrayBufferView/.test(events[index].text)) {
+            errors.push(events[index].text);
+        }
+    }
+    return { errors, startupDiagnostics };
+}
+
 async function main() {
     const root = path.resolve(__dirname, '../..');
     const deployment = JSON.parse(await fs.readFile(path.join(root, 'artifacts/deployment/latest.json'), 'utf8'));
@@ -58,7 +73,9 @@ async function main() {
             const context = await browser.newContext({ viewport: mobile ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: mobile, isMobile: mobile });
             const page = await context.newPage();
             const check = { name: !isolation ? 'live-touch-no-isolation' : mobile ? 'live-touch' : 'live-normal-desktop', isolationHeadersRemovedForTest: !isolation, errors: [], failedRequests: [] };
-            page.on('console', message => { if (message.type() === 'error' || /WebGL: INVALID|ArrayBufferView/.test(message.text())) check.errors.push(message.text()); });
+            let startup = true;
+            const consoleEvents = [];
+            page.on('console', message => { consoleEvents.push({ type: message.type(), text: message.text(), startup }); });
             page.on('pageerror', error => check.errors.push(String(error)));
             page.on('requestfailed', request => check.failedRequests.push({ url: request.url(), error: request.failure()?.errorText }));
             const started = Date.now();
@@ -78,6 +95,7 @@ async function main() {
                 }
                 await page.goto(deployment.url, { waitUntil: 'domcontentloaded', timeout: 120000 });
                 await page.waitForFunction(() => !document.querySelector('#loading'), undefined, { timeout: 180000 });
+                startup = false;
                 check.startupSeconds = (Date.now() - started) / 1000;
                 check.capabilities = await page.evaluate(() => ({ isolated: crossOriginIsolated, sharedArrayBuffer: typeof SharedArrayBuffer }));
                 assert.equal(check.capabilities.isolated, isolation);
@@ -118,8 +136,10 @@ async function main() {
                     const volume = (await state()).MasterVolume;
                     assert.ok(volume > 0.35 && volume < 0.5);
                     await page.waitForTimeout(2000);
+                    startup = true;
                     await page.reload({ waitUntil: 'domcontentloaded', timeout: 120000 });
                     await page.waitForFunction(() => window.__touhouProbe?.Screen === 'title' && !document.querySelector('#loading'), undefined, { timeout: 180000 });
+                    startup = false;
                     assert.equal((await state()).MasterVolume, volume);
                     check.saveReloadPassed = true;
                     await click('踏入夜境     →');
@@ -142,6 +162,7 @@ async function main() {
                     check.finalState = await state();
                     assert.equal(check.finalState.Warning, '');
                 }
+                assert.deepEqual(classifyBrowserConsole(consoleEvents).errors, []);
                 assert.deepEqual(check.errors, []);
                 assert.deepEqual(check.failedRequests, []);
                 check.passed = true;
@@ -152,6 +173,8 @@ async function main() {
                 await page.screenshot({ path: path.join(output, check.name + '-failure.png') }).catch(() => {});
                 throw error;
             } finally {
+                check.console = classifyBrowserConsole(consoleEvents);
+                check.consoleEvents = consoleEvents;
                 report.checks.push(check);
                 await context.close();
             }
@@ -168,4 +191,5 @@ async function main() {
     console.log('PUBLIC_WEB_DEPLOYMENT_PASS ' + deployment.url);
 }
 
-main().catch(error => { console.error(error); process.exitCode = 1; });
+module.exports = { classifyBrowserConsole };
+if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1; });
