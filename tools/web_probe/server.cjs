@@ -2,7 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 
-function startProbeServer(root, port = 0, { isolation = true, entryArguments = null } = {}) {
+function startProbeServer(root, port = 0, { isolation = true, entryArguments = null, entryHtml = null } = {}) {
     const site = fs.realpathSync(root);
     const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.pck': 'application/octet-stream', '.png': 'image/png' };
     const requests = [];
@@ -22,6 +22,11 @@ function startProbeServer(root, port = 0, { isolation = true, entryArguments = n
         }
         if (!pathname.startsWith('/TouhouSurvivor/') || !['GET', 'HEAD'].includes(request.method)) {
             response.writeHead(404).end();
+            return;
+        }
+        if (entryHtml !== null && pathname === '/TouhouSurvivor/') {
+            response.writeHead(200, { 'Content-Type': types['.html'], 'Content-Length': Buffer.byteLength(entryHtml) });
+            response.end(request.method === 'HEAD' ? undefined : entryHtml);
             return;
         }
         const relative = pathname.endsWith('/') ? pathname + 'index.html' : pathname;

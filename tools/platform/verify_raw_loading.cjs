@@ -11,7 +11,8 @@ async function verifyRawLoading() {
     const pack = await fs.readFile(path.join(build.site, 'TouhouSurvivor/index.pck'));
     const expected = crypto.createHash('sha256').update(pack).digest('hex');
     const loader = await fs.readFile(path.join(build.site, 'TouhouSurvivor/index.loader.js'), 'utf8');
-    const host = await startProbeServer(build.site, 0, { isolation: false });
+    const entryHtml = '<!doctype html><html><body>' + ['loading', 'notice', 'progress', 'amount', 'speed', 'remaining', 'percentage', 'phase', 'download-total', 'download-note', 'retry'].map(name => '<div id="' + name + '"></div>').join('') + '</body></html>';
+    const host = await startProbeServer(build.site, 0, { isolation: false, entryHtml });
     const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
     const report = { build: build.build, physicalDeviceTested: false, checks: [] };
     try {
@@ -20,8 +21,7 @@ async function verifyRawLoading() {
             const page = await context.newPage();
             const check = { attempt, failedRequests: [], errors: [] };
             try {
-                await page.goto(host.origin + '/TouhouSurvivor/index.icon.png');
-                await page.setContent('<body>' + ['loading', 'notice', 'progress', 'amount', 'speed', 'remaining', 'percentage', 'phase', 'download-total', 'download-note', 'retry'].map(name => '<div id="' + name + '"></div>').join('') + '</body>');
+                await page.goto(host.origin + '/TouhouSurvivor/');
                 await page.addScriptTag({ content: loader });
                 page.on('requestfailed', request => check.failedRequests.push({ url: request.url(), error: request.failure()?.errorText }));
                 page.on('pageerror', error => check.errors.push(String(error)));
