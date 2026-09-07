@@ -92,11 +92,12 @@ for (const threads of [undefined, true, false]) {
         };
         let requirements;
         let drained = false;
+        let requests = 0;
         let context;
-        const originalFetch = async () => new Response(new ReadableStream({
+        const originalFetch = async () => { requests++; return new Response(new ReadableStream({
             start(controller) { controller.enqueue(new Uint8Array([1, 2])); controller.enqueue(new Uint8Array([3, 4])); controller.close(); },
             cancel() { assert.fail('Download must reach EOF rather than being cancelled'); }
-        }));
+        })); };
         class Engine {
             static getMissingFeatures(options) { requirements = options.threads; return []; }
             async startGame() {
@@ -111,6 +112,7 @@ for (const threads of [undefined, true, false]) {
         await loader.start();
         assert.equal(requirements, threads ?? true);
         assert.equal(drained, true);
+        assert.equal(requests, 1);
         assert.equal(document.body.dataset.gameReady, 'true');
         assert.equal(elements.get('loading').dataset.loaded, '4');
         assert.equal(elements.get('loading').removed, true);

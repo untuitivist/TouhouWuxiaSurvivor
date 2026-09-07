@@ -131,6 +131,27 @@
                 responses.add(response);
                 if (file.compressed && response.headers.get('Content-Encoding')) throw new Error('压缩资源的服务器响应不符合加载要求。');
                 if (!file.compressed && response.headers.get('Content-Encoding')) decodedMode = true;
+                if (!file.compressed) {
+                    const trackedResponse = response.clone();
+                    responses.add(trackedResponse);
+                    const progressReader = trackedResponse.body.getReader();
+                    const track = async () => {
+                        try {
+                            while (true) {
+                                const chunk = await progressReader.read();
+                                if (chunk.done) break;
+                                monitor.receive(file, chunk.value.byteLength);
+                            }
+                        } finally { progressReader.releaseLock(); }
+                    };
+                    const [payload] = await Promise.all([response.blob(), track()]);
+                    if (payload.size !== file.decodedBytes) throw new Error('资源没有接收完整，请重新加载。');
+                    const timings = performance.getEntriesByName(download);
+                    const timing = timings[timings.length - 1];
+                    monitor.complete(file, !!timing && timing.transferSize === 0 && timing.decodedBodySize > 0);
+                    render();
+                    return new Response(payload, { headers: { 'Content-Type': /\.wasm$/.test(file.url) ? 'application/wasm' : 'application/octet-stream' } });
+                }
                 const sourceReader = response.body.getReader();
                 const tracked = new ReadableStream({
                     async pull(controller) {

@@ -2,6 +2,8 @@
 
 ## Publication Follow-Up
 
+The release gate reproduced the raw-response issue after the initial successful suites. A no-game comparison over the same PCK found 12 aborted events in 20 synthetic-stream reads, with all byte counts/hashes correct, versus zero in 20 native Blob reads. The final raw fallback consumes the original response natively while a cloned response reports progress from the same single HTTP request; it hands the completed Blob to the engine. Compressed downloads retain the streaming path. Publication now additionally requires 20 real-loader raw downloads with matching bytes/SHA-256 and no failed requests. The first unshipped Windows candidate is preserved rather than overwritten when rebuilding the release from the final fix commit.
+
 The user subsequently authorized the alpha-0.0.10 dual-target release. The publication path now requires the same clean source commit for the standalone Windows EXE and threadless Web artifact, and four full browser suites (raw/gzip, isolated/unisolated). The stale Windows changelog smoke assertion is corrected to inspect settings/F3 in their historical alpha-0.0.9 entry; the current release is checked independently. Publication results are recorded in docs/deployment.md and local release receipts. The original validation-only scope and investigation below are preserved as history.
 
 ## Accepted Scope

@@ -13,6 +13,10 @@ foreach ($name in $reports) {
     if (-not $report.passed -or $report.build -ne $latest.build -or $report.transferMode -ne $transferMode) { throw "Matching successful browser verification required: $name" }
 }
 if ($Threadless -and $manifest.threadSupport -ne $false) { throw 'The selected artifact is not threadless.' }
+if ($Threadless) {
+    $rawLoading = Get-Content -LiteralPath (Join-Path $latest.build 'raw-loading-verification.json') -Raw | ConvertFrom-Json
+    if (!$rawLoading.passed -or $rawLoading.build -ne $latest.build -or $rawLoading.checks.Count -ne 20) { throw 'Repeated raw loading verification is required.' }
+}
 foreach ($file in $manifest.sourceFiles) {
     if ((Get-FileHash -LiteralPath (Join-Path $root $file.path)).Hash -ne $file.sha256) { throw "Source changed since verified build: $($file.path)" }
 }
