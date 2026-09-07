@@ -1,5 +1,12 @@
 # Progress Log
 
+## Release alpha-0.1.1 — 2026-09-07
+
+- User authorized publication. Promoted the shared sprite fix to alpha-0.1.1 / 0.1.1.0, preserved all historical releases, and integrated dynamic batch checks into actual EXE/Web release verification and deployment gates. Diagnostic screenshots now support an external evidence directory so standalone verification leaves the portable directory with only the EXE.
+- Clean build source: 71e322076ea1ebf9a1d95066383485caa190ac2b. EXE is 193121856 bytes, SHA-256 1E01EB37525B9ECE3955F8F3A70EAE95CABD021855E77697E53E124AE6E51C5E; 22 standalone checks pass. Web build 20260907-114847-651 passes twenty raw transfers, dynamic pixel regressions, four five-scenario suites, six loading scenarios and DPR 1/3 fixtures.
+- Git push, server fast-forward pull and backed-up activation succeeded. Active release alpha-0.1.1-71e3220-20260907T040525Z matches both artifacts. Public normal desktop, touch/save-reload and genuinely unisolated touch pass with preserved existing routes and zero failed requests/runtime errors. Inspected live version title and exported EXE battle evidence.
+- Complete versioned changelog copied alongside the EXE. Final documentation commit does not alter the deployed source revision. Black textures were not independently reproduced, and physical-phone FPS remains unverified.
+
 ## Shared Sprite Visibility Repair — 2026-09-07
 
 - Reproduced missing enemy textures during a seeded battle near 144 simulated seconds. Native/CPU instance data remained valid; immediate reference draws restored the missing fairy sprites (1461 differing pixels). Preserved evidence under artifacts/batch-validation-before-fix and artifacts/batch-state.log.

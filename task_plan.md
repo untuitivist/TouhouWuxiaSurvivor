@@ -3,8 +3,8 @@
 ## Release alpha-0.1.1 — 2026-09-07
 
 1. [complete] Promote shared sprite fixes to alpha-0.1.1, preserve released history and require dynamic batch validation of exported artifacts. Source core/UI, fourteen JavaScript tests, seven deployment tests and script syntax checks pass.
-2. [in_progress] Commit clean source, export both targets, verify standalone EXE and threadless Web including full release suites.
-3. [pending] Push, server pull/deploy, public verification and final delivery receipts.
+2. [complete] Clean 71e3220 builds both targets. Standalone EXE passes 22 checks including both batch journeys; threadless Web passes dynamic pixel comparisons, four full suites, twenty raw transfers, six loading scenarios and DPR checks.
+3. [complete] Pushed, server fast-forward pull and backed-up deployment complete. Public desktop, touch/save/reload and genuinely unisolated touch pass; active metadata confirms exact source and Windows hash. Receipts recorded in docs/deployment.md.
 
 ## Shared Sprite Visibility Repair — 2026-09-07
 
