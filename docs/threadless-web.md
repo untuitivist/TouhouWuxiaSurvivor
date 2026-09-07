@@ -11,7 +11,7 @@ The user subsequently authorized the alpha-0.1.0 dual-target release. The public
 - One maintained Godot game project, one C# gameplay implementation and one set of content/settings/input semantics for Windows and Web. Build staging is generated input, not a second game.
 - The user authorizes adjustment or replacement of the Web export toolchain to investigate a genuinely shared-memory-free browser build. Do not replace the Windows toolchain or fork gameplay into JavaScript.
 - Future native mobile export should reuse shared gameplay and existing touch controls; Android/iOS packaging is not part of this task and touch support alone does not constitute native-mobile readiness.
-- Preserve concurrent alpha-0.1.0 release changes already present when this task started. Isolate toolchain experiments from the published/publishing build and its caches. No publication is authorized by this compatibility task.
+- Preserve concurrent alpha-0.0.10 release changes already present when this task started. Isolate toolchain experiments from the published/publishing build and its caches. No publication is authorized by this compatibility task.
 
 ## Plan
 

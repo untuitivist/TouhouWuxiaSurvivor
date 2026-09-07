@@ -594,7 +594,7 @@ Phase 5
 - Comment and export-boundary audits passed. Verify process cleanup, then run final smoke and OpenGL visual tests.
 - Final smoke passed. Inspect PIDs 72664/42000; terminate only if their command lines belong to this task, preserve user editor PID 17192.
 - Task-owned stale processes cleaned. Run final seven-state OpenGL capture and confirm it exits, leaving only PID 17192.
-## Dual-Target Release alpha-0.1.0
+## Dual-Target Release alpha-0.0.10 (Historical Candidate; Superseded by alpha-0.1.0)
 
 1. [in_progress] Prepare the next optimization version and release notes while preserving all earlier releases; explicitly exclude unimplemented shared-memory-free compatibility from release claims.
 2. [pending] Validate the same committed gameplay revision for self-contained Windows export and Web, using the actual deployment resource path without hiding request failures.
