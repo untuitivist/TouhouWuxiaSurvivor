@@ -47,6 +47,8 @@ public partial class GameRoot
         if (mode == "changelog") { ShowChangelog(); return; }
         if (mode == "journal") { OpenJournal(); return; }
         if (mode == "journal-detail") { ShowJournalDetail(JournalCatalog.All.Single(entry => entry.Id == "art-MasterSpark")); return; }
+        if (mode == "growth-choices") { PrepareGrowthPreview(); return; }
+        if (mode == "growth-orbit") { PrepareGrowthCombatPreview(); return; }
         PrepareBattlePreview(mode);
     }
 
@@ -101,6 +103,8 @@ public partial class GameRoot
             enemy.Health = enemy.MaxHealth = 10000;
             enemy.Speed = 0;
         }
+        if (mode == "reimu-spell") run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.DreamSeal), 5);
+        if (run.Hero == HeroKind.Reimu) run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.Homing), 3);
         if (mode == "reimu-spell")
             for (var index = 0; index < 20; index++) run.Projectiles.Add(new() { Position = Geometry.Angle(index * MathF.Tau / 20) * 25, Hostile = true, Radius = 1, Life = 2 });
         var ticks = mode == "marisa-warmup" ? 8 : mode == "reimu-spell" ? 14 : mode == "marisa-stars" ? 18 : 45;
@@ -236,7 +240,7 @@ public partial class GameRoot
         run!.AddExperience(30);
         run.Step(default);
         RefreshRunScreen();
-        Require(run.Choices.All(art => ArtCatalog.Available(HeroKind.Marisa, art)), "Marisa choices are character-owned");
+        Require(run.Choices.All(art => ArtCatalog.Available(HeroKind.Marisa, art.Ability)), "Marisa choices are character-owned");
         AssertUiBounds();
         ShowTitle();
         GD.Print("UI: navigation, inspection, preserved offers, audio sliders, embedded history, title, heroes, dash, victory, replay, help, viewport bounds");

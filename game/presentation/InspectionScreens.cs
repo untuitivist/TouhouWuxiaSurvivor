@@ -12,7 +12,7 @@ public partial class GameRoot
         var hero = run.Hero == HeroKind.Reimu ? "博丽灵梦" : "雾雨魔理沙";
         ui.Label(panel, $"{hero}  ·  修习 {run.Level}", new(36, 132, 292, 32), 22, Palette.Gold);
         ui.Label(panel, $"生命  {run.Health:0.#} / {run.MaxHealth:0}\n术式威力  ×{run.Power:0.00}\n施放频率  ×{run.CastSpeed:0.00}\n移动速度  {run.MoveSpeed:0.#}\n拾取半径  {run.PickupRadius:0}\n闪身冷却  {run.DashInterval:0.00} 秒", new(36, 180, 280, 202), 18);
-        ui.Label(panel, $"符卡：{ArtCatalog.SignatureName(run.Hero)}\n蓄势满后自动施放，无额外按键。\n数值含本局修习；频率不等于总伤害。", new(36, 397, 281, 79), 14, Palette.Muted);
+        ui.Label(panel, $"符卡：{ArtCatalog.SignatureName(run.Hero)}\n{(run.Build.SignatureUnlocked ? "已解锁，满蓄势自动施放。" : "尚未解锁，修习中领悟。")}\n数值含本局修习；频率不等于总伤害。", new(36, 397, 281, 79), 14, Palette.Muted);
         var abilities = ArtCatalog.Abilities(run.Hero).ToArray();
         for (var index = 0; index < abilities.Length; index++)
         {
@@ -22,7 +22,9 @@ public partial class GameRoot
             var card = ui.Panel(panel, new(344, 132 + index * 115, 723, 110), new Color("172a31"));
             ui.Label(card, art.Name, new(16, 8, 570, 31), 23, color, true);
             ui.Label(card, rank == 0 ? "未习得" : $"{rank} / {art.MaxRank} 重", new(617, 14, 92, 25), 14, color);
-            ui.Label(card, art.Source, new(17, 42, 689, 23), 12, Palette.Muted);
+            var branches = UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior);
+            var branchText = string.Join(" · ", branches.Select(upgrade => $"{(run.Build.Rank(upgrade) > 0 ? "已悟" : "待悟")} {upgrade.Name}"));
+            ui.Label(card, run.Hero == HeroKind.Reimu ? branchText : art.Source, new(17, 42, 689, 23), 12, Palette.Muted);
             ui.Label(card, rank >= art.MaxRank ? "圆满：" + art.Mastery : ArtCatalog.UpgradeText(art.Id, rank), new(17, 68, 689, 36), 15, Palette.Paper);
         }
         var training = ArtCatalog.Training.Select(art => $"{art.Name} {run.Ranks[(int)art.Id]}/{art.MaxRank}");

@@ -16,8 +16,10 @@ public sealed partial class RunState
     public ComponentStore<Projectile> Projectiles => World.Projectiles;
     public ComponentStore<Pickup> Pickups => World.Pickups;
     public readonly List<CombatEvent> Events = [];
-    public readonly List<ArtKind> Choices = [];
-    public readonly int[] Ranks = new int[ArtCatalog.All.Length];
+    public readonly List<UpgradeDefinition> Choices = [];
+    public BuildState Build { get; }
+    public int[] Ranks => Build.Ranks;
+    public ReimuAbilityState Reimu { get; } = new();
     public readonly Seal[] Seals =
     [
         new() { Name = "天之印", Position = new(-680, -430) },
@@ -27,7 +29,7 @@ public sealed partial class RunState
     public HeroKind Hero { get; }
     public bool Focused { get; private set; }
     public BeamState? Beam { get; private set; }
-    public BoundaryField? Field { get; private set; }
+public BoundaryField? Field { get; internal set; }
     public int Seed { get; }
     public RunPhase Phase { get; private set; } = RunPhase.Playing;
     public Vector2 PlayerPosition { get; private set; }
@@ -36,10 +38,10 @@ public sealed partial class RunState
     public int Ticks { get; private set; }
     public float Time => Ticks * StepSeconds;
     public float Health { get; private set; }
-    public float MaxHealth => (Hero == HeroKind.Reimu ? 110 : 85) + Ranks[(int)ArtKind.Vitality] * 25;
-    public float Power => (Hero == HeroKind.Marisa ? 1.16f : 1) * (1 + Ranks[(int)ArtKind.Power] * 0.18f);
+    public float MaxHealth => HeroCatalog.Get(Hero).Health + Ranks[(int)ArtKind.Vitality] * 25;
+    public float Power => HeroCatalog.Get(Hero).Power * (1 + Ranks[(int)ArtKind.Power] * 0.18f);
     public float CastSpeed => 1 + Ranks[(int)ArtKind.Haste] * 0.14f;
-    public float MoveSpeed => (Hero == HeroKind.Marisa ? 220 : 205) * (1 + Ranks[(int)ArtKind.Flow] * 0.06f);
+    public float MoveSpeed => HeroCatalog.Get(Hero).Speed * (1 + Ranks[(int)ArtKind.Flow] * 0.06f);
     public float PickupRadius => 78 + Ranks[(int)ArtKind.Flow] * 35;
     public float DashDuration { get; private set; }
     public float DashCooldown { get; private set; }
@@ -65,8 +67,7 @@ public sealed partial class RunState
     private float spawnTimer = 0.4f;
     private float nextElite = 55;
     private float primaryTimer;
-    private float orbitTimer;
-    private float fieldTimer;
+
     private float stardustTimer;
     private float beamCooldown;
     private Vector2 dashDirection;
@@ -74,12 +75,11 @@ public sealed partial class RunState
     public RunState(HeroKind hero, int seed)
     {
         Hero = hero;
+        Build = new(hero);
         Seed = seed;
         random = new Random(seed);
         Health = MaxHealth;
-        Ranks[(int)(hero == HeroKind.Reimu ? ArtKind.Ofuda : ArtKind.Stars)] = 1;
-        if (hero == HeroKind.Reimu) Ranks[(int)ArtKind.YinYang] = 1;
-        else Ranks[(int)ArtKind.MasterSpark] = 1;
+
     }
 
     public void Step(FrameInput input)
@@ -101,7 +101,7 @@ public sealed partial class RunState
         if (Phase == RunPhase.Won) Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Phase == RunPhase.Playing) UpdatePickupsAndSeals();
         Enemies.RemoveAll(enemy => enemy.Health <= 0);
-        if (SpellCharge >= 100 && Phase == RunPhase.Playing) CastSignatureSpell();
+        if (Build.SignatureUnlocked && SpellCharge >= 100 && Phase == RunPhase.Playing) CastSignatureSpell();
         if (PendingChoices > 0 && Phase == RunPhase.Playing) OfferChoices();
     }
 
@@ -138,7 +138,7 @@ public sealed partial class RunState
     }
 
     private void Heal(float amount) => Health = Math.Min(MaxHealth, Health + amount);
-    private void Emit(EffectKind kind, Vector2 position, float value = 0) => Events.Add(new(kind, position, position, value));
+    internal void Emit(EffectKind kind, Vector2 position, float value = 0) => Events.Add(new(kind, position, position, value));
     private float RandomFloat() => (float)random.NextDouble();
     internal static Vector2 ClampToArena(Vector2 position) => Vector2.Clamp(position, new(-ArenaHalfWidth + 28, -ArenaHalfHeight + 28), new(ArenaHalfWidth - 28, ArenaHalfHeight - 28));
 }

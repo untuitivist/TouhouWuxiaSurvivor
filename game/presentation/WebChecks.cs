@@ -29,6 +29,7 @@ public partial class GameRoot
         webPilot = arguments.Contains("--web-pilot");
         var fixture = arguments.FirstOrDefault(argument => argument.StartsWith("--web-fixture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
         webPerformance = fixture == "performance";
+        if (fixture == "growth-choices") { PrepareGrowthPreview(); return; }
         webArtPreview = fixture is "reimu-field" or "reimu-spell" or "marisa-stars" or "marisa-warmup" or "marisa-beam";
         if (webPilot || fixture.Length > 0)
         {

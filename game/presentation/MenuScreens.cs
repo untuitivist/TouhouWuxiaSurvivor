@@ -37,7 +37,7 @@ public partial class GameRoot
         var panel = Modal("heroes", "CHOOSE YOUR PATH  /  选择行者", "今夜，由谁来平息异变？", 1080, 570);
         var heroes = new[]
         {
-            (HeroKind.Reimu, "博丽灵梦", "乐园的巫女", "御札 · 阴阳玉 · 封魔", "110 点生命\n初始：追踪御札 + 阴阳玉\n满蓄势：灵符「梦想封印」", "御札追踪，阴阳玉护身，留阵迎敌。\n从容穿行弹隙，守住进退之路。", Palette.Red, "灵"),
+            (HeroKind.Reimu, "博丽灵梦", "乐园的巫女", "御札 · 阴阳玉 · 封魔", "110 点生命\n初始：基础直射御札\n需解锁：灵符「梦想封印」", "修习解锁阵与玉，符可追踪、爆炸。\n从容穿行弹隙，守住进退之路。", Palette.Red, "灵"),
             (HeroKind.Marisa, "雾雨魔理沙", "普通的魔法使", "星屑 · 光热 · 魔炮", "85 点生命，伤害 +16%\n初始：星光射击 + Master Spark\n满蓄势：强化魔炮", "星弹散射，慢移时收束。\n魔炮蓄势锁向，走位可平移火线。", Palette.Violet, "魔")
         };
         Button? first = null;
@@ -65,7 +65,7 @@ public partial class GameRoot
         ui.Label(panel, "01   行", new(36, 135, 260, 40), 26, Palette.Gold, true);
         ui.Label(panel, $"{GameControls.Hint(GameControls.Up)} / {GameControls.Hint(GameControls.Left)} / {GameControls.Hint(GameControls.Down)} / {GameControls.Hint(GameControls.Right)}  移动\n{GameControls.Hint(GameControls.Focus)}  慢移，显示判定点\n{GameControls.Hint(GameControls.Dash)}  闪身，短暂无敌\nEsc  安全暂停 / 返回\n{GameControls.Hint(GameControls.Fullscreen)}  全屏预览", new(36, 188, 290, 172), 17);
         ui.Label(panel, "02   悟", new(355, 135, 270, 40), 26, Palette.Jade, true);
-        ui.Label(panel, $"攻击自动寻找目标。\n各自三条能力 + 通用修习。\n升级按卡片提示键或点击。\n{GameControls.Hint(GameControls.Inspect)} 查看效果与原作出处。", new(355, 188, 293, 148), 17);
+        ui.Label(panel, $"攻击自动寻找目标。\n灵梦基础符起步，升级解锁阵与玉。\n行为分支可兼修；按提示键或点击。\n{GameControls.Hint(GameControls.Inspect)} 查看效果与原作出处。", new(355, 188, 293, 148), 17);
         ui.Label(panel, "03   破", new(676, 135, 280, 40), 26, Palette.Red, true);
         ui.Label(panel, "擦弹与退治积累符卡蓄势。\n灵梦：梦想封印追踪灵光。\n魔理沙：锁向持续魔炮。\n发动时清弹、吸取经验。", new(676, 188, 290, 148), 18);
         ui.Label(panel, "路上有三个古印。净化进度会保留，遇险可以先退；不净化也能迎战终局。", new(36, 370, 925, 60), 20, Palette.Gold, true);

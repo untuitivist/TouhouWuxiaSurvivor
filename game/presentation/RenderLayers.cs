@@ -40,7 +40,7 @@ public partial class GameCanvas
             worldLayer.AddChild(batch);
             batches.Add(name, batch);
         }
-        foreach (var name in new[] { "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai" })
+        foreach (var name in new[] { "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai", "actors/yin_yang_orb" })
         {
             var batch = new SpriteBatch(textures[name]) { ZIndex = 5 };
             worldLayer.AddChild(batch);

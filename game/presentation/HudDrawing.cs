@@ -31,7 +31,7 @@ public partial class GameCanvas
         Text("符卡蓄势", new(989, 31), 17, Palette.Jade);
         Text($"{(int)Run.SpellCharge} / 100", new(1162, 31), 15, Palette.Paper);
         Bar(new(989, 45, 263, 8), Run.SpellCharge / 100, Palette.Jade);
-        Text("擦弹蓄势 · 满槽自动清弹", new(989, 77), 14, Palette.Muted);
+        Text(Run.Build.SignatureUnlocked ? "擦弹蓄势 · 满槽自动清弹" : "梦想封印 · 尚未解锁", new(989, 77), 14, Palette.Muted);
         Text("历 练", new(28, 679), 13, Palette.Jade);
         Bar(new(84, 668, 242, 7), (float)Run.Experience / Run.NextLevelExperience, Palette.Jade);
         Text($"{Run.Experience} / {Run.NextLevelExperience}", new(84, 699), 13, Palette.Muted);
@@ -60,7 +60,7 @@ public partial class GameCanvas
         if (Run.Time < 10)
         {
             surface.DrawRect(new(383, 551, 514, 65), Palette.Alpha(Palette.Deep, 0.8f));
-            CenterText(Run.Hero == HeroKind.Reimu ? "御札追敌，阴阳护身。" : "星弹开路，魔炮锁向。", new(640, 578), 20, Palette.Paper, TitleFont);
+            CenterText(Run.Hero == HeroKind.Reimu ? "基础御札起步，修习解锁阵与玉。" : "星弹开路，魔炮锁向。", new(640, 578), 20, Palette.Paper, TitleFont);
             FittedText($"{GameControls.Hint(GameControls.Up)} / {GameControls.Hint(GameControls.Left)} / {GameControls.Hint(GameControls.Down)} / {GameControls.Hint(GameControls.Right)} 移动 · {GameControls.Hint(GameControls.Inspect)} 构筑 · Esc 暂停", new(397, 603), 486, 15, Palette.Muted);
         }
         if (Run.SpellFlash > 0) CenterText(ArtCatalog.SignatureName(Run.Hero), new(640, 213), 30, Palette.Alpha(Palette.Gold, Run.SpellFlash / 0.65f), TitleFont);

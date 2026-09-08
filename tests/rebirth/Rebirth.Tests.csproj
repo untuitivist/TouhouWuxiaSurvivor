@@ -12,6 +12,8 @@
     <Compile Include="../../game/diagnostics/RunPilot.cs" Link="RunPilot.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="HeroTests.cs" />
+    <Compile Include="GrowthTests.cs" />
+    <Compile Include="GrowthBalance.cs" />
     <Compile Include="PerformanceBenchmarks.cs" />
     <Compile Include="EcsTests.cs" />
   </ItemGroup>

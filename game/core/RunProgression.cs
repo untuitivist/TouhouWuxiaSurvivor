@@ -19,15 +19,7 @@ public sealed partial class RunState
     private void OfferChoices()
     {
         Choices.Clear();
-        var candidates = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && ArtCatalog.Available(Hero, art.Id) && Ranks[(int)art.Id] < art.MaxRank)
-            .Select(art => art.Id).ToList();
-        while (Choices.Count < 3 && candidates.Count > 0)
-        {
-            var index = random.Next(candidates.Count);
-            Choices.Add(candidates[index]);
-            candidates.RemoveAt(index);
-        }
-        if (Choices.Count < 3) Choices.Add(ArtKind.Recovery);
+        Choices.AddRange(UpgradeOffers.Create(Build, Level, random));
         Phase = RunPhase.Choosing;
         Emit(EffectKind.Level, PlayerPosition);
     }
@@ -35,9 +27,9 @@ public sealed partial class RunState
     public bool Choose(int index)
     {
         if (Phase != RunPhase.Choosing || index < 0 || index >= Choices.Count) return false;
-        var art = Choices[index];
-        if (!ArtCatalog.Available(Hero, art) || Ranks[(int)art] >= ArtCatalog.Get(art).MaxRank) return false;
-        if (art != ArtKind.Recovery) Ranks[(int)art]++;
+        var upgrade = Choices[index];
+        if (!Build.TryApply(upgrade, Level)) return false;
+        var art = upgrade.Ability;
         if (art == ArtKind.Vitality) Heal(35);
         if (art == ArtKind.Recovery)
         {

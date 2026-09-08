@@ -102,9 +102,9 @@ public partial class GameRoot
         GameControls.SetBinding(profile.Data.Bindings, GameControls.ChoiceTwo, 0, Key.Enter);
         RefreshRunScreen();
         var selectedArt = testRun.Choices[1];
-        var originalRank = testRun.Ranks[(int)selectedArt];
+        var originalRank = testRun.Build.Rank(selectedArt);
         PressKey(Key.Enter);
-        Require(testRun.Ranks[(int)selectedArt] == originalRank + 1, "Rebound choice takes priority over focused first button");
+        Require(testRun.Build.Rank(selectedArt) == originalRank + 1, "Rebound choice takes priority over focused first button");
         run = preservedRun;
         profile.Data.Bindings = GameControls.DefaultBindings();
         GameControls.Configure(profile.Data.Bindings);

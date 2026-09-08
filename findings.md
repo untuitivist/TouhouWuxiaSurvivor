@@ -1,3 +1,13 @@
+## Reimu Growth Implementation — 2026-09-08
+
+- Local reference is a Unity binary build at ../other_game_reference/20MinuteTillDawn, not source. Read-only assembly identifiers include PrereqsMet, prereqs, anyPrereqFulfill and SynergyUIState; exact probabilities and mechanics were not verified, and no code/assets were copied.
+- Implemented and tested Reimu behavior composition; full acceptance scope and concurrent-localization isolation are recorded in docs/reimu_growth_sample.md.
+
+- Existing Choices and rank arrays mix ability identity with upgrade identity; replace offers with stable upgrade definitions while keeping compact ability ranks in runtime state.
+- Existing Reimu starts homing + orbit and casts signature without unlock. These must change only for Reimu in this sample; Marisa compatibility is a regression requirement.
+- Orbit positions must be shared by collision and presentation; cleared hostile projectiles must skip later damage in the same tick. Binding must stop movement but not silently disable all Boss behavior.
+- No nested AGENTS.md found; rg returned exit 1 for no matches.
+
 ## Gameplay Direction Audit — 2026-09-08
 
 - Legacy contracts favor prerequisites, behavioral specialization, affinity, equal-budget horizontal packs and immutable run content. Current documented baseline does not mandate mutually exclusive specializations even though exclusion fields exist.

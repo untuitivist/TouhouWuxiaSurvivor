@@ -5,6 +5,7 @@ using Rebirth.Diagnostics;
 using Rebirth.Tests;
 
 if (args.Contains("--performance")) return PerformanceBenchmarks.Run(args);
+if (args.Contains("--growth-balance")) return GrowthBalance.Run();
 
 var tests = new (string Name, Action Body)[]
 {
@@ -12,6 +13,15 @@ var tests = new (string Name, Action Body)[]
     ("inline hit history retains overflow and duplicate safety", EcsTests.History),
     ("spatial identity lookup and allocation-free queries", EcsTests.Queries),
     ("hero identities and initial weapons", HeroIdentity),
+    ("growth prerequisites, uniqueness and mixed offers", GrowthTests.Offers),
+    ("compatible branches commute and reject repeats", GrowthTests.Combinations),
+    ("basic ofuda stays straight and signature stays locked", GrowthTests.Basic),
+    ("all straight ofuda ranks aim a real shot at distant targets", GrowthTests.StraightAim),
+    ("equal-point route balance retains distinct niches", GrowthBalance.Guardrails),
+    ("homing blast combines without recursive explosions", GrowthTests.Blast),
+    ("clustered boundary binds while boss attacks continue", GrowthTests.Boundary),
+    ("yin yang charge, launch and pause share orbit state", GrowthTests.Orbit),
+    ("bounded bullet clear is safe regardless of storage order", GrowthTests.Clear),
     ("upgrade descriptions match shared ability tuning", HeroTests.UpgradeDescriptions),
     ("character-owned upgrade pools and validation", HeroTests.Ownership),
     ("ofuda tracks and reacquires targets", HeroTests.Homing),
@@ -67,7 +77,7 @@ static void HeroIdentity()
     var reimu = NewRun();
     var marisa = NewRun(HeroKind.Marisa);
     Check(reimu.MaxHealth > marisa.MaxHealth && marisa.MoveSpeed > reimu.MoveSpeed, "Different strengths");
-    Check(reimu.Ranks[(int)ArtKind.Ofuda] == 1 && reimu.Ranks[(int)ArtKind.YinYang] == 1 && marisa.Ranks[(int)ArtKind.Stars] == 1 && marisa.Ranks[(int)ArtKind.MasterSpark] == 1 && marisa.Ranks[(int)ArtKind.Ofuda] == 0, "Different starter arts");
+    Check(reimu.Ranks[(int)ArtKind.Ofuda] == 1 && reimu.Ranks[(int)ArtKind.YinYang] == 0 && marisa.Ranks[(int)ArtKind.Stars] == 1 && marisa.Ranks[(int)ArtKind.MasterSpark] == 1 && marisa.Ranks[(int)ArtKind.Ofuda] == 0, "Different starter arts");
 }
 
 static void Movement()
@@ -89,6 +99,7 @@ static void FocusMovement()
 static void QiBurst()
 {
     var run = NewRun();
+    run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.DreamSeal), 5);
     for (var index = 0; index < 20; index++)
         run.Projectiles.Add(new() { Position = Geometry.Angle(index * MathF.Tau / 20) * 25, Hostile = true, Radius = 5, Life = 2 });
     run.Pickups.Add(new() { Position = new(500, 0), Value = 4 });
@@ -138,8 +149,8 @@ static void Choices()
     Check(run.Choices.Distinct().Count() == run.Choices.Count, "Unique options");
     run.Step(new(Vector2.One));
     Check(run.Ticks == tick && !run.Choose(-1) && !run.Choose(9), "Freeze and bounds");
-    var previousRanks = run.Ranks.Sum();
-    Check(run.Choose(0) && run.PendingChoices == pending - 1 && run.Ranks.Sum() == previousRanks + 1, "One application");
+    var previousRanks = run.Build.AllocatedPoints;
+    Check(run.Choose(0) && run.PendingChoices == pending - 1 && run.Build.AllocatedPoints == previousRanks + 1, "One application");
     Resolve(run);
     Check(!run.Choose(0) && run.Phase == RunPhase.Playing, "Cannot choose stale card");
 }
@@ -148,9 +159,10 @@ static void UpgradeCaps()
 {
     var run = NewRun();
     foreach (var art in ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery)) run.Ranks[(int)art.Id] = art.MaxRank;
+    foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior)) run.Build.TryApply(upgrade, 100);
     run.AddExperience(50);
     run.Step(default);
-    Check(run.Choices.SequenceEqual(new[] { ArtKind.Recovery }), "Fallback only");
+    Check(run.Choices.SequenceEqual(new[] { UpgradeCatalog.Get(UpgradeCatalog.Recovery) }), "Fallback only");
     Resolve(run);
     foreach (var art in ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery)) Check(run.Ranks[(int)art.Id] == art.MaxRank, "Rank limit");
 }
@@ -262,7 +274,7 @@ static void Restart()
     old.Step(default);
     Resolve(old);
     var fresh = NewRun();
-    Check(fresh.Ticks == 0 && fresh.Level == 1 && fresh.Enemies.Count == 0 && fresh.Ranks.Sum() == 2 && fresh.SpellCharge == 0, "Independent state");
+    Check(fresh.Ticks == 0 && fresh.Level == 1 && fresh.Enemies.Count == 0 && fresh.Ranks.Sum() == HeroCatalog.Get(fresh.Hero).InitialAbilities.Count && fresh.SpellCharge == 0, "Independent state");
 }
 
 static void FullTimeline()

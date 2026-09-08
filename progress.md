@@ -1,3 +1,9 @@
+## Reimu Playable Growth Tree — 2026-09-08
+
+- Implemented the approved sample: gated starter/unlocks/signature, compatible behavior nodes, independent Reimu runtime, shared UI/journal descriptions, existing-art orbit/launch rendering.
+- 38/38 core regressions and six seeded journeys pass. Independent growth snapshot passes the full native suite; three Web layouts pass growth interactions with no shared memory. Screenshots inspected.
+- Concurrent localization edits caused a mixed-workspace provenance assertion failure; preserved those edits and isolated growth staging/validation rather than reverting or committing another task. No release/version/push/deployment.
+
 ## Gameplay Direction Audit — 2026-09-08
 
 - User moved priority from performance to fun and decoupling. Reviewed archived architecture/balance docs and progression definitions/tests, then checked active progression/catalog/journal dependencies.

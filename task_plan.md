@@ -1,3 +1,11 @@
+## Reimu Playable Growth Tree — 2026-09-08
+
+- Complete: stable upgrade definitions, build state and offer policy; Reimu starts with straight ofuda and explicitly unlocks other abilities/signature.
+- Complete: six compatible behaviors, shared choices/build/journal descriptions and existing original-art rendering.
+- Complete: 38 core regressions, six existing seeded journeys, independent native full smoke and three non-isolated Web layout/interaction checks. Human fun, route balance and physical mobile testing remain outside this automated acceptance.
+- Local commit includes only growth work; concurrent localization work is preserved separately. See docs/reimu_growth_sample.md.
+- Scope: Reimu sample only; Marisa keeps current gameplay until a later tree migration. No new controls, version bump, release export, push or deployment. No deletions.
+
 ## Gameplay Direction Audit — 2026-09-08
 
 - Complete: recorded user report that stutter is resolved and redirected priority to fun, decoupling and worthwhile legacy ideas.

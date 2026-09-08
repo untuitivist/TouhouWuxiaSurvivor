@@ -9,7 +9,7 @@ public static class RunPilot
     {
         while (run.Phase == RunPhase.Choosing)
         {
-            var preferred = run.Choices.FindIndex(art => ArtCatalog.Get(art).Owner == run.Hero);
+            var preferred = run.Choices.FindIndex(art => art.Owner == run.Hero);
             run.Choose(preferred < 0 ? 0 : preferred);
         }
     }

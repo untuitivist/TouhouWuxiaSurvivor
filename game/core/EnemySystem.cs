@@ -31,6 +31,11 @@ internal static class EnemySystem
                 enemy.Timer = 3.2f;
             }
             if (enemy.Kind == EnemyKind.Boss) UpdateBoss(run, enemy, direction, distance);
+            if (enemy.BoundRemaining > 0)
+            {
+                enemy.Velocity *= enemy.Kind == EnemyKind.Boss ? ReimuTuning.BossSlowMultiplier : 0;
+                enemy.BoundRemaining = Math.Max(0, enemy.BoundRemaining - RunState.StepSeconds);
+            }
             enemy.Position = RunState.ClampToArena(enemy.Position + enemy.Velocity * RunState.StepSeconds);
             if (Vector2.DistanceSquared(enemy.Position, run.PlayerPosition) < MathF.Pow(enemy.Radius + 6, 2)) run.Hurt(enemy.ContactDamage);
         }

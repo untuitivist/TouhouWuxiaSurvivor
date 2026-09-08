@@ -41,9 +41,11 @@ public partial class GameCanvas
         if (Run.Hero == HeroKind.Reimu && orbitRank > 0)
         {
             surface.DrawArc(player, Run.OrbitRadius, 0, MathF.Tau, 64, Palette.Alpha(Palette.Jade, 0.10f), 1);
-            for (var index = 0; index < orbitRank + 1; index++)
+            for (var index = 0; index < ReimuAbilitySystem.OrbitCount(Run); index++)
             {
-                var position = player + Vector2.FromAngle(Run.OrbitAngle + index * MathF.Tau / (orbitRank + 1)) * Run.OrbitRadius;
+                var position = Palette.Vector(ReimuAbilitySystem.OrbitPosition(Run, index));
+                if (Run.Reimu.Charging && index == ReimuAbilitySystem.OrbitCount(Run) - 1)
+                    OriginalEffect("reimu_aura", position, Vector2.One * (38 + 22 * (1 - Run.Reimu.ChargeRemaining / ReimuTuning.OrbChargeDuration)), Palette.Alpha(Colors.White, 0.65f));
                 surface.DrawCircle(position, 14, Palette.Alpha(Palette.Jade, 0.12f));
                 Sprite("actors/yin_yang_orb", position + new Vector2(0, 7), 0.62f);
             }

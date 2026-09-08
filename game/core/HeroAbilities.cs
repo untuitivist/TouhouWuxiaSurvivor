@@ -10,14 +10,7 @@ public sealed partial class RunState
         var target = NearestEnemy(PlayerPosition, 950);
         if (Hero == HeroKind.Reimu)
         {
-            var rank = Ranks[(int)ArtKind.Ofuda];
-            if (rank > 0 && target != null && primaryTimer <= 0)
-            {
-                CastOfuda(target, rank);
-                primaryTimer = AbilityTuning.Get(ArtKind.Ofuda, rank).Interval;
-            }
-            UpdateYinYang();
-            UpdateBoundary(target);
+            ReimuAbilitySystem.Step(this);
         }
         else
         {
@@ -45,13 +38,7 @@ public sealed partial class RunState
         }
     }
 
-    private void CastOfuda(Enemy target, int rank)
-    {
-        var stats = AbilityTuning.Get(ArtKind.Ofuda, rank);
-        var heading = Geometry.Direction(target.Position - PlayerPosition);
-        for (var index = 0; index < stats.Count; index++)
-            AddProjectile(new() { Art = ArtKind.Ofuda, Position = PlayerPosition, Velocity = Geometry.Rotate(heading, (index - (stats.Count - 1) / 2f) * 0.24f) * 510, Damage = stats.Damage * Power, Life = stats.Range / 510 + 0.6f, Radius = 8, TurnRate = 5.5f, TargetId = target.Id });
-    }
+
 
     private void CastStars(Enemy target, int rank)
     {
@@ -62,45 +49,7 @@ public sealed partial class RunState
             AddProjectile(new() { Art = ArtKind.Stars, Position = PlayerPosition, Velocity = Geometry.Rotate(heading, (index - (stats.Count - 1) / 2f) * spread) * 620, Damage = stats.Damage * Power, Life = stats.Range / 620, Radius = 8 });
     }
 
-    private void UpdateYinYang()
-    {
-        orbitTimer -= StepSeconds * CastSpeed;
-        var rank = Ranks[(int)ArtKind.YinYang];
-        if (rank <= 0 || orbitTimer > 0) return;
-        var stats = AbilityTuning.Get(ArtKind.YinYang, rank);
-        for (var index = 0; index < stats.Count; index++)
-        {
-            var position = PlayerPosition + Geometry.Angle(OrbitAngle + index * MathF.Tau / stats.Count) * stats.Range;
-            foreach (var enemy in grid.Query(position, 75))
-                if (Vector2.DistanceSquared(position, enemy.Position) < MathF.Pow(enemy.Radius + 28, 2))
-                    DamageEnemy(enemy, stats.Damage * Power, Geometry.Direction(enemy.Position - PlayerPosition) * 9);
-        }
-        orbitTimer = stats.Interval;
-    }
 
-    private void UpdateBoundary(Enemy? target)
-    {
-        fieldTimer -= StepSeconds * CastSpeed;
-        var rank = Ranks[(int)ArtKind.Boundary];
-        if (Field == null && rank > 0 && fieldTimer <= 0 && target != null && Vector2.DistanceSquared(target.Position, PlayerPosition) < 260 * 260)
-        {
-            var stats = AbilityTuning.Get(ArtKind.Boundary, rank);
-            Field = new() { Position = PlayerPosition, HalfSize = stats.Range, Remaining = stats.Duration, Damage = stats.Damage * Power };
-            fieldTimer = stats.Interval;
-        }
-        if (Field == null) return;
-        Field.Remaining -= StepSeconds;
-        if (Field.Remaining <= 0) { Field = null; return; }
-        Field.PulseTimer -= StepSeconds;
-        if (Field.PulseTimer > 0) return;
-        Field.PulseTimer += AbilityTuning.BoundaryPulse;
-        foreach (var enemy in Enemies)
-        {
-            var offset = Vector2.Abs(enemy.Position - Field.Position);
-            if (Math.Max(offset.X, offset.Y) <= Field.HalfSize + enemy.Radius)
-                DamageEnemy(enemy, Field.Damage, Vector2.Zero);
-        }
-    }
 
     private void StartBeam(bool signature)
     {

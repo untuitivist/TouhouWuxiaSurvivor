@@ -8,28 +8,28 @@ public partial class GameRoot
     private void ShowChoices()
     {
         if (run == null) return;
-        var panel = Modal("choices", $"ENLIGHTENMENT  /  修习 {run.Level}", "此刻，悟得一式。", 1100, 546);
+        var panel = Modal("choices", $"ENLIGHTENMENT  /  修习 {run.Level}", "此刻，悟得一式。", 1100, 620);
         ui.Label(panel, "时间已停。选择角色能力或通用修习，决定下一步打法。", new(37, 126, 1018, 25), 15, Palette.Muted);
         Button? first = null;
         for (var index = 0; index < run.Choices.Count; index++)
         {
             var selectedIndex = index;
-            var art = ArtCatalog.Get(run.Choices[index]);
-            var rank = run.Ranks[(int)art.Id];
+            var upgrade = run.Choices[index];
+            var art = upgrade.Art;
             var color = new Color(art.Color);
-            var card = ui.Panel(panel, new(35 + index * 346, 162, 334, 303), new Color("172a31"));
-            ui.Label(card, $"0{index + 1}    /    {art.School}", new(19, 16, 294, 30), 14, color);
-            ui.Label(card, art.Name, new(17, 59, 300, 49), 29, Palette.Paper, true);
-            ui.Label(card, ArtCatalog.RankText(art.Id, rank), new(20, 112, 294, 24), 14, color);
-            ui.Label(card, ArtCatalog.UpgradeText(art.Id, rank), new(20, 147, 294, 70), 17, Palette.Paper);
+            var card = ui.Panel(panel, new(35 + index * 346, 162, 334, 350), new Color("172a31"));
+            ui.Label(card, $"0{index + 1}    /    {upgrade.Category}", new(19, 16, 294, 30), 14, color);
+            ui.Label(card, upgrade.Name, new(17, 59, 300, 49), 29, Palette.Paper, true);
+            ui.Label(card, UpgradeCatalog.Progress(upgrade, run.Build), new(20, 109, 294, 40), 13, color);
+            ui.Label(card, UpgradeCatalog.Description(upgrade, run.Build), new(20, 153, 294, 105), 16, Palette.Paper);
             var footer = art.Source.Length > 0 ? art.Source : "通用修习 · 不改变角色的能力归属";
-            if (!TouchLayout) ui.Label(card, footer, new(20, 219, 294, 40), 13, color);
+            if (!TouchLayout) ui.Label(card, footer, new(20, 267, 294, 36), 13, color);
             var action = new[] { GameControls.ChoiceOne, GameControls.ChoiceTwo, GameControls.ChoiceThree }[index];
-            var button = ui.Button(card, TouchLayout ? "领悟此式" : $"[{GameControls.Hint(action)}]  领悟", new(19, TouchLayout ? 219 : 263, 296, TouchLayout ? 78 : 30), () => SelectArt(selectedIndex), true);
+            var button = ui.Button(card, TouchLayout ? "领悟此式" : $"[{GameControls.Hint(action)}]  领悟", new(19, TouchLayout ? 266 : 310, 296, TouchLayout ? 78 : 30), () => SelectArt(selectedIndex), true);
             first ??= button;
         }
-        ui.Button(panel, $"查看构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 486, 232, 36), OpenBuild);
-        ui.Label(panel, "查看不会消耗选择，也不会刷新候选能力。", new(296, 490, 766, 28), 14, Palette.Muted);
+        ui.Button(panel, $"查看构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 560, 232, 36), OpenBuild);
+        ui.Label(panel, "查看不会消耗选择，也不会刷新候选能力。", new(296, 564, 766, 28), 14, Palette.Muted);
         first?.GrabFocus();
     }
 
@@ -39,7 +39,7 @@ public partial class GameRoot
         var panel = Modal("pause", "A MOMENT OF STILLNESS  /  暂歇", "风止，夜未尽。", 920, 520);
         ui.Label(panel, $"行走 {GameCanvas.FormatTime(run.Time)}   ·   修习 {run.Level}   ·   退治 {run.Kills}", new(36, 132, 840, 32), 19, Palette.Gold);
         var build = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && run.Ranks[(int)art.Id] > 0).Select(art => $"{art.Name}  {run.Ranks[(int)art.Id]} 重");
-        ui.Label(panel, string.Join("     ", build), new(36, 188, 844, 116), 20, Palette.Paper);
+        ui.Label(panel, string.Join("     ", build) + "\n" + string.Join(" · ", UpgradeCatalog.All.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior && run.Build.Rank(upgrade) > 0).Select(upgrade => upgrade.Name)), new(36, 188, 844, 116), 18, Palette.Paper);
         ui.Button(panel, $"属性与构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 311, 270, 66), OpenBuild);
         ui.Button(panel, "更新记录", new(324, 311, 270, 66), ShowChangelog);
         ui.Button(panel, "夜境图鉴", new(612, 311, 270, 66), OpenJournal);
@@ -72,7 +72,8 @@ public partial class GameRoot
             ui.Label(card, statistics[index].Item2, new(17, 46, 178, 49), 31, Palette.Gold);
         }
         var build = string.Join("  ·  ", ArtCatalog.Abilities(run.Hero).Where(art => run.Ranks[(int)art.Id] > 0).Select(art => $"{art.Name} {run.Ranks[(int)art.Id]}重"));
-        ui.Label(panel, build, new(36, 335, 888, 47), 19, Palette.Paper);
+        var behaviors = string.Join(" · ", UpgradeCatalog.All.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior && run.Build.Rank(upgrade) > 0).Select(upgrade => upgrade.Name));
+        ui.Label(panel, build + "\n" + behaviors, new(36, 335, 888, 52), 16, Palette.Paper);
         ui.Label(panel, $"修习 {run.Level}  ·  符卡施放 {run.SpellsCast} 次  ·  本局种子 {run.Seed}", new(36, 391, 888, 31), 15, Palette.Muted);
         if (profile.Warning.Length > 0) ui.Label(panel, profile.Warning, new(36, 424, 888, 25), 13, Palette.Red);
         ui.Button(panel, "再行一局", new(36, 474, 278, 49), () => StartRun(lastHero), true).GrabFocus();

@@ -70,7 +70,7 @@ public sealed partial class RunState
             AddProjectile(new() { Position = origin, Velocity = Geometry.Angle(rotation + MathF.Tau * index / count) * speed, Radius = 5, Damage = 15, Life = 7, Hostile = true, Alternate = alternate });
     }
 
-    private void AddProjectile(Projectile projectile)
+    internal void AddProjectile(Projectile projectile)
     {
         if (Projectiles.Count < ProjectileLimit) Projectiles.Add(projectile);
     }

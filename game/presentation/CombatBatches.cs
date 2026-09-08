@@ -33,11 +33,12 @@ public partial class GameCanvas
             var position = Palette.Vector(projectile.Position);
             if (!InView(position)) continue;
             var name = projectile.Hostile ? projectile.Alternate ? "violet_pellet" : "red_pellet"
-                : projectile.DreamOrb ? "dream" : projectile.Art == ArtKind.Ofuda ? "ofuda" : projectile.Art == ArtKind.Stardust ? "stardust" : "star";
+                : projectile.DreamOrb ? "dream" : projectile.Art == ArtKind.YinYang ? "actors/yin_yang_orb" : projectile.Art == ArtKind.Ofuda ? "ofuda" : projectile.Art == ArtKind.Stardust ? "stardust" : "star";
             var size = projectile.Hostile ? 15 : projectile.DreamOrb ? projectile.Radius * 2.6f : projectile.Art == ArtKind.Ofuda ? 22 : projectile.Radius * 2.4f;
             var rotation = projectile.Art == ArtKind.Ofuda && !projectile.Hostile ? MathF.Atan2(projectile.Velocity.Y, projectile.Velocity.X) + MathF.PI / 2 : projectile.Hostile ? 0 : Clock * 3 + projectile.Life;
             var tint = projectile.DreamOrb ? DreamColors[projectile.TintIndex % DreamColors.Length] : Colors.White;
-            batches[name].Add(position, Vector2.One * size, tint, rotation);
+            var frames = projectile.Art == ArtKind.YinYang && !projectile.Hostile ? spriteFrames[name].Frames : 1;
+            batches[name].Add(position, Vector2.One * size, tint, rotation, (int)(Clock * 10) % frames, frames);
         }
         VisibleBatchInstances = 0;
         foreach (var batch in batches.Values) { batch.Submit(); VisibleBatchInstances += batch.Count; }

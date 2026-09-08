@@ -27,6 +27,7 @@ public sealed class Enemy
     public float Flash;
     public float ContactDamage;
     public bool Charging;
+    public float BoundRemaining;
 }
 
 public struct Projectile
@@ -44,6 +45,8 @@ public struct Projectile
     public float TurnRate;
     public int TargetId;
     public bool DreamOrb;
+    public bool Blast;
+    public int ClearBudget;
     public int TintIndex;
     public HitHistory HitIds;
 }

@@ -62,7 +62,7 @@ internal static class HeroTests
                 run.Step(default);
                 while (run.Phase == RunPhase.Choosing)
                 {
-                    Check(run.Choices.All(art => ArtCatalog.Available(hero, art)), "Foreign abilities never enter offers");
+                    Check(run.Choices.All(art => ArtCatalog.Available(hero, art.Ability)), "Foreign abilities never enter offers");
                     Check(run.Choose(0), "Legal choice applies");
                 }
             }
@@ -71,7 +71,7 @@ internal static class HeroTests
             run.AddExperience(run.NextLevelExperience);
             run.Step(default);
             run.Choices.Clear();
-            run.Choices.Add(foreign);
+            run.Choices.Add(UpgradeCatalog.All.First(upgrade => upgrade.Ability == foreign));
             Check(!run.Choose(0) && run.Ranks[(int)foreign] == 0, "Choice application also rejects invalid ownership");
         }
     }
@@ -80,6 +80,7 @@ internal static class HeroTests
     {
         var run = Empty(HeroKind.Reimu);
         run.Ranks[(int)ArtKind.Ofuda] = 1;
+        run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.Homing), 3);
         var first = Target(run, new(300, 0));
         run.Step(default);
         var ofuda = run.Projectiles.First();
@@ -153,6 +154,11 @@ internal static class HeroTests
         foreach (var hero in Enum.GetValues<HeroKind>())
         {
             var run = Empty(hero);
+            if (hero == HeroKind.Reimu)
+            {
+                run.Ranks[(int)ArtKind.Ofuda] = 1;
+                run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.DreamSeal), 5);
+            }
             var count = hero == HeroKind.Reimu ? 20 : 27;
             for (var index = 0; index < count; index++)
                 run.Projectiles.Add(new() { Position = Geometry.Angle(index * MathF.Tau / count) * 25, Hostile = true, Radius = 1, Life = 2 });

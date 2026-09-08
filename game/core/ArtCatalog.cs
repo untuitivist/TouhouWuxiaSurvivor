@@ -6,7 +6,7 @@ public static class ArtCatalog
 {
     public static readonly ArtDefinition[] All =
     [
-        new(ArtKind.Ofuda, "追踪御札", "灵梦 · 追踪", "符纸自动追踪妖怪；目标消失后寻找新目标。", "六张御札追踪，目标消失后重新索敌。", "ef9fb3", 5, HeroKind.Reimu, "红魔乡/永夜抄说明书：御札；本作追踪转译", "札"),
+        new(ArtKind.Ofuda, "御札", "灵梦 · 符", "向目标发射直线御札；追踪与爆炸需分别领悟，可兼修。", "每轮六张御札；行为效果由已选分支决定。", "ef9fb3", 5, HeroKind.Reimu, "红魔乡/永夜抄说明书：御札；本作成长转译", "札"),
         new(ArtKind.YinYang, "阴阳玉", "灵梦 · 护身", "阴阳玉绕身，击退近敌；走位决定接触范围。", "六枚阴阳玉，回旋半径扩大至 115。", "8cdcc8", 5, HeroKind.Reimu, "红魔乡说明书：阴阳玉；本作回旋转译", "玉"),
         new(ArtKind.Boundary, "封魔阵", "灵梦 · 留阵", "在脚下留下方形封魔阵，持续伤害阵内敌人；离开后阵地不跟随。", "更大的驻留阵地；进退之间引敌入阵。", "efb7bf", 5, HeroKind.Reimu, "红魔乡：梦符「封魔阵」；本作驻留转译", "阵"),
         new(ArtKind.Stars, "星光射击", "魔理沙 · 散射", "星弹自动朝妖群散射；慢移时收束角度，不增加弹数或伤害。", "七星齐发；散射覆盖与慢移集中自由切换。", "e6c786", 5, HeroKind.Marisa, "永夜抄说明书/求闻史纪：星尘与光热魔法", "星"),
@@ -33,7 +33,7 @@ public static class ArtCatalog
         var prefix = rank == 0 ? "习得：" : "下一重：";
         return prefix + (kind switch
         {
-            ArtKind.Ofuda => $"每轮 {next.Count} 张追踪御札，单札基础伤害 {next.Damage:0}。",
+            ArtKind.Ofuda => $"每轮 {next.Count} 张御札，单札基础伤害 {next.Damage:0}。",
             ArtKind.YinYang => $"{next.Count} 枚阴阳玉，基础伤害 {next.Damage:0}，回旋半径 {next.Range:0}。",
             ArtKind.Boundary => $"半边长 {next.Range:0}，留阵 {next.Duration:0.0} 秒；每次基础伤害 {next.Damage:0}。",
             ArtKind.Stars => $"每轮 {next.Count} 枚星弹，单弹基础伤害 {next.Damage:0}；Shift 收束。",
