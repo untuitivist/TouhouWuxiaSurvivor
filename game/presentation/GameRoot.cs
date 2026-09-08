@@ -111,10 +111,12 @@ public partial class GameRoot : Node
         var shade = new ColorRect { Color = new(0.025f, 0.045f, 0.06f, 0.83f), Size = new(1280, 720), MouseFilter = Control.MouseFilterEnum.Stop };
         screen!.AddChild(shade);
         var panel = ui.Panel(screen, new((1280 - width) / 2, (720 - height) / 2, width, height));
-        var bookmark = new ColorRect { Position = new(width - 80, 16), Size = new(28, 36), Color = PixelSkin.Red, MouseFilter = Control.MouseFilterEnum.Ignore };
+        var spray = new TextureRect { Texture = PixelSkin.Artwork("panel-spray"), Position = new(width - 280, 22), Size = new(180, 96), ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, Modulate = new(1, 1, 1, 0.2f), MouseFilter = Control.MouseFilterEnum.Ignore };
+        panel.AddChild(spray);
+        var bookmark = new TextureRect { Texture = PixelSkin.Artwork("bookmark"), Position = new(width - 80, 8), Size = new(28, 44), MouseFilter = Control.MouseFilterEnum.Ignore };
         panel.AddChild(bookmark);
         ui.Label(bookmark, "夜", new(6, 6, 18, 23), 14).AddThemeColorOverride("font_color", PixelSkin.Light);
-        var stitch = new ColorRect { Position = new(36, 117), Size = new(width - 72, 2), Color = new("c7ab79"), MouseFilter = Control.MouseFilterEnum.Ignore };
+        var stitch = new TextureRect { Texture = PixelSkin.Artwork("divider"), Position = new(36, 117), Size = new(width - 72, 4), StretchMode = TextureRect.StretchModeEnum.Tile, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, MouseFilter = Control.MouseFilterEnum.Ignore };
         panel.AddChild(stitch);
         ui.Label(panel, eyebrow, new(36, 24, width - 72, 25), 13, Palette.Gold);
         ui.Label(panel, heading, new(34, 60, width - 68, 55), 38, Palette.Paper, true);

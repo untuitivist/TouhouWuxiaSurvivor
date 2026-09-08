@@ -100,6 +100,7 @@ public partial class GameRoot
         }
         parent.AddChild(new TextureRect
         {
+            Name = "journal_picture",
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             Texture = texture, Position = bounds.Position, Size = bounds.Size,
             StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,

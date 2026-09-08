@@ -16,6 +16,13 @@ public partial class GameRoot
         var migrated = GameControls.NormalizeBindings(oldBindings);
         Require(migrated[GameControls.Dash][0] == (long)Key.F3 && migrated[GameControls.Debug][0] != (long)Key.F3, "New debug action does not steal an existing user's F3 binding");
         ShowTitle();
+        var primary = Descendants(screen!).OfType<Button>().First();
+        var primaryTextures = new[] { "normal", "hover", "pressed" }
+            .Select(state => ((StyleBoxTexture)primary.GetThemeStylebox(state)).Texture.ResourcePath).ToArray();
+        Require(primaryTextures.Distinct().Count() == 3, "Primary button has distinct normal, hover and pressed artwork");
+        Require(primary.GetThemeColor("font_color") == PixelSkin.Light && primary.GetThemeColor("font_hover_color") == PixelSkin.Light, "Dark primary states retain light readable text");
+        Require(PixelSkin.Frame("panel").AxisStretchHorizontal == StyleBoxTexture.AxisStretchMode.Tile
+            && PixelSkin.Frame("panel").AxisStretchVertical == StyleBoxTexture.AxisStretchMode.Tile, "Paper grain tiles without stretching");
         var count = debugOverlay.RefreshCount;
         debugOverlay._Process(1);
         Require(!debugOverlay.Visible && debugOverlay.RefreshCount == count, "Hidden debug overlay does not rebuild text");

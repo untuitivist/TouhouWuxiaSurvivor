@@ -25,7 +25,9 @@ public partial class GameRoot
         {
             journalPage = page;
             ShowJournal();
-            foreach (var image in Descendants(screen!).OfType<TextureRect>())
+            var previews = Descendants(screen!).OfType<TextureRect>().Where(image => image.Name == "journal_picture").ToArray();
+            Require(previews.Length == Math.Min(JournalPageSize, JournalCatalog.All.Count - page * JournalPageSize), "Every visible card keeps its preview");
+            foreach (var image in previews)
                 Require(image.Size == new Vector2(80, 80) && image.GetParent<Control>().ClipContents, "Card textures stay inside the clipped preview at native image sizes");
         }
         journalPage = 0;
@@ -44,8 +46,9 @@ public partial class GameRoot
         foreach (var entry in JournalCatalog.All)
         {
             ShowJournalDetail(entry);
-            Require(Descendants(screen!).OfType<TextureRect>().Single().Texture != null, "Every journal entry has an existing original texture");
-            Require(Descendants(screen!).OfType<TextureRect>().Single().Size == new Vector2(240, 216), "Large original images fit detail preview");
+            var preview = Descendants(screen!).OfType<TextureRect>().Single(image => image.Name == "journal_picture");
+            Require(preview.Texture != null, "Every journal entry has an existing original texture");
+            Require(preview.Size == new Vector2(240, 216), "Large original images fit detail preview");
             Require(Descendants(screen!).OfType<RichTextLabel>().Single().Text.Contains(entry.Source), "Details retain provenance and adaptation notes");
             AssertUiBounds();
         }

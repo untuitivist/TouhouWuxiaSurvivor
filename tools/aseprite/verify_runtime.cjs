@@ -6,7 +6,7 @@ const { execFileSync } = require('node:child_process');
 const { PNG } = require('pngjs');
 const root = path.resolve(__dirname, '../..');
 const executable = process.env.ASEPRITE_EXE || 'D:/thesteam/steamapps/common/Aseprite/Aseprite.exe';
-const names = ['panel','button','primary','hover','pressed','disabled','inset','dark','track','fill','focus','thumb','thumb-hover','arrow','stone','shrine_marker','petal','shadow','touch-disc','touch-grip','night_journal'];
+const names = ['panel','button','primary','hover','pressed','disabled','inset','dark','track','fill','focus','thumb','thumb-hover','arrow','stone','shrine_marker','petal','shadow','touch-disc','touch-grip','night_journal','primary-hover','primary-pressed','bookmark','divider','panel-spray'];
 const output = path.join(root, 'artifacts/aseprite-runtime-roundtrip');
 fs.mkdirSync(output, { recursive: true });
 const report = { version: execFileSync(executable, ['--version'], { encoding: 'utf8' }).trim(), assets: [] };

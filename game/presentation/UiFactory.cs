@@ -38,6 +38,10 @@ public sealed class UiFactory(Font body, Font title)
         if (primary)
         {
             button.AddThemeStyleboxOverride("normal", PixelSkin.Frame("primary"));
+            button.AddThemeStyleboxOverride("hover", PixelSkin.Frame("primary-hover"));
+            button.AddThemeStyleboxOverride("pressed", PixelSkin.Frame("primary-pressed"));
+            foreach (var state in new[] { "font_color", "font_hover_color", "font_pressed_color", "font_focus_color" })
+                button.AddThemeColorOverride(state, PixelSkin.Light);
         }
         button.Pressed += action;
         parent.AddChild(button);
