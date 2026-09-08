@@ -1,0 +1,58 @@
+{
+  "usage": "User-supplied original pack; provenance does not grant redistribution permission.",
+  "composition": "Game-authored placement, sizing and title modulation; original texture pixels remain unchanged.",
+  "outputs": [
+    {
+      "file": "assets/internal_original/base/scenery/tree_canopy_a.png",
+      "source": "TH13.5 东方心绮楼/backGround/bg01/梩偭傁彫01.png",
+      "pixels": [
+        256,
+        256
+      ],
+      "crop": null,
+      "transformation": "Byte-for-byte PNG copy; no repainting, alpha edits or resampling",
+      "source_sha256": "97ae22122ab0d145253256a0e614c281978738486655b6c5a1b1a6f0bfc734a0",
+      "output_sha256": "97ae22122ab0d145253256a0e614c281978738486655b6c5a1b1a6f0bfc734a0",
+      "usage": "Original foliage viewed as a top-down scenery canopy; not a newly painted tree"
+    },
+    {
+      "file": "assets/internal_original/base/scenery/tree_canopy_b.png",
+      "source": "TH13.5 东方心绮楼/backGround/bg01/梩偭傁彫02.png",
+      "pixels": [
+        256,
+        256
+      ],
+      "crop": null,
+      "transformation": "Byte-for-byte PNG copy; no repainting, alpha edits or resampling",
+      "source_sha256": "8d2c52f2725114745f67fcaa1b8cf83620b024a859f6c34394084d6c159ed1bc",
+      "output_sha256": "8d2c52f2725114745f67fcaa1b8cf83620b024a859f6c34394084d6c159ed1bc",
+      "usage": "Second original foliage canopy for existing deterministic tree locations"
+    },
+    {
+      "file": "assets/internal_original/base/scenery/torii.png",
+      "source": "TH13.5 东方心绮楼/actor/mamizou/texture/torii.png",
+      "pixels": [
+        167,
+        275
+      ],
+      "crop": null,
+      "transformation": "Byte-for-byte PNG copy; no repainting, alpha edits or resampling",
+      "source_sha256": "b77ec477121a04f51520551288e41f267494c93368e8849c77650701d9d4b985",
+      "output_sha256": "b77ec477121a04f51520551288e41f267494c93368e8849c77650701d9d4b985",
+      "usage": "Mamizou actor texture reused as non-colliding map scenery; not claimed as a Hakurei shrine stage asset"
+    },
+    {
+      "file": "assets/internal_original/base/scenery/title_shrine.png",
+      "source": "TH15.5 东方凭依华/event/pic/bg/bg_hakurei.png",
+      "pixels": [
+        901,
+        557
+      ],
+      "crop": null,
+      "transformation": "Byte-for-byte PNG copy; no repainting, alpha edits or resampling",
+      "source_sha256": "e698c78727074e71dc16c50983d2f4e20d90269538cac23d9b99a2b60e4b4242",
+      "output_sha256": "e698c78727074e71dc16c50983d2f4e20d90269538cac23d9b99a2b60e4b4242",
+      "usage": "Original monochrome Hakurei shrine event illustration, not a night-scene recreation"
+    }
+  ]
+}

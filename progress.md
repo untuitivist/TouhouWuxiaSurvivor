@@ -1,5 +1,12 @@
 # Progress Log
 
+## Original Scenery Replacement — 2026-09-08
+
+- Final scenery captures are in scenery-refined-20260908-172449; after font reimport, title/changelog captures are in scenery-final-ui-20260908-173532. Desktop and Web use the same replacement code; final title text backplates and full torii silhouette were visually inspected. Before/after comparisons are under artifacts/scenery-art.
+- Web build 20260908-172621-470 passes three title sizes plus two character scenes without isolation or shared memory, both normal/injected batch regressions and DPR 1/3 checks. Native batch check 20260908-173535 passes both heroes. Font coverage required 12 additional characters and now passes 1195; source PNG bytes and alpha remain unchanged. No phone FPS claim, no export, no push, no deployment or version change.
+- Inspected supplied TH13.5 foliage/torii textures and TH15.5 Hakurei shrine illustration. Selected four original PNGs with transparent edges; byte-for-byte copies and provenance checks preserve source pixels without painting or alpha edits. Tree locations, collisions and combat remain unchanged; original actor torii art is reused only as non-colliding scenery, not attributed to a shrine-stage asset.
+- Native baseline preserved in artifacts/render-performance/scenery-before-20260908-171422. First integration passes build, 29/29 core and UI/settings/F3/render-cache checks, with six seeded journeys unchanged. Static stress remains 320 enemies, 1600 projectiles and 400 pickups; draw calls decrease from 800 to 254, not a physical-mobile FPS claim.
+- Initial title and battle captures are preserved in scenery-after-20260908-171819. Review finds the taller original torii hidden behind the upper HUD and footer text lacking contrast over the detailed illustration; shift only its decorative position down and retain functional title-text backplates.
 ## Release alpha-0.1.3 — 2026-09-08
 
 - Final delivery recorded in docs/deployment.md. The landing-only network hint is deployed from e4191f9 with an independent active.json override and rollback backup; public HTML checksum, unchanged scripts and 1280x720 / 844x390 / 390x844 visible layouts pass. One entry screenshot attempt hit ERR_CONNECTION_CLOSED and is preserved before the successful rerun. Verified the original EXE hash, game source commit and immutable asset metadata remain unchanged. No older release files were removed.

@@ -15,9 +15,9 @@ public partial class GameCanvas
             var location = new Vector2((int)(hash % 2800) - 1400, (int)(TileHash(index, 12) % 2000) - 1000);
             if (Math.Abs(location.X) < 150 || Math.Abs(location.Y) < 100 || Math.Abs(location.X - location.Y * 1.45f) < 100) continue;
             if (Run.Seals.Any(seal => Palette.Vector(seal.Position).DistanceSquaredTo(location) < 180 * 180)) continue;
-            DrawTree(location, 0.7f + hash % 4 * 0.1f, false);
+            DrawTree(location, 0.7f + hash % 4 * 0.1f, (int)(hash % 2));
         }
-        DrawTorii(new(0, -175), 1);
+        DrawTorii(new(0, -80), 1);
     }
 
     private void DrawWorldDynamic()
@@ -54,50 +54,24 @@ public partial class GameCanvas
 
     private void DrawTorii(Vector2 position, float scale)
     {
-        void Block(float left, float top, float width, float height, string color) => surface.DrawRect(new(position + new Vector2(left, top) * scale, new Vector2(width, height) * scale), new Color(color));
-        Block(-76, 0, 152, 18, "233330");
-        Block(-60, -121, 13, 130, "793c3b");
-        Block(47, -121, 13, 130, "793c3b");
-        Block(-59, -117, 4, 120, "ac6151");
-        Block(48, -117, 4, 120, "ac6151");
-        Block(-69, -18, 30, 26, "526460");
-        Block(39, -18, 30, 26, "526460");
-        Block(-84, -132, 168, 13, "713b3a");
-        Block(-90, -137, 180, 6, "b2755b");
-        Block(-82, -101, 164, 9, "a15c4e");
-        Block(-94, -145, 188, 9, "1c2c30");
-        Block(-11, -122, 22, 39, "272e29");
-        Block(-7, -116, 14, 27, "bca375");
-        for (var index = 0; index < 5; index++)
-        {
-            var origin = position + new Vector2(-40 + index * 20, -78 + MathF.Sin(index) * 3) * scale;
-            surface.DrawLine(origin, origin + new Vector2(2, 15) * scale, new Color("c9c7aa"), 3 * scale);
-        }
+        var size = toriiTexture.GetSize() * (0.7f * scale);
+        surface.DrawTextureRect(toriiTexture, new(position - new Vector2(size.X / 2, size.Y - 10 * scale), size), false, new Color("c9b6b1"));
     }
 
-    private void DrawTree(Vector2 position, float scale, bool blossom)
+    private void DrawTree(Vector2 position, float scale, int variant)
     {
-        var foliage = blossom ? new Color("624a61") : new Color("243f3d");
-        surface.DrawCircle(position + new Vector2(0, 4), 40 * scale, new Color(0.03f, 0.06f, 0.07f, 0.23f));
-        surface.DrawRect(new(position + new Vector2(-6, -64) * scale, new Vector2(12, 74) * scale), new Color("39443e"));
-        for (var index = 0; index < 5; index++)
-        {
-            var offset = new Vector2((index % 3 - 1) * 28, -64 - (index / 3) * 27) * scale;
-            surface.DrawCircle(position + offset, (34 - index % 2 * 5) * scale, foliage);
-            surface.DrawCircle(position + offset + new Vector2(-6, -10) * scale, 23 * scale, blossom ? new Color("815b70") : new Color("304d45"));
-        }
+        var size = Vector2.One * (148 * scale);
+        surface.DrawTextureRect(treeCanopies[variant], new(position - new Vector2(size.X / 2, size.Y - 8 * scale), size), false, new Color("b2c3be"));
     }
 
     private void DrawTitleLandscape()
     {
-        surface.DrawTextureRect(titleLandscape, new(0, 0, 1280, 720), false);
+        var titleSize = titleLandscape.GetSize();
+        var cropHeight = titleSize.X * 720 / 1280;
+        surface.DrawTextureRectRegion(titleLandscape, new(0, 0, 1280, 720), new(0, (titleSize.Y - cropHeight) / 2, titleSize.X, cropHeight), new Color("b5c5cf"));
         Sprite("players/reimu", new(949, 539), 3);
         Sprite("players/marisa", new(1037, 559), 3, 1);
-        if (!ReducedMotion) for (var index = 0; index < 18; index++)
-        {
-            var horizontal = MathF.Floor(((index * 193 + Clock * 12) % 1280) / 4) * 4;
-            var vertical = MathF.Floor(((index * 113 + Clock * 17) % 720) / 4) * 4;
-            surface.DrawRect(new(horizontal, vertical, 4, 4), new Color("dfa5a1"));
-        }
+        surface.DrawRect(new(780, 610, 468, 40), Palette.Alpha(Palette.Deep, 0.86f));
+        surface.DrawRect(new(0, 672, 1280, 48), Palette.Alpha(Palette.Deep, 0.86f));
     }
 }

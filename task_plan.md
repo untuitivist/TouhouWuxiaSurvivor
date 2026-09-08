@@ -1,5 +1,10 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Original Scenery Replacement — 2026-09-08
+
+1. [complete] Inspect supplied tree, torii and shrine artwork; preserve native before captures and select usable transparent source textures.
+2. [complete] Replace procedural scenery/title drawing with cached original resources, preserve gameplay and add source integrity checks.
+3. [complete] Review real native/Web screenshots and before/after comparisons; source integrity, 29 core cases, UI, native/Web colors, five threadless Web scenes and DPR checks pass. Record provenance/changelog for local-only delivery without publication.
 ## Release alpha-0.1.3 — 2026-09-08
 
 1. [complete] Promote the art integration to alpha-0.1.3, preserve previous releases and validate the source before committing.
