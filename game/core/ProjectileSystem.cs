@@ -28,8 +28,7 @@ internal static class ProjectileSystem
                     var speed = Geometry.Length(projectile.Velocity);
                     var currentAngle = MathF.Atan2(projectile.Velocity.Y, projectile.Velocity.X);
                     var delta = new Vector2(target.Position.X - projectile.Position.X, target.Position.Y - projectile.Position.Y);
-                    var angle = MathF.Atan2(delta.Y, delta.X) - currentAngle;
-                    angle = MathF.Atan2(MathF.Sin(angle), MathF.Cos(angle));
+                    var angle = Geometry.AngleDelta(currentAngle, MathF.Atan2(delta.Y, delta.X));
                     var heading = currentAngle + Math.Clamp(angle, -projectile.TurnRate * RunState.StepSeconds, projectile.TurnRate * RunState.StepSeconds);
                     projectile.Velocity = new(MathF.Cos(heading) * speed, MathF.Sin(heading) * speed);
                 }

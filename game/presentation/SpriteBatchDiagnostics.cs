@@ -57,7 +57,10 @@ public partial class GameRoot
                     sprite.Scale = Vector2.One * 24 / texture.GetHeight();
                     sprite.Modulate = tint;
                     sprite.Frame = frame;
-                    batch.Add(position, Vector2.One * 24, tint, frame: frame, frameCount: frames);
+                    var direction = new Vector2(index % 7 - 3, index % 5 - 2);
+                    sprite.Rotation = cycle == 1 ? MathF.Atan2(direction.Y, direction.X) + MathF.PI / 2 : 0;
+                    if (cycle == 1) batch.AddDirected(position, Vector2.One * 24, tint, direction, frame, frames);
+                    else batch.Add(position, Vector2.One * 24, tint, frame: frame, frameCount: frames);
                 }
                 batch.Submit();
                 if (count == 0) { GC.Collect(); GC.WaitForPendingFinalizers(); }
@@ -92,6 +95,7 @@ public partial class GameRoot
                     sprite.Visible = index < count;
                     if (!sprite.Visible) continue;
                     sprite.Position = new(16 + index % 20 * 24, 16 + index / 20 * 32);
+                    sprite.Rotation = 0;
                     sprite.Texture = fixedTexture;
                     sprite.Hframes = 1;
                     sprite.Scale = Vector2.One * 24 / fixedTexture.GetHeight();

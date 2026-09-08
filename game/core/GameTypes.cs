@@ -91,6 +91,14 @@ public sealed class Seal
 
 public static class Geometry
 {
+    public static float AngleDelta(float from, float to)
+    {
+        var delta = to - from;
+        if (delta >= MathF.PI) return delta - MathF.Tau;
+        if (delta <= -MathF.PI) return delta + MathF.Tau;
+        return delta;
+    }
+
     public static float Length(Vector2 vector) => MathF.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
     public static float DistanceSquared(Vector2 first, Vector2 second)
     {

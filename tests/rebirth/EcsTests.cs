@@ -65,6 +65,10 @@ public static class EcsTests
         Vector2 Point() => new(random.Next(-2000, 2000), random.Next(-1500, 1500));
         for (var index = 0; index < 10000; index++)
         {
+            var from = (float)(random.NextDouble() * MathF.Tau - MathF.PI);
+            var to = (float)(random.NextDouble() * MathF.Tau - MathF.PI);
+            var referenceAngle = MathF.Atan2(MathF.Sin(to - from), MathF.Cos(to - from));
+            Check(Math.Abs(Geometry.AngleDelta(from, to) - referenceAngle) < 0.000001f, "Bounded heading difference matches shortest-angle reference");
             var start = Point();
             var end = index % 10 == 0 ? start : Point();
             var point = Point();

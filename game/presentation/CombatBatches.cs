@@ -9,6 +9,7 @@ public partial class GameCanvas
     private SpriteBatch violetPellets = null!;
     private SpriteBatch experienceBatch = null!;
     private SpriteBatch healingBatch = null!;
+    private SpriteBatch ofudaBatch = null!;
     private (SpriteBatch Batch, float Size, int Frames)[] enemyStyles = [];
 
     private void CacheCombatStyles()
@@ -17,6 +18,7 @@ public partial class GameCanvas
         violetPellets = batches["violet_pellet"];
         experienceBatch = batches["experience"];
         healingBatch = batches["healing"];
+        ofudaBatch = batches["ofuda"];
         enemyStyles = Enum.GetValues<EnemyKind>().Select(kind =>
         {
             var name = kind switch { EnemyKind.Kedama => "actors/kedama", EnemyKind.Fairy => "actors/wild_fairy", EnemyKind.Charger => "actors/mountain_spirit", _ => "actors/great_youkai" };
@@ -56,8 +58,12 @@ public partial class GameCanvas
                 (projectile.Alternate ? violetPellets : redPellets).AddPosition(position.X, position.Y);
                 continue;
             }
-            var name = projectile.Hostile ? projectile.Alternate ? "violet_pellet" : "red_pellet"
-                : projectile.DreamOrb ? "dream" : projectile.Art == ArtKind.YinYang ? "actors/yin_yang_orb" : projectile.Art == ArtKind.Ofuda ? "ofuda" : projectile.Art == ArtKind.Stardust ? "stardust" : "star";
+            if (!projectile.DreamOrb && projectile.Art == ArtKind.Ofuda)
+            {
+                ofudaBatch.AddDirected(position, new(22, 22), Colors.White, Palette.Vector(projectile.Velocity));
+                continue;
+            }
+            var name = projectile.DreamOrb ? "dream" : projectile.Art == ArtKind.YinYang ? "actors/yin_yang_orb" : projectile.Art == ArtKind.Stardust ? "stardust" : "star";
             var size = projectile.Hostile ? 15 : projectile.DreamOrb ? projectile.Radius * 2.6f : projectile.Art == ArtKind.Ofuda ? 22 : projectile.Radius * 2.4f;
             var rotation = projectile.Art == ArtKind.Ofuda && !projectile.Hostile ? MathF.Atan2(projectile.Velocity.Y, projectile.Velocity.X) + MathF.PI / 2 : projectile.Hostile ? 0 : Clock * 3 + projectile.Life;
             var tint = projectile.DreamOrb ? DreamColors[projectile.TintIndex % DreamColors.Length] : Colors.White;

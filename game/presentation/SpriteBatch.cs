@@ -72,11 +72,22 @@ public partial class SpriteBatch : MultiMeshInstance2D
 
     public void Add(Vector2 position, Vector2 size, Color color, float rotation = 0, int frame = 0, int frameCount = 1)
     {
+        var cosine = rotation == 0 ? 1 : MathF.Cos(rotation);
+        var sine = rotation == 0 ? 0 : MathF.Sin(rotation);
+        AddBasis(position, size, color, cosine, sine, frame, frameCount);
+    }
+
+    public void AddDirected(Vector2 position, Vector2 size, Color color, Vector2 velocity, int frame = 0, int frameCount = 1)
+    {
+        var length = MathF.Sqrt(velocity.X * velocity.X + velocity.Y * velocity.Y);
+        AddBasis(position, size, color, length > 0 ? -velocity.Y / length : 0, length > 0 ? velocity.X / length : 1, frame, frameCount);
+    }
+
+    private void AddBasis(Vector2 position, Vector2 size, Color color, float cosine, float sine, int frame, int frameCount)
+    {
         if (fixedSize > 0) throw new InvalidOperationException("Fixed-size batches accept position-only instances");
         EnsureCapacity();
         var offset = Count++ * 16;
-        var cosine = rotation == 0 ? 1 : MathF.Cos(rotation);
-        var sine = rotation == 0 ? 0 : MathF.Sin(rotation);
         buffer[offset] = cosine * size.X;
         buffer[offset + 1] = -sine * size.Y;
         buffer[offset + 3] = position.X;
