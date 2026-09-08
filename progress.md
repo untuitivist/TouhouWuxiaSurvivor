@@ -1,3 +1,9 @@
+## Release alpha-0.1.4 — 2026-09-08
+
+- Started authorized dual-target release from clean dd1eaf1. Current public game remains alpha-0.1.3; matching previous landing override confirmed.
+- Initial GitHub fetch reset; HTTP/1.1 retry succeeded. Node-host SSH executable invocation failed immediately; native CMD SSH with pinned host key succeeded. Key name lookup under user home found nothing; located existing authorized key under U:/Project without exposing contents.
+- Source core 29/29, six seeded journeys and full UI/settings/journal/minimap smoke passed. Font gate identified one new glyph in promoted log; regenerated licensed subset to 1204 characters before export. JavaScript first run lacked NODE_PATH; corrected environment and all 19 tests passed. Seven deployment tests and original-effect/scenery source checks passed. All previous release EXE/log hashes recorded before new output.
+
 ## Card Compendium — 2026-09-08
 
 - Native core 29/29 plus new journal navigation/catalog/asset tests passed; four non-isolated Web layouts each opened all 22 entries and passed filters, pagination, reading buttons and pause safety.

@@ -58,7 +58,7 @@ Invoke-ReleaseCheck 'standalone-smoke' @('--headless', '--', '--rebirth-smoke') 
 Invoke-ReleaseCheck 'standalone-display' @('--audio-driver', 'Dummy', '--', '--rebirth-video-smoke') 'REBIRTH_DISPLAY_PASS'
 Invoke-ReleaseCheck 'standalone-title' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=title', "--rebirth-capture=$(Join-Path $logs 'title.png')") 'REBIRTH_CAPTURE_PASS'
 Invoke-ReleaseCheck 'standalone-boss' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=boss', "--rebirth-capture=$(Join-Path $logs 'boss.png')") 'REBIRTH_CAPTURE_PASS'
-$screens = @('build', 'settings', 'settings-video', 'settings-controls', 'settings-confirm', 'debug-title', 'debug-combat', 'changelog', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'marisa-build', 'marisa-choices')
+$screens = @('build', 'settings', 'settings-video', 'settings-controls', 'settings-confirm', 'debug-title', 'debug-combat', 'changelog', 'journal', 'journal-detail', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'marisa-build', 'marisa-choices')
 foreach ($screen in $screens) {
     Invoke-ReleaseCheck "standalone-$screen" @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', "--rebirth-screen=$screen", "--rebirth-capture=$(Join-Path $logs "$screen.png")") 'REBIRTH_CAPTURE_PASS'
 }
