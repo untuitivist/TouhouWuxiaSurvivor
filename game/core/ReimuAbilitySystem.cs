@@ -89,10 +89,16 @@ public static class ReimuAbilitySystem
     internal static void ClearProjectiles(RunState run, Vector2 start, Vector2 end, ref int budget)
     {
         if (budget <= 0) return;
+        var minimumX = MathF.Min(start.X, end.X);
+        var maximumX = MathF.Max(start.X, end.X);
+        var minimumY = MathF.Min(start.Y, end.Y);
+        var maximumY = MathF.Max(start.Y, end.Y);
         foreach (ref var projectile in run.Projectiles.Active)
         {
             if (!projectile.Hostile || projectile.Life <= 0) continue;
             var radius = ReimuTuning.ClearRadius + projectile.Radius;
+            if (projectile.Position.X < minimumX - radius || projectile.Position.X > maximumX + radius
+                || projectile.Position.Y < minimumY - radius || projectile.Position.Y > maximumY + radius) continue;
             if (Geometry.SegmentDistanceSquared(projectile.Position, start, end) > radius * radius) continue;
             projectile.Life = 0;
             if (--budget <= 0) break;

@@ -18,6 +18,13 @@ public static class EcsTests
         store.Clear();
         store.Add(new() { Life = 2 });
         Check(store.Count == 1 && !store[0].HitIds.Contains(7), "Fresh entities have no previous state");
+        var visits = 0;
+        Check(store.RemoveAll(projectile => { visits++; return projectile.Life < 0; }) == 0 && visits == 1 && store[0].Life == 2, "Unchanged storage visits each element once and retains state");
+        store.Add(new() { Life = -1 });
+        store.Add(new() { Life = 3 });
+        Check(store.RemoveAll(static projectile => projectile.Life < 0) == 1 && store.Count == 2 && store[1].Life == 3, "Compaction retains an untouched prefix and shifts survivors after the first hole");
+        Check(store.RemoveAll(static projectile => true) == 2 && store.Count == 0, "Compaction clears every slot when all entities expire");
+        Check(store.RemoveAll(static projectile => true) == 0, "Empty storage is safe to compact");
     }
 
     public static void History()

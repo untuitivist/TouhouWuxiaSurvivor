@@ -11,9 +11,9 @@ public sealed partial class RunState
         var distance = range * range;
         foreach (var enemy in Enemies)
         {
-            if (enemy.Health <= 0 || excluded.Contains(enemy.Id)) continue;
+            if (enemy.Health <= 0) continue;
             var candidate = Geometry.DistanceSquared(enemy.Position, origin);
-            if (candidate >= distance) continue;
+            if (candidate >= distance || excluded.Contains(enemy.Id)) continue;
             distance = candidate;
             nearest = enemy;
         }
