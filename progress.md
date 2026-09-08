@@ -1,3 +1,8 @@
+## Gameplay Direction Audit — 2026-09-08
+
+- User moved priority from performance to fun and decoupling. Reviewed archived architecture/balance docs and progression definitions/tests, then checked active progression/catalog/journal dependencies.
+- Added docs/gameplay_rebuild_plan.md and clarified the historical scope of rebirth_design.md. No gameplay, asset, version, export or deployment changes; documentation checks and local commit only.
+
 ## Release alpha-0.1.4 — 2026-09-08
 
 - Complete: source frozen at 99e0bae; Windows 194332544 bytes, 24 standalone checks passed; final Web build 20260908-182518-023 passed all release gates and new UI/art suites. Pushed and deployed alpha-0.1.4-99e0bae-20260908T104638Z.

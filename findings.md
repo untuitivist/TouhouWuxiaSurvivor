@@ -1,3 +1,9 @@
+## Gameplay Direction Audit — 2026-09-08
+
+- Legacy contracts favor prerequisites, behavioral specialization, affinity, equal-budget horizontal packs and immutable run content. Current documented baseline does not mandate mutually exclusive specializations even though exclusion fields exist.
+- Current OfferChoices uses ownership/rank filtering and uniform draws; enough upgrades can fill every legal rank. JournalCatalog still creates throwaway runs and spawns sample enemies to obtain definitions. These are concrete extension boundaries, not reasons to rewrite the entire engine.
+- First proposed slice is different viable routes for the existing two heroes, with shared definitions and candidate/effect separation. Old character-agnostic martial templates and all legacy inventories must not return automatically.
+
 ## Card Compendium Audit — 2026-09-08
 
 - Legacy CompendiumCatalog projects world/enemy/character/upgrade/spell catalogs; CompendiumPanel uses tabs, source dropdown, ItemList and side-by-side detail.

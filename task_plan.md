@@ -1,3 +1,9 @@
+## Gameplay Direction Audit — 2026-09-08
+
+- Complete: recorded user report that stutter is resolved and redirected priority to fun, decoupling and worthwhile legacy ideas.
+- Complete: compared legacy contracts and progression implementation with current candidate selection, linear ranks and journal/runtime dependencies.
+- Complete: documented a bounded build-diversity slice, incremental decoupling and acceptance criteria. This task changes planning documents only; gameplay proposals are not implemented or released.
+
 ## Release alpha-0.1.4 — 2026-09-08
 
 - Complete: clean source dd1eaf1 audited, live alpha-0.1.3 checked, pinned SSH host and private key located without reading key contents. GitHub HTTP/1.1 retry succeeded after initial reset.

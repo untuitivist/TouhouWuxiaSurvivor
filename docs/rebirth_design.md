@@ -1,6 +1,6 @@
 # 幻想乡 · 夜境异闻
 
-> 当前设计：alpha-0.0.9，2026-09-06。历史版本的变化见 CHANGELOG.md；人物资料与原作出处见 docs/character_identity.md。
+> 重建初期设计基线：alpha-0.0.9，2026-09-06；下文的“未发布”“暂缓”属于当时状态，不代表 alpha-0.1.4 的交付范围。发布历史见 CHANGELOG.md，人物资料见 docs/character_identity.md；2026-09-08 确认的玩法与解耦方向见 docs/gameplay_rebuild_plan.md。
 
 ## 方向与边界
 
