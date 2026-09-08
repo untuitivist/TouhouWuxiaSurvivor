@@ -1,3 +1,9 @@
+## Card Compendium — 2026-09-08
+
+- Audit complete: legacy six categories, source filters, immutable facts and runtime projections. Legacy src is excluded from current compilation.
+- Complete: current-content catalog, original-asset cards and separate details; retain filters/page/focus and pause safety.
+- Complete: native and Web navigation/visual checks, glyph subset and documentation. Local commit follows final diff review; no release or deployment.
+
 ## Web Minimap Fix — 2026-09-08
 
 - Completed shared touch-aware minimap layout without moving touch buttons or changing gameplay/version.

@@ -1,0 +1,84 @@
+using Rebirth.Core;
+
+namespace Rebirth.Presentation;
+
+internal enum JournalCategory { Character, Ability, Training, Spell, Enemy, World }
+
+internal sealed record JournalEntry(string Id, JournalCategory Category, string Name, string Summary, string Source, string Asset, bool Strip, string Details);
+
+internal static class JournalCatalog
+{
+    public const string ArtRoot = "res://assets/internal_original/base/";
+    public static readonly IReadOnlyList<JournalEntry> All = Array.AsReadOnly(Build().ToArray());
+    public static string CategoryName(JournalCategory category) => category switch
+    {
+        JournalCategory.Character => "行者", JournalCategory.Ability => "术式", JournalCategory.Training => "修习",
+        JournalCategory.Spell => "符卡", JournalCategory.Enemy => "妖怪", _ => "夜境"
+    };
+
+    private static IEnumerable<JournalEntry> Build()
+    {
+        foreach (var hero in Enum.GetValues<HeroKind>())
+        {
+            var preview = new RunState(hero, 42);
+            var reimu = hero == HeroKind.Reimu;
+            var name = reimu ? "博丽灵梦" : "雾雨魔理沙";
+            var abilities = ArtCatalog.Abilities(hero).ToArray();
+            var initial = string.Join("、", abilities.Where(art => preview.Ranks[(int)art.Id] > 0).Select(art => art.Name));
+            yield return new("hero-" + hero, JournalCategory.Character, name,
+                reimu ? "御札追踪 · 阴阳玉护身" : "星弹散射 · 锁向魔炮", "角色设定沿用现有角色目录；数值为本作改编。",
+                reimu ? "players/reimu.png" : "players/marisa.png", true,
+                $"初始生命  {preview.MaxHealth:0}\n移动速度  {preview.MoveSpeed:0}\n基础威力  ×{preview.Power:0.00}\n初始术式  {initial}\n专属术式  {string.Join("、", abilities.Select(art => art.Name))}\n满蓄势符卡  {ArtCatalog.SignatureName(hero)}\n\n没有局外数值加成。武侠体现在走位、进退与修习，不替换角色原有能力身份。");
+            yield return new("spell-" + hero, JournalCategory.Spell, ArtCatalog.SignatureName(hero),
+                reimu ? "满蓄势自动释放追踪灵光" : "满蓄势自动释放强化魔炮", "原作命名沿用现有符卡目录；施放时序与战斗效果为本作改编。",
+                reimu ? "effects/reimu_aura.png" : "effects/master_spark.png", false,
+                "擦弹与退治积累蓄势；蓄势满后自动发动，无需额外按键。发动时清除敌弹并吸取场上拾取物。\n\n" +
+                (reimu ? "梦想封印：释放追踪灵光，寻找妖怪并造成范围爆发。" : "强化魔炮：先蓄势锁向，再持续照射；移动可平移火线，方向不会跟随重新索敌。") +
+                "\n\n图中为当前局内使用的素材，不是原作符卡逐帧复刻。");
+        }
+        foreach (var art in ArtCatalog.All)
+        {
+            var details = art.Description + "\n\n";
+            if (art.Owner.HasValue)
+            {
+                details += "各重基础效果（未乘本局威力加成）\n";
+                for (var rank = 1; rank <= art.MaxRank; rank++) details += $"第 {rank} 重  {ArtCatalog.UpgradeText(art.Id, rank - 1)}\n";
+                details += "\n圆满  " + art.Mastery;
+            }
+            else details += art.Id == ArtKind.Recovery ? "即时恢复，不累计重数；候选不足时提供调息。" : $"最多修习 {art.MaxRank} 重；只影响本局。";
+            yield return new("art-" + art.Id, art.Owner.HasValue ? JournalCategory.Ability : JournalCategory.Training,
+                art.Name, art.School, string.IsNullOrEmpty(art.Source) ? "本作通用修习，不对应原作符卡。" : art.Source,
+                AbilityAsset(art.Id), art.Id == ArtKind.YinYang, details);
+        }
+        var enemyPreview = new RunState(HeroKind.Reimu, 42);
+        foreach (var kind in Enum.GetValues<EnemyKind>())
+        {
+            var enemy = enemyPreview.SpawnEnemy(kind, System.Numerics.Vector2.Zero);
+            var (name, summary, asset) = kind switch
+            {
+                EnemyKind.Kedama => ("毛玉", "近身追逐 · 基础敌群", "kedama"),
+                EnemyKind.Fairy => ("野妖精", "保持距离 · 扇形弹幕", "wild_fairy"),
+                EnemyKind.Charger => ("山精", "预警锁向 · 直线冲锋", "mountain_spirit"),
+                EnemyKind.Elite => ("精英妖怪", "高耐久 · 环形弹幕", "great_youkai"),
+                _ => ("结界残影", "终局首领 · 分阶段弹幕", "great_youkai")
+            };
+            yield return new("enemy-" + kind, JournalCategory.Enemy, name, summary,
+                "敌人职责与名称为本作战斗定义；展示现有局内精灵，不指认原作角色。", "actors/" + asset + ".png", true,
+                $"零时刻生成样本\n生命  {enemy.MaxHealth:0.#}\n基础移动速度  {enemy.Speed:0.#}\n接触伤害  {enemy.ContactDamage:0.#}\n碰撞半径  {enemy.Radius:0.#}\n\n" +
+                (kind == EnemyKind.Boss ? $"正常流程在 {RunState.BossArrival / 60:0} 分钟后登场，击破后获胜。与精英共用当前精灵；并非额外可选角色。" : "部分敌人的生成生命与速度随局内时间增长；这些是基准值，不是所有时刻的固定值。") +
+                "\n\n" + summary);
+        }
+        yield return new("world-shrine", JournalCategory.World, "博丽夜境", "有限夜境 · 古印与终局", "当前战场为本作场景；背景使用已接入的神社原作素材。", "scenery/title_shrine.png", false,
+            $"场地范围  {RunState.ArenaHalfWidth * 2:0} × {RunState.ArenaHalfHeight * 2:0}\n终局登场  {RunState.BossArrival / 60:0} 分钟\n\n在有限场地中走位、修习、净化古印，击破结界残影结束本局。旧版多群系、无限地图与作品包尚未迁回，不作为当前可玩条目展示。");
+        yield return new("world-seal", JournalCategory.World, "古印", "靠近净化 · 离开保留进度", "本作交互目标；预览使用当前局内阵纹。", "effects/ritual_array.png", false,
+            "靠近古印时积累净化进度，离开不会清空。完成后提供修习机会、生命恢复与符卡蓄势，并吸取拾取物。\n\n不净化也能迎战终局；遇险先退出阵地，比停在弹幕里更重要。");
+    }
+
+    private static string AbilityAsset(ArtKind kind) => kind switch
+    {
+        ArtKind.Ofuda => "effects/reimu_talisman.png", ArtKind.YinYang => "actors/yin_yang_orb.png",
+        ArtKind.Boundary => "effects/reimu_seal_ink.png", ArtKind.Stars => "combat/star.png",
+        ArtKind.Stardust => "effects/marisa_cast.png", ArtKind.MasterSpark => "effects/master_spark.png",
+        _ => "effects/ritual_array.png"
+    };
+}

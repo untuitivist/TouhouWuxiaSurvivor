@@ -22,12 +22,13 @@ public partial class GameRoot
         ui.Button(screen!, "游戏设置", new(275, 450, 173, 45), ShowSettings);
         ui.Button(screen!, "更新记录", new(86, 507, 173, 43), ShowChangelog);
         ui.Button(screen!, GamePlatform.IsWeb ? "切换全屏" : "暂别夜境", new(275, 507, 173, 43), () => { if (GamePlatform.IsWeb) ToggleWebFullscreen(); else GetTree().Quit(); });
-        ui.Label(screen!, $"异闻录   /   退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 582, 500, 30), 14, Palette.Muted);
+        ui.Button(screen!, "夜境图鉴", new(86, 561, 362, 45), OpenJournal);
+        ui.Label(screen!, $"退治最佳 {profile.Data.BestKills}   ·   平息异变 {profile.Data.Victories} 次", new(86, 610, 500, 26), 14, Palette.Muted);
         ui.Label(screen!, "博丽夜境  ·  约五分钟一局  ·  自动战斗", new(790, 617, 445, 30), 15, Palette.Gold).AddThemeColorOverride("font_color", Palette.Paper);
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
         ui.Label(screen!, $"{version}  ·  从零重写试玩版", new(49, 681, 400, 26), 12, Palette.Muted).AddThemeColorOverride("font_color", Palette.Paper);
         ui.Label(screen!, "东方同人内部原型 · 素材未经公开发行授权", new(841, 681, 395, 26), 12, Palette.Muted).AddThemeColorOverride("font_color", Palette.Paper);
-        if (profile.Notice.Length > 0) ui.Label(screen!, profile.Notice, new(86, 621, 510, 36), 13, Palette.Red);
+        if (profile.Notice.Length > 0) ui.Label(screen!, profile.Notice, new(86, 642, 510, 30), 13, Palette.Red);
         first.GrabFocus();
     }
 

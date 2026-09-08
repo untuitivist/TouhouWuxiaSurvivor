@@ -1,3 +1,9 @@
+## Card Compendium — 2026-09-08
+
+- Native core 29/29 plus new journal navigation/catalog/asset tests passed; four non-isolated Web layouts each opened all 22 entries and passed filters, pagination, reading buttons and pause safety.
+- Visual review caught oversized beam thumbnail despite functional passes: TextureRect texture was assigned before IgnoreSize, retaining native minimum size. Reordered initialization, clipped preview parent and added exact texture-bounds regressions. Revalidation passed.
+- Final native core/UI/settings/journal tests passed, including display-preview return; Windows cards/detail and Web desktop/small-touch images visually reviewed. Final compatible Web build 20260908-181153-813 passed all 22 entries in each of four layouts, scroll buttons, filters, pagination and paused-run preservation. Report: artifacts/web-builds/20260908-181153-813/journal-verification/2026-09-08T10-12-44-583Z/report.json.
+
 ## Web Minimap Fix — 2026-09-08
 
 - Completed shared touch-aware minimap layout without moving touch buttons or changing gameplay/version.

@@ -40,8 +40,9 @@ public partial class GameRoot
         ui.Label(panel, $"行走 {GameCanvas.FormatTime(run.Time)}   ·   修习 {run.Level}   ·   退治 {run.Kills}", new(36, 132, 840, 32), 19, Palette.Gold);
         var build = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && run.Ranks[(int)art.Id] > 0).Select(art => $"{art.Name}  {run.Ranks[(int)art.Id]} 重");
         ui.Label(panel, string.Join("     ", build), new(36, 188, 844, 116), 20, Palette.Paper);
-        ui.Button(panel, $"属性与构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 325, 410, 45), OpenBuild);
-        ui.Button(panel, "更新记录", new(466, 325, 416, 45), ShowChangelog);
+        ui.Button(panel, $"属性与构筑 [{GameControls.Hint(GameControls.Inspect)}]", new(36, 311, 270, 66), OpenBuild);
+        ui.Button(panel, "更新记录", new(324, 311, 270, 66), ShowChangelog);
+        ui.Button(panel, "夜境图鉴", new(612, 311, 270, 66), OpenJournal);
         ui.Label(panel, $"{GameControls.Hint(GameControls.Pause, true)} 继续 · 子页面先返回此处，不直接恢复战斗", new(36, 382, 844, 28), 14, Palette.Muted);
         ui.Button(panel, "继续行走", new(36, 426, 270, TouchLayout ? 82 : 49), NavigateBack, true).GrabFocus();
         ui.Button(panel, "游戏设置", new(324, 426, 270, TouchLayout ? 82 : 49), ShowSettings);

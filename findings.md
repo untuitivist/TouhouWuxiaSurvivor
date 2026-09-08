@@ -1,3 +1,10 @@
+## Card Compendium Audit — 2026-09-08
+
+- Legacy CompendiumCatalog projects world/enemy/character/upgrade/spell catalogs; CompendiumPanel uses tabs, source dropdown, ItemList and side-by-side detail.
+- Preserve runtime truth, source/adaptation distinction and existing art. Replace dense list with paged cards and separate detail.
+- Current scope: characters, abilities, training, signature spells, enemies, world. Old biomes, structures and DLC remain archived rather than falsely advertised.
+- Lookup of assets/rebirth and assets/effects failed; active textures are assets/internal_original/base. No files deleted.
+
 # Findings and Decisions
 
 ## Black Sprite Color Input — 2026-09-07

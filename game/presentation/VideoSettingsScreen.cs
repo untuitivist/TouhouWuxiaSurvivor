@@ -109,6 +109,8 @@ public partial class GameRoot
             case "heroes": ShowHeroes(); break;
             case "help": ShowHelp(); break;
             case "changelog": ShowChangelog(); break;
+            case "journal": ShowJournal(); break;
+            case "journal_detail": ShowJournalDetail(JournalCatalog.All.Single(entry => entry.Id == journalSelected)); break;
             case "abandon": ShowAbandonConfirmation(); break;
             default: if (run != null) RefreshRunScreen(); else ShowTitle(); break;
         }

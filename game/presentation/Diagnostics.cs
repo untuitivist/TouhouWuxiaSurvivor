@@ -45,6 +45,8 @@ public partial class GameRoot
             return;
         }
         if (mode == "changelog") { ShowChangelog(); return; }
+        if (mode == "journal") { OpenJournal(); return; }
+        if (mode == "journal-detail") { ShowJournalDetail(JournalCatalog.All.Single(entry => entry.Id == "art-MasterSpark")); return; }
         PrepareBattlePreview(mode);
     }
 
@@ -152,6 +154,7 @@ public partial class GameRoot
         TestSharedPlatform();
         TestPixelUiAndDebug();
         TestRenderInvalidation();
+        TestJournal();
         ShowTitle();
         AssertUiBounds();
         PressButton("踏入夜境     →");

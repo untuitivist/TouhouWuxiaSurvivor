@@ -60,6 +60,10 @@ public partial class GameRoot
         dashRequested = false;
         switch (currentScreen)
         {
+            case "journal_detail": ShowJournal(); break;
+            case "journal":
+                if (run == null) ShowTitle(); else ShowPause();
+                break;
             case "build": CloseBuild(); break;
             case "settings":
             case "changelog":
