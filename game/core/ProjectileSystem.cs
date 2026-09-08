@@ -11,7 +11,7 @@ internal static class ProjectileSystem
         {
             ref var shield = ref world.Projectiles[index];
             if (shield.Life > 0 && !shield.Hostile && shield.ClearBudget > 0)
-                ReimuAbilitySystem.ClearProjectiles(run, shield.Position, shield.Position + shield.Velocity * RunState.StepSeconds, ref shield.ClearBudget);
+                ReimuAbilitySystem.ClearProjectiles(run, shield.Position, Geometry.Advance(shield.Position, shield.Velocity, RunState.StepSeconds), ref shield.ClearBudget);
         }
         for (var index = world.Projectiles.Count - 1; index >= 0; index--)
         {
@@ -25,16 +25,17 @@ internal static class ProjectileSystem
                 projectile.TargetId = target?.Id ?? 0;
                 if (target != null)
                 {
-                    var speed = projectile.Velocity.Length();
+                    var speed = Geometry.Length(projectile.Velocity);
                     var currentAngle = MathF.Atan2(projectile.Velocity.Y, projectile.Velocity.X);
-                    var delta = target.Position - projectile.Position;
+                    var delta = new Vector2(target.Position.X - projectile.Position.X, target.Position.Y - projectile.Position.Y);
                     var angle = MathF.Atan2(delta.Y, delta.X) - currentAngle;
                     angle = MathF.Atan2(MathF.Sin(angle), MathF.Cos(angle));
-                    projectile.Velocity = Geometry.Angle(currentAngle + Math.Clamp(angle, -projectile.TurnRate * RunState.StepSeconds, projectile.TurnRate * RunState.StepSeconds)) * speed;
+                    var heading = currentAngle + Math.Clamp(angle, -projectile.TurnRate * RunState.StepSeconds, projectile.TurnRate * RunState.StepSeconds);
+                    projectile.Velocity = new(MathF.Cos(heading) * speed, MathF.Sin(heading) * speed);
                 }
             }
             var previous = projectile.Position;
-            projectile.Position += projectile.Velocity * RunState.StepSeconds;
+            projectile.Position = Geometry.Advance(projectile.Position, projectile.Velocity, RunState.StepSeconds);
             projectile.Life -= RunState.StepSeconds;
 
             if (projectile.Hostile)

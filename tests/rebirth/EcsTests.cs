@@ -52,6 +52,31 @@ public static class EcsTests
         Check(GC.GetAllocatedBytesForCurrentThread() == before, "Hot spatial queries allocate no iterator objects");
     }
 
+    public static void GeometryEquivalence()
+    {
+        var random = new Random(71);
+        Vector2 Point() => new(random.Next(-2000, 2000), random.Next(-1500, 1500));
+        for (var index = 0; index < 10000; index++)
+        {
+            var start = Point();
+            var end = index % 10 == 0 ? start : Point();
+            var point = Point();
+            var segment = end - start;
+            var length = segment.LengthSquared();
+            var fraction = length < 0.0001f ? 0 : Math.Clamp(Vector2.Dot(point - start, segment) / length, 0, 1);
+            var expected = Vector2.DistanceSquared(point, start + segment * fraction);
+            var actual = Geometry.SegmentDistanceSquared(point, start, end);
+            Check(Math.Abs(Geometry.DistanceSquared(start, end) - length) <= Math.Max(0.001f, length * 0.00001f), "Scalar squared distance matches vector reference");
+            Check(Math.Abs(Geometry.Length(segment) - segment.Length()) < 0.001f, "Scalar length matches vector reference");
+            Check(Vector2.DistanceSquared(Geometry.Advance(start, segment, 1f / 60), start + segment * (1f / 60)) < 0.000001f, "Scalar movement retains fixed-step displacement");
+            Check(Math.Abs(actual - expected) <= Math.Max(0.001f, expected * 0.00001f), "Scalar swept geometry retains segment distances");
+            var direction = Geometry.Direction(segment);
+            var expectedDirection = length > 0.0001f ? Vector2.Normalize(segment) : Vector2.UnitY;
+            Check(Vector2.DistanceSquared(direction, expectedDirection) < 0.00000001f, "Scalar direction retains normalization and zero fallback");
+        }
+        Check(Geometry.SegmentDistanceSquared(new(50, 5), Vector2.Zero, new(100, 0)) == 25, "Swept path still catches a small target between endpoints");
+    }
+
     private static void Check(bool condition, string message)
     {
         if (!condition) throw new InvalidOperationException(message);

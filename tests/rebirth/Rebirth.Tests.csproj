@@ -10,6 +10,7 @@
   <ItemGroup>
     <Compile Include="../../game/core/**/*.cs" Link="core/%(Filename)%(Extension)" />
     <Compile Include="../../game/diagnostics/RunPilot.cs" Link="RunPilot.cs" />
+    <Compile Include="../../game/diagnostics/CombatStressScenario.cs" Link="CombatStressScenario.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="HeroTests.cs" />
     <Compile Include="GrowthTests.cs" />

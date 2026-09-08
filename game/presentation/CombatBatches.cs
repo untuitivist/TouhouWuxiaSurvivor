@@ -15,7 +15,8 @@ public partial class GameCanvas
         foreach (ref readonly var pickup in Run.Pickups.Active)
         {
             var position = Palette.Vector(pickup.Position);
-            if (InView(position)) batches[pickup.Healing ? "healing" : "experience"].Add(position, Vector2.One * (pickup.Healing ? 17 : 12), Colors.White);
+            var size = pickup.Healing ? 17 : 12;
+            if (InView(position)) batches[pickup.Healing ? "healing" : "experience"].Add(position, new(size, size), Colors.White);
         }
         foreach (var enemy in Run.Enemies)
         {
@@ -25,7 +26,8 @@ public partial class GameCanvas
             var scale = enemy.Kind switch { EnemyKind.Kedama => 0.95f, EnemyKind.Elite => 1.7f, EnemyKind.Boss => 2f, _ => 1.15f };
             var (size, frameCount) = spriteFrames[name];
             var frame = (int)(Clock * 9 + enemy.Id * 0.7f) % frameCount;
-            batches[name].Add(position - new Vector2(0, size * scale * 0.25f), Vector2.One * size * scale,
+            var scaledSize = size * scale;
+            batches[name].Add(new(position.X, position.Y - scaledSize * 0.25f), new(scaledSize, scaledSize),
                 enemy.Flash > 0 ? new Color(1.8f, 1.8f, 1.8f) : Colors.White, frame: frame, frameCount: frameCount);
         }
         foreach (ref readonly var projectile in Run.Projectiles.Active)
@@ -38,7 +40,7 @@ public partial class GameCanvas
             var rotation = projectile.Art == ArtKind.Ofuda && !projectile.Hostile ? MathF.Atan2(projectile.Velocity.Y, projectile.Velocity.X) + MathF.PI / 2 : projectile.Hostile ? 0 : Clock * 3 + projectile.Life;
             var tint = projectile.DreamOrb ? DreamColors[projectile.TintIndex % DreamColors.Length] : Colors.White;
             var frames = projectile.Art == ArtKind.YinYang && !projectile.Hostile ? spriteFrames[name].Frames : 1;
-            batches[name].Add(position, Vector2.One * size, tint, rotation, (int)(Clock * 10) % frames, frames);
+            batches[name].Add(position, new(size, size), tint, rotation, (int)(Clock * 10) % frames, frames);
         }
         VisibleBatchInstances = 0;
         foreach (var batch in batches.Values) { batch.Submit(); VisibleBatchInstances += batch.Count; }

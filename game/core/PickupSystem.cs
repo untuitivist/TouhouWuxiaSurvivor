@@ -11,12 +11,12 @@ internal static class PickupSystem
         for (var index = pickups.Count - 1; index >= 0; index--)
         {
             ref var pickup = ref pickups[index];
-            var distance = Vector2.DistanceSquared(pickup.Position, run.PlayerPosition);
+            var distance = Geometry.DistanceSquared(pickup.Position, run.PlayerPosition);
             if (distance < attractionRadius) pickup.Attracted = true;
             if (!pickup.Attracted) continue;
-            var offset = run.PlayerPosition - pickup.Position;
-            pickup.Position += Geometry.Direction(offset) * Math.Min(offset.Length(), 540 * RunState.StepSeconds);
-            if (Vector2.DistanceSquared(pickup.Position, run.PlayerPosition) >= 20 * 20) continue;
+            var offset = new Vector2(run.PlayerPosition.X - pickup.Position.X, run.PlayerPosition.Y - pickup.Position.Y);
+            pickup.Position = Geometry.Advance(pickup.Position, Geometry.Direction(offset), Math.Min(Geometry.Length(offset), 540 * RunState.StepSeconds));
+            if (Geometry.DistanceSquared(pickup.Position, run.PlayerPosition) >= 20 * 20) continue;
             run.CollectPickup(pickup);
             pickup.Collected = true;
         }

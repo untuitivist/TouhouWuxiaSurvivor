@@ -66,9 +66,14 @@ public partial class GameRoot : Node
         {
             float horizontal = Input.GetAxis(GameControls.Left, GameControls.Right) + touchHud.Movement.X;
             float vertical = Input.GetAxis(GameControls.Up, GameControls.Down) + touchHud.Movement.Y;
+            webCombatStress?.Refill(run);
+            var started = webChecks ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             run.Step(new(new NumericsVector(horizontal, vertical), canvas.Focused, dashRequested));
+            if (webChecks) simulationMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
+            started = webChecks ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             canvas.ReceiveEvents();
             audio.PlayEvents(run.Events);
+            if (webChecks) eventMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
         }
         dashRequested = false;
         if (displayedPhase != run.Phase) RefreshRunScreen();

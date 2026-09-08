@@ -8,8 +8,10 @@ public partial class SpriteBatch : MultiMeshInstance2D
     private static ArrayMesh? spriteMesh;
     private float[] buffer = [];
     private int capacity;
-    private Vector2 boundsMinimum;
-    private Vector2 boundsMaximum;
+    private float minimumX;
+    private float minimumY;
+    private float maximumX;
+    private float maximumY;
     public int Count { get; private set; }
 
     public SpriteBatch() { }
@@ -45,17 +47,20 @@ public partial class SpriteBatch : MultiMeshInstance2D
             Multimesh.InstanceCount = capacity;
         }
         var offset = Count++ * 16;
-        var cosine = MathF.Cos(rotation);
-        var sine = MathF.Sin(rotation);
+        var cosine = rotation == 0 ? 1 : MathF.Cos(rotation);
+        var sine = rotation == 0 ? 0 : MathF.Sin(rotation);
         buffer[offset] = cosine * size.X;
         buffer[offset + 1] = -sine * size.Y;
         buffer[offset + 3] = position.X;
         buffer[offset + 4] = sine * size.X;
         buffer[offset + 5] = cosine * size.Y;
         buffer[offset + 7] = position.Y;
-        var extent = new Vector2(MathF.Abs(buffer[offset]) + MathF.Abs(buffer[offset + 1]), MathF.Abs(buffer[offset + 4]) + MathF.Abs(buffer[offset + 5])) * 0.5f;
-        boundsMinimum = Count == 1 ? position - extent : boundsMinimum.Min(position - extent);
-        boundsMaximum = Count == 1 ? position + extent : boundsMaximum.Max(position + extent);
+        var extentX = (MathF.Abs(buffer[offset]) + MathF.Abs(buffer[offset + 1])) * 0.5f;
+        var extentY = (MathF.Abs(buffer[offset + 4]) + MathF.Abs(buffer[offset + 5])) * 0.5f;
+        minimumX = Count == 1 ? position.X - extentX : MathF.Min(minimumX, position.X - extentX);
+        minimumY = Count == 1 ? position.Y - extentY : MathF.Min(minimumY, position.Y - extentY);
+        maximumX = Count == 1 ? position.X + extentX : MathF.Max(maximumX, position.X + extentX);
+        maximumY = Count == 1 ? position.Y + extentY : MathF.Max(maximumY, position.Y + extentY);
         buffer[offset + 8] = color.R;
         buffer[offset + 9] = color.G;
         buffer[offset + 10] = color.B;
@@ -69,7 +74,7 @@ public partial class SpriteBatch : MultiMeshInstance2D
         Multimesh.VisibleInstanceCount = Count;
         if (Count > 0)
         {
-            Multimesh.CustomAabb = new(new(boundsMinimum.X, boundsMinimum.Y, -0.5f), new(boundsMaximum.X - boundsMinimum.X, boundsMaximum.Y - boundsMinimum.Y, 1));
+            Multimesh.CustomAabb = new(new(minimumX, minimumY, -0.5f), new(maximumX - minimumX, maximumY - minimumY, 1));
             Multimesh.Buffer = buffer;
         }
     }

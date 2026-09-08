@@ -12,6 +12,7 @@ public sealed partial class RunState
     public const int ProjectileLimit = 1600;
     public const int PickupLimit = 700;
     public CombatWorld World { get; } = new();
+    public CombatTimings? Timings { get; set; }
     public ComponentStore<Enemy> Enemies => World.Enemies;
     public ComponentStore<Projectile> Projectiles => World.Projectiles;
     public ComponentStore<Pickup> Pickups => World.Pickups;
@@ -93,16 +94,23 @@ public BoundaryField? Field { get; internal set; }
         DashCooldown = Math.Max(0, DashCooldown - StepSeconds);
         SpellFlash = Math.Max(0, SpellFlash - StepSeconds);
         MovePlayer(input);
+        Timings?.Begin();
         UpdateEncounters();
+        Timings?.Stamp(0);
         EnemySystem.Step(this);
+        Timings?.Stamp(1);
         grid.Rebuild(Enemies);
+        Timings?.Stamp(2);
         UpdateWeapons();
+        Timings?.Stamp(3);
         ProjectileSystem.Step(this);
+        Timings?.Stamp(4);
         if (Phase == RunPhase.Won) Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Phase == RunPhase.Playing) UpdatePickupsAndSeals();
         Enemies.RemoveAll(enemy => enemy.Health <= 0);
         if (Build.SignatureUnlocked && SpellCharge >= 100 && Phase == RunPhase.Playing) CastSignatureSpell();
         if (PendingChoices > 0 && Phase == RunPhase.Playing) OfferChoices();
+        Timings?.Stamp(5);
     }
 
     private void MovePlayer(FrameInput input)
@@ -140,5 +148,5 @@ public BoundaryField? Field { get; internal set; }
     private void Heal(float amount) => Health = Math.Min(MaxHealth, Health + amount);
     internal void Emit(EffectKind kind, Vector2 position, float value = 0) => Events.Add(new(kind, position, position, value));
     private float RandomFloat() => (float)random.NextDouble();
-    internal static Vector2 ClampToArena(Vector2 position) => Vector2.Clamp(position, new(-ArenaHalfWidth + 28, -ArenaHalfHeight + 28), new(ArenaHalfWidth - 28, ArenaHalfHeight - 28));
+    internal static Vector2 ClampToArena(Vector2 position) => new(Math.Clamp(position.X, -ArenaHalfWidth + 28, ArenaHalfWidth - 28), Math.Clamp(position.Y, -ArenaHalfHeight + 28, ArenaHalfHeight - 28));
 }

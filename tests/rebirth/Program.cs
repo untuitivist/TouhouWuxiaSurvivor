@@ -12,6 +12,7 @@ var tests = new (string Name, Action Body)[]
     ("dense component lifecycle preserves order and state", EcsTests.Storage),
     ("inline hit history retains overflow and duplicate safety", EcsTests.History),
     ("spatial identity lookup and allocation-free queries", EcsTests.Queries),
+    ("scalar hot geometry matches vector reference", EcsTests.GeometryEquivalence),
     ("hero identities and initial weapons", HeroIdentity),
     ("growth prerequisites, uniqueness and mixed offers", GrowthTests.Offers),
     ("compatible branches commute and reject repeats", GrowthTests.Combinations),

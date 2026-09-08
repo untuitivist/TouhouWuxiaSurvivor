@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using Rebirth.Core;
+using Rebirth.Diagnostics;
 
 namespace Rebirth.Tests;
 
@@ -11,7 +12,7 @@ public static class PerformanceBenchmarks
     public static int Run(string[] arguments)
     {
         Measure(180, 600, 120);
-        var results = new[] { Measure(180, 600, 1200), Measure(320, 1600, 1200) };
+        var results = new[] { Measure(180, 600, 1200), Measure(320, 1600, 1200), Measure(320, 1600, 1200, true) };
         var json = JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), results }, new JsonSerializerOptions { WriteIndented = true });
         Console.WriteLine(json);
         var destination = arguments.FirstOrDefault(argument => argument.StartsWith("--output="));
@@ -19,18 +20,21 @@ public static class PerformanceBenchmarks
         return 0;
     }
 
-    private static object Measure(int enemyCount, int projectileCount, int ticks)
+    private static object Measure(int enemyCount, int projectileCount, int ticks, bool growth = false)
     {
         var run = new RunState(HeroKind.Reimu, 260906);
-        Array.Clear(run.Ranks);
+        if (!growth) Array.Clear(run.Ranks);
         var random = new Random(17);
         for (var index = 0; index < enemyCount; index++)
             run.Enemies.Add(new() { Id = index + 10000, Kind = EnemyKind.Kedama, Position = new(index % 20 * 65 - 620, index / 20 * 65 - 480), Radius = 14, Health = 1000000, MaxHealth = 1000000 });
+        var scenario = growth ? new CombatStressScenario(run, enemyCount) : null;
         var samples = new double[ticks];
         var allocated = GC.GetAllocatedBytesForCurrentThread();
         for (var tick = 0; tick < ticks; tick++)
         {
             var start = Stopwatch.GetTimestamp();
+            scenario?.Refill(run);
+            foreach (var enemy in run.Enemies) enemy.ContactDamage = 0;
             while (run.Projectiles.Count < projectileCount)
             {
                 var hostile = random.Next(4) != 0;
@@ -42,8 +46,9 @@ public static class PerformanceBenchmarks
             samples[tick] = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
         }
         allocated = GC.GetAllocatedBytesForCurrentThread() - allocated;
+        if (run.Ticks != ticks || run.Phase != RunPhase.Playing) throw new InvalidOperationException("Performance scenario must simulate every requested tick");
         Array.Sort(samples);
-        return new { enemyCount, projectileCount, ticks, meanMs = samples.Average(), p95Ms = samples[(int)(ticks * 0.95)], allocatedPerTick = allocated / ticks,
+        return new { enemyCount, projectileCount, ticks, growth, meanMs = samples.Average(), p95Ms = samples[(int)(ticks * 0.95)], allocatedPerTick = allocated / ticks,
             finalTicks = run.Ticks, health = run.Health, projectiles = run.Projectiles.Count, grazes = run.Grazes, spells = run.SpellsCast };
     }
 }

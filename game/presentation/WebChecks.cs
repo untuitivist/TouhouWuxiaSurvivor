@@ -13,6 +13,9 @@ public partial class GameRoot
     private bool webPerformance;
     private bool webArtPreview;
     private double webCheckSeconds;
+    private CombatStressScenario? webCombatStress;
+    private double simulationMilliseconds;
+    private double eventMilliseconds;
 
     private ProfileStore CreateProfile(string[] arguments)
     {
@@ -37,6 +40,11 @@ public partial class GameRoot
             if (fixture == "choices") { run!.AddExperience(30); run.Step(default); RefreshRunScreen(); }
             if (fixture == "boss") { run!.SpawnEnemy(EnemyKind.Boss, new(350, 0)); RefreshRunScreen(); }
             if (webPerformance) PreparePerformancePreview();
+            if (fixture == "combat-performance")
+            {
+                var load = arguments.FirstOrDefault(argument => argument.StartsWith("--web-load="))?.Split('=', 2)[1];
+                webCombatStress = new(run!, int.TryParse(load, out var count) ? count : 320);
+            }
             if (webArtPreview) PrepareAbilityPreview(fixture);
         }
         GD.Print("SHARED_WEB_CHECKS_READY");
@@ -64,6 +72,9 @@ public partial class GameRoot
             RenderWidth = (int)GetViewport().GetTexture().GetSize().X, RenderHeight = (int)GetViewport().GetTexture().GetSize().Y,
             Fps = Engine.GetFramesPerSecond(), DrawCalls = Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame),
             BatchMilliseconds = canvas.BatchBuildMilliseconds, BatchInstances = canvas.VisibleBatchInstances,
+            SimulationMilliseconds = simulationMilliseconds, EventMilliseconds = eventMilliseconds,
+            Enemies = run?.Enemies.Count ?? 0, Projectiles = run?.Projectiles.Count ?? 0, Pickups = run?.Pickups.Count ?? 0,
+            SystemMilliseconds = run?.Timings?.Milliseconds ?? [],
             Screen = currentScreen, Hero = run?.Hero.ToString() ?? "", Phase = run?.Phase.ToString() ?? "",
             Tick = run?.Ticks ?? 0, Time = run?.Time ?? 0, X = run?.PlayerPosition.X ?? 0, Y = run?.PlayerPosition.Y ?? 0,
             Focused = run?.Focused ?? false, DashCooldown = run?.DashCooldown ?? 0, MoveX = touchHud.Movement.X, MoveY = touchHud.Movement.Y,

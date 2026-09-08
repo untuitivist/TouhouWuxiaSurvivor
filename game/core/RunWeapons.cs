@@ -12,7 +12,7 @@ public sealed partial class RunState
         foreach (var enemy in Enemies)
         {
             if (enemy.Health <= 0 || excluded.Contains(enemy.Id)) continue;
-            var candidate = Vector2.DistanceSquared(enemy.Position, origin);
+            var candidate = Geometry.DistanceSquared(enemy.Position, origin);
             if (candidate >= distance) continue;
             distance = candidate;
             nearest = enemy;

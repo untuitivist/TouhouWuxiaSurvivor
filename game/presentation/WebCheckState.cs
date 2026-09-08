@@ -34,6 +34,12 @@ internal sealed class WebCheckState
     public double DrawCalls { get; set; }
     public double BatchMilliseconds { get; set; }
     public int BatchInstances { get; set; }
+    public double SimulationMilliseconds { get; set; }
+    public double EventMilliseconds { get; set; }
+    public int Enemies { get; set; }
+    public int Projectiles { get; set; }
+    public int Pickups { get; set; }
+    public double[] SystemMilliseconds { get; set; } = [];
     public WebCheckControl[] Controls { get; set; } = [];
 }
 

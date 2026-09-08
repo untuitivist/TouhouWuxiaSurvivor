@@ -9,12 +9,12 @@ internal static class EnemySystem
         foreach (var enemy in run.Enemies)
         {
             if (enemy.Health <= 0) continue;
-            var offset = run.PlayerPosition - enemy.Position;
-            var distance = offset.Length();
-            var direction = Geometry.Direction(offset);
+            var offset = new Vector2(run.PlayerPosition.X - enemy.Position.X, run.PlayerPosition.Y - enemy.Position.Y);
+            var distance = Geometry.Length(offset);
+            var direction = distance > 0.01f ? new Vector2(offset.X / distance, offset.Y / distance) : Vector2.UnitY;
             enemy.Timer -= RunState.StepSeconds;
             enemy.Flash = Math.Max(0, enemy.Flash - RunState.StepSeconds);
-            enemy.Velocity = direction * enemy.Speed;
+            enemy.Velocity = new(direction.X * enemy.Speed, direction.Y * enemy.Speed);
             if (enemy.Kind == EnemyKind.Fairy)
             {
                 enemy.Velocity *= distance > 320 ? 1 : distance < 230 ? -0.7f : 0;
@@ -36,8 +36,9 @@ internal static class EnemySystem
                 enemy.Velocity *= enemy.Kind == EnemyKind.Boss ? ReimuTuning.BossSlowMultiplier : 0;
                 enemy.BoundRemaining = Math.Max(0, enemy.BoundRemaining - RunState.StepSeconds);
             }
-            enemy.Position = RunState.ClampToArena(enemy.Position + enemy.Velocity * RunState.StepSeconds);
-            if (Vector2.DistanceSquared(enemy.Position, run.PlayerPosition) < MathF.Pow(enemy.Radius + 6, 2)) run.Hurt(enemy.ContactDamage);
+            enemy.Position = RunState.ClampToArena(Geometry.Advance(enemy.Position, enemy.Velocity, RunState.StepSeconds));
+            var contactRadius = enemy.Radius + 6;
+            if (Geometry.DistanceSquared(enemy.Position, run.PlayerPosition) < contactRadius * contactRadius) run.Hurt(enemy.ContactDamage);
         }
     }
 
