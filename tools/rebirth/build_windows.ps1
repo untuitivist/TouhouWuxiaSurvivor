@@ -40,7 +40,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Standalone Windows verification failed' }
 } finally { Pop-Location }
 $validation = "$version-export-validation"
-Copy-Item -LiteralPath "$stage/artifacts/$validation" -Destination "$root/artifacts/$validation" -Recurse
+New-Item -ItemType Directory -Path "$root/artifacts/$validation" -Force | Out-Null
+foreach ($file in Get-ChildItem -LiteralPath "$stage/artifacts/$validation") {
+    Copy-Item -LiteralPath $file.FullName -Destination "$root/artifacts/$validation" -Recurse -Force
+}
 New-Item -ItemType Directory -Path "$root/release" -Force | Out-Null
 Copy-Item -LiteralPath "$stage/release/$name" -Destination $destination
 $reportPath = "$root/artifacts/$validation/report.json"
