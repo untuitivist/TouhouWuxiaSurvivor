@@ -3,6 +3,13 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
 
+function startupTimeout(value = process.env.TOUHOU_PUBLIC_STARTUP_TIMEOUT_MS) {
+    if (value === undefined) return 180000;
+    const timeout = Number(value);
+    assert.ok(Number.isInteger(timeout) && timeout >= 180000 && timeout <= 900000, 'Public startup timeout must be between 180000 and 900000 ms');
+    return timeout;
+}
+
 function classifyBrowserConsole(events) {
     const errors = [];
     const startupDiagnostics = [];
@@ -24,7 +31,8 @@ async function main() {
     const origin = new URL(deployment.url).origin;
     const output = path.join(deployment.output, 'public-verification');
     await fs.mkdir(output, { recursive: true });
-    const report = { url: deployment.url, releaseId: deployment.releaseId, physicalMobileTested: false, checks: [] };
+    const startupBudgetMs = startupTimeout();
+    const report = { url: deployment.url, releaseId: deployment.releaseId, physicalMobileTested: false, startupBudgetMs, checks: [] };
     let browser;
     try {
         const redirect = await fetch(origin + '/TouhouSurvivor', { redirect: 'manual' });
@@ -94,7 +102,7 @@ async function main() {
                     });
                 }
                 await page.goto(deployment.url, { waitUntil: 'domcontentloaded', timeout: 120000 });
-                await page.waitForFunction(() => !document.querySelector('#loading'), undefined, { timeout: 180000 });
+                await page.waitForFunction(() => !document.querySelector('#loading'), undefined, { timeout: startupBudgetMs });
                 startup = false;
                 check.startupSeconds = (Date.now() - started) / 1000;
                 check.capabilities = await page.evaluate(() => ({ isolated: crossOriginIsolated, sharedArrayBuffer: typeof SharedArrayBuffer }));
@@ -138,7 +146,7 @@ async function main() {
                     await page.waitForTimeout(2000);
                     startup = true;
                     await page.reload({ waitUntil: 'domcontentloaded', timeout: 120000 });
-                    await page.waitForFunction(() => window.__touhouProbe?.Screen === 'title' && !document.querySelector('#loading'), undefined, { timeout: 180000 });
+                    await page.waitForFunction(() => window.__touhouProbe?.Screen === 'title' && !document.querySelector('#loading'), undefined, { timeout: startupBudgetMs });
                     startup = false;
                     assert.equal((await state()).MasterVolume, volume);
                     check.saveReloadPassed = true;
@@ -173,6 +181,7 @@ async function main() {
                 await page.screenshot({ path: path.join(output, check.name + '-failure.png') }).catch(() => {});
                 throw error;
             } finally {
+                check.elapsedSeconds = (Date.now() - started) / 1000;
                 check.console = classifyBrowserConsole(consoleEvents);
                 check.consoleEvents = consoleEvents;
                 report.checks.push(check);
@@ -191,5 +200,5 @@ async function main() {
     console.log('PUBLIC_WEB_DEPLOYMENT_PASS ' + deployment.url);
 }
 
-module.exports = { classifyBrowserConsole };
+module.exports = { classifyBrowserConsole, startupTimeout };
 if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1; });

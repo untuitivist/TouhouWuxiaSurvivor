@@ -1,6 +1,13 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { classifyBrowserConsole } = require('./verify_deployment.cjs');
+const { classifyBrowserConsole, startupTimeout } = require('./verify_deployment.cjs');
+
+test('public startup budget is explicit, bounded and cannot disable timeouts', () => {
+    assert.equal(startupTimeout('180000'), 180000);
+    assert.equal(startupTimeout('600000'), 600000);
+    for (const invalid of ['', '0', '-1', '179999', '900001', 'Infinity', 'NaN', '600000.5'])
+        assert.throws(() => startupTimeout(invalid));
+});
 
 const waiting = ['still waiting on run dependencies:', 'dependency: wasm-instantiate', '(end of list)'];
 const events = (texts, startup = true, type = 'error') => texts.map(text => ({ text, startup, type }));

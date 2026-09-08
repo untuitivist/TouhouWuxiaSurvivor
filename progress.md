@@ -2,6 +2,9 @@
 
 ## Release alpha-0.1.3 — 2026-09-08
 
+- Both artifacts are built from clean 4d6fb6b and all local gates pass. Windows has 22 checks; Web has 20 raw-download runs, five art scenes, ordinary/injected colors, four complete gameplay suites, six loading scenarios and matching DPR 1/3 checks. The initial DPR invocation selected an older pointer; explicit --compatible rerun verifies 20260908-153552-526 instead, without using the older result as release evidence.
+- Deployment alpha-0.1.3-4d6fb6b-20260908T075754Z is active. First public desktop succeeds but touch times out during resource receipt at 60.8%; a second attempt times out on desktop while still downloading at 60.1%. Both original reports/screenshots are preserved under public-verification-first-timeout and public-verification-second-timeout. No runtime errors or failed requests were recorded, but neither attempt passes full public acceptance.
+- Add an explicit bounded public-startup budget (default remains 180 seconds) and record the selected budget and elapsed time. This run uses 600 seconds to observe the slow public transfer, retaining all gameplay/error assertions. This verification-only change does not rebuild or modify either published game artifact.
 - Source gates pass: 29/29 core, six seeded journeys, UI/settings/profile/F3, 1183-character font coverage, 7/7 original crops, 18 JavaScript tests and seven deployment safety tests. Server preflight confirms alpha-0.1.2 is active. An initial standalone JavaScript invocation lacked NODE_PATH; rerunning with the existing bundled dependency path passes, with the failed log retained.
 - User authorizes the next paired release after f5614ed. Preparing alpha-0.1.3 / 0.1.3.0 with original hero-effect textures; retain prior versions and all historical logs, preserve shared gameplay and run artifact-specific checks before deployment.
 
