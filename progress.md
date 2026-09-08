@@ -1,5 +1,10 @@
 # Progress Log
 
+## Release alpha-0.1.3 — 2026-09-08
+
+- Source gates pass: 29/29 core, six seeded journeys, UI/settings/profile/F3, 1183-character font coverage, 7/7 original crops, 18 JavaScript tests and seven deployment safety tests. Server preflight confirms alpha-0.1.2 is active. An initial standalone JavaScript invocation lacked NODE_PATH; rerunning with the existing bundled dependency path passes, with the failed log retained.
+- User authorizes the next paired release after f5614ed. Preparing alpha-0.1.3 / 0.1.3.0 with original hero-effect textures; retain prior versions and all historical logs, preserve shared gameplay and run artifact-specific checks before deployment.
+
 ## Original Hero Art Integration
 
 - Final extraction recheck exposed an encoded-PNG comparison mismatch despite identical decoded pixels and recorded output hashes. The checker now compares exact RGBA pixels and dimensions against the original crop, then validates source/output SHA-256 through the recorded manifest; this preserves tamper detection without depending on PNG recompression bytes.

@@ -1,5 +1,11 @@
 # Task Plan: Runtime Alignment with Canonical Design
 
+## Release alpha-0.1.3 — 2026-09-08
+
+1. [complete] Promote the art integration to alpha-0.1.3, preserve previous releases and validate the source before committing.
+2. [in progress] Build and verify self-contained Windows and threadless Web from the same clean commit, including hero art and existing release gates.
+3. [pending] Push source, deploy through server Git fast-forward with backups, verify public access and record artifact hashes and limitations.
+
 ## Original Hero Art Integration
 
 1. [complete] Inventory the supplied original pack and inspect player/effect atlases. Capture unchanged native battle/ability baselines; identify the remaining procedural beam, charge-star and seal placeholders.
