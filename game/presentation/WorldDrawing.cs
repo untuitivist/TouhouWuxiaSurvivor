@@ -27,7 +27,7 @@ public partial class GameCanvas
         for (var index = 0; index < 25; index++)
         {
             var location = camera + new Vector2(((index * 179 + Clock * (7 + index % 3)) % 1420) - 710, ((index * 137 + Clock * 12) % 820) - 410);
-            surface.DrawLine(location, location + new Vector2(4, 2), Palette.Alpha(index % 3 == 0 ? Palette.Gold : Palette.Paper, 0.2f), 2);
+            surface.DrawTextureRect(PixelSkin.Artwork("petal"), new(location, new(8, 8)), false, Palette.Alpha(Colors.White, 0.35f));
         }
     }
 
@@ -44,8 +44,7 @@ public partial class GameCanvas
         var color = seal.Complete ? Palette.Jade : Palette.Gold;
         OriginalEffect("ritual_array", position, Vector2.One * 184, Palette.Alpha(Colors.White, seal.Complete ? 0.18f : 0.38f), ReducedMotion ? 0 : Clock * 0.06f);
         surface.DrawArc(position, 74, -MathF.PI / 2, -MathF.PI / 2 + MathF.Tau * Math.Max(0.002f, seal.Charge), 64, color, 3);
-        surface.DrawRect(new(position + new Vector2(-15, -36), new(30, 44)), new Color("243638"));
-        surface.DrawRect(new(position + new Vector2(-18, 5), new(36, 8)), new Color("6a7970"));
+        surface.DrawTextureRect(PixelSkin.Artwork("shrine_marker"), new(position + new Vector2(-20, -48), new(40, 60)), false);
         CenterText(seal.Complete ? "定" : "封", position + new Vector2(0, -7), 23, color, TitleFont);
         CenterText(seal.Name, position + new Vector2(0, 113), 18, color);
         if (!seal.Complete && Run != null && position.DistanceSquaredTo(Palette.Vector(Run.PlayerPosition)) < 160 * 160)

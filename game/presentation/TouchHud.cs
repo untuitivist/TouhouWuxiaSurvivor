@@ -96,7 +96,7 @@ public partial class TouchHud : Control
     {
         if (BodyFont == null) return;
         Ring(StickCenter, 90, new Color("8ac2af"));
-        DrawCircle(StickCenter + Movement * 62, 23, new Color(0.78f, 0.91f, 0.79f, 0.8f));
+        DrawTextureRect(PixelSkin.Artwork("touch-grip"), new(StickCenter + Movement * 62 - Vector2.One * 23, Vector2.One * 46), false);
         Ring(DashCenter, 64, dashPointer >= 0 ? Palette.Red : Palette.Gold);
         Ring(FocusCenter, 53, FocusHeld ? Palette.Jade : Palette.Paper);
         LabelAt("闪身", DashCenter, 24);
@@ -109,8 +109,7 @@ public partial class TouchHud : Control
 
     private void Ring(Vector2 center, float radius, Color color)
     {
-        DrawCircle(center, radius, new Color(0.025f, 0.045f, 0.06f, 0.7f));
-        DrawArc(center, radius, 0, Mathf.Tau, 24, color, 3, false);
+        DrawTextureRect(PixelSkin.Artwork("touch-disc"), new(center - Vector2.One * radius, Vector2.One * radius * 2), false, color);
     }
 
     private void LabelAt(string text, Vector2 center, int size, Color? color = null)

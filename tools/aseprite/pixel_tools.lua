@@ -10,6 +10,8 @@ function painter.color(hex, alpha)
 end
 
 function painter.begin(sprite)
+    painter.finish()
+    initialized = false
     artwork = sprite
     canvasWidth = sprite.width
     canvasHeight = sprite.height

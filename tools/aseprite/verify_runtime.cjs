@@ -1,0 +1,36 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
+const { PNG } = require('pngjs');
+const root = path.resolve(__dirname, '../..');
+const executable = process.env.ASEPRITE_EXE || 'D:/thesteam/steamapps/common/Aseprite/Aseprite.exe';
+const names = ['panel','button','primary','hover','pressed','disabled','inset','dark','track','fill','focus','thumb','thumb-hover','arrow','stone','shrine_marker','petal','shadow','touch-disc','touch-grip','night_journal'];
+const output = path.join(root, 'artifacts/aseprite-runtime-roundtrip');
+fs.mkdirSync(output, { recursive: true });
+const report = { version: execFileSync(executable, ['--version'], { encoding: 'utf8' }).trim(), assets: [] };
+for (const name of names) {
+    const source = path.join(root, 'art/runtime', name + '.aseprite');
+    const texture = path.join(root, 'assets/aseprite', name + '.png');
+    const bytes = fs.readFileSync(source);
+    assert.equal(bytes.readUInt16LE(4), 0xa5e0);
+    assert.equal(bytes.readUInt16LE(6), 1);
+    const roundtrip = path.join(output, name + '.png');
+    execFileSync(executable, ['--batch', source, '--save-as', roundtrip], { encoding: 'utf8' });
+    const actual = PNG.sync.read(fs.readFileSync(texture));
+    const exported = PNG.sync.read(fs.readFileSync(roundtrip));
+    assert.equal(actual.width, exported.width);
+    assert.equal(actual.height, exported.height);
+    assert.ok(actual.data.equals(exported.data), name + ' source/export pixel mismatch');
+    assert.ok(actual.data.some((value, index) => index % 4 === 3 && value > 0), name + ' must not be blank');
+    report.assets.push({ name, width: actual.width, height: actual.height, sourceSha256: crypto.createHash('sha256').update(bytes).digest('hex'), pixelMatch: true });
+}
+const skin = fs.readFileSync(path.join(root,'game/presentation/PixelSkin.cs'),'utf8');
+assert.ok(!/Image.Create|ImageTexture|FillRect/.test(skin), 'No runtime-generated UI textures');
+assert.ok(fs.readFileSync(path.join(root,'tools/platform/build_web.ps1'),'utf8').includes("'assets/aseprite'"));
+assert.ok(!fs.readFileSync(path.join(root,'game/presentation/GameCanvas.cs'),'utf8').includes('assets/world/tiles'), 'No legacy procedural ground textures');
+for (const file of ['project.godot','export_presets.cfg']) assert.ok(!fs.readFileSync(path.join(root,file),'utf8').includes('assets/branding/night_journal.png'));
+report.passed = true;
+fs.writeFileSync(path.join(root,'artifacts/aseprite-runtime-verification.json'),JSON.stringify(report,null,2)+'\n','utf8');
+console.log('ASEPRITE_RUNTIME_VERIFICATION_PASS', names.length);
