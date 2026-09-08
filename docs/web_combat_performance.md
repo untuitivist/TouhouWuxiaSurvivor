@@ -1,5 +1,11 @@
 # Web Combat Performance Investigation
 
+## alpha-0.1.6 follow-up
+
+The release candidate retains the existing ECS/OOP division. It adds a conservative swept AABB rejection before narrow-phase collision, replaces in-arena dictionary buckets with a directly indexed grid (with overflow support and identical query order), reuses fixed-style sprite attributes, and caches render mappings. In the integrated English unisolated stress run, 320/1600 averaged 58.7 rendered FPS, 6.85 ms simulation and 3.30 ms batch preparation. This is desktop evidence, not a mobile guarantee. Earlier measurements below remain the investigation history.
+
+Release builds now require both languages at all three load levels with --enforce: mean rendered FPS at least 55, sampled FPS at least 45, simulation at least 55 ticks/s, p95 logic at most 16.7 ms and mean batch preparation at most 5 ms. These gates are bound to the exact Web build; deployment also requires interactive language persistence and shared language smoke checks. The full release receipt records the final clean-build measurements.
+
 ## Scope and architecture
 
 The reported failure is Web gameplay slowing as entity counts rise, not initial downloads.

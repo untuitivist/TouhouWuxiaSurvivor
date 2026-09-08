@@ -89,8 +89,8 @@ async function verify(playwright, repository, { compatible = false, isolation = 
             await wait(() => !!window.__touhouProbe && !document.querySelector('#loading'));
             assert.equal((await state()).MasterVolume, volume);
             entry.saveReloadPassed = true;
-            await click('踏入夜境     →');
-            await click('执此道 · 博丽灵梦');
+            await click('开始游戏     →');
+            await click('选择 博丽灵梦');
             await wait(() => window.__touhouProbe.Screen === 'playing');
             const before = await state();
             await page.keyboard.down('KeyD');
@@ -118,9 +118,9 @@ async function verify(playwright, repository, { compatible = false, isolation = 
         });
         await scenario('touch', true, [], async ({ page, context, wait, state, point, click, screenshot, entry }) => {
             await screenshot('title');
-            const start = (await state()).Controls.find(control => control.Text.includes('踏入'));
+            const start = (await state()).Controls.find(control => control.Text.includes('开始游戏'));
             await click(start.Text);
-            await click('执此道 · 雾雨魔理沙');
+            await click('选择 雾雨魔理沙');
             await wait(() => window.__touhouProbe.TouchVisible);
             const cdp = await context.newCDPSession(page);
             const move = { id: 11, ...await point(235, 535) };
@@ -149,7 +149,7 @@ async function verify(playwright, repository, { compatible = false, isolation = 
             await screenshot('settings');
             await click('返回');
             await wait(() => window.__touhouProbe.Screen === 'pause');
-            await click('继续行走');
+            await click('继续游戏');
             await wait(() => window.__touhouProbe.Screen === 'playing');
             const pause = await point(1180, 150);
             await page.touchscreen.tap(pause.x, pause.y);
@@ -158,8 +158,8 @@ async function verify(playwright, repository, { compatible = false, isolation = 
         await scenario('touch-upgrade', true, ['--web-fixture=choices'], async ({ wait, click, screenshot }) => {
             await wait(() => window.__touhouProbe.Phase === 'Choosing');
             await screenshot('offers');
-            await click('领悟此式');
-            await click('领悟此式');
+            await click('选择');
+            await click('选择');
             await wait(() => window.__touhouProbe.Phase === 'Playing');
         });
         for (const hero of ['reimu', 'marisa']) {

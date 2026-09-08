@@ -1,3 +1,4 @@
+using Rebirth.Core;
 using Godot;
 
 namespace Rebirth.Presentation;
@@ -58,23 +59,23 @@ public static class GameControls
 
     public static string? SetBinding(Dictionary<string, long[]> bindings, string action, int slot, Key key)
     {
-        if (!bindings.ContainsKey(action) || slot is < 0 or > 1 || !ValidKey(key)) return "此按键保留给界面操作，请选择其他键。";
-        if (key == Key.Escape && action != Pause) return "Esc 保留为安全返回键。";
-        if (key == Key.None && bindings[action][1 - slot] == 0) return "每个操作至少保留一个按键。";
+        if (!bindings.ContainsKey(action) || slot is < 0 or > 1 || !ValidKey(key)) return GameText.Get("此按键保留给界面操作，请选择其他键。");
+        if (key == Key.Escape && action != Pause) return GameText.Get("Esc 保留为安全返回键。");
+        if (key == Key.None && bindings[action][1 - slot] == 0) return GameText.Get("每个操作至少保留一个按键。");
         if (key != Key.None)
             foreach (var definition in Actions)
                 for (var candidate = 0; candidate < 2; candidate++)
                     if ((definition.Id != action || candidate != slot) && bindings[definition.Id][candidate] == (long)key)
-                        return $"{KeyText(key)} 已用于「{definition.Name}」，请先修改该绑定。";
+                        return GameText.Format($"{KeyText(key)} 已用于「{definition.Name}」，请先修改该绑定。");
         bindings[action][slot] = (long)key;
         Configure(bindings);
         return null;
     }
 
-    public static string KeyText(Key key) => key == Key.None ? "未绑定" : OS.GetKeycodeString(key);
+    public static string KeyText(Key key) => key == Key.None ? GameText.Get("未绑定") : OS.GetKeycodeString(key);
     public static string Hint(string action, bool both = false)
     {
-        return hints.TryGetValue(action, out var text) ? both ? text.Both : text.Primary : "未绑定";
+        return hints.TryGetValue(action, out var text) ? both ? text.Both : text.Primary : GameText.Get("未绑定");
     }
 
     public static void Configure(Dictionary<string, long[]>? bindings = null)

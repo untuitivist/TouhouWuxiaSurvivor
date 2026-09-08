@@ -44,7 +44,7 @@ async function main() {
                     assert.ok(check.state.BatchInstances > 0);
                     assert.equal(check.state.Hero, scene.fixture.startsWith('reimu') ? 'Reimu' : 'Marisa');
                 } else {
-                    assert.ok(check.state.Controls.some(control => control.Text.includes('踏入夜境')));
+                    assert.ok(check.state.Controls.some(control => control.Text.includes('开始游戏')));
                 }
                 assert.deepEqual(check.errors, []);
                 assert.deepEqual(check.requests, []);

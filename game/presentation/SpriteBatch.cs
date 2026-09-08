@@ -8,6 +8,7 @@ public partial class SpriteBatch : MultiMeshInstance2D
     private static ArrayMesh? spriteMesh;
     private float[] buffer = [];
     private int capacity;
+    private readonly float fixedSize;
     private float minimumX;
     private float minimumY;
     private float maximumX;
@@ -16,8 +17,9 @@ public partial class SpriteBatch : MultiMeshInstance2D
 
     public SpriteBatch() { }
 
-    public SpriteBatch(Texture2D texture)
+    public SpriteBatch(Texture2D texture, float fixedSize = 0)
     {
+        this.fixedSize = fixedSize;
         Texture = texture;
         TextureFilter = TextureFilterEnum.Nearest;
         animationMaterial ??= new ShaderMaterial { Shader = new Shader { Code = "shader_type canvas_item; void vertex() { UV.x = (UV.x + INSTANCE_CUSTOM.x) * INSTANCE_CUSTOM.y; UV.y = 1.0 - UV.y; }" } };
@@ -38,14 +40,40 @@ public partial class SpriteBatch : MultiMeshInstance2D
 
     public void Begin() => Count = 0;
 
+    private void EnsureCapacity()
+    {
+        if (Count < capacity) return;
+        var previousCapacity = capacity;
+        capacity = Math.Max(32, capacity * 2);
+        Array.Resize(ref buffer, capacity * 16);
+        if (fixedSize > 0)
+            for (var index = previousCapacity; index < capacity; index++)
+            {
+                var offset = index * 16;
+                buffer[offset] = buffer[offset + 5] = fixedSize;
+                buffer[offset + 8] = buffer[offset + 9] = buffer[offset + 10] = buffer[offset + 11] = buffer[offset + 13] = 1;
+            }
+        Multimesh.InstanceCount = capacity;
+    }
+
+    public void AddPosition(float horizontal, float vertical)
+    {
+        if (fixedSize <= 0) throw new InvalidOperationException("Position-only instances require a fixed-size batch");
+        EnsureCapacity();
+        var offset = Count++ * 16;
+        buffer[offset + 3] = horizontal;
+        buffer[offset + 7] = vertical;
+        var extent = fixedSize * 0.5f;
+        minimumX = Count == 1 ? horizontal - extent : MathF.Min(minimumX, horizontal - extent);
+        minimumY = Count == 1 ? vertical - extent : MathF.Min(minimumY, vertical - extent);
+        maximumX = Count == 1 ? horizontal + extent : MathF.Max(maximumX, horizontal + extent);
+        maximumY = Count == 1 ? vertical + extent : MathF.Max(maximumY, vertical + extent);
+    }
+
     public void Add(Vector2 position, Vector2 size, Color color, float rotation = 0, int frame = 0, int frameCount = 1)
     {
-        if (Count == capacity)
-        {
-            capacity = Math.Max(32, capacity * 2);
-            Array.Resize(ref buffer, capacity * 16);
-            Multimesh.InstanceCount = capacity;
-        }
+        if (fixedSize > 0) throw new InvalidOperationException("Fixed-size batches accept position-only instances");
+        EnsureCapacity();
         var offset = Count++ * 16;
         var cosine = rotation == 0 ? 1 : MathF.Cos(rotation);
         var sine = rotation == 0 ? 0 : MathF.Sin(rotation);

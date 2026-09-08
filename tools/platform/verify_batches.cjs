@@ -40,7 +40,7 @@ async function main({ colorStateStress = false } = {}) {
                 await page.screenshot({ path: path.join(output, hero + '.png') });
                 assert.deepEqual(check.errors, []);
                 assert.deepEqual(check.failedRequests, []);
-                assert.ok(check.events.some(text => /SPRITE_BATCH_VISUAL_PASS.+checks=72/.test(text)), check.events.slice(-5).join('\n'));
+                assert.ok(check.events.some(text => /SPRITE_BATCH_VISUAL_PASS.+checks=81/.test(text)), check.events.slice(-5).join('\n'));
                 assert.equal(check.events.filter(text => text.startsWith('BATTLE_BATCH_CHECK')).length, 12);
                 assert.equal(check.events.filter(text => text.startsWith('BATCH_COLOR_CHECK')).length, 24);
                 assert.ok(check.events.includes('BATCH_COLOR_VISUAL_PASS checks=24'));

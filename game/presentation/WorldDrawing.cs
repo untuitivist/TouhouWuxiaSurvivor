@@ -45,10 +45,6 @@ public partial class GameCanvas
         OriginalEffect("ritual_array", position, Vector2.One * 184, Palette.Alpha(Colors.White, seal.Complete ? 0.18f : 0.38f), ReducedMotion ? 0 : Clock * 0.06f);
         surface.DrawArc(position, 74, -MathF.PI / 2, -MathF.PI / 2 + MathF.Tau * Math.Max(0.002f, seal.Charge), 64, color, 3);
         surface.DrawTextureRect(PixelSkin.Artwork("shrine_marker"), new(position + new Vector2(-20, -48), new(40, 60)), false);
-        CenterText(seal.Complete ? "定" : "封", position + new Vector2(0, -7), 23, color, TitleFont);
-        CenterText(seal.Name, position + new Vector2(0, 113), 18, color);
-        if (!seal.Complete && Run != null && position.DistanceSquaredTo(Palette.Vector(Run.PlayerPosition)) < 160 * 160)
-            CenterText("停留净化 · 悟道 / 回血", position + new Vector2(0, 138), 15, Palette.Paper);
     }
 
     private void DrawTorii(Vector2 position, float scale)

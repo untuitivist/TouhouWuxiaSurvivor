@@ -36,7 +36,8 @@ public partial class GameCanvas
         hudLayer = AddPass(this, 11, DrawHud);
         foreach (var name in new[] { "red_pellet", "violet_pellet", "ofuda", "star", "stardust", "dream", "experience", "healing" })
         {
-            var batch = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/{name}.png")) { ZIndex = name.EndsWith("pellet") ? 9 : name is "experience" or "healing" ? 3 : 7 };
+            var fixedSize = name.EndsWith("pellet") ? 15 : name == "experience" ? 12 : name == "healing" ? 17 : 0;
+            var batch = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/{name}.png"), fixedSize) { ZIndex = name.EndsWith("pellet") ? 9 : name is "experience" or "healing" ? 3 : 7 };
             worldLayer.AddChild(batch);
             batches.Add(name, batch);
         }
@@ -46,6 +47,7 @@ public partial class GameCanvas
             worldLayer.AddChild(batch);
             batches.Add(name, batch);
         }
+        CacheCombatStyles();
         worldLayer.Hide();
         hudLayer.Hide();
     }

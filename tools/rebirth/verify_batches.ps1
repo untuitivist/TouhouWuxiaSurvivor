@@ -23,7 +23,7 @@ foreach ($hero in @('reimu', 'marisa')) {
     if (!$process.WaitForExit(120000)) { $process.Kill($true); throw "Batch visual check timed out: $hero" }
     $text = $stdout.GetAwaiter().GetResult() + $stderr.GetAwaiter().GetResult()
     [IO.File]::WriteAllText((Join-Path $output "$hero.log"), $text, $encoding)
-    if ($process.ExitCode -ne 0 -or $text -notmatch 'SPRITE_BATCH_VISUAL_PASS.+checks=72' -or $text -match '(?m)^ERROR:|SHADER ERROR:') { throw "Batch rendering failed: $output/$hero.log" }
+    if ($process.ExitCode -ne 0 -or $text -notmatch 'SPRITE_BATCH_VISUAL_PASS.+checks=81' -or $text -match '(?m)^ERROR:|SHADER ERROR:') { throw "Batch rendering failed: $output/$hero.log" }
     if ([regex]::Matches($text, 'BATTLE_BATCH_CHECK').Count -ne 12) { throw 'Missing full-battle comparisons' }
     if ([regex]::Matches($text, 'BATCH_COLOR_CHECK').Count -ne 24 -or $text -notmatch 'BATCH_COLOR_VISUAL_PASS checks=24') { throw 'Missing interleaved color comparisons' }
     Write-Output "BATCH_RENDER_PASS $hero $output"

@@ -150,8 +150,8 @@ async function main() {
                     startup = false;
                     assert.equal((await state()).MasterVolume, volume);
                     check.saveReloadPassed = true;
-                    await click('踏入夜境     →');
-                    await click('执此道 · 雾雨魔理沙');
+                    await click('开始游戏     →');
+                    await click('选择 雾雨魔理沙');
                     await page.waitForFunction(() => window.__touhouProbe.TouchVisible);
                     const cdp = await context.newCDPSession(page);
                     const move = { id: 11, ...await point(235, 535) };

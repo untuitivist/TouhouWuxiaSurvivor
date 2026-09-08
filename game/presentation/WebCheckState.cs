@@ -3,6 +3,7 @@ namespace Rebirth.Presentation;
 internal sealed class WebCheckState
 {
     public string Screen { get; set; } = "";
+    public string Language { get; set; } = "zh";
     public string Hero { get; set; } = "";
     public string Phase { get; set; } = "";
     public int Tick { get; set; }

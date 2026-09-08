@@ -1,3 +1,4 @@
+using Rebirth.Core;
 using Godot;
 
 namespace Rebirth.Presentation;
@@ -18,8 +19,8 @@ public partial class GameRoot
     private void BuildSettings()
     {
         captureAction = null;
-        var panel = Modal("settings", "SETTINGS  /  游戏设置", "按自己的节奏。", 1060, 660);
-        var tabs = new[] { "声音", "画面", "操作", "触控" };
+        var panel = Modal("settings", GameText.Get("SETTINGS  /  游戏设置"), GameText.Get("按自己的节奏。"), 1060, 660);
+        var tabs = new[] { GameText.Get("声音"), GameText.Get("画面"), GameText.Get("操作"), GameText.Get("触控") };
         for (var index = 0; index < tabs.Length; index++)
         {
             var selected = index;
@@ -32,20 +33,21 @@ public partial class GameRoot
             case 2: BuildControlSettings(panel); break;
             case 3: BuildTouchSettings(panel); break;
         }
+        AddLanguageSelector(panel);
         settingsWarning = ui.Label(panel, profile.Notice.Length > 0 ? profile.Notice : settingsMessage, new(36, 548, 988, 28), 14, Palette.Gold);
-        ui.Button(panel, "返回", new(36, TouchLayout ? 578 : 599, 210, TouchLayout ? 74 : 40), NavigateBack, true).GrabFocus();
-        ui.Button(panel, "恢复本页默认", new(766, TouchLayout ? 578 : 599, 258, TouchLayout ? 74 : 40), ConfirmSettingsReset);
-        ui.Label(panel, TouchLayout ? "触控点选 · 横屏体验更佳" : "Tab 切换控件 · Esc 安全返回", new(274, 606, 465, 28), 15, Palette.Muted);
+        ui.Button(panel, GameText.Get("返回"), new(36, TouchLayout ? 578 : 599, 210, TouchLayout ? 74 : 40), NavigateBack, true).GrabFocus();
+        ui.Button(panel, GameText.Get("恢复本页默认"), new(766, TouchLayout ? 578 : 599, 258, TouchLayout ? 74 : 40), ConfirmSettingsReset);
+        ui.Label(panel, TouchLayout ? GameText.Get("触控点选 · 横屏体验更佳") : GameText.Get("Tab 切换控件 · Esc 安全返回"), new(274, 606, 465, 28), 15, Palette.Muted);
     }
 
     private void BuildAudioSettings(Control panel)
     {
-        AddVolumeSlider(panel, "总音量", "master_volume", 211, profile.Data.MasterVolume, value => profile.Data.MasterVolume = value);
-        AddVolumeSlider(panel, "音乐音量", "music_volume", 285, profile.Data.MusicVolume, value => profile.Data.MusicVolume = value);
-        AddVolumeSlider(panel, "音效音量", "sound_volume", 359, profile.Data.SoundVolume, value => profile.Data.SoundVolume = value);
-        ui.Button(panel, $"音乐：{(profile.Data.MusicEnabled ? "开启" : "静音")}", new(36, 440, 480, 44), () => { profile.Data.MusicEnabled = !profile.Data.MusicEnabled; SaveSettings(); });
-        ui.Button(panel, $"音效：{(profile.Data.SoundEnabled ? "开启" : "静音")}", new(540, 440, 484, 44), () => { profile.Data.SoundEnabled = !profile.Data.SoundEnabled; SaveSettings(); });
-        ui.Label(panel, "音量即时生效并自动保存；静音保留音量数值。左右键微调，Home / End 调至两端。", new(36, 502, 988, 32), 16, Palette.Muted);
+        AddVolumeSlider(panel, GameText.Get("总音量"), "master_volume", 211, profile.Data.MasterVolume, value => profile.Data.MasterVolume = value);
+        AddVolumeSlider(panel, GameText.Get("音乐音量"), "music_volume", 285, profile.Data.MusicVolume, value => profile.Data.MusicVolume = value);
+        AddVolumeSlider(panel, GameText.Get("音效音量"), "sound_volume", 359, profile.Data.SoundVolume, value => profile.Data.SoundVolume = value);
+        ui.Button(panel, GameText.Format($"音乐：{(profile.Data.MusicEnabled ? GameText.Get("开启") : GameText.Get("静音"))}"), new(36, 440, 480, 44), () => { profile.Data.MusicEnabled = !profile.Data.MusicEnabled; SaveSettings(); });
+        ui.Button(panel, GameText.Format($"音效：{(profile.Data.SoundEnabled ? GameText.Get("开启") : GameText.Get("静音"))}"), new(540, 440, 484, 44), () => { profile.Data.SoundEnabled = !profile.Data.SoundEnabled; SaveSettings(); });
+        ui.Label(panel, GameText.Get("音量即时生效并自动保存；静音保留音量数值。左右键微调，Home / End 调至两端。"), new(36, 502, 988, 32), 16, Palette.Muted);
     }
 
     private void AddVolumeSlider(Control panel, string title, string name, int vertical, float value, Action<float> update)
@@ -75,10 +77,10 @@ public partial class GameRoot
     private void ConfirmSettingsReset()
     {
         captureAction = null;
-        var panel = Modal("settings_reset", "RESET  /  恢复默认", "只重置当前页，不清除成绩。", 880, 365);
-        ui.Label(panel, "声音恢复音量与静音；操作恢复默认键位；触控恢复自动检测。\n画面恢复帧率与震屏，桌面显示选项仍需预览确认。只处理当前页。", new(36, 143, 808, 75), 18, Palette.Muted);
-        ui.Button(panel, "取消", new(36, 267, 385, 44), BuildSettings, true).GrabFocus();
-        ui.Button(panel, "确认恢复", new(449, 267, 395, 44), () =>
+        var panel = Modal("settings_reset", GameText.Get("RESET  /  恢复默认"), GameText.Get("只重置当前页，不清除成绩。"), 880, 365);
+        ui.Label(panel, GameText.Get("声音恢复音量与静音；操作恢复默认键位；触控恢复自动检测。\n画面恢复帧率与震屏，桌面显示选项仍需预览确认。只处理当前页。"), new(36, 143, 808, 75), 18, Palette.Muted);
+        ui.Button(panel, GameText.Get("取消"), new(36, 267, 385, 44), BuildSettings, true).GrabFocus();
+        ui.Button(panel, GameText.Get("确认恢复"), new(449, 267, 395, 44), () =>
         {
             if (settingsTab == 1)
             {
@@ -95,7 +97,7 @@ public partial class GameRoot
             }
             else if (settingsTab == 2) { profile.Data.Bindings = GameControls.DefaultBindings(); GameControls.Configure(profile.Data.Bindings); }
             else profile.Data.TouchMode = 0;
-            settingsMessage = "当前页已恢复默认，成绩与其他页保持不变。";
+            settingsMessage = GameText.Get("当前页已恢复默认，成绩与其他页保持不变。");
             SaveSettings();
         });
     }

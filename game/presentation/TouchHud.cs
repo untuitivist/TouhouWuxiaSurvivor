@@ -1,3 +1,4 @@
+using Rebirth.Core;
 using Godot;
 
 namespace Rebirth.Presentation;
@@ -99,12 +100,12 @@ public partial class TouchHud : Control
         DrawTextureRect(PixelSkin.Artwork("touch-grip"), new(StickCenter + Movement * 62 - Vector2.One * 23, Vector2.One * 46), false);
         Ring(DashCenter, 64, dashPointer >= 0 ? Palette.Red : Palette.Gold);
         Ring(FocusCenter, 53, FocusHeld ? Palette.Jade : Palette.Paper);
-        LabelAt("闪身", DashCenter, 24);
-        LabelAt("慢移", FocusCenter, 23);
+        LabelAt(GameText.Get("闪身"), DashCenter, 24);
+        LabelAt(GameText.Get("慢移"), FocusCenter, 23);
         DrawStyleBox(PixelSkin.Frame("panel"), HudLayout.PauseButton);
         DrawStyleBox(PixelSkin.Frame("panel"), HudLayout.InspectButton);
-        LabelAt("暂停", HudLayout.PauseButton.GetCenter(), 23, Palette.Ink);
-        LabelAt("构筑", HudLayout.InspectButton.GetCenter(), 23, Palette.Ink);
+        LabelAt(GameText.Get("暂停"), HudLayout.PauseButton.GetCenter(), 23, Palette.Ink);
+        LabelAt(GameText.Get("构筑"), HudLayout.InspectButton.GetCenter(), 23, Palette.Ink);
     }
 
     private void Ring(Vector2 center, float radius, Color color)
@@ -114,6 +115,7 @@ public partial class TouchHud : Control
 
     private void LabelAt(string text, Vector2 center, int size, Color? color = null)
     {
+        text = GameText.Get(text);
         var width = BodyFont!.GetStringSize(text, fontSize: size).X;
         DrawString(BodyFont, center + new Vector2(-width / 2, size / 3), text, fontSize: size, modulate: color ?? Palette.Paper);
     }

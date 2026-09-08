@@ -79,6 +79,36 @@ public partial class GameRoot
                 checks++;
                 if (checks % 6 == 0) await CompareBattleBatchRendering(checks);
             }
+            batch.Hide();
+            var fixedTexture = GD.Load<Texture2D>("res://assets/internal_original/base/combat/red_pellet.png");
+            var fixedBatch = new SpriteBatch(fixedTexture, 24);
+            actual.AddChild(fixedBatch);
+            foreach (var count in new[] { 0, 1, 32, 33, 65, 257, 0, 1, 257 })
+            {
+                fixedBatch.Begin();
+                for (var index = 0; index < sprites.Count; index++)
+                {
+                    var sprite = sprites[index];
+                    sprite.Visible = index < count;
+                    if (!sprite.Visible) continue;
+                    sprite.Position = new(16 + index % 20 * 24, 16 + index / 20 * 32);
+                    sprite.Texture = fixedTexture;
+                    sprite.Hframes = 1;
+                    sprite.Scale = Vector2.One * 24 / fixedTexture.GetHeight();
+                    sprite.Modulate = Colors.White;
+                    sprite.Frame = 0;
+                    fixedBatch.AddPosition(sprite.Position.X, sprite.Position.Y);
+                }
+                fixedBatch.Submit();
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+                using var actualImage = actual.GetTexture().GetImage();
+                using var expectedImage = expected.GetTexture().GetImage();
+                var mismatches = CompareRenderedImages(actualImage, expectedImage, 7, out var covered);
+                Require(count == 0 || covered > count * 20, "Fixed batch reference must remain visible");
+                Require(mismatches <= Math.Max(4, covered / 100), "Position-only batches retain size, color and lifecycle state");
+                checks++;
+            }
             GD.Print($"SPRITE_BATCH_VISUAL_PASS hero={run!.Hero} checks={checks} time={run.Time} phase={run.Phase}");
             if (!OS.HasFeature("web")) GetTree().Quit();
         }

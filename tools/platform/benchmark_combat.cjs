@@ -15,8 +15,15 @@ async function main() {
     const build = JSON.parse(await fs.readFile(buildPath, "utf8"));
     const output = path.resolve(option("output", path.join(build.build, "combat-benchmark.json")));
     const throttle = Number(option("throttle", "1"));
+    const language = option("language", "zh");
+    assert.ok(["zh", "en"].includes(language));
+    const enforce = process.argv.includes("--enforce");
+    if (enforce) assert.equal(throttle, 1, "Release budgets use the unthrottled desktop reference environment");
     assert.ok(Number.isFinite(throttle) && throttle >= 1);
     const report = { buildPath, build, throttle, isolation: option("isolation", "false") === "true", physicalDeviceTested: false, scope: "Desktop Edge, real fixed-step combat with compatible growth branches and replenished entities; CPU emulation is not phone FPS.", scenarios: [] };
+    report.language = language;
+    report.gatesEnforced = enforce;
+    report.passed = false;
     const host = await startDeploymentFixture(build, { isolation: report.isolation });
     const browser = await chromium.launch({ executablePath: "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe", headless: true, args: ["--enable-unsafe-swiftshader"] });
     try {
@@ -29,7 +36,7 @@ async function main() {
                 const response = await route.fetch();
                 const html = await response.text();
                 assert.ok(html.includes('"args":[]'));
-                await route.fulfill({ response, body: html.replace('"args":[]', `"args":["--","--web-validation","--web-fixture=combat-performance","--web-load=${load}"]`) });
+                await route.fulfill({ response, body: html.replace('"args":[]', `"args":["--","--web-validation","--web-fixture=combat-performance","--web-load=${load}","--web-language=${language}"]`) });
             });
             await page.goto(host.origin + "/TouhouSurvivor/", { waitUntil: "domcontentloaded" });
             await page.waitForFunction(() => window.__touhouProbe?.Tick > 60 && !document.getElementById("loading"), {}, { timeout: 120000 });
@@ -53,11 +60,20 @@ async function main() {
             assert.deepEqual(errors, []);
             report.scenarios.push(result);
             result.capabilities = capabilities;
+            assert.ok(samples.every(sample => sample.Language === language));
             console.log("COMBAT_BENCHMARK", JSON.stringify({ ...result, samples: undefined }));
             assert.ok(samples.every(state => state.Phase === "Playing" && state.Enemies >= load && state.Projectiles > 0), "Fixture must remain populated and simulate, not freeze or die");
             assert.ok(summarize(samples.map(state => state.Projectiles)).mean >= (load === 320 ? 1200 : load === 180 ? 450 : 150), "Average post-collision projectile population must retain pressure, allowing same-tick collisions and expiry");
+            if (enforce) {
+                assert.ok(result.metrics.Fps.mean >= 55, "Mean rendered FPS must be at least 55");
+                assert.ok(Math.min(...samples.map(sample => sample.Fps)) >= 45, "Sampled rendered FPS must remain at least 45");
+                assert.ok(result.simulatedTicksPerSecond >= 55, "Simulation must retain real-time speed");
+                assert.ok(result.metrics.SimulationMilliseconds.p95 <= 16.7, "p95 simulation step must fit a 60 Hz frame");
+                assert.ok(result.metrics.BatchMilliseconds.mean <= 5, "Mean batch preparation budget is 5 ms");
+            }
             await context.close();
         }
+        report.passed = true;
     } finally {
         await browser.close();
         host.server.closeAllConnections();

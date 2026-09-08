@@ -49,7 +49,7 @@ public partial class GameRoot
             var preview = Descendants(screen!).OfType<TextureRect>().Single(image => image.Name == "journal_picture");
             Require(preview.Texture != null, "Every journal entry has an existing original texture");
             Require(preview.Size == new Vector2(240, 216), "Large original images fit detail preview");
-            Require(Descendants(screen!).OfType<RichTextLabel>().Single().Text.Contains(entry.Source), "Details retain provenance and adaptation notes");
+            Require(Descendants(screen!).OfType<RichTextLabel>().Single().Text.Contains(GameText.Get(entry.Source)), "Details retain provenance and adaptation notes");
             AssertUiBounds();
         }
         ShowJournal();

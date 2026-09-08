@@ -37,9 +37,16 @@ internal static class ProjectileSystem
             var previous = projectile.Position;
             projectile.Position = Geometry.Advance(projectile.Position, projectile.Velocity, RunState.StepSeconds);
             projectile.Life -= RunState.StepSeconds;
+            var minimumX = MathF.Min(previous.X, projectile.Position.X);
+            var maximumX = MathF.Max(previous.X, projectile.Position.X);
+            var minimumY = MathF.Min(previous.Y, projectile.Position.Y);
+            var maximumY = MathF.Max(previous.Y, projectile.Position.Y);
 
             if (projectile.Hostile)
             {
+                var interactionRadius = MathF.Max(34, projectile.Radius + 5);
+                if (run.PlayerPosition.X < minimumX - interactionRadius || run.PlayerPosition.X > maximumX + interactionRadius
+                    || run.PlayerPosition.Y < minimumY - interactionRadius || run.PlayerPosition.Y > maximumY + interactionRadius) continue;
                 var distance = Geometry.SegmentDistanceSquared(run.PlayerPosition, previous, projectile.Position);
                 var hitRadius = projectile.Radius + 5;
                 if (distance < hitRadius * hitRadius)
@@ -58,12 +65,15 @@ internal static class ProjectileSystem
                 foreach (var enemy in world.Grid.Query(projectile.Position, 80))
                 {
                     var hitRadius = enemy.Radius + projectile.Radius;
+                    if (enemy.Position.X < minimumX - hitRadius || enemy.Position.X > maximumX + hitRadius
+                        || enemy.Position.Y < minimumY - hitRadius || enemy.Position.Y > maximumY + hitRadius) continue;
                     if (projectile.HitIds.Contains(enemy.Id) || Geometry.SegmentDistanceSquared(enemy.Position, previous, projectile.Position) >= hitRadius * hitRadius) continue;
                     projectile.HitIds.Add(enemy.Id);
                     if (projectile.DreamOrb) run.Explode(projectile.Position, projectile.Damage);
                     else
                     {
-                        run.DamageEnemy(enemy, projectile.Damage, Geometry.Direction(projectile.Velocity) * 4);
+                        var knockback = Geometry.Direction(projectile.Velocity);
+                        run.DamageEnemy(enemy, projectile.Damage, new(knockback.X * 4, knockback.Y * 4));
                         if (projectile.Blast) ReimuAbilitySystem.Blast(run, projectile.Position, projectile.Damage, enemy.Id);
                     }
                     if (projectile.Pierce-- <= 0) { projectile.Life = 0; break; }

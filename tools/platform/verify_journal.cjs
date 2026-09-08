@@ -82,9 +82,9 @@ async function main() {
                 }
                 await click('返回');
                 await waitScreen('title');
-                await click('踏入夜境     →');
+                await click('开始游戏     →');
                 await waitScreen('heroes');
-                await click('执此道 · 博丽灵梦');
+                await click('选择 博丽灵梦');
                 await waitScreen('playing');
                 if (scene.touch) {
                     const pause = await rectangle(1180, 150, 0, 0);
@@ -101,7 +101,7 @@ async function main() {
                 await page.keyboard.press('Escape');
                 await waitScreen('pause');
                 assert.equal((await state()).Tick, pausedTicks);
-                await click('继续行走');
+                await click('继续游戏');
                 await waitScreen('playing');
                 await page.waitForFunction(ticks => window.__touhouProbe.Tick > ticks, pausedTicks);
                 assert.deepEqual(check.errors, []);

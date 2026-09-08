@@ -1,9 +1,21 @@
 using Godot;
+using Rebirth.Core;
 
 namespace Rebirth.Presentation;
 
 public sealed class UiFactory(Font body, Font title)
 {
+    private static int FitText(Font font, string text, Vector2 bounds, int size)
+    {
+        while (size > 12)
+        {
+            var lines = font.GetMultilineStringSize(text, HorizontalAlignment.Left, bounds.X, size);
+            if (lines.Y <= bounds.Y && lines.X <= bounds.X) break;
+            size--;
+        }
+        return size;
+    }
+
     public Theme CreateTheme() => PixelTheme.Create(body);
 
     public Panel Panel(Control parent, Rect2 rectangle, Color? fill = null)
@@ -16,6 +28,8 @@ public sealed class UiFactory(Font body, Font title)
 
     public Label Label(Control parent, string text, Rect2 rectangle, int size = 18, Color? color = null, bool heading = false)
     {
+        text = GameText.Get(text);
+        if (GameText.IsEnglish) size = FitText(heading ? title : body, text, rectangle.Size, size);
         var label = new Label
         {
             Text = text,
@@ -34,6 +48,7 @@ public sealed class UiFactory(Font body, Font title)
 
     public Button Button(Control parent, string text, Rect2 rectangle, Action action, bool primary = false)
     {
+        text = GameText.Get(text);
         var button = new Button { Text = text, TooltipText = text, ClipText = true, Position = rectangle.Position, Size = rectangle.Size, MouseDefaultCursorShape = Control.CursorShape.PointingHand };
         if (primary)
         {
@@ -42,6 +57,12 @@ public sealed class UiFactory(Font body, Font title)
             button.AddThemeStyleboxOverride("pressed", PixelSkin.Frame("primary-pressed"));
             foreach (var state in new[] { "font_color", "font_hover_color", "font_pressed_color", "font_focus_color" })
                 button.AddThemeColorOverride(state, PixelSkin.Light);
+        }
+        if (GameText.IsEnglish)
+        {
+            var size = 18;
+            while (size > 12 && body.GetStringSize(text, fontSize: size).X > rectangle.Size.X - 28) size--;
+            button.AddThemeFontSizeOverride("font_size", size);
         }
         button.Pressed += action;
         parent.AddChild(button);

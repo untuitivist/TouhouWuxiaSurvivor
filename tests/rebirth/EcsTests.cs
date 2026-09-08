@@ -77,6 +77,35 @@ public static class EcsTests
         Check(Geometry.SegmentDistanceSquared(new(50, 5), Vector2.Zero, new(100, 0)) == 25, "Swept path still catches a small target between endpoints");
     }
 
+    public static void GridEquivalence()
+    {
+        var random = new Random(73);
+        var enemies = new ComponentStore<Enemy>(400);
+        var grid = new EnemyGrid();
+        for (var index = 0; index < 400; index++)
+            enemies.Add(new() { Id = index + 1, Position = new(random.Next(-2600, 2600), random.Next(-2000, 2000)), Health = 10 });
+        for (var pass = 0; pass < 4; pass++)
+        {
+            grid.Rebuild(enemies);
+            for (var query = 0; query < 100; query++)
+            {
+                var center = new Vector2(random.Next(-2200, 2200), random.Next(-1800, 1800));
+                var radius = random.Next(1, 180);
+                var minimumColumn = (int)MathF.Floor((center.X - radius) / 96);
+                var maximumColumn = (int)MathF.Floor((center.X + radius) / 96);
+                var minimumRow = (int)MathF.Floor((center.Y - radius) / 96);
+                var maximumRow = (int)MathF.Floor((center.Y + radius) / 96);
+                var expected = enemies.Where(enemy => enemy.Health > 0 && MathF.Floor(enemy.Position.X / 96) >= minimumColumn && MathF.Floor(enemy.Position.X / 96) <= maximumColumn
+                    && MathF.Floor(enemy.Position.Y / 96) >= minimumRow && MathF.Floor(enemy.Position.Y / 96) <= maximumRow)
+                    .OrderBy(enemy => MathF.Floor(enemy.Position.X / 96)).ThenBy(enemy => MathF.Floor(enemy.Position.Y / 96)).Select(enemy => enemy.Id).ToArray();
+                var actual = new List<int>();
+                foreach (var enemy in grid.Query(center, radius)) actual.Add(enemy.Id);
+                Check(actual.SequenceEqual(expected), "Dense and overflow cells preserve candidate order across rebuilds");
+            }
+            foreach (var enemy in enemies) { enemy.Position = -enemy.Position; if (enemy.Id % 7 == 0) enemy.Health = 0; }
+        }
+    }
+
     private static void Check(bool condition, string message)
     {
         if (!condition) throw new InvalidOperationException(message);

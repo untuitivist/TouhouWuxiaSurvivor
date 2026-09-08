@@ -86,17 +86,21 @@ public partial class GameCanvas : Node2D
         return Palette.Vector(Run.PlayerPosition).Clamp(new Vector2(-RunState.ArenaHalfWidth + 640, -RunState.ArenaHalfHeight + 282), new Vector2(RunState.ArenaHalfWidth - 640, RunState.ArenaHalfHeight - 282));
     }
 
+    public void RefreshLanguage() => hudLayer.QueueRedraw();
+
     private void Text(string text, Vector2 position, int size, Color color, Font? font = null)
-        => surface.DrawString(font ?? BodyFont, position, text, HorizontalAlignment.Left, -1, size, color);
+        => surface.DrawString(font ?? BodyFont, position, GameText.Get(text), HorizontalAlignment.Left, -1, size, color);
 
     private void FittedText(string text, Vector2 position, float width, int size, Color color)
     {
+        text = GameText.Get(text);
         while (size > 10 && BodyFont.GetStringSize(text, fontSize: size).X > width) size--;
         surface.DrawString(BodyFont, position, text, HorizontalAlignment.Left, width, size, color);
     }
 
     private void CenterText(string text, Vector2 position, int size, Color color, Font? font = null)
     {
+        text = GameText.Get(text);
         var selected = font ?? BodyFont;
         position.X -= selected.GetStringSize(text, fontSize: size).X / 2;
         Text(text, position, size, color, selected);

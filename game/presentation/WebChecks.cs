@@ -29,6 +29,8 @@ public partial class GameRoot
         var arguments = OS.GetCmdlineUserArgs();
         webChecks = GamePlatform.IsWeb && arguments.Contains("--web-validation");
         if (!webChecks) return;
+        var language = arguments.FirstOrDefault(argument => argument.StartsWith("--web-language="))?.Split('=', 2)[1];
+        if (language != null) { profile.Data.Language = GameText.NormalizeLanguage(language); GameText.SetLanguage(profile.Data.Language); ShowTitle(); }
         webPilot = arguments.Contains("--web-pilot");
         var fixture = arguments.FirstOrDefault(argument => argument.StartsWith("--web-fixture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
         webPerformance = fixture == "performance";
@@ -76,6 +78,7 @@ public partial class GameRoot
             Enemies = run?.Enemies.Count ?? 0, Projectiles = run?.Projectiles.Count ?? 0, Pickups = run?.Pickups.Count ?? 0,
             SystemMilliseconds = run?.Timings?.Milliseconds ?? [],
             Screen = currentScreen, Hero = run?.Hero.ToString() ?? "", Phase = run?.Phase.ToString() ?? "",
+            Language = GameText.Language,
             Tick = run?.Ticks ?? 0, Time = run?.Time ?? 0, X = run?.PlayerPosition.X ?? 0, Y = run?.PlayerPosition.Y ?? 0,
             Focused = run?.Focused ?? false, DashCooldown = run?.DashCooldown ?? 0, MoveX = touchHud.Movement.X, MoveY = touchHud.Movement.Y,
             TouchVisible = touchHud.Visible, TouchFocus = touchHud.FocusHeld, DebugVisible = debugOverlay.Visible,

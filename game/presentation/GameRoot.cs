@@ -23,7 +23,6 @@ public partial class GameRoot : Node
 
     public override void _Ready()
     {
-        DisplayServer.WindowSetTitle("幻想乡 · 夜境异闻");
         if (GamePlatform.IsWeb) GetWindow().ContentScaleMode = Window.ContentScaleModeEnum.Viewport;
         var (body, title) = GameFonts.Load();
         canvas.BodyFont = body;
@@ -32,8 +31,12 @@ public partial class GameRoot : Node
         AddChild(audio);
         ui = new(body, title);
         var arguments = OS.GetCmdlineUserArgs();
-        diagnosticMode = arguments.Contains("--rebirth-smoke") || arguments.Contains("--rebirth-video-smoke") || arguments.Contains("--rebirth-batch-smoke") || arguments.Any(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal));
+        diagnosticMode = arguments.Contains("--rebirth-language-smoke") || arguments.Contains("--rebirth-smoke") || arguments.Contains("--rebirth-video-smoke") || arguments.Contains("--rebirth-batch-smoke") || arguments.Any(argument => argument.StartsWith("--rebirth-capture=", StringComparison.Ordinal));
         profile = CreateProfile(arguments);
+        GameText.SetLanguage(profile.Data.Language);
+        if (diagnosticMode && arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-language=", StringComparison.Ordinal)) is { } languageArgument)
+            GameText.SetLanguage(languageArgument.Split('=', 2)[1]);
+        DisplayServer.WindowSetTitle(GameText.Get("幻想乡 · 夜境异闻"));
         if (!diagnosticMode) profile.Data.Video.Apply();
         else { profile.Data.MusicEnabled = false; profile.Data.SoundEnabled = false; }
         GameControls.Configure(profile.Data.Bindings);
@@ -53,6 +56,12 @@ public partial class GameRoot : Node
         touchHud.VisibilityChanged += () => canvas.SetTouchHudVisible(touchHud.Visible);
         InitializeDebugOverlay(layer, body);
         ShowTitle();
+        if (arguments.Contains("--rebirth-language-smoke"))
+        {
+            diagnosticFinished = true;
+            _ = RunLanguageSmoke();
+            return;
+        }
         InitializeDiagnostics();
         InitializeWebChecks();
     }
@@ -120,7 +129,7 @@ public partial class GameRoot : Node
         panel.AddChild(spray);
         var bookmark = new TextureRect { Texture = PixelSkin.Artwork("bookmark"), Position = new(width - 80, 8), Size = new(28, 44), MouseFilter = Control.MouseFilterEnum.Ignore };
         panel.AddChild(bookmark);
-        ui.Label(bookmark, "夜", new(6, 6, 18, 23), 14).AddThemeColorOverride("font_color", PixelSkin.Light);
+        ui.Label(bookmark, GameText.Get("夜"), new(6, 6, 18, 23), 14).AddThemeColorOverride("font_color", PixelSkin.Light);
         var stitch = new TextureRect { Texture = PixelSkin.Artwork("divider"), Position = new(36, 117), Size = new(width - 72, 4), StretchMode = TextureRect.StretchModeEnum.Tile, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, MouseFilter = Control.MouseFilterEnum.Ignore };
         panel.AddChild(stitch);
         ui.Label(panel, eyebrow, new(36, 24, width - 72, 25), 13, Palette.Gold);

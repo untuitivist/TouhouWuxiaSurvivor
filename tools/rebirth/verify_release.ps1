@@ -55,6 +55,8 @@ function Invoke-ReleaseCheck([string]$Name, [string[]]$GameArguments, [string]$E
 }
 
 Invoke-ReleaseCheck 'standalone-smoke' @('--headless', '--', '--rebirth-smoke') 'REBIRTH_UI_SMOKE_PASS'
+Invoke-ReleaseCheck 'standalone-language' @('--headless', '--', '--rebirth-language-smoke') 'LANGUAGE_SMOKE_PASS'
+Invoke-ReleaseCheck 'standalone-language-settings' @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', '--rebirth-language=en', '--rebirth-screen=settings', "--rebirth-capture=$(Join-Path $logs 'language-settings.png')") 'REBIRTH_CAPTURE_PASS'
 Invoke-ReleaseCheck 'standalone-display' @('--audio-driver', 'Dummy', '--', '--rebirth-video-smoke') 'REBIRTH_DISPLAY_PASS'
 Invoke-ReleaseCheck 'standalone-title' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=title', "--rebirth-capture=$(Join-Path $logs 'title.png')") 'REBIRTH_CAPTURE_PASS'
 Invoke-ReleaseCheck 'standalone-boss' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=boss', "--rebirth-capture=$(Join-Path $logs 'boss.png')") 'REBIRTH_CAPTURE_PASS'
@@ -68,7 +70,7 @@ foreach ($hero in @('reimu', 'marisa')) {
     if ($hero -eq 'marisa') { $arguments += '--rebirth-batch-marisa' }
     Invoke-ReleaseCheck "standalone-batch-$hero" $arguments 'SPRITE_BATCH_VISUAL_PASS'
     $batchLog = [IO.File]::ReadAllText((Join-Path $logs "standalone-batch-$hero.log"), $encoding)
-    if ($batchLog -notmatch 'SPRITE_BATCH_VISUAL_PASS.+checks=72' -or [regex]::Matches($batchLog, 'BATTLE_BATCH_CHECK').Count -ne 12) { throw 'Incomplete standalone batch verification' }
+    if ($batchLog -notmatch 'SPRITE_BATCH_VISUAL_PASS.+checks=81' -or [regex]::Matches($batchLog, 'BATTLE_BATCH_CHECK').Count -ne 12) { throw 'Incomplete standalone batch verification' }
     if ($batchLog -notmatch 'BATCH_COLOR_VISUAL_PASS checks=24' -or [regex]::Matches($batchLog, 'BATCH_COLOR_CHECK').Count -ne 24) { throw 'Incomplete standalone color verification' }
 }
 if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must still contain only the EXE after all checks.' }
@@ -83,7 +85,7 @@ $report = [ordered]@{
     isolated_directory = $isolated
     isolated_files = @(Get-ChildItem -LiteralPath $isolated -Force | ForEach-Object { $_.Name })
     embedded_runtime = $configuration.runtimeOptions.includedFrameworks
-    checks = @('standalone-smoke', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small', 'standalone-batch-reimu', 'standalone-batch-marisa')
+    checks = @('standalone-smoke', 'standalone-language', 'standalone-language-settings', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small', 'standalone-batch-reimu', 'standalone-batch-marisa')
 }
 [System.IO.File]::WriteAllText((Join-Path $logs 'report.json'), ($report | ConvertTo-Json -Depth 5), $encoding)
 Write-Output "SINGLE_EXE_VALIDATION_PASS version=$version bytes=$($source.Length) sha256=$checksum"

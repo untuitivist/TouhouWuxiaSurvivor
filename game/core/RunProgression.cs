@@ -84,7 +84,7 @@ public sealed partial class RunState
         if (enemy.Health <= 0) return;
         enemy.Health -= damage;
         enemy.Flash = 0.1f;
-        if (enemy.Kind != EnemyKind.Boss) enemy.Position = ClampToArena(enemy.Position + knockback);
+        if (enemy.Kind != EnemyKind.Boss) enemy.Position = ClampToArena(new(enemy.Position.X + knockback.X, enemy.Position.Y + knockback.Y));
         Emit(EffectKind.Hit, enemy.Position, damage);
         if (enemy.Health > 0) return;
         Kills++;

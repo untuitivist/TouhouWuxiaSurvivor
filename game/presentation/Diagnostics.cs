@@ -314,7 +314,7 @@ public partial class GameRoot
 
     private void PressButton(string text)
     {
-        var button = Descendants(screen!).OfType<Button>().FirstOrDefault(candidate => candidate.Text == text);
+        var button = Descendants(screen!).OfType<Button>().FirstOrDefault(candidate => candidate.Text == GameText.Get(text));
         Require(button != null, $"Button exists: {text}");
         button!.EmitSignal(BaseButton.SignalName.Pressed);
     }

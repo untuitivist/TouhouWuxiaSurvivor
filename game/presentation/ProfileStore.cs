@@ -7,6 +7,7 @@ namespace Rebirth.Presentation;
 public sealed class PlayerProfile
 {
     public int Version { get; set; } = 1;
+    public string Language { get; set; } = "zh";
     public int BestKills { get; set; }
     public int BestGrazes { get; set; }
     public int CompletedRuns { get; set; }
@@ -27,7 +28,7 @@ public sealed class ProfileStore
 {
     public PlayerProfile Data { get; private set; } = new();
     public string Warning { get; private set; } = "";
-    public string Notice => Warning.Length > 0 ? Warning : GamePlatform.StorageNotice;
+    public string Notice => GameText.Get(Warning.Length > 0 ? Warning : GamePlatform.StorageNotice);
     private readonly string path;
 
     public ProfileStore(string? customPath = null)
@@ -48,6 +49,7 @@ public sealed class ProfileStore
             loaded.Video.Normalize();
             loaded.Bindings = GameControls.NormalizeBindings(loaded.Bindings);
             loaded.TouchMode = Math.Clamp(loaded.TouchMode, 0, 2);
+            loaded.Language = GameText.NormalizeLanguage(loaded.Language);
             Data = loaded;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidDataException)

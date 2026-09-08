@@ -5,6 +5,27 @@ namespace Rebirth.Presentation;
 
 public partial class GameCanvas
 {
+    private SpriteBatch redPellets = null!;
+    private SpriteBatch violetPellets = null!;
+    private SpriteBatch experienceBatch = null!;
+    private SpriteBatch healingBatch = null!;
+    private (SpriteBatch Batch, float Size, int Frames)[] enemyStyles = [];
+
+    private void CacheCombatStyles()
+    {
+        redPellets = batches["red_pellet"];
+        violetPellets = batches["violet_pellet"];
+        experienceBatch = batches["experience"];
+        healingBatch = batches["healing"];
+        enemyStyles = Enum.GetValues<EnemyKind>().Select(kind =>
+        {
+            var name = kind switch { EnemyKind.Kedama => "actors/kedama", EnemyKind.Fairy => "actors/wild_fairy", EnemyKind.Charger => "actors/mountain_spirit", _ => "actors/great_youkai" };
+            var scale = kind switch { EnemyKind.Kedama => 0.95f, EnemyKind.Elite => 1.7f, EnemyKind.Boss => 2f, _ => 1.15f };
+            var (size, frames) = spriteFrames[name];
+            return (batches[name], size * scale, frames);
+        }).ToArray();
+    }
+
     private bool InView(Vector2 position, float margin = 80)
         => Math.Abs(position.X - camera.X) <= 640 + margin && Math.Abs(position.Y - camera.Y) <= 370 + margin;
 
@@ -15,25 +36,26 @@ public partial class GameCanvas
         foreach (ref readonly var pickup in Run.Pickups.Active)
         {
             var position = Palette.Vector(pickup.Position);
-            var size = pickup.Healing ? 17 : 12;
-            if (InView(position)) batches[pickup.Healing ? "healing" : "experience"].Add(position, new(size, size), Colors.White);
+            if (InView(position)) (pickup.Healing ? healingBatch : experienceBatch).AddPosition(position.X, position.Y);
         }
         foreach (var enemy in Run.Enemies)
         {
             var position = Palette.Vector(enemy.Position);
             if (!InView(position, 100)) continue;
-            var name = enemy.Kind switch { EnemyKind.Kedama => "actors/kedama", EnemyKind.Fairy => "actors/wild_fairy", EnemyKind.Charger => "actors/mountain_spirit", _ => "actors/great_youkai" };
-            var scale = enemy.Kind switch { EnemyKind.Kedama => 0.95f, EnemyKind.Elite => 1.7f, EnemyKind.Boss => 2f, _ => 1.15f };
-            var (size, frameCount) = spriteFrames[name];
-            var frame = (int)(Clock * 9 + enemy.Id * 0.7f) % frameCount;
-            var scaledSize = size * scale;
-            batches[name].Add(new(position.X, position.Y - scaledSize * 0.25f), new(scaledSize, scaledSize),
-                enemy.Flash > 0 ? new Color(1.8f, 1.8f, 1.8f) : Colors.White, frame: frame, frameCount: frameCount);
+            var style = enemyStyles[(int)enemy.Kind];
+            var frame = (int)(Clock * 9 + enemy.Id * 0.7f) % style.Frames;
+            style.Batch.Add(new(position.X, position.Y - style.Size * 0.25f), new(style.Size, style.Size),
+                enemy.Flash > 0 ? new Color(1.8f, 1.8f, 1.8f) : Colors.White, frame: frame, frameCount: style.Frames);
         }
         foreach (ref readonly var projectile in Run.Projectiles.Active)
         {
             var position = Palette.Vector(projectile.Position);
             if (!InView(position)) continue;
+            if (projectile.Hostile)
+            {
+                (projectile.Alternate ? violetPellets : redPellets).AddPosition(position.X, position.Y);
+                continue;
+            }
             var name = projectile.Hostile ? projectile.Alternate ? "violet_pellet" : "red_pellet"
                 : projectile.DreamOrb ? "dream" : projectile.Art == ArtKind.YinYang ? "actors/yin_yang_orb" : projectile.Art == ArtKind.Ofuda ? "ofuda" : projectile.Art == ArtKind.Stardust ? "stardust" : "star";
             var size = projectile.Hostile ? 15 : projectile.DreamOrb ? projectile.Radius * 2.6f : projectile.Art == ArtKind.Ofuda ? 22 : projectile.Radius * 2.4f;
