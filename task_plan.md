@@ -2,7 +2,7 @@
 
 - Complete: clean source dd1eaf1 audited, live alpha-0.1.3 checked, pinned SSH host and private key located without reading key contents. GitHub HTTP/1.1 retry succeeded after initial reset.
 - Complete: version/log promotion and source validations; commit before both exports.
-- Pending: standalone Windows 24 checks, matching threadless Web release gates plus journal/minimap/scenery checks, push and backup-preserving deployment, public verification and receipt.
+- Complete: standalone Windows 24 checks, matching threadless Web release gates plus journal/minimap/scenery checks, push and backup-preserving deployment, public verification and receipt.
 - Preserve all historical files; no cleanup/deletion.
 
 ## Card Compendium — 2026-09-08

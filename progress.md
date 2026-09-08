@@ -1,5 +1,9 @@
 ## Release alpha-0.1.4 — 2026-09-08
 
+- Complete: source frozen at 99e0bae; Windows 194332544 bytes, 24 standalone checks passed; final Web build 20260908-182518-023 passed all release gates and new UI/art suites. Pushed and deployed alpha-0.1.4-99e0bae-20260908T104638Z.
+- Public normal desktop/touch/unisolated touch passed; separate live two-layout journal traversal opened all 22 entries and confirmed minimap clearance. Actual public phone screenshots inspected. Three-entry startup times 37.806/44.581/10.385 seconds are observations, not speed promises.
+- Verified 21 historical release files unchanged, copied full version log and wrote delivery receipt; docs-only receipt commit follows. No deletion, rollback needed or additional gameplay change.
+
 - Started authorized dual-target release from clean dd1eaf1. Current public game remains alpha-0.1.3; matching previous landing override confirmed.
 - Initial GitHub fetch reset; HTTP/1.1 retry succeeded. Node-host SSH executable invocation failed immediately; native CMD SSH with pinned host key succeeded. Key name lookup under user home found nothing; located existing authorized key under U:/Project without exposing contents.
 - Source core 29/29, six seeded journeys and full UI/settings/journal/minimap smoke passed. Font gate identified one new glyph in promoted log; regenerated licensed subset to 1204 characters before export. JavaScript first run lacked NODE_PATH; corrected environment and all 19 tests passed. Seven deployment tests and original-effect/scenery source checks passed. All previous release EXE/log hashes recorded before new output.
