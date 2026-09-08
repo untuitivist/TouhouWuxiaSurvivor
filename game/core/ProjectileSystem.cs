@@ -61,11 +61,9 @@ internal static class ProjectileSystem
             }
             else
             {
-                foreach (var enemy in world.Grid.Query(projectile.Position, 80))
+                foreach (var enemy in world.Grid.QuerySwept(projectile.Position, 80, previous, projectile.Position, projectile.Radius))
                 {
                     var hitRadius = enemy.Radius + projectile.Radius;
-                    if (enemy.Position.X < minimumX - hitRadius || enemy.Position.X > maximumX + hitRadius
-                        || enemy.Position.Y < minimumY - hitRadius || enemy.Position.Y > maximumY + hitRadius) continue;
                     if (projectile.HitIds.Contains(enemy.Id) || Geometry.SegmentDistanceSquared(enemy.Position, previous, projectile.Position) >= hitRadius * hitRadius) continue;
                     projectile.HitIds.Add(enemy.Id);
                     if (projectile.DreamOrb) run.Explode(projectile.Position, projectile.Damage);

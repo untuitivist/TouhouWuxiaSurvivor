@@ -112,6 +112,18 @@ public static class EcsTests
                 var actual = new List<int>();
                 foreach (var enemy in grid.Query(center, radius)) actual.Add(enemy.Id);
                 Check(actual.SequenceEqual(expected), "Dense and overflow cells preserve candidate order across rebuilds");
+                var start = center + new Vector2(40, -25);
+                var end = center - new Vector2(35, -15);
+                var expectedSwept = new List<int>();
+                foreach (var enemy in grid.Query(center, radius))
+                {
+                    var hitRadius = enemy.Radius + 8;
+                    if (enemy.Position.X >= MathF.Min(start.X, end.X) - hitRadius && enemy.Position.X <= MathF.Max(start.X, end.X) + hitRadius
+                        && enemy.Position.Y >= MathF.Min(start.Y, end.Y) - hitRadius && enemy.Position.Y <= MathF.Max(start.Y, end.Y) + hitRadius) expectedSwept.Add(enemy.Id);
+                }
+                var actualSwept = new List<int>();
+                foreach (var enemy in grid.QuerySwept(center, radius, start, end, 8)) actualSwept.Add(enemy.Id);
+                Check(actualSwept.SequenceEqual(expectedSwept), "Swept broad phase preserves filtered candidate order");
             }
             foreach (var enemy in enemies) { enemy.Position = -enemy.Position; if (enemy.Id % 7 == 0) enemy.Health = 0; }
         }

@@ -49,6 +49,8 @@ public sealed class EnemyGrid
     }
 
     public QueryEnumerator Query(Vector2 center, float radius) => new(this, center, radius);
+    public QueryEnumerator QuerySwept(Vector2 center, float radius, Vector2 start, Vector2 end, float padding)
+        => new(this, center, radius, start, end, padding);
 
     public struct QueryEnumerator
     {
@@ -60,6 +62,12 @@ public sealed class EnemyGrid
         private int row;
         private int offset;
         private List<Enemy>? bucket;
+        private readonly bool swept;
+        private readonly float minimumPositionX;
+        private readonly float maximumPositionX;
+        private readonly float minimumPositionY;
+        private readonly float maximumPositionY;
+        private readonly float padding;
         public Enemy Current { get; private set; }
 
         internal QueryEnumerator(EnemyGrid grid, Vector2 center, float radius)
@@ -75,6 +83,17 @@ public sealed class EnemyGrid
             Current = null!;
         }
 
+        internal QueryEnumerator(EnemyGrid grid, Vector2 center, float radius, Vector2 start, Vector2 end, float padding)
+            : this(grid, center, radius)
+        {
+            swept = true;
+            minimumPositionX = MathF.Min(start.X, end.X);
+            maximumPositionX = MathF.Max(start.X, end.X);
+            minimumPositionY = MathF.Min(start.Y, end.Y);
+            maximumPositionY = MathF.Max(start.Y, end.Y);
+            this.padding = padding;
+        }
+
         public QueryEnumerator GetEnumerator() => this;
 
         public bool MoveNext()
@@ -83,8 +102,16 @@ public sealed class EnemyGrid
             {
                 while (bucket != null && offset < bucket.Count)
                 {
-                    Current = bucket[offset++];
-                    if (Current.Health > 0) return true;
+                    var enemy = bucket[offset++];
+                    if (enemy.Health <= 0) continue;
+                    if (swept)
+                    {
+                        var radius = enemy.Radius + padding;
+                        if (enemy.Position.X < minimumPositionX - radius || enemy.Position.X > maximumPositionX + radius
+                            || enemy.Position.Y < minimumPositionY - radius || enemy.Position.Y > maximumPositionY + radius) continue;
+                    }
+                    Current = enemy;
+                    return true;
                 }
                 if (++row > maximumY) { column++; row = minimumY; }
                 if (column > maximumX) break;
