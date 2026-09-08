@@ -1,5 +1,22 @@
 # Web Combat Performance Investigation
 
+## Released alpha-0.1.6 evidence
+
+The final clean source is c5bf1684b88d3b825556919fa7ae9eba6d255059. Both the standalone Windows executable and public Web deployment use this revision. Earlier candidate failures and measurements below are retained as investigation history, not final release results.
+
+The final build is artifacts/web-builds/20260909-024731-641. Both combat-gate-zh.json and combat-gate-en.json passed the unchanged budgets. The user confirmed that the existing full-load scenario is sufficient; this release does not expand the enemy limit to 1000.
+
+| Language | 40/200 FPS mean | 180/600 FPS mean | 320/1600 FPS mean | Full-load minimum sampled FPS | Full-load simulation p95 ms | Full-load batch mean ms |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Chinese | 60 | 60 | 58.09 | 49 | 9.9 | 3.45 |
+| English | 60 | 60 | 58.41 | 52 | 9.2 | 3.59 |
+
+The test starts with an additional 400 pickups. These are desktop Edge touch-emulation measurements without shared memory, not physical-device tests or a claim of a locked 60 FPS. Final simulation speeds at full load were 59.97 and 59.80 ticks/s, recorded separately from rendered FPS.
+
+Additional equivalent optimizations filter swept candidates within grid enumeration, delay hit-history checks until distance qualifies a target, skip untouched compaction prefixes, reject distant bullet-clear candidates, and reuse heading math for homing and sprite orientation. Candidate order, collision budgets and gameplay timesteps remain unchanged. Geometry, storage, query-order and actual rotated-sprite comparisons cover these changes.
+
+The release passed 40 core tests, 860 localization checks, 26 standalone Windows checks and the complete Web compatibility suite. Public deployment alpha-0.1.6-c5bf168-20260908T190557Z passed normal desktop, touch and touch without isolation headers. Unlike alpha-0.1.5, the online build now includes the language selector; both language directions persisted through public-page reloads. See docs/deployment.md for the release receipt and rollback location.
+
 ## alpha-0.1.6 follow-up
 
 The release candidate retains the existing ECS/OOP division. It adds a conservative swept AABB rejection before narrow-phase collision, replaces in-arena dictionary buckets with a directly indexed grid (with overflow support and identical query order), reuses fixed-style sprite attributes, and caches render mappings. In the integrated English unisolated stress run, 320/1600 averaged 58.7 rendered FPS, 6.85 ms simulation and 3.30 ms batch preparation. This is desktop evidence, not a mobile guarantee. Earlier measurements below remain the investigation history.
