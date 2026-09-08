@@ -47,7 +47,12 @@ for (const entry of manifest.assets) {
     report.assets.push({ ...entry, sourceSha256: crypto.createHash("sha256").update(sourceBytes).digest("hex"), textureSha256: crypto.createHash("sha256").update(fs.readFileSync(texture)).digest("hex"), roundtrip: true });
 }
 assert.equal(names.size, 54);
-for (const module of ["draw_redraw", "redraw_brush", "redraw_actors", "redraw_effects", "redraw_scenery", "redraw_ui"]) {
+const approvedTitle = PNG.sync.read(fs.readFileSync(path.join(root, "assets/ui/title/moonlit_shrine.png")));
+const currentTitle = PNG.sync.read(fs.readFileSync(path.join(root, "assets/aseprite/redraw/scenery/title_shrine.png")));
+assert.equal(currentTitle.width, approvedTitle.width);
+assert.equal(currentTitle.height, approvedTitle.height);
+assert.ok(currentTitle.data.equals(approvedTitle.data), "Startup background must match the approved Aseprite reference");
+for (const module of ["draw_redraw", "redraw_brush", "redraw_actors", "redraw_effects", "redraw_scenery", "redraw_ui", "redraw_title", "title_painter"]) {
     const script = fs.readFileSync(path.join(__dirname, module + ".lua"), "utf8");
     assert.ok(!/app\.open|getPixel|drawImage|internal_original/.test(script), "Redraw tools must not import reference pixels: " + module);
 }

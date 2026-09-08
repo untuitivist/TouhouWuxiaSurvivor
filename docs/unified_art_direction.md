@@ -1,5 +1,16 @@
 # Unified Aseprite Visual Direction
 
+## User reference correction
+
+The user rejected the visual direction in 6917463. Technical checks were not aesthetic approval. The supplied startup screenshot (art/reference/approved-startup.png) is the visual reference: ink-blue layered mountains, muted foliage and blossoms, warm lamps, brown/gold paper panels and a pale-green primary button. Reuse the existing project-drawn Aseprite title landscape exactly. Redraw Reimu and Marisa with slimmer proportions rather than importing original sprites. This correction is a startup/UI/two-character sample; other artwork remains pending user review. No gameplay, version or deployment changes.
+
+### Correction verification
+
+- Native capture and 14 checks: artifacts/redraw-native/20260908-200655-393.
+- Threadless Web: artifacts/web-builds/20260909-040756-633; title desktop/small/touch, language persistence and Reimu/Marisa batch checks passed.
+- 54 Aseprite source/export comparisons and exact approved-background pixel equality passed; core 40/40 and localization 860/860 passed.
+- This verifies rendering and behavior, not user aesthetic approval or mobile hardware performance. Existing audio import emitted UTF-8 metadata warnings; no audio files were changed.
+
 ## Superseding rule
 
 The user requires all active game imagery to share one redrawn style. Original Touhou images are visual references only, not runtime images, crops, recolored exports or collage elements. Historical references and previous releases remain untouched. Audio is outside this drawing task and stays unchanged. Fan-character identity is retained; redrawing does not establish permission to commercially distribute Touhou-derived content.

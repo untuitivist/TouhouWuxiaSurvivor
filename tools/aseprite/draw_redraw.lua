@@ -1,6 +1,6 @@
 local root=app.params["root"] or app.fs.currentPath
 local art=dofile(root.."/tools/aseprite/redraw_brush.lua")
-for _,name in ipairs({"actors","effects","scenery","ui"}) do dofile(root.."/tools/aseprite/redraw_"..name..".lua")(art) end
+for _,name in ipairs({"actors","effects","scenery","ui","title"}) do dofile(root.."/tools/aseprite/redraw_"..name..".lua")(art) end
 local manifest=io.open(root.."/art/redraw/manifest.json","wb")
 table.sort(art.entries,function(left,right)return left.name<right.name end)
 manifest:write('{"schema":1,"editor":"Aseprite","provenance":"Drawn from blank canvases; reference image pixels are never imported","assets":[')

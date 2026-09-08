@@ -1,26 +1,30 @@
 return function(art)
 local palette=art.palette
-for name,fill in pairs({panel=palette.paper,inset=palette.white,button=palette.paper,hover=palette.white,pressed=palette.gold,disabled=palette.mist,primary=palette.jadeShade,["primary-hover"]=palette.jade,["primary-pressed"]=palette.deep,dark=palette.deep,track=palette.slate,fill=palette.jade}) do
+local ink,wood,gold=art.color("382c32"),art.color("754c38"),art.color("bb8c4e")
+local paper,light=art.color("f2e3bc"),art.color("fff1ce")
+for name,fill in pairs({panel="f2e3bc",inset="e5d3aa",button="f2e3bc",hover="fff1ce",pressed="d7b47d",disabled="d4cab1",primary="bfd0a0",["primary-hover"]="d5e0b2",["primary-pressed"]="a7b781",dark="342e2e",track="a68c65",fill="526b51"}) do
     art.save("ui/"..name,64,64,function()
-        local dark=name:sub(1,7)=="primary" or name=="dark"
-        art.layer("Cut paper silhouette")
-        art.rect(4,5,56,56,palette.ink);art.rect(5,3,54,57,palette.ink)
-        art.rect(6,5,52,53,palette.goldShade);art.rect(7,6,50,51,palette.gold)
-        art.rect(9,8,46,47,fill);art.line(10,9,52,9,dark and palette.jade or palette.white)
-        art.line(10,53,53,53,dark and palette.ink or palette.goldShade)
-        art.layer("Woven paper surface")
-        for row=16,47,4 do for column=16,47,4 do
-            local hash=(column*7+row*13)%19
-            if hash<3 then art.pixel(column,row,art.color(dark and "91aaa6" or "9d7046",22)) end
-        end end
-        art.layer("Cloud-scroll corner inlays")
-        for _,corner in ipairs({{6,6,1,1},{57,6,-1,1},{6,57,1,-1},{57,57,-1,-1}}) do
-            local horizontal,vertical,signX,signY=table.unpack(corner)
-            art.line(horizontal,vertical,horizontal+7*signX,vertical,palette.paper)
-            art.line(horizontal,vertical,horizontal,vertical+7*signY,palette.paper)
-            art.line(horizontal+3*signX,vertical+3*signY,horizontal+8*signX,vertical+3*signY,palette.goldShade)
-            art.line(horizontal+3*signX,vertical+3*signY,horizontal+3*signX,vertical+8*signY,palette.goldShade)
-            art.pixel(horizontal+5*signX,vertical+5*signY,palette.red)
+        art.layer("Approved brown timber silhouette")
+        art.rect(6,8,54,54,ink)
+        art.rect(2,6,58,50,wood)
+        art.rect(6,2,50,58,wood)
+        art.layer("Warm paper and inset rim")
+        art.rect(6,6,50,50,gold)
+        art.rect(8,8,46,46,art.color(fill))
+        art.rect(10,8,42,2,name=="dark" and wood or light)
+        art.rect(8,10,2,42,name=="dark" and wood or light)
+        art.rect(10,52,42,2,name=="dark" and wood or art.color("c8ac7b"))
+        art.layer("Square corner joinery")
+        if name~="fill" and name~="track" then
+            for _,corner in ipairs({{4,4},{50,4},{4,50},{50,50}}) do
+                art.rect(corner[1],corner[2],8,8,wood)
+                art.rect(corner[1]+2,corner[2]+2,4,4,gold)
+                art.pixel(corner[1]+2,corner[2]+2,light)
+            end
+        end
+        if name:sub(1,7)=="primary" or name=="pressed" then
+            art.rect(4,16,2,30,art.color("a84342"))
+            art.rect(56,16,2,30,art.color("a84342"))
         end
     end)
 end

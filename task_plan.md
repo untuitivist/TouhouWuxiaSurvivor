@@ -1,4 +1,11 @@
-## Unified Aseprite Redraw — Active
+## Startup Reference Correction — Active
+
+1. [complete] Identify the supplied screenshot and preserve the matching existing Aseprite background through a shared painter.
+2. [complete] Adjust paper UI and redraw two slimmer character samples in Aseprite scripts.
+3. [complete] Generated with Aseprite; 54 round trips and exact reference-background equality passed. Native 14 checks, core 40/40, localization 860/860 and Web title desktop/small/touch, language and both character batch checks passed. Native title and Web touch captures inspected.
+4. [complete] Local sample prepared for commit and presentation; no release or whole-art approval claim. Other art remains pending user direction.
+
+## Unified Aseprite Redraw — Rejected Visual Direction
 
 1. [complete] Audit active visual resources and establish one original pixel-art palette and provenance rule.
 2. [complete] Draw all active visual categories from blank Aseprite canvases, preserving layered editable sources and animation-strip dimensions.
