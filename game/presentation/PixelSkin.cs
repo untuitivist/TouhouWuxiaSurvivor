@@ -52,7 +52,7 @@ public static class PixelSkin
     public static Texture2D Artwork(string name)
     {
         if (icons.TryGetValue(name, out var existing)) return existing;
-        var texture = GD.Load<Texture2D>($"res://assets/aseprite/{name}.png");
+        var texture = GD.Load<Texture2D>($"{VisualAssets.InterfaceRoot}{name}.png");
         icons[name] = texture;
         return texture;
     }

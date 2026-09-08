@@ -13,7 +13,7 @@ public partial class GameRoot
         {
             StartRun(OS.GetCmdlineUserArgs().Contains("--rebirth-batch-marisa") ? HeroKind.Marisa : HeroKind.Reimu, 42);
             await TestBatchColorState();
-            var texture = GD.Load<Texture2D>("res://assets/internal_original/base/actors/wild_fairy.png");
+            var texture = GD.Load<Texture2D>(VisualAssets.Root + "actors/wild_fairy.png");
             var frames = texture.GetWidth() / texture.GetHeight();
             var actual = new SubViewport { Size = new(512, 512), TransparentBg = true, Disable3D = true, RenderTargetUpdateMode = SubViewport.UpdateMode.Always, World2D = new() };
             var expected = new SubViewport { Size = new(512, 512), TransparentBg = true, Disable3D = true, RenderTargetUpdateMode = SubViewport.UpdateMode.Always, World2D = new() };
@@ -83,7 +83,7 @@ public partial class GameRoot
                 if (checks % 6 == 0) await CompareBattleBatchRendering(checks);
             }
             batch.Hide();
-            var fixedTexture = GD.Load<Texture2D>("res://assets/internal_original/base/combat/red_pellet.png");
+            var fixedTexture = GD.Load<Texture2D>(VisualAssets.Root + "combat/red_pellet.png");
             var fixedBatch = new SpriteBatch(fixedTexture, 24);
             actual.AddChild(fixedBatch);
             foreach (var count in new[] { 0, 1, 32, 33, 65, 257, 0, 1, 257 })

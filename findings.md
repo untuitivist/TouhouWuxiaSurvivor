@@ -1,3 +1,11 @@
+## Unified Redraw Findings
+
+- In-game screenshots confirmed readable new characters, title, UI and star/magic-beam identity. Grass in the first integrated draft was too noisy at gameplay scale; reduced high-frequency texture marks without changing terrain geometry or simulation.
+- User supersedes the old original-plus-Aseprite rule: original images are drawing references only. No cropping, tracing by pixel copy, recoloring or embedding reference pixels into new exports.
+- Active visuals include seven 48px actor/player strips, projectiles, six effect textures, scenery, UI/title and an icon currently containing original pixel copies. Audio is not a drawing asset and remains unchanged.
+- Existing batch geometry and 256x128 beam cap/body contract must remain compatible; do not add per-entity nodes or runtime drawing costs.
+
+
 ## Reimu Growth Implementation — 2026-09-08
 
 - Local reference is a Unity binary build at ../other_game_reference/20MinuteTillDawn, not source. Read-only assembly identifiers include PrereqsMet, prereqs, anyPrereqFulfill and SynergyUIState; exact probabilities and mechanics were not verified, and no code/assets were copied.

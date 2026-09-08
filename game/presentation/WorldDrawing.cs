@@ -42,7 +42,7 @@ public partial class GameCanvas
     {
         var position = Palette.Vector(seal.Position);
         var color = seal.Complete ? Palette.Jade : Palette.Gold;
-        OriginalEffect("ritual_array", position, Vector2.One * 184, Palette.Alpha(Colors.White, seal.Complete ? 0.18f : 0.38f), ReducedMotion ? 0 : Clock * 0.06f);
+        EffectSprite("ritual_array", position, Vector2.One * 184, Palette.Alpha(Colors.White, seal.Complete ? 0.18f : 0.38f), ReducedMotion ? 0 : Clock * 0.06f);
         surface.DrawArc(position, 74, -MathF.PI / 2, -MathF.PI / 2 + MathF.Tau * Math.Max(0.002f, seal.Charge), 64, color, 3);
         surface.DrawTextureRect(PixelSkin.Artwork("shrine_marker"), new(position + new Vector2(-20, -48), new(40, 60)), false);
     }

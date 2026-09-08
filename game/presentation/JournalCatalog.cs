@@ -8,7 +8,7 @@ internal sealed record JournalEntry(string Id, JournalCategory Category, string 
 
 internal static class JournalCatalog
 {
-    public const string ArtRoot = "res://assets/internal_original/base/";
+    public const string ArtRoot = VisualAssets.Root;
     private static string cachedLanguage = "";
     private static IReadOnlyList<JournalEntry> cachedEntries = [];
     public static IReadOnlyList<JournalEntry> All
@@ -86,7 +86,7 @@ internal static class JournalCatalog
                 (kind == EnemyKind.Boss ? GameText.Format($"正常流程在 {RunState.BossArrival / 60:0} 分钟后登场，击破后获胜。与精英共用当前精灵；并非额外可选角色。") : GameText.Get("部分敌人的生成生命与速度随局内时间增长；这些是基准值，不是所有时刻的固定值。")) +
                 "\n\n" + summary);
         }
-        yield return new("world-shrine", JournalCategory.World, GameText.Get("博丽夜境"), GameText.Get("有限夜境 · 古印与终局"), GameText.Get("当前战场为本作场景；背景使用已接入的神社原作素材。"), "scenery/title_shrine.png", false,
+        yield return new("world-shrine", JournalCategory.World, GameText.Get("博丽夜境"), GameText.Get("有限夜境 · 古印与终局"), GameText.Get("当前战场为本作场景；背景与局内图像统一使用 Aseprite 重绘素材。"), "scenery/title_shrine.png", false,
             GameText.Format($"场地范围  {RunState.ArenaHalfWidth * 2:0} × {RunState.ArenaHalfHeight * 2:0}\n终局登场  {RunState.BossArrival / 60:0} 分钟\n\n在有限场地中走位、修习、净化古印，击破结界残影结束本局。旧版多群系、无限地图与作品包尚未迁回，不作为当前可玩条目展示。"));
         yield return new("world-seal", JournalCategory.World, GameText.Get("古印"), GameText.Get("靠近净化 · 离开保留进度"), GameText.Get("本作交互目标；预览使用当前局内阵纹。"), "effects/ritual_array.png", false,
             GameText.Get("靠近古印时积累净化进度，离开不会清空。完成后提供修习机会、生命恢复与符卡蓄势，并吸取拾取物。\n\n不净化也能迎战终局；遇险先退出阵地，比停在弹幕里更重要。"));

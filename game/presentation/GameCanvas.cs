@@ -19,19 +19,19 @@ public partial class GameCanvas : Node2D
     private Texture2D toriiTexture = null!;
     private Texture2D[] treeCanopies = [];
     private readonly List<VisualEvent> effects = [];
-    private const string BaseArt = "res://assets/internal_original/base/";
+    private const string BaseArt = VisualAssets.Root;
 
     public override void _Ready()
     {
         TextureFilter = TextureFilterEnum.Nearest;
-        titleLandscape = GD.Load<Texture2D>("res://assets/ui/title/moonlit_shrine.png");
+        titleLandscape = GD.Load<Texture2D>(VisualAssets.Title);
         toriiTexture = PixelLandscape.Load("torii");
         treeCanopies = [PixelLandscape.Load("tree_canopy_a"), PixelLandscape.Load("tree_canopy_b")];
         foreach (var name in new[] { "players/reimu", "players/marisa", "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai", "actors/yin_yang_orb" })
             textures[name] = GD.Load<Texture2D>($"{BaseArt}{name}.png");
         textures["path"] = PixelSkin.Artwork("stone");
         foreach (var entry in textures) spriteFrames[entry.Key] = (entry.Value.GetHeight(), Math.Max(1, entry.Value.GetWidth() / entry.Value.GetHeight()));
-        LoadOriginalEffects();
+        LoadEffectArtwork();
         InitializeRenderLayers();
     }
 

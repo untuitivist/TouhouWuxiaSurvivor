@@ -45,8 +45,8 @@ public partial class GameCanvas
             {
                 var position = Palette.Vector(ReimuAbilitySystem.OrbitPosition(Run, index));
                 if (Run.Reimu.Charging && index == ReimuAbilitySystem.OrbitCount(Run) - 1)
-                    OriginalEffect("reimu_aura", position, Vector2.One * (38 + 22 * (1 - Run.Reimu.ChargeRemaining / ReimuTuning.OrbChargeDuration)), Palette.Alpha(Colors.White, 0.65f));
-                OriginalEffect("reimu_aura", position, Vector2.One * 28, Palette.Alpha(Palette.Jade, 0.12f));
+                    EffectSprite("reimu_aura", position, Vector2.One * (38 + 22 * (1 - Run.Reimu.ChargeRemaining / ReimuTuning.OrbChargeDuration)), Palette.Alpha(Colors.White, 0.65f));
+                EffectSprite("reimu_aura", position, Vector2.One * 28, Palette.Alpha(Palette.Jade, 0.12f));
                 Sprite("actors/yin_yang_orb", position + new Vector2(0, 7), 0.62f);
             }
         }
@@ -83,13 +83,13 @@ public partial class GameCanvas
                     Star(position, 32 * (1 - progress), Palette.Alpha(Palette.Gold, 1 - progress), progress * 3);
                     break;
                 case EffectKind.Explosion:
-                    OriginalEffect("reimu_aura", position, Vector2.One * effect.Entry.Value * (0.3f + progress * 1.7f), Palette.Alpha(new Color("ffaec9"), 0.5f * (1 - progress)));
+                    EffectSprite("reimu_aura", position, Vector2.One * effect.Entry.Value * (0.3f + progress * 1.7f), Palette.Alpha(new Color("ffaec9"), 0.5f * (1 - progress)));
                     break;
                 case EffectKind.Spell:
-                    OriginalEffect(Run?.Hero == HeroKind.Reimu ? "reimu_aura" : "marisa_cast", position, Vector2.One * (48 + 172 * progress), Palette.Alpha(Colors.White, 0.45f * (1 - progress)));
+                    EffectSprite(Run?.Hero == HeroKind.Reimu ? "reimu_aura" : "marisa_cast", position, Vector2.One * (48 + 172 * progress), Palette.Alpha(Colors.White, 0.45f * (1 - progress)));
                     break;
                 case EffectKind.Seal:
-                    OriginalEffect("ritual_array", position, Vector2.One * (150 + 170 * progress), Palette.Alpha(Colors.White, 0.35f * (1 - progress)));
+                    EffectSprite("ritual_array", position, Vector2.One * (150 + 170 * progress), Palette.Alpha(Colors.White, 0.35f * (1 - progress)));
                     break;
                 case EffectKind.Graze:
                     Star(position, 8 + progress * 12, Palette.Alpha(Palette.Jade, 1 - progress), progress);

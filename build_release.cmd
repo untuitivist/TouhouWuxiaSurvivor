@@ -27,6 +27,8 @@ if exist "%OUTPUT_EXE%" (
 )
 cd /d "%~dp0"
 if not exist artifacts mkdir artifacts
+call tools\aseprite\verify_redraw.cmd > artifacts\release-art-verification.log 2>&1
+if errorlevel 1 exit /b 1
 set DOTNET_CLI_UI_LANGUAGE=en
 set DOTNET_CLI_USE_MSBUILD_SERVER=0
 set UseSharedCompilation=false

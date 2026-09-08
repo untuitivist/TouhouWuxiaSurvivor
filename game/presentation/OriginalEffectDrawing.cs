@@ -7,14 +7,14 @@ public partial class GameCanvas
     private readonly Dictionary<string, Texture2D> effectTextures = [];
     private static readonly Color[] SparkColors = [new("97dfff"), new("c7b4ff"), new("ffb3df"), new("ffe1a2"), new("b8f2d0")];
 
-    private void LoadOriginalEffects()
+    private void LoadEffectArtwork()
     {
         foreach (var name in new[] { "master_spark", "marisa_cast", "reimu_seal_ink", "reimu_talisman", "reimu_aura", "ritual_array" })
             effectTextures[name] = GD.Load<Texture2D>($"{BaseArt}effects/{name}.png");
         effectTextures["star"] = GD.Load<Texture2D>($"{BaseArt}combat/star.png");
     }
 
-    private void OriginalEffect(string name, Vector2 position, Vector2 size, Color tint, float rotation = 0)
+    private void EffectSprite(string name, Vector2 position, Vector2 size, Color tint, float rotation = 0)
     {
         if (size.X < 0.5f || size.Y < 0.5f || tint.A <= 0) return;
         surface.DrawSetTransform(position, rotation);
@@ -29,7 +29,7 @@ public partial class GameCanvas
         return SparkColors[index].Lerp(SparkColors[(index + 1) % SparkColors.Length], phase - MathF.Floor(phase));
     }
 
-    private void OriginalBeam(Vector2 origin, Vector2 direction, float length, float halfWidth, Color tint)
+    private void SpellBeam(Vector2 origin, Vector2 direction, float length, float halfWidth, Color tint)
     {
         var texture = effectTextures["master_spark"];
         var capLength = Math.Min(length * 0.2f, halfWidth * 2);

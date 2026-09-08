@@ -1,3 +1,16 @@
+## Unified Aseprite Redraw Progress
+
+- Final Web build 20260909-034138-085 and native snapshot 20260908-194232-838 passed. Native includes smoke, language, ten actual screenshots and both heroes under batch/color comparisons. Web includes both hero batches, five skill views, four journal layouts, bilingual persistence and three title layouts.
+- Final full-load desktop unisolated reference: Chinese 58.93 FPS mean / 54 minimum sampled, English 59.95 / 59. Both unchanged three-load gates passed; not a physical-phone or locked-60 guarantee. Final terrain is quieter than the initial draft.
+- Completed 54 editable Aseprite/PNG pairs, shared VisualAssets paths, reference-image export exclusions, build-time provenance checks and current documentation. Original images, old sources and released EXEs are preserved.
+- First integrated build passed all 54 source/export round trips, 40 core and 860 localization cases, native 14 checks, Web batches, five hero-effect views, five scenery layouts, four journal layouts, bilingual persistence and three title layouts. Existing full-load Chinese Web gate averaged 58.95 FPS (desktop reference only).
+- Final pass reduces terrain noise and adds mandatory artwork provenance checks to both build tools. Final artifact checks are pending; no publication occurred.
+- One tool-side JavaScript quoting error while adding the verifier was corrected with a raw multiline patch; no partially written verifier was executed.
+- First Aseprite batch generated 54 layered source/PNG pairs from blank canvases. Character identity is readable; the first title draft is too sparse and will receive foliage, depth and masonry detail before acceptance. No original pixels were imported.
+- Audited active C# resource paths, dimensions, existing Aseprite Lua workflow and original-derived icon composition. No art changes have been made yet.
+- Prior alpha-0.1.6 deployment remains intact. This request is a development change, not a new release instruction.
+
+
 ## Reimu Playable Growth Tree — 2026-09-08
 
 - Implemented the approved sample: gated starter/unlocks/signature, compatible behavior nodes, independent Reimu runtime, shared UI/journal descriptions, existing-art orbit/launch rendering.

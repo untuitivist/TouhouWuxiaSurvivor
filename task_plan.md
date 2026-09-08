@@ -1,3 +1,11 @@
+## Unified Aseprite Redraw — Active
+
+1. [complete] Audit active visual resources and establish one original pixel-art palette and provenance rule.
+2. [complete] Draw all active visual categories from blank Aseprite canvases, preserving layered editable sources and animation-strip dimensions.
+3. [complete] Route both targets and compendium to the new artwork; exclude reference images from exports.
+4. [complete] Verified 54 Aseprite round trips, native 14 checks, core 40/40, localization 860/860, Web visual/UI/batch checks and both full-load language gates. Local-only delivery without a version bump or deployment.
+
+
 ## Reimu Playable Growth Tree — 2026-09-08
 
 - Complete: stable upgrade definitions, build state and offer policy; Reimu starts with straight ofuda and explicitly unlocks other abilities/signature.
