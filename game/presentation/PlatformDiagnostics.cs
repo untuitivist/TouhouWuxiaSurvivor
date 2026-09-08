@@ -27,6 +27,17 @@ public partial class GameRoot
         controls.SetContext(true, 2);
         Require(!controls.Handle(new InputEventScreenTouch { Index = 15, Position = TouchHud.StickCenter, Pressed = true }), "Hidden touch controls cannot consume input");
         controls.Free();
+        var minimap = HudLayout.Minimap(true);
+        var footprint = new Rect2(minimap.Position, minimap.Size + new Vector2(0, 28));
+        Require(!footprint.Intersects(HudLayout.PauseButton) && !footprint.Intersects(HudLayout.InspectButton), "Touch minimap and label clear both top buttons");
+        Require(footprint.End.Y < TouchHud.DashCenter.Y - 68 && footprint.End.X <= 1280, "Touch minimap stays inside viewport and above action buttons");
+        Require(HudLayout.Minimap(false) == new Rect2(1111, 108, 141, 111), "Desktop minimap position remains unchanged");
+        touchHud.SetContext(true, 1);
+        Require(canvas.MinimapBounds == minimap, "Visible touch controls move the actual minimap immediately");
+        touchHud.SetContext(true, 2);
+        Require(canvas.MinimapBounds == HudLayout.Minimap(false), "Hidden touch controls restore the actual desktop minimap");
+        touchHud.SetContext(currentScreen == "playing", profile.Data.TouchMode);
+        GD.Print("MINIMAP_LAYOUT_PASS: shared button bounds, touch visibility and desktop restoration");
         GD.Print("SHARED_PLATFORM_PASS: bundled Chinese font and multi-pointer ownership/cancel/menu reset");
     }
 }

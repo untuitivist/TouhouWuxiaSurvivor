@@ -5,6 +5,16 @@ namespace Rebirth.Presentation;
 
 public partial class GameCanvas
 {
+    private bool touchHudVisible;
+    public Rect2 MinimapBounds => HudLayout.Minimap(touchHudVisible);
+
+    public void SetTouchHudVisible(bool visible)
+    {
+        if (touchHudVisible == visible) return;
+        touchHudVisible = visible;
+        hudLayer.QueueRedraw();
+    }
+
     private void DrawHud()
     {
         if (Run == null) return;
@@ -81,13 +91,13 @@ public partial class GameCanvas
     private void DrawMinimap()
     {
         if (Run == null) return;
-        var bounds = new Rect2(1111, 108, 141, 111);
+        var bounds = MinimapBounds;
         surface.DrawStyleBox(PixelSkin.Frame("dark"), bounds);
         Vector2 Map(System.Numerics.Vector2 position) => bounds.GetCenter() + new Vector2(position.X / RunState.ArenaHalfWidth * 62, position.Y / RunState.ArenaHalfHeight * 46);
         foreach (var seal in Run.Seals) Diamond(Map(seal.Position), 3, seal.Complete ? Palette.Jade : Palette.Gold);
         if (Run.Boss != null) surface.DrawCircle(Map(Run.Boss.Position), 3, Palette.Red);
         surface.DrawCircle(Map(Run.PlayerPosition), 3, Palette.Paper);
-        Text("博 丽 夜 境", new(1142, 239), 12, Palette.Muted);
+        Text("博 丽 夜 境", bounds.Position + new Vector2(31, 131), 12, Palette.Muted);
     }
 
     private void Bar(Rect2 rectangle, float fraction, Color color)

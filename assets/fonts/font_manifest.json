@@ -2,9 +2,9 @@
   "upstream": "notofonts/noto-cjk",
   "tag": "Sans2.004",
   "source_sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
-  "output_sha256": "04ad3b812f160222e72dc6da4876a8a447fff47e71695e8d0492167a1d0d5904",
-  "characters": 1195,
-  "bytes": 484000,
+  "output_sha256": "19721b267bcb6bddd006acf007697449faa49db4bd162673551d8e118f3cde4e",
+  "characters": 1196,
+  "bytes": 484200,
   "license": "SIL Open Font License 1.1",
   "modified": "Character subset and renamed font family; glyph outlines unchanged.",
   "fonttools_version": "4.63.0"

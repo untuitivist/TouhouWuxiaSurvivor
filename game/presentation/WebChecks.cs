@@ -67,6 +67,8 @@ public partial class GameRoot
             Tick = run?.Ticks ?? 0, Time = run?.Time ?? 0, X = run?.PlayerPosition.X ?? 0, Y = run?.PlayerPosition.Y ?? 0,
             Focused = run?.Focused ?? false, DashCooldown = run?.DashCooldown ?? 0, MoveX = touchHud.Movement.X, MoveY = touchHud.Movement.Y,
             TouchVisible = touchHud.Visible, TouchFocus = touchHud.FocusHeld, DebugVisible = debugOverlay.Visible,
+            MinimapX = canvas.MinimapBounds.Position.X, MinimapY = canvas.MinimapBounds.Position.Y,
+            MinimapWidth = canvas.MinimapBounds.Size.X, MinimapHeight = canvas.MinimapBounds.Size.Y,
             Persistent = OS.IsUserfsPersistent(), Warning = profile.Notice, MasterVolume = profile.Data.MasterVolume,
             CompletedRuns = profile.Data.CompletedRuns, BossSpawned = run?.BossSpawned ?? false, BossPresent = run?.Boss != null, Pilot = webPilot,
             HasChineseGlyphs = "博丽灵梦雾雨魔理沙夜境异闻".All(character => canvas.BodyFont.HasChar(character)),

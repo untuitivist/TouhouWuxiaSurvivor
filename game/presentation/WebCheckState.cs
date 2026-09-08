@@ -14,6 +14,10 @@ internal sealed class WebCheckState
     public float MoveX { get; set; }
     public float MoveY { get; set; }
     public bool TouchVisible { get; set; }
+    public float MinimapX { get; set; }
+    public float MinimapY { get; set; }
+    public float MinimapWidth { get; set; }
+    public float MinimapHeight { get; set; }
     public bool DebugVisible { get; set; }
     public bool Persistent { get; set; }
     public string Warning { get; set; } = "";

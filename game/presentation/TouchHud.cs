@@ -71,8 +71,8 @@ public partial class TouchHud : Control
                 DashPressed?.Invoke();
             }
             else if (touch.Position.DistanceTo(FocusCenter) <= 57 && focusPointer < 0) focusPointer = touch.Index;
-            else if (new Rect2(1112, 109, 136, 82).HasPoint(touch.Position)) PausePressed?.Invoke();
-            else if (new Rect2(958, 109, 136, 82).HasPoint(touch.Position)) InspectPressed?.Invoke();
+            else if (HudLayout.PauseButton.HasPoint(touch.Position)) PausePressed?.Invoke();
+            else if (HudLayout.InspectButton.HasPoint(touch.Position)) InspectPressed?.Invoke();
             else return false;
             QueueRedraw();
             return true;
@@ -101,10 +101,10 @@ public partial class TouchHud : Control
         Ring(FocusCenter, 53, FocusHeld ? Palette.Jade : Palette.Paper);
         LabelAt("闪身", DashCenter, 24);
         LabelAt("慢移", FocusCenter, 23);
-        DrawStyleBox(PixelSkin.Frame("panel"), new(1112, 109, 136, 82));
-        DrawStyleBox(PixelSkin.Frame("panel"), new(958, 109, 136, 82));
-        LabelAt("暂停", new(1180, 150), 23, Palette.Ink);
-        LabelAt("构筑", new(1026, 150), 23, Palette.Ink);
+        DrawStyleBox(PixelSkin.Frame("panel"), HudLayout.PauseButton);
+        DrawStyleBox(PixelSkin.Frame("panel"), HudLayout.InspectButton);
+        LabelAt("暂停", HudLayout.PauseButton.GetCenter(), 23, Palette.Ink);
+        LabelAt("构筑", HudLayout.InspectButton.GetCenter(), 23, Palette.Ink);
     }
 
     private void Ring(Vector2 center, float radius, Color color)

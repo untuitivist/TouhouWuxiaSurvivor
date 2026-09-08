@@ -1,3 +1,10 @@
+## Web Minimap Fix — 2026-09-08
+
+- Completed shared touch-aware minimap layout without moving touch buttons or changing gameplay/version.
+- Native core 29/29 and UI/settings smoke passed, including actual visibility changes and desktop restoration.
+- Threadless Web build 20260908-174744-434 passed four Edge browser layouts: desktop, phone DPR1, phone DPR3 and small touch. Pause/build input and return passed; mobile screenshot visually inspected. These are browser emulations, not physical-device performance tests.
+- Report: artifacts/web-builds/20260908-174744-434/minimap-verification/2026-09-08T09-49-53-434Z/report.json. No deployment, push or release export.
+
 # Task Plan: Runtime Alignment with Canonical Design
 
 ## Original Scenery Replacement — 2026-09-08

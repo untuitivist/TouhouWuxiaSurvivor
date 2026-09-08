@@ -50,6 +50,7 @@ public partial class GameRoot : Node
         touchHud.PausePressed = NavigateBack;
         touchHud.InspectPressed = OpenBuild;
         layer.AddChild(touchHud);
+        touchHud.VisibilityChanged += () => canvas.SetTouchHudVisible(touchHud.Visible);
         InitializeDebugOverlay(layer, body);
         ShowTitle();
         InitializeDiagnostics();
