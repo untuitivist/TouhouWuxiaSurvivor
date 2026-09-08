@@ -29,6 +29,7 @@
     .load-stat span{display:block;color:#705b40;font-size:13px;margin-bottom:5px}
     .load-stat strong{font-size:clamp(18px,4vw,24px);font-variant-numeric:tabular-nums}
     #download-note{margin-top:16px;font-size:12px;color:#79664c}
+    #network-hint{margin-top:8px;font-size:12px;color:#705b40}
     #retry{margin-top:16px;padding:10px 22px;font:inherit;color:#443728;background:#bdcd9e;border:2px solid #705333;cursor:pointer}
     #retry[hidden]{display:none}
     .load-footer{font-size:12px;max-width:640px;color:#b4c5bc}
@@ -44,6 +45,7 @@
       <div id="phase" role="status">00 / 准备连接</div>
       <h1>幻想乡 · 夜境异闻</h1>
       <p id="notice">正在读取资源清单。首次加载需要下载游戏资源，后续可复用浏览器缓存。</p>
+      <p id="network-hint">下载较慢时，可尝试开启 VPN 连接外网或切换线路，可能提升下载速度。</p>
       <div class="progress-line"><span id="download-total">正在确认核心资源总量</span><strong id="percentage">0.0%</strong></div>
       <progress id="progress" max="1" value="0" aria-label="核心资源接收进度"></progress>
       <div class="load-stats">
