@@ -3,8 +3,8 @@
 ## Release alpha-0.1.3 — 2026-09-08
 
 1. [complete] Promote the art integration to alpha-0.1.3, preserve previous releases and validate the source before committing.
-2. [in progress] Build and verify self-contained Windows and threadless Web from the same clean commit, including hero art and existing release gates.
-3. [pending] Push source, deploy through server Git fast-forward with backups, verify public access and record artifact hashes and limitations.
+2. [complete] Build and verify self-contained Windows and threadless Web from clean 4d6fb6b, including hero art and all existing release gates.
+3. [complete] Push source, deploy through server Git fast-forward with backups, verify public access with explicit slow-start budget, and record hashes, failure evidence and limitations. Apply the user-requested landing-only network hint separately without changing game artifacts; public text/layout checks pass.
 
 ## Original Hero Art Integration
 

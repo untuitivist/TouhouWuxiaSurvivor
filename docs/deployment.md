@@ -1,5 +1,18 @@
 # 域名部署与双端发布
 
+## alpha-0.1.3 双端发布完成（2026-09-08）
+
+- Windows 与 Web 游戏产物由同一干净提交 `4d6fb6bfaae1b80a2c420958b5f867cd84501acc` 构建，源码已推送，服务器通过 `git pull --ff-only` 同步。发布原作魔炮、蓄力星环、封魔阵与古印特效，玩法、操作和伤害不变。
+- Windows：`release/TouhouWuxiaSurvivor_alpha-0.1.3.exe`，193,260,064 字节，文件版本 0.1.3.0；SHA-256：`F6490F55D10174571FB8F426EC451F0963C61D31D5FE2C851C9760C29C780AA2`。内嵌 .NET 8.0.6，隔离目录前后仅 EXE，22 项独立检查通过；已查看实际魔炮与更新记录截图。
+- Web：本地构建 `20260908-153552-526`，实际启用 `alpha-0.1.3-4d6fb6b-20260908T075754Z`；保留单线程 C# Web。20 次原始下载、五个角色美术场景、普通与异常颜色回归、有／无隔离 × 原始／gzip 四组共 20 项游戏流程、六项加载场景及匹配本构建的 DPR 1/3 检查通过。最初 DPR 命令选中了旧指针，显式 `--compatible` 复验后仅采用新构建报告。
+- 源码核心 29/29、六组固定种子旅程、UI／设置／存档／F3、1183 字字体覆盖、7/7 原图裁切、18 项 JavaScript 与七项部署安全测试通过。后续公网启动预算新增一项单测，相关七项测试通过，不改变游戏产物。
+- 公网正常桌面、触控、无隔离触控最终通过，实际无隔离入口没有 SharedArrayBuffer；保存刷新、多指操作、竖屏暂停及旧路由正常，运行错误与失败请求为空。报告：`artifacts/deployment/alpha-0.1.3-4d6fb6b-20260908T075754Z/public-verification/report.json`。
+- 首载速度存在明显波动：前两轮在 180 秒预算内分别于触控 60.8% 和桌面 60.1% 下载阶段超时，原始日志和截图分别保存在同目录的 `public-verification-first-timeout`、`public-verification-second-timeout`。显式使用 600 秒启动观察预算后通过，桌面／触控／无隔离触控首次启动分别为 283.578／10.286／286.122 秒。没有跳过错误断言，不将“最终能进入”写成“加载很快”。
+- 核心资源实际下载 30,711,684 字节（约 30.71 MB）：PCK gzip 18,852,214 字节、WASM gzip 11,859,470 字节，不含页面、脚本和协议开销。完整版本日志保存在 `release/CHANGELOG_alpha-0.1.3.md`；全部旧版及回滚备份 `/srv/touhou-survivor/backups/alpha-0.1.3-4d6fb6b-20260908T075754Z/` 保留。
+- 用户在验收期间要求增加 VPN 提示。网页入口随后按 `e4191f9853cc79a8b045ff180b0a5a15f8e2afb6` 的 `platform/web/shell.html` 仅追加提示节点与样式；不覆盖不可变资源，不修改原 EXE，不改变游戏版本。active.json 单独记录 `landingPageOverride`，游戏 sourceCommit 仍为原构建提交，不能把入口补丁说成重新构建两端。
+- 入口备份：`/srv/touhou-survivor/backups/network-hint-e4191f9-20260908T082946Z/`；入口 SHA-256：`900bc37959f90f5b250530f978a838e78148a0d99d60cb2d9a65f1f4b70063f7`。公网 HTML 哈希、全部脚本未变及电脑／手机横竖屏提示可见性通过，第一次入口截图请求连接中断的记录保留。文案为条件性的“可能提升”，不保证 VPN 加速；此项核验仅覆盖入口，不冒充再次完整游戏回归。
+- 收据及核验：`artifacts/deployment/network-hint-receipt.json`、`network-hint-verification.json`、`active-013-with-network-hint.json`。网页文案补充后的日志另存 `release/CHANGELOG_alpha-0.1.3_web-notice.md`，原 EXE 内嵌及成品旁初版日志保留。阵纹密度、程序场景美术、手机真机性能与真实设备发黑触发条件仍待改进或复测。
+
 ## alpha-0.1.2 双端发布完成（2026-09-07）
 
 - 两端由同一干净提交 `cf5e5c59a7c8aa166734a271b3404ecd9097dd85` 构建，源码已推送，服务器通过 `git pull --ff-only` 同步。后续文档提交只记录结果，不改变交付产物。
