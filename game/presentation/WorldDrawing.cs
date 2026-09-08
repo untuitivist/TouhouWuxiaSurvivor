@@ -66,9 +66,7 @@ public partial class GameCanvas
 
     private void DrawTitleLandscape()
     {
-        var titleSize = titleLandscape.GetSize();
-        var cropHeight = titleSize.X * 720 / 1280;
-        surface.DrawTextureRectRegion(titleLandscape, new(0, 0, 1280, 720), new(0, (titleSize.Y - cropHeight) / 2, titleSize.X, cropHeight), new Color("b5c5cf"));
+        surface.DrawTextureRect(titleLandscape, new(0, 0, 1280, 720), false);
         Sprite("players/reimu", new(949, 539), 3);
         Sprite("players/marisa", new(1037, 559), 3, 1);
         surface.DrawRect(new(780, 610, 468, 40), Palette.Alpha(Palette.Deep, 0.86f));

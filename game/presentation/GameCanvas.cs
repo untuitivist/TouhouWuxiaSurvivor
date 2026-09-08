@@ -24,7 +24,7 @@ public partial class GameCanvas : Node2D
     public override void _Ready()
     {
         TextureFilter = TextureFilterEnum.Nearest;
-        titleLandscape = PixelLandscape.Load("title_shrine");
+        titleLandscape = GD.Load<Texture2D>("res://assets/ui/title/moonlit_shrine.png");
         toriiTexture = PixelLandscape.Load("torii");
         treeCanopies = [PixelLandscape.Load("tree_canopy_a"), PixelLandscape.Load("tree_canopy_b")];
         foreach (var name in new[] { "players/reimu", "players/marisa", "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai", "actors/yin_yang_orb" })

@@ -10,7 +10,7 @@ $build = Join-Path $root ('artifacts/web-builds/' + [DateTime]::Now.ToString('yy
 $stage = Join-Path $build 'stage'
 $site = Join-Path $build 'site/TouhouSurvivor'
 New-Item -ItemType Directory -Force -Path $stage, $site | Out-Null
-$paths = @('game', 'assets/branding', 'assets/fonts', 'assets/internal_original/base', 'assets/world/tiles', 'platform/web', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
+$paths = @('game', 'assets/branding', 'assets/ui/title', 'assets/fonts', 'assets/internal_original/base', 'assets/world/tiles', 'platform/web', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
 $manifest = [Collections.Generic.List[object]]::new()
 foreach ($relative in $paths) {
     $source = Join-Path $root $relative
