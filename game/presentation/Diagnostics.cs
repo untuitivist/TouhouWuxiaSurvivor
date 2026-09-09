@@ -324,7 +324,7 @@ public partial class GameRoot
         var viewport = new Rect2(-1, -1, 1282, 722);
         foreach (var control in Descendants(screen!).OfType<Control>())
         {
-            if (control is not (Button or Label or HSlider or RichTextLabel)) continue;
+            if (control is not (Button or Label or HSlider or RichTextLabel or TextureRect)) continue;
             Require(viewport.Encloses(control.GetGlobalRect()), $"Control fits viewport: {control.Name}");
             if (control.GetParent() is Panel parent)
                 Require(parent.GetGlobalRect().Grow(2).Encloses(control.GetGlobalRect()), $"Control fits card: {(control as Label)?.Text ?? control.Name}");

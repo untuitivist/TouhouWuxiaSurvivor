@@ -32,7 +32,7 @@ public static class PixelSkin
             AxisStretchHorizontal = StyleBoxTexture.AxisStretchMode.Tile,
             AxisStretchVertical = StyleBoxTexture.AxisStretchMode.Tile
         };
-        foreach (var side in new[] { Side.Left, Side.Top, Side.Right, Side.Bottom }) style.SetTextureMargin(side, 14);
+        foreach (var side in new[] { Side.Left, Side.Top, Side.Right, Side.Bottom }) style.SetTextureMargin(side, 16);
         style.ContentMarginLeft = 12;
         style.ContentMarginRight = 12;
         style.ContentMarginTop = 3;

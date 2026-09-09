@@ -44,6 +44,7 @@ async function main({ colorStateStress = false } = {}) {
                 assert.equal(check.events.filter(text => text.startsWith('BATTLE_BATCH_CHECK')).length, 12);
                 assert.equal(check.events.filter(text => text.startsWith('BATCH_COLOR_CHECK')).length, 24);
                 assert.ok(check.events.includes('BATCH_COLOR_VISUAL_PASS checks=24'));
+                assert.ok(check.events.includes('ACTOR_ATLAS_VISUAL_PASS checks=32 rows=4 mirror=false overlap=true upright=true'));
                 if (stress) {
                     assert.ok(check.colorState?.draws > 24, 'Fault injection must exercise actual instanced draws');
                     assert.equal(check.colorState.missingColor, 0, 'Instanced draws must supply their vertex colors');

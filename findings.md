@@ -1,3 +1,17 @@
+## Complete Visual Integration Inventory — 2026-09-09
+
+## Full Pack Integration Findings — 2026-09-09
+
+- Generated and retained four source editions; active v04 covers all 54 former runtime entries plus ten new portrait/board/scenery/atlas entries. All 64 sources round-trip through Aseprite; player walk phases are distinct and twelve tags per character stay inside their own direction.
+- Aseprite appends frames to tags ending at the current final frame. Creating tags during per-direction frame generation silently extended front-cast to frame 32; creating all tags after the complete timeline fixes the cause.
+- TextureRect.Size was clamped to original portrait dimensions when assigned before IgnoreSize. Reordering initialization fixes card overflow; native UI bounds now include TextureRect. Nine-patch margins of 16 keep corner strokes out of tiled centers.
+- Retained one ECS simulation and one atlas-backed sorted actor MultiMesh; removed duplicate player/enemy strip loading. The new pose selector reads actual primary cooldown resets and freezes with simulation time.
+- Web staging correctly rejected missing glyphs in retained unreleased history. Regenerated the licensed shared font from the cached, hash-verified original; no new font download was needed.
+
+- Current active pack contains 54 entries. Consumers share VisualAssets but build staging/verifiers still hard-code the old redraw directory, so routing only runtime code would leave Web packaging inconsistent.
+- The archived view prototype already separates pure projection, atlas metadata and foot-depth actor batching. It was never integrated or visually validated; restore by review and fix its three-row mirroring assumption for four explicitly drawn directions.
+- Existing build_shrine.lua is an extraction/cleanup study and remains ineligible for runtime. The new pack must draw every category from blank Aseprite sources, not invoke that extraction pipeline or inherit generated reference cels.
+
 ## Single Front Pose Inspection — 2026-09-09
 
 - The first approved front movement pose occupies part of a 112x60 native reference region at (704, 503). Its large bow, broad upper hair shape, small visible face, detached white sleeves, yellow neck ribbon, red tunic and offset boots must retain their relative positions. The approved board itself, not a generic tutorial body ratio, is the target.

@@ -1,5 +1,13 @@
 ## Reference-Driven Game Visual Rebuild — 2026-09-09
 
+## Complete Visual Integration — 2026-09-09
+
+- Completed active shrine-v04: 64 editable Aseprite sources/PNGs, both full character boards, 32-frame four-direction timelines, all current runtime visual categories. Retained old and intermediate sources.
+- Integrated shared oblique projection, upright billboards, one foot-sorted actor atlas, actual-cast animation, portraits, title, icon and nine-patch UI. Gameplay balance and limits unchanged.
+- Passed source round-trip 64/64, core 43/43, native 15 modes, threadless Web functional/skill/color-state tests, four minimap and four journal layouts, and language checks. Verified 88 C# files and all 64 PNGs match both final build snapshots.
+- Details and limitations: docs/complete_visual_validation.md. No physical-mobile FPS claim and no user visual approval inferred. No version bump, release EXE, push or deployment.
+
+
 - Started from clean c4e5f5d. User escalates the approved corrected image to the entire game, allows extraction plus Aseprite redraw, and explicitly permits browser ChatGPT image generation.
 - Located the intended existing in-app browser tab and preserved its draft in findings. Reviewed shared presentation modules and existing Aseprite build/verification entry points. No browser message sent or runtime art replaced yet.
 

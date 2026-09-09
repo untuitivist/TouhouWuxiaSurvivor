@@ -21,7 +21,7 @@ for name, hex in pairs({
     redDark="633d49", red="a45553", redLight="cd7960", redRim="e9a477", roof="26353c", roofLight="566061",
     moonShade="c7c5a0", moon="e8dbae", moonLight="f6ecc7", crater="d6c598",
     goldDark="775940", gold="bd8a50", goldLight="e3b873", flame="ffe6a3", paper="eee1b9"
-}) do colors[name] = paint.color(hex) end
+}) do colors[name] = paint.color(options.palette and options.palette[name] or hex) end
 
 paint.layer("01 - Indigo sky")
 paint.rect(0, 0, 640, 360, colors.night)
@@ -223,6 +223,7 @@ for _, tuft in ipairs({{377,330},{409,303},{580,323},{591,305},{321,301},{439,35
     paint.line(tuft[1],tuft[2],tuft[1]+5,tuft[2]-4,colors.leafMid)
 end
 paint.finish()
+if options.finish then options.finish(sprite);return end
 sprite:saveAs(outputSource)
 sprite:saveCopyAs(outputTexture)
 print("ASEPRITE_TITLE_SAVED " .. outputSource)

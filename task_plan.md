@@ -1,3 +1,15 @@
+## Complete Reference-Driven Visual Integration — Complete 2026-09-09
+
+The user explicitly requests the complete job, not another isolated sample. Complete both characters, all active visual categories, the shared camera/view integration, and actual Windows/Web verification. Do not add gameplay, change balance, publish, or delete historical sources.
+
+1. [complete] Inventory all 54 active assets, presentation consumers, archived projection/atlas code and build/verifier assumptions.
+2. [complete] Build a new all-Aseprite art pack with layered Reimu/Marisa portraits, four-direction walk/cast timelines, enemies, independent effects, courtyard/scenery, UI and icon; no input-reference pixels in visible drawing layers.
+3. [complete] Generate character design boards and source/provenance manifest; inspect full-category previews and animation phases. Preserve all earlier art and manual edits.
+4. [complete] Complete shared projection, foot-depth ordering, frame selection and view-relative controls while preserving ECS simulation and MultiMesh batching.
+5. [complete] Route all consumers/build staging/export checks to the new pack; integrate portraits and keep settings, localization, compendium, minimap and touch controls intact.
+6. [complete] Verify editable sources/exports, core and native rendering, then build and check threadless Web on desktop/touch layouts. Distinguish measured technical results from visual approval and physical-device FPS.
+7. [complete] Save current design, update history and local commits. No release version bump, production EXE export, push or deployment unless separately requested.
+
 ## Reimu Front Pose Study — Prepared For Review 2026-09-09
 
 1. [complete] Inspected the approved first front-facing pose at native dimensions, including an enlarged face comparison; no rejected base, guide scaling or source-pixel replay.

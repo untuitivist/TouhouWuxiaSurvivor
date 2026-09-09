@@ -5,7 +5,7 @@ $encoding = [Text.UTF8Encoding]::new($false)
 $output = Join-Path $root ('artifacts/redraw-native/' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff'))
 $stage = Join-Path $output 'stage'
 New-Item -ItemType Directory -Path $stage -Force | Out-Null
-foreach ($relative in @('game', 'assets/aseprite/redraw', 'assets/fonts', 'assets/internal_original/base/audio', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')) {
+foreach ($relative in @('game', 'assets/aseprite/shrine-v04', 'assets/fonts', 'assets/internal_original/base/audio', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')) {
     $target = Join-Path $stage $relative
     New-Item -ItemType Directory -Path (Split-Path $target -Parent) -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $root $relative) -Destination $target -Recurse
@@ -44,7 +44,7 @@ function Test-Native([string]$Name, [string[]]$Arguments, [string]$Expected) {
 }
 Test-Native 'smoke' @('--headless', '--', '--rebirth-smoke') 'REBIRTH_UI_SMOKE_PASS'
 Test-Native 'language' @('--headless', '--', '--rebirth-language-smoke') 'LANGUAGE_SMOKE_PASS'
-foreach ($screen in @('title', 'settings', 'journal', 'journal-detail', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'boss')) {
+foreach ($screen in @('title', 'heroes', 'settings', 'journal', 'journal-detail', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'boss')) {
     Test-Native $screen @('--resolution', '1280x720', '--', "--rebirth-screen=$screen", "--rebirth-capture=$output/$screen.png") 'REBIRTH_CAPTURE_PASS'
 }
 Test-Native 'batch-reimu' @('--', '--rebirth-batch-smoke', "--rebirth-batch-output=$output") 'SPRITE_BATCH_VISUAL_PASS'

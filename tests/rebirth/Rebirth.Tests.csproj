@@ -17,5 +17,8 @@
     <Compile Include="GrowthBalance.cs" />
     <Compile Include="PerformanceBenchmarks.cs" />
     <Compile Include="EcsTests.cs" />
+    <Compile Include="ProjectionTests.cs" />
+    <Compile Include="../../game/presentation/HeroAnimation.cs" Link="HeroAnimation.cs" />
+    <Compile Include="../../game/presentation/WorldProjection.cs" Link="WorldProjection.cs" />
   </ItemGroup>
 </Project>

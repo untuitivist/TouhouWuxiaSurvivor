@@ -14,7 +14,7 @@ if (Test-Path -LiteralPath $destination) { throw 'Historical executable already 
 $build = Join-Path $root ('artifacts/windows-builds/' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss-fff'))
 $stage = Join-Path $build 'stage'
 New-Item -ItemType Directory -Path "$stage/release", "$stage/tools/rebirth" -Force | Out-Null
-$paths = @('game', 'assets/aseprite/redraw', 'assets/fonts', 'assets/internal_original/base/audio', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
+$paths = @('game', 'assets/aseprite/shrine-v04', 'assets/fonts', 'assets/internal_original/base/audio', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
 $manifest = [Collections.Generic.List[object]]::new()
 foreach ($relative in $paths) {
     $source = Join-Path $root $relative

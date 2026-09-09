@@ -28,6 +28,7 @@ public sealed partial class RunState
         new() { Name = "人之印", Position = new(100, 650) }
     ];
     public HeroKind Hero { get; }
+    public float PrimaryCastCooldown => Hero == HeroKind.Reimu ? Reimu.ShotCooldown : primaryTimer;
     public bool Focused { get; private set; }
     public BeamState? Beam { get; private set; }
 public BoundaryField? Field { get; internal set; }

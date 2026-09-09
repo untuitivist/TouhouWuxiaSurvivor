@@ -38,7 +38,7 @@ internal static class JournalCatalog
             var initial = string.Join("、", abilities.Where(art => preview.Ranks[(int)art.Id] > 0).Select(art => GameText.Get(art.Name)));
             yield return new("hero-" + hero, JournalCategory.Character, name,
                 reimu ? GameText.Get("基础御札 · 解锁与兼修") : GameText.Get("星弹散射 · 锁向魔炮"), GameText.Get("角色设定沿用现有角色目录；数值为本作改编。"),
-                reimu ? "players/reimu.png" : "players/marisa.png", true,
+                reimu ? "portraits/reimu.png" : "portraits/marisa.png", false,
                 GameText.Format($"初始生命  {preview.MaxHealth:0}\n移动速度  {preview.MoveSpeed:0}\n基础威力  ×{preview.Power:0.00}\n初始术式  {initial}\n专属术式  {string.Join("、", abilities.Select(art => GameText.Get(art.Name)))}\n满蓄势符卡  {ArtCatalog.SignatureName(hero)}\n\n没有局外数值加成。武侠体现在走位、进退与修习，不替换角色原有能力身份。"));
             yield return new("spell-" + hero, JournalCategory.Spell, ArtCatalog.SignatureName(hero),
                 reimu ? GameText.Get("满蓄势自动释放追踪灵光") : GameText.Get("满蓄势自动释放强化魔炮"), GameText.Get("原作命名沿用现有符卡目录；施放时序与战斗效果为本作改编。"),

@@ -9,6 +9,9 @@ if (args.Contains("--growth-balance")) return GrowthBalance.Run();
 
 var tests = new (string Name, Action Body)[]
 {
+    ("oblique world projection is reversible and preserves billboards", ProjectionTests.RoundTrip),
+    ("projected controls preserve screen direction and analog strength", ProjectionTests.Controls),
+    ("hero animation follows actual casting and four-frame locomotion", ProjectionTests.Animation),
     ("dense component lifecycle preserves order and state", EcsTests.Storage),
     ("inline hit history retains overflow and duplicate safety", EcsTests.History),
     ("spatial identity lookup and allocation-free queries", EcsTests.Queries),
