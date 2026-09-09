@@ -1,3 +1,13 @@
+## alpha-0.1.7 Dual-Platform Release — 2026-09-09 UTC
+
+- Completed preflight in artifacts/release-017/preflight.log. New version, release note and standalone portrait captures are prepared; regenerated the source-verified font subset for three new log glyphs.
+- Saved SHA-256/size records for all 28 previous release files plus four AI archive/editable-source files in artifacts/release-017/preservation-before.json; confirmed the runtime delta from published 0.1.6 is selection-only.
+- Read-only server check confirms clean main and live 0.1.6. Windows built-in SSH is unusable locally; Git SSH works. No remote updates or historical artifact overwrites have occurred.
+- Confirmed the user requests publication now, with WebGPU deferred to the next version. Inspected clean release baseline, naming and deployment gates. No export or live activation has happened in this run yet.
+- Preparing a new immutable release without overwriting alpha-0.1.6 or changing gameplay, balance, controls, art direction or renderer.
+
+---
+
 ## Temporary Hero-Selection AI Illustrations — 2026-09-09
 
 - Started from clean 8e8d4be. Inspecting the existing shared menu and Aseprite batch export. No version bump, publish, deployment or deletion is authorized.

@@ -1,3 +1,15 @@
+## alpha-0.1.7 Release Scope — 2026-09-09 UTC
+
+- GitHub main is e902d46; server source is clean c5bf168, serving alpha-0.1.6-c5bf168-20260908T190557Z. Pinned-host read-only SSH succeeds with Git OpenSSH; no live changes yet.
+- Standalone smoke already tests bilingual/touch portrait layout and both callbacks. Added rendered hero-selection captures at 960x540 Chinese and 640x360 English to the immutable EXE verification.
+- Source preflight passes: zero native build warnings/errors, 40/40 core cases, six deterministic journeys, full UI/portrait smoke, 19/19 JavaScript and 7/7 deployment-safety tests. Font grows from 1247 to 1250 required characters. The malformed-profile warning is the intended preservation test.
+- Start at clean main fbc7664, 19 commits ahead of the locally cached origin/main. The active game was restored to published e902d46 before the isolated selection-screen change; withdrawn visual experiments are history, not this release content.
+- Version mapping is alpha-0.1.7 / Windows 0.1.7.0. Both targets must be rebuilt from one clean committed revision; prior development-build reports do not qualify.
+- Existing deployment gates require four browser transport/isolation combinations, 20 raw loads, ordinary and injected-color checks for both heroes, bilingual three-load combat gates, language persistence and standalone Windows verification. Run these existing gates; do not add another long full-load research task.
+- General artwork remains Aseprite + original assets. The AI portraits are temporary selection-only extracts, not hand redraws. Next-version WebGPU exploration must preserve shared C# and a compatible fallback; no support or performance claim is made now.
+
+---
+
 ## Hero Selection Portrait Scope — 2026-09-09
 
 - The current selection screen has two 495x351 text-only cards with 449-pixel start buttons; both Chinese and English and touch layouts must remain usable.

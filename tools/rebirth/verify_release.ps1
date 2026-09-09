@@ -60,11 +60,12 @@ Invoke-ReleaseCheck 'standalone-language-settings' @('--resolution', '960x540', 
 Invoke-ReleaseCheck 'standalone-display' @('--audio-driver', 'Dummy', '--', '--rebirth-video-smoke') 'REBIRTH_DISPLAY_PASS'
 Invoke-ReleaseCheck 'standalone-title' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=title', "--rebirth-capture=$(Join-Path $logs 'title.png')") 'REBIRTH_CAPTURE_PASS'
 Invoke-ReleaseCheck 'standalone-boss' @('--audio-driver', 'Dummy', '--', '--rebirth-screen=boss', "--rebirth-capture=$(Join-Path $logs 'boss.png')") 'REBIRTH_CAPTURE_PASS'
-$screens = @('build', 'settings', 'settings-video', 'settings-controls', 'settings-confirm', 'debug-title', 'debug-combat', 'changelog', 'journal', 'journal-detail', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'marisa-build', 'marisa-choices')
+$screens = @('heroes', 'build', 'settings', 'settings-video', 'settings-controls', 'settings-confirm', 'debug-title', 'debug-combat', 'changelog', 'journal', 'journal-detail', 'reimu-field', 'reimu-spell', 'marisa-stars', 'marisa-warmup', 'marisa-beam', 'marisa-build', 'marisa-choices')
 foreach ($screen in $screens) {
     Invoke-ReleaseCheck "standalone-$screen" @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', "--rebirth-screen=$screen", "--rebirth-capture=$(Join-Path $logs "$screen.png")") 'REBIRTH_CAPTURE_PASS'
 }
 Invoke-ReleaseCheck 'standalone-controls-small' @('--resolution', '640x360', '--audio-driver', 'Dummy', '--', '--rebirth-screen=settings-controls', "--rebirth-capture=$(Join-Path $logs 'controls-small.png')") 'REBIRTH_CAPTURE_PASS'
+Invoke-ReleaseCheck 'standalone-heroes-small' @('--resolution', '640x360', '--audio-driver', 'Dummy', '--', '--rebirth-language=en', '--rebirth-screen=heroes', "--rebirth-capture=$(Join-Path $logs 'heroes-small.png')") 'REBIRTH_CAPTURE_PASS'
 foreach ($hero in @('reimu', 'marisa')) {
     $arguments = @('--audio-driver', 'Dummy', '--', '--rebirth-batch-smoke', "--rebirth-batch-output=$logs")
     if ($hero -eq 'marisa') { $arguments += '--rebirth-batch-marisa' }
@@ -85,7 +86,7 @@ $report = [ordered]@{
     isolated_directory = $isolated
     isolated_files = @(Get-ChildItem -LiteralPath $isolated -Force | ForEach-Object { $_.Name })
     embedded_runtime = $configuration.runtimeOptions.includedFrameworks
-    checks = @('standalone-smoke', 'standalone-language', 'standalone-language-settings', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small', 'standalone-batch-reimu', 'standalone-batch-marisa')
+    checks = @('standalone-smoke', 'standalone-language', 'standalone-language-settings', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small', 'standalone-heroes-small', 'standalone-batch-reimu', 'standalone-batch-marisa')
 }
 [System.IO.File]::WriteAllText((Join-Path $logs 'report.json'), ($report | ConvertTo-Json -Depth 5), $encoding)
 Write-Output "SINGLE_EXE_VALIDATION_PASS version=$version bytes=$($source.Length) sha256=$checksum"

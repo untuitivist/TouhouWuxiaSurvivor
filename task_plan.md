@@ -1,3 +1,18 @@
+## Dual-Platform alpha-0.1.7 Release — 2026-09-09 UTC
+
+Publish the restored alpha-0.1.6 game plus the explicitly permitted temporary AI hero-selection portraits. Deliver a self-contained Windows EXE and activate the matching threadless Web build. WebGPU is next-version research, not a renderer change in this release. Preserve all existing files, history, source artwork and release artifacts.
+
+1. [complete] Confirmed release gates, 32 preserved artifact/source hashes and pinned SSH access; version/log/font are ready, and source/UI/loader/deployment regressions pass. Commit these release inputs before export.
+2. [in_progress] Build Windows and threadless Web from the exact same clean commit; run existing release gates and the portrait checks.
+3. [pending] Push the verified source, deploy with rollback backup, and verify the live desktop/touch/unisolated site.
+4. [pending] Record artifact hashes, deployment receipt and validation boundaries; commit/push the release record and hand off both deliverables.
+
+Errors: the first CMD rg compound command returned no output; switched to argument-array tools and bounded UTF-8 reads. No files changed by that command.
+Built-in Windows ssh exits 255 even for -V with no diagnostic; Git-bundled OpenSSH succeeds with the same pinned host/key. Use its bin directory first during deployment.
+The new changelog requires three missing glyphs (U+4E34/U+822C/U+FF0B); regenerated the existing font subset without downloads and verified all 1250 glyphs.
+
+---
+
 ## Temporary AI Portraits on Hero Selection — 2026-09-09
 
 Only the hero-selection illustrations are authorized to use the two archived AI boards. Preserve alpha-0.1.6 gameplay, all in-run artwork, the general Aseprite + original asset policy, archived originals and release/deployment state.
