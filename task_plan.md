@@ -3,13 +3,15 @@
 Publish the restored alpha-0.1.6 game plus the explicitly permitted temporary AI hero-selection portraits. Deliver a self-contained Windows EXE and activate the matching threadless Web build. WebGPU is next-version research, not a renderer change in this release. Preserve all existing files, history, source artwork and release artifacts.
 
 1. [complete] Confirmed release gates, 32 preserved artifact/source hashes and pinned SSH access; version/log/font are ready, and source/UI/loader/deployment regressions pass. Commit these release inputs before export.
-2. [in_progress] Build Windows and threadless Web from the exact same clean commit; run existing release gates and the portrait checks.
-3. [pending] Push the verified source, deploy with rollback backup, and verify the live desktop/touch/unisolated site.
-4. [pending] Record artifact hashes, deployment receipt and validation boundaries; commit/push the release record and hand off both deliverables.
+2. [complete] Both targets built from clean 82563e6; 28 standalone EXE checks and all existing Web gates plus four portrait layouts pass. All 81 C# files and two PNGs match both stages.
+3. [complete] Source pushed and deployment alpha-0.1.7-82563e6-20260909T164729Z activated with backup. Public desktop/touch/unisolated tests and extra bilingual portrait/hero/persistence checks pass.
+4. [complete] Preserved all 32 original release/archive/source hashes; saved versioned changelog, receipts and validation boundaries. Final documentation records these completed results without changing published source inputs.
 
 Errors: the first CMD rg compound command returned no output; switched to argument-array tools and bounded UTF-8 reads. No files changed by that command.
-Built-in Windows ssh exits 255 even for -V with no diagnostic; Git-bundled OpenSSH succeeds with the same pinned host/key. Use its bin directory first during deployment.
+Built-in Windows ssh exits 255 even for -V with no diagnostic; Git-bundled OpenSSH succeeds with the same pinned host/key. Adding its entire bin directory to PATH also selected incompatible MSYS tar, so the final local deployment entry uses per-command SSH/SCP aliases and native Windows tar.
 The new changelog requires three missing glyphs (U+4E34/U+822C/U+FF0B); regenerated the existing font subset without downloads and verified all 1250 glyphs.
+The first batch fixture received OS port 4045, rejected by the browser before game startup; preserved the failure and reran on newly allocated listeners without changing assertions.
+An exploratory Windows-glob search and one incorrectly prefixed screenshot path failed only to read; corrected the inputs. The combined archive patch exceeded Windows argument length and this entry does not accept stdin; bounded per-file apply_patch chunks succeeded. All failure logs are retained.
 
 ---
 

@@ -1,5 +1,9 @@
 ## alpha-0.1.7 Release Scope — 2026-09-09 UTC
 
+- Release complete: Windows is 195109656 bytes with SHA-256 B2B2F21A4A191E47A2A882CAE9ECBF6E68377853E3EB6007341042586BD8D9C1; active Web release is alpha-0.1.7-82563e6-20260909T164729Z. Both use clean 82563e6535f42e35cfe67318d16a116b7b04dee7.
+- All required gates and extra public portrait/language checks pass. Live counted core resources are 32502943 bytes; entry hash matches server metadata. Reviewed real public desktop combat/F3 and unisolated touch English selection, not only staged captures.
+- Highest-load desktop reference averages 57.81/59.30 FPS (zh/en), p95 simulation 9.4ms; physical mobile remains untested. No WebGPU support or performance claim is inferred from this release.
+- Hashes for all 28 prior release files plus four archived/editable portrait sources remain unchanged. Full evidence index is in release/RECEIPT_alpha-0.1.7.json; failed local port/tar attempts are preserved, not hidden.
 - GitHub main is e902d46; server source is clean c5bf168, serving alpha-0.1.6-c5bf168-20260908T190557Z. Pinned-host read-only SSH succeeds with Git OpenSSH; no live changes yet.
 - Standalone smoke already tests bilingual/touch portrait layout and both callbacks. Added rendered hero-selection captures at 960x540 Chinese and 640x360 English to the immutable EXE verification.
 - Source preflight passes: zero native build warnings/errors, 40/40 core cases, six deterministic journeys, full UI/portrait smoke, 19/19 JavaScript and 7/7 deployment-safety tests. Font grows from 1247 to 1250 required characters. The malformed-profile warning is the intended preservation test.

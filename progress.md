@@ -1,5 +1,9 @@
 ## alpha-0.1.7 Dual-Platform Release — 2026-09-09 UTC
 
+- Completed both exports from clean 82563e6 and 28 Windows standalone checks. Local Web gates, bilingual performance, four portrait layouts, loading faults and DPR checks all pass. Reviewed native and Web selection screenshots.
+- Pushed 82563e6; server fast-forwarded and activated alpha-0.1.7-82563e6-20260909T164729Z with an intact rollback backup. Live metadata, source/EXE/entry hashes, counted downloads and existing routes match.
+- Public ordinary desktop, touch and unisolated touch pass (startup 13.179/12.149/12.258 seconds in this run); supplemental desktop/touch tests pass both portraits, hero launches and bidirectional persisted language. No runtime errors or failed requests, and actual public screenshots are reviewed.
+- Version-specific changelog/receipts and final preservation report are archived. All 32 prior files and the new EXE hash are unchanged. This final documentation-only commit does not alter the published source revision; WebGPU is explicitly deferred to the next version.
 - Completed preflight in artifacts/release-017/preflight.log. New version, release note and standalone portrait captures are prepared; regenerated the source-verified font subset for three new log glyphs.
 - Saved SHA-256/size records for all 28 previous release files plus four AI archive/editable-source files in artifacts/release-017/preservation-before.json; confirmed the runtime delta from published 0.1.6 is selection-only.
 - Read-only server check confirms clean main and live 0.1.6. Windows built-in SSH is unusable locally; Git SSH works. No remote updates or historical artifact overwrites have occurred.
