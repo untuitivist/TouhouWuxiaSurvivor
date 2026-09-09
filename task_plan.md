@@ -1,3 +1,13 @@
+## Reference-Driven Game Visual Rebuild — Active 2026-09-09
+
+1. [complete] Preserve corrected Reimu and full Marisa boards; archive sidebar-generated reference candidates and inspect the shared rendering boundary.
+2. [in_progress] Faithful Aseprite tracing/redrawing is mandatory. Extraction/color cleanup cannot be shipped. The simplified Reimu front-01/front-02 coordinate studies were rejected; they are not completed character art.
+3. [pending] Integrate the new view only with acceptable redraws. The unfinished camera/atlas prototype is preserved in artifacts/reference-camera-wip-20260909; the runnable game remains unchanged.
+4. [pending] Validate final art and actual native/threadless Web captures. Only process checks for the rejected study and unchanged core regressions have passed, not new-view or art-quality acceptance.
+5. [in_progress] Record the clarified fidelity requirement and rejected studies; local commit only, no version bump, release EXE, push or deployment.
+
+Fixed scope: Touhou + wuxia + survivor; identity-preserving Reimu ofuda shots / orbiting yin-yang orbs / ground boundary, existing growth, balance and controls retained. Latest user clarification overrides the earlier extraction interpretation: all final new art requires faithful Aseprite tracing/redrawing, not cropped/generated pixels. Both Reimu and Marisa require full design-board scope.
+
 ## Startup Reference Correction — Active
 
 1. [complete] Identify the supplied screenshot and preserve the matching existing Aseprite background through a shared painter.

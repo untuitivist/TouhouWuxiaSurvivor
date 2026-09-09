@@ -1,3 +1,8 @@
+## Reference-Driven Game Visual Rebuild — 2026-09-09
+
+- Started from clean c4e5f5d. User escalates the approved corrected image to the entire game, allows extraction plus Aseprite redraw, and explicitly permits browser ChatGPT image generation.
+- Located the intended existing in-app browser tab and preserved its draft in findings. Reviewed shared presentation modules and existing Aseprite build/verification entry points. No browser message sent or runtime art replaced yet.
+
 ## Unified Aseprite Redraw Progress
 
 - Final Web build 20260909-034138-085 and native snapshot 20260908-194232-838 passed. Native includes smoke, language, ten actual screenshots and both heroes under batch/color comparisons. Web includes both hero batches, five skill views, four journal layouts, bilingual persistence and three title layouts.
@@ -930,3 +935,15 @@
 - Release metadata aligned and daily notes promoted into alpha-0.0.9, leaving an empty unreleased bucket. Source core 26/26 and full UI/settings/F3/profile regressions passed; export in progress. Confirmed alpha-0.0.8 and older log text unchanged and prior EXE hash unchanged.
 
 - Started release preparation from a clean worktree. Preserve nine existing EXEs and all released log entries; no push or deletion authorized.
+## Reference Rebuild In Progress — 2026-09-09
+
+- Sidebar ChatGPT generated the four-row enemy sheet. Saved original as `art/reference/enemies-walk-generated-01.png`; not yet a production export. Marisa sheet and revised shrine map are archived separately.
+- Shared renderer now has a candidate foot-sorted actor atlas path and ground compression / upright compensation; compilation and rendered verification still pending. No core combat changes, no release.
+## Faithful Tracing Correction / Current Status — 2026-09-09
+
+- Archived the corrected Reimu board, complete user-supplied Marisa board, and generated reference candidates with dimensions, SHA-256 and non-runtime status in art/reference/gameplay_reference_manifest.json.
+- User clarified that Aseprite tracing/redrawing is mandatory, then rejected the simplified front-frame result. Recorded the precise error: coordinate reconstruction changed silhouette, face and detail rather than faithfully tracing. No visual-success claim.
+- Both Reimu studies retain editable sources. Front-02 has eight populated drawing layers and one locked/hidden reference layer; decoded RGBA reference-off and source round-trip checks pass, but artwork is rejected. No complete Marisa redraw or complete game redraw has been delivered.
+- Kept extraction tools artifact-only and marked their future manifest outputs runtime_eligible=false. Pending camera changes are preserved at artifacts/reference-camera-wip-20260909; all current game/test source modifications from that prototype were restored to HEAD without deleting files.
+- Current Debug build: zero warnings/errors. Existing core suite: 40/40. These validate the unchanged playable game, not the archived new camera. No unnecessary repeated load test and no release.
+- Daily local commit contains provenance, clarified requirements, rejected studies and reference-study tools; it does not update the running art, version or server.

@@ -1,5 +1,23 @@
 # Unified Aseprite Visual Direction
 
+## Fidelity rejection and Marisa reference — 2026-09-09
+
+The user rejected the simplified tracing study: resemblance is not sufficient. Preserve the supplied reference proportions, silhouette, facial placement, costume construction, folds, palette and detail instead of replacing them with approximate polygons. The Reimu front-01/front-02 studies are rejected, not approved tracing examples. Their valid layer structure and reference-independent exports do not establish visual fidelity.
+
+Marisa now has an explicit full reference board at `art/reference/marisa-gameplay-style-approved.png`. Deliver the same complete design scope as Reimu: full-body illustration, directional gameplay sprites, casting presentation, isolated effects, palette and genuinely editable Aseprite sources. The earlier generic witch walking sheet is superseded as her design basis. Image captions about herb fields do not authorize gameplay changes.
+
+
+## Mandatory tracing/redrawing — superseding clarification, 2026-09-09
+
+The user now explicitly requires **Aseprite tracing and redrawing**. Generated images are reference only, including the sidebar ChatGPT outputs and the corrected gameplay board. Cropping, keying, resizing, palette reduction, separating imported pixels into layers, or saving an image as an Aseprite file does not satisfy this requirement. The earlier permission to split the board is not permission to ship its pixels.
+
+- Create the visible artwork on blank Aseprite layers. Redraw silhouette, form, material, folds and pixel clusters rather than merely resampling the reference. Preserve the approved pose, character identity and visual language instead of redesigning it into a generic style.
+- Reference layers must be clearly labelled, locked and omitted from exports. Body parts and materials need meaningful editable layers; do not present cutout layers or empty layers as a completed redraw.
+- Aseprite-native script drawing is identified as such, not described as manual mouse strokes. Pixel provenance and visual quality are separate acceptance criteria. Reference-independent output alone does not prove a pleasing or faithful result.
+- `art/trace/reimu_front_02.aseprite` is an unapproved single-front-frame process study. No full animation, new gameplay camera or complete game redraw has shipped. `tools/aseprite/export_trace.lua` forces reference layers off without overwriting the source.
+- The corrected board is now the overall game/camera reference, not just a character reference. Keep the existing playable artwork until actual redraws are ready; do not temporarily replace it with keyed AI sheets. The camera integration prototype is archived in `artifacts/reference-camera-wip-20260909/`.
+
+
 ## Latest gameplay reference — 2026-09-09
 
 The user explicitly approved the viewpoint and visual style in `art/reference/reimu-gameplay-style-approved.png` and requested corresponding in-game changes. This supersedes earlier character/gameplay styling where inconsistent; it is not permission to copy every mechanic, caption, pixel dimension, or layout in the reference. Preserve the previously approved startup scene until separately changed.

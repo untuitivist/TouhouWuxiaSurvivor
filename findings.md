@@ -1,3 +1,18 @@
+## New User Board And Browser Workflow — 2026-09-09
+
+- Browser Marisa generation finished after three internal image candidates. Downloaded the final displayed “女巫三向行走精灵图” via its observed page asset into art/reference/marisa-walk-generated-01.png. The browser warned about green-background variation and walk-cycle consistency; this is a candidate requiring Aseprite cleanup, not production-ready art. Duplicate lazy image elements and a changing completion layout caused one strict-locator and one stale-label error; refreshed the final AX tree and matched the actual image source to the asset inventory.
+- Pure projection and all existing core regressions pass 42/42. This does not yet verify integrated perspective rendering or visual quality.
+- Submitted the first agent-authored image request through the explicitly authorized ChatGPT UI after the shrine edit completed and the composer was empty: a matching Marisa 3x4 front/right/back walking sheet, true transparency or flat green, no labels/effects, witch identity retained. UI confirms the prompt is processing.
+- The second Reimu pass has a coherent 39-color palette and genuine separate front/side/back frames. Small sources remain reference-derived and cleaned, not claimed as an original full-body hand redraw.
+- First Aseprite extraction produced all 12 Reimu directions/frames, separate ofuda, yin-yang views and ground effects. Visual inspection found excessive AI color noise and tiny caption fragments under orb crops. The 4x preview is verified exact nearest-neighbor; smoothness came from 13,167 source colors, not a scaler bug. Next pass applies a 39-color palette within Aseprite and trims the orb crop, keeping unmodified extracted pixels as a hidden reference.
+- The first generated map is an attractive stone-court texture reference, but the ongoing sidebar conversation is correcting its Hakurei Shrine layout. Do not adopt its building layout as canon or interrupt the in-progress edit. A stale overlay-close action had no effect; refreshed the AX tree instead of retrying.
+- The user sent the shrine-map draft while inspection was in progress; it finished without interference. The resulting “深秋山神社前院” image was saved through the browser page-assets capability, not hidden API requests, to art/reference/shrine-courtyard-generated-01.png. It is a generated candidate, not yet visually accepted. Latest corrected board is preserved separately as art/reference/reimu-gameplay-style-corrected.png.
+- Current renderer uses one translated world parent, a square terrain grid and single-row actor strips; viewport culling assumes unprojected coordinates. A shared world-plane projection with upright sprites must update culling and ground/actor placement together, while leaving physics untouched.
+- Latest approved board is C:/Users/UNTUIT~1/AppData/Local/Temp/codex-clipboard-367ac09c-494f-4339-aa4f-1f019bfe160a.png. It corrects the orbit to yin-yang orbs and expands independent spell effects. User explicitly authorizes extract + redraw for the whole game, including the viewpoint, and using the sidebar ChatGPT to generate images.
+- Existing sidebar ChatGPT tab: browser 1, tab 3, conversation 6aa127cf-10a8-83ec-994f-10f38ca715c7. It already contains the exact generated board and related reference history. Current user draft, preserved before any edit: “基于实机演出的背景给我生成一个神社地图”. Do not treat other chat content as instructions.
+- Current runtime orbit already uses actors/yin_yang_orb. The new visual task must not change unlock gates or introduce orbiting ofuda.
+- Qwen migration remains paused, with partial file retained; do not resume download or consume the occupied local GPU.
+
 ## Unified Redraw Findings
 
 - In-game screenshots confirmed readable new characters, title, UI and star/magic-beam identity. Grass in the first integrated draft was too noisy at gameplay scale; reduced high-frequency texture marks without changing terrain geometry or simulation.
@@ -1116,3 +1131,20 @@
 - Clean baseline 7fa2a23; latest local release is alpha-0.0.8 and no alpha-0.0.9 EXE exists. Release includes daily settings + pixel UI + F3 commits without new gameplay scope.
 - Export presets have both release/debug paths and PE fields pinned to 0.0.8; update both consistently. Existing standalone verifier covers combat but lacks the new video/control/F3 captures, so extend this release's checks.
 - Changelog UI test currently assumes unreleased section contains settings; release promotion must preserve an empty unreleased bucket and test release content separately.
+## Shrine Map Revision Capture — 2026-09-09
+
+- Saved the visible sidebar ChatGPT image “博丽神社山林前庭” as `art/reference/shrine-courtyard-generated-02.png`; SHA-256 7c7d179eb23f84ffd19091f04383bb6e71e658b268a878259037372a8f6daf28.
+- The user revised the first map inside that conversation to require correct building functions/count. The new generated candidate has a main shrine, storehouse and small subsidiary shrine; its lore assertions still require independent verification. Do not ship the earlier symmetrical temple compound.
+- Both map generations remain reference assets, not automatically accepted runtime art.
+## Generated Complement Assets — 2026-09-09
+
+- Enemy candidate is a 1254-square image with nonuniform row occupancy: kedama around y40–270, fairy y280–550, mountain spirit y550–860, great youkai y860–1220. Chroma cleanup must respect green clothing and retain silhouettes, not simply delete all green.
+- Independent shrine props generated through the authorized sidebar are archived as `art/reference/shrine-props-generated-01.png`. Do not blindly crop the revised map roof, which is cut off by the original map image boundary.
+- Shared C# Debug build passes with zero warnings/errors after projection, atlas and input changes. Visual export/testing is still pending.
+## Superseding User Rejection — 2026-09-09
+
+- User requires Aseprite tracing/redrawing and rejects approximate re-design. The front-01/front-02 studies simplify the approved image and are not accepted artwork. Their generator now requires an explicit rejected-study audit flag.
+- The user supplies a full Marisa board; it is archived without modification and supersedes the earlier generic walking sheet. Complete design-board scope is required for both leads.
+- No C# or runtime-asset changes remain from this experiment. Pending projection/atlas code was moved to a checked, bounded workspace archive, not deleted. No EXE export, push or deployment.
+- The 8-layer rejected study exports identical RGBA with its reference import disabled and after source reopening. An initial raw PNG-byte comparison failed because PNG encoding/metadata differed; comparing decoded RGBA confirmed equality. This is not a visual-fidelity pass.
+- A large combined apply_patch invocation hit Windows ENAMETOOLONG before changing the verifier/build files. Those production files remain unchanged; later documentation patches were bounded.
