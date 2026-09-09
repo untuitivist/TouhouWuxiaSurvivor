@@ -1,3 +1,15 @@
+## Published Version Rollback — 2026-09-09
+
+- The user requests returning to 0.1.6, ending the unaccepted visual rebuild. The published baseline is e902d466deaf5757ad34cc69dd1686e7a481a641; origin/main currently references it. The pre-rollback HEAD is 072a2eb369522dad3528042e008a663baa849777, 15 local commits later.
+- Both trees already use alpha-0.1.6. Restore runtime/resource contents, including the original view and icon; version-only editing is insufficient.
+- Added game/**/*.cs must leave the active compile glob. New sources and ignored import metadata are preserved in artifacts/rollback-alpha-0.1.6-from-072a2eb under artifacts/.gdignore. Historical entries below describe earlier work, not the active result after rollback.
+- Existing release/TouhouWuxiaSurvivor_alpha-0.1.6.exe and older deliveries are not overwritten.
+- Restored build passes with zero warnings/errors; the published suite reports 40/40 core tests, and native UI/settings/journal/F3/minimap/profile smoke passes. The profile warning is the suite's intentional malformed-file preservation fixture, not a new user-save failure.
+- Visual inspection confirms the old blue-night moon/torii title with original hero sprites and the original uncompressed top-down Reimu scene. The restored font passes all 1247 required glyphs using existing Anaconda fontTools; no package installation or font alteration.
+
+---
+
+
 ## Complete Visual Integration Inventory — 2026-09-09
 
 ## Full Pack Integration Findings — 2026-09-09

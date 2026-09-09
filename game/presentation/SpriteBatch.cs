@@ -22,7 +22,7 @@ public partial class SpriteBatch : MultiMeshInstance2D
         this.fixedSize = fixedSize;
         Texture = texture;
         TextureFilter = TextureFilterEnum.Nearest;
-        animationMaterial ??= new ShaderMaterial { Shader = new Shader { Code = "shader_type canvas_item; void vertex() { UV.y = 1.0 - UV.y; UV = INSTANCE_CUSTOM.xy + UV * INSTANCE_CUSTOM.zw; }" } };
+        animationMaterial ??= new ShaderMaterial { Shader = new Shader { Code = "shader_type canvas_item; void vertex() { UV.x = (UV.x + INSTANCE_CUSTOM.x) * INSTANCE_CUSTOM.y; UV.y = 1.0 - UV.y; }" } };
         Material = animationMaterial;
         Multimesh = new MultiMesh { TransformFormat = MultiMesh.TransformFormatEnum.Transform2D, UseColors = true, UseCustomData = true, Mesh = spriteMesh ??= CreateSpriteMesh() };
     }
@@ -51,7 +51,7 @@ public partial class SpriteBatch : MultiMeshInstance2D
             {
                 var offset = index * 16;
                 buffer[offset] = buffer[offset + 5] = fixedSize;
-                buffer[offset + 8] = buffer[offset + 9] = buffer[offset + 10] = buffer[offset + 11] = buffer[offset + 14] = buffer[offset + 15] = 1;
+                buffer[offset + 8] = buffer[offset + 9] = buffer[offset + 10] = buffer[offset + 11] = buffer[offset + 13] = 1;
             }
         Multimesh.InstanceCount = capacity;
     }
@@ -83,16 +83,6 @@ public partial class SpriteBatch : MultiMeshInstance2D
         AddBasis(position, size, color, length > 0 ? -velocity.Y / length : 0, length > 0 ? velocity.X / length : 1, frame, frameCount);
     }
 
-    public void AddRegion(Vector2 position, Vector2 size, Color color, Rect2 region, bool mirror = false)
-    {
-        AddBasis(position, size, color, 1, 0, 0, 1);
-        var offset = (Count - 1) * 16;
-        buffer[offset + 12] = mirror ? region.End.X : region.Position.X;
-        buffer[offset + 13] = region.Position.Y;
-        buffer[offset + 14] = mirror ? -region.Size.X : region.Size.X;
-        buffer[offset + 15] = region.Size.Y;
-    }
-
     private void AddBasis(Vector2 position, Vector2 size, Color color, float cosine, float sine, int frame, int frameCount)
     {
         if (fixedSize > 0) throw new InvalidOperationException("Fixed-size batches accept position-only instances");
@@ -114,10 +104,8 @@ public partial class SpriteBatch : MultiMeshInstance2D
         buffer[offset + 9] = color.G;
         buffer[offset + 10] = color.B;
         buffer[offset + 11] = color.A;
-        buffer[offset + 12] = (float)frame / frameCount;
-        buffer[offset + 13] = 0;
-        buffer[offset + 14] = 1f / frameCount;
-        buffer[offset + 15] = 1;
+        buffer[offset + 12] = frame;
+        buffer[offset + 13] = 1f / frameCount;
     }
 
     public void Submit()

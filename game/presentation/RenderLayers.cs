@@ -23,7 +23,6 @@ public partial class GameCanvas
     private void InitializeRenderLayers()
     {
         AddChild(worldLayer);
-        worldLayer.Scale = new(1, WorldProjection.DepthScale);
         BuildTerrainBatches();
         sceneryLayer = AddPass(worldLayer, 1, DrawScenery);
         animatedLayers.Add(AddPass(worldLayer, 2, DrawWorldDynamic));
@@ -31,8 +30,7 @@ public partial class GameCanvas
         var beamLayer = AddPass(worldLayer, 4, DrawMarisaBeam);
         beamLayer.Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add };
         animatedLayers.Add(beamLayer);
-        animatedLayers.Add(AddPass(worldLayer, 5, DrawEnemies));
-        InitializeActorBatch();
+        animatedLayers.Add(AddPass(worldLayer, 6, DrawEnemies));
         animatedLayers.Add(AddPass(worldLayer, 8, DrawPlayer));
         animatedLayers.Add(AddPass(worldLayer, 10, DrawEffects));
         hudLayer = AddPass(this, 11, DrawHud);
@@ -43,9 +41,12 @@ public partial class GameCanvas
             worldLayer.AddChild(batch);
             batches.Add(name, batch);
         }
-        var orbBatch = new SpriteBatch(GD.Load<Texture2D>(BaseArt + "actors/yin_yang_orb.png")) { ZIndex = 7 };
-        worldLayer.AddChild(orbBatch);
-        batches.Add("actors/yin_yang_orb", orbBatch);
+        foreach (var name in new[] { "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai", "actors/yin_yang_orb" })
+        {
+            var batch = new SpriteBatch(textures[name]) { ZIndex = 5 };
+            worldLayer.AddChild(batch);
+            batches.Add(name, batch);
+        }
         CacheCombatStyles();
         worldLayer.Hide();
         hudLayer.Hide();
@@ -69,14 +70,13 @@ public partial class GameCanvas
         if (changedRun)
         {
             renderedRun = Run;
-            heroAnimation.Reset();
             renderDirty = true;
             sceneryLayer.QueueRedraw();
             QueueRedraw();
         }
         worldLayer.Visible = hudLayer.Visible = Run != null;
         if (Run == null) { QueueRedraw(); return; }
-        var offset = new Vector2(640, 370) - new Vector2(camera.X, camera.Y * WorldProjection.DepthScale);
+        var offset = new Vector2(640, 370) - camera;
         if (!ReducedMotion) offset += new Vector2(MathF.Sin(Clock * 71), MathF.Cos(Clock * 57)) * shake;
         worldLayer.Position = offset;
         var changedPhase = renderedPhase != Run.Phase;
@@ -92,4 +92,24 @@ public partial class GameCanvas
         if (changedRun || changedPhase || hudAge >= 0.1f) { hudAge = 0; hudLayer.QueueRedraw(); }
     }
 
+    private void BuildTerrainBatches()
+    {
+        var grass = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/grass.png"));
+        var path = new SpriteBatch(textures["path"]);
+        worldLayer.AddChild(grass);
+        worldLayer.AddChild(path);
+        for (var column = -34; column <= 33; column++)
+        for (var row = -26; row <= 25; row++)
+        {
+            var location = new Vector2(column * 48, row * 48);
+            var hash = TileHash(column, row);
+            var outside = Math.Abs(location.X) > RunState.ArenaHalfWidth || Math.Abs(location.Y) > RunState.ArenaHalfHeight;
+            var isPath = Math.Abs(location.X + 24) < 75 || Math.Abs(location.Y + 24) < 70 || Math.Abs(location.X - location.Y * 1.45f) < 48;
+            var tint = outside ? new Color("101f26") : isPath ? new Color("526563") : new Color("879f89");
+            var brightness = 0.88f + hash % 5 * 0.025f;
+            (isPath ? path : grass).Add(location + new Vector2(24, 24), new(48, 48), tint * new Color(brightness, brightness, brightness));
+        }
+        grass.Submit();
+        path.Submit();
+    }
 }

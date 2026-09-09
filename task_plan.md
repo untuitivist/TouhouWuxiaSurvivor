@@ -1,3 +1,21 @@
+## Restore Published alpha-0.1.6 — 2026-09-09
+
+Current request supersedes all visual-rebuild plans below. Restore the actual published tree, not only its version string. Preserve files and history; do not release, push, deploy, or change branches.
+
+1. [complete] Identify clean HEAD 072a2eb and published target e902d46; classify 42 modified and 871 added tracked files.
+2. [complete] Copied 42 changed-file snapshots and moved 871 tracked additions plus 268 ignored imports to artifacts/rollback-alpha-0.1.6-from-072a2eb; verified all 1181 SHA-256 hashes without deleting files.
+3. [complete] Restored published runtime, assets, build and validation tools; retained explicitly historical notes and archived the withdrawn unreleased changelog.
+4. [complete] Build (zero warnings/errors), 40/40 restored core tests, Godot import, native UI smoke, 1247-character font check and three rendered scenes pass; shared runtime/build inputs match the release and the existing EXE matches its receipt hash.
+5. [complete] Record results in docs/rollback_alpha_0_1_6.md and include these changes in the local rollback commit; no export/push/deployment.
+
+Errors: the first quoted Git invocation through cmd.exe failed before changing files; switched to execFile argument arrays.
+Font verification initially found no fontTools in the bundled Python; check existing Python environments rather than installing or changing the restored font.
+Resolved with existing D:/_soft/Anaconda/python.exe; no dependency download or restored-source change.
+Final whitespace review found one extra EOF blank line in the withdrawn log; corrected it before committing.
+
+---
+
+
 ## Complete Reference-Driven Visual Integration — Complete 2026-09-09
 
 The user explicitly requests the complete job, not another isolated sample. Complete both characters, all active visual categories, the shared camera/view integration, and actual Windows/Web verification. Do not add gameplay, change balance, publish, or delete historical sources.

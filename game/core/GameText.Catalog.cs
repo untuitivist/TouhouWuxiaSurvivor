@@ -264,7 +264,7 @@ public static partial class GameText
         ["部分敌人的生成生命与速度随局内时间增长；这些是基准值，不是所有时刻的固定值。"] = "Some enemies gain spawn HP and speed as the run progresses. These are baseline values.",
         ["博丽夜境"] = "Hakurei at Night",
         ["有限夜境 · 古印与终局"] = "Bounded arena · Seals and final boss",
-        ["当前战场为本作场景；背景与局内图像统一使用 Aseprite 重绘素材。"] = "An arena made for this game, with scenery and sprites redrawn in Aseprite.",
+        ["当前战场为本作场景；背景使用已接入的神社原作素材。"] = "An arena made for this game, using the integrated shrine artwork.",
         ["场地范围  {0:0} × {1:0}\n终局登场  {2:0} 分钟\n\n在有限场地中走位、修习、净化古印，击破结界残影结束本局。旧版多群系、无限地图与作品包尚未迁回，不作为当前可玩条目展示。"] = "Arena Size  {0:0} × {1:0}\nBoss Arrival  {2:0} minutes\n\nMove, learn upgrades and cleanse seals within a bounded arena. Defeat the Barrier Echo to win. Legacy biomes, endless maps and content packs are not yet playable here.",
         ["古印"] = "Ancient Seal",
         ["靠近净化 · 离开保留进度"] = "Stay close to cleanse · Progress is saved",

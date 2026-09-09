@@ -11,7 +11,7 @@ public partial class GameCanvas
         foreach (var enemy in Run.Enemies)
         {
             var position = Palette.Vector(enemy.Position);
-            if (!InView(position, 120)) continue;
+            if (position.DistanceSquaredTo(camera) > 850 * 850) continue;
             if (enemy.Telegraph > 0 && enemy.Kind == EnemyKind.Charger)
             {
                 var target = position + Palette.Vector(enemy.Aim) * 265;
@@ -45,11 +45,17 @@ public partial class GameCanvas
             {
                 var position = Palette.Vector(ReimuAbilitySystem.OrbitPosition(Run, index));
                 if (Run.Reimu.Charging && index == ReimuAbilitySystem.OrbitCount(Run) - 1)
-                    EffectSprite("reimu_aura", position, Vector2.One * (38 + 22 * (1 - Run.Reimu.ChargeRemaining / ReimuTuning.OrbChargeDuration)), Palette.Alpha(Colors.White, 0.65f));
-                EffectSprite("reimu_aura", position, Vector2.One * 28, Palette.Alpha(Palette.Jade, 0.12f));
+                    OriginalEffect("reimu_aura", position, Vector2.One * (38 + 22 * (1 - Run.Reimu.ChargeRemaining / ReimuTuning.OrbChargeDuration)), Palette.Alpha(Colors.White, 0.65f));
+                OriginalEffect("reimu_aura", position, Vector2.One * 28, Palette.Alpha(Palette.Jade, 0.12f));
+                Sprite("actors/yin_yang_orb", position + new Vector2(0, 7), 0.62f);
             }
         }
         surface.DrawTextureRect(PixelSkin.Artwork("shadow"), new(player + new Vector2(-19, 0), new(38, 19)), false);
+        if (Run.DashDuration > 0)
+            for (var index = 1; index <= 4; index++)
+                Sprite(Run.Hero == HeroKind.Reimu ? "players/reimu" : "players/marisa", player - Palette.Vector(Run.Facing) * (index * 18), 1.45f, 0, Palette.Alpha(Palette.Jade, 0.35f - index * 0.06f));
+        var playerTint = Run.Invulnerability > 0 && (int)(Clock * 20) % 2 == 0 ? new Color(1, 1, 1, 0.4f) : Colors.White;
+        Sprite(Run.Hero == HeroKind.Reimu ? "players/reimu" : "players/marisa", player, 1.45f, 0, playerTint);
 
         if (Focused)
         {
@@ -77,13 +83,13 @@ public partial class GameCanvas
                     Star(position, 32 * (1 - progress), Palette.Alpha(Palette.Gold, 1 - progress), progress * 3);
                     break;
                 case EffectKind.Explosion:
-                    EffectSprite("reimu_aura", position, Vector2.One * effect.Entry.Value * (0.3f + progress * 1.7f), Palette.Alpha(new Color("ffaec9"), 0.5f * (1 - progress)));
+                    OriginalEffect("reimu_aura", position, Vector2.One * effect.Entry.Value * (0.3f + progress * 1.7f), Palette.Alpha(new Color("ffaec9"), 0.5f * (1 - progress)));
                     break;
                 case EffectKind.Spell:
-                    EffectSprite(Run?.Hero == HeroKind.Reimu ? "reimu_aura" : "marisa_cast", position, Vector2.One * (48 + 172 * progress), Palette.Alpha(Colors.White, 0.45f * (1 - progress)));
+                    OriginalEffect(Run?.Hero == HeroKind.Reimu ? "reimu_aura" : "marisa_cast", position, Vector2.One * (48 + 172 * progress), Palette.Alpha(Colors.White, 0.45f * (1 - progress)));
                     break;
                 case EffectKind.Seal:
-                    EffectSprite("ritual_array", position, Vector2.One * (150 + 170 * progress), Palette.Alpha(Colors.White, 0.35f * (1 - progress)));
+                    OriginalEffect("ritual_array", position, Vector2.One * (150 + 170 * progress), Palette.Alpha(Colors.White, 0.35f * (1 - progress)));
                     break;
                 case EffectKind.Graze:
                     Star(position, 8 + progress * 12, Palette.Alpha(Palette.Jade, 1 - progress), progress);

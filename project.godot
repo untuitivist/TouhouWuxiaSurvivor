@@ -14,7 +14,7 @@ config/name="幻想乡 · 夜境异闻"
 config/version="alpha-0.1.6"
 run/main_scene="res://game/Main.tscn"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
-config/icon="res://assets/aseprite/shrine-v04/ui/night_journal.png"
+config/icon="res://assets/aseprite/night_journal.png"
 
 [display]
 

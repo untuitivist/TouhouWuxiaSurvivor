@@ -1,3 +1,17 @@
+## Rollback to Published alpha-0.1.6 — 2026-09-09
+
+- Confirmed clean main, original HEAD 072a2eb, baseline e902d46; no reset, force-push or file deletion.
+- Saved all 42 changed-file originals before editing notes. Next: archive 871 added tracked files and 268 ignored imports with hashes, restore published files, and validate.
+- Prior visual validation results below are historical and are not reused as rollback test evidence.
+- Archived 1181 files (63550118 bytes), checked every archive hash, restored all 37 modified non-history files and removed only the added paths from the Git index after physically moving them to the archive.
+- The staged game, assets, art, content, platform, tools, tests, project/export configuration and launch/build entries match e902d46 exactly. Published changelog entries are byte-for-byte unchanged; withdrawn notes remain separately accessible.
+- Final local validation passes: build 0 warnings/errors; 40/40 original core tests; Godot import and native UI/settings/journal/F3/minimap/profile checks; 1247-glyph font coverage. Expected malformed-profile fixture warning is documented.
+- Rendered and reviewed title, Reimu field and Marisa beam at artifacts/render-performance/rollback-alpha-0.1.6-20260909-223412; original top-down view, original hero/effect assets and old moon/torii title are restored.
+- Existing alpha-0.1.6 EXE matches receipt SHA-256 003b15729c019daaa3b8eecfe063e3119d29a1114f083bd662e8684f48a093ca. No exports, pushes, deployment changes or long full-load test; final record and rollback are one local commit.
+
+---
+
+
 ## Reference-Driven Game Visual Rebuild — 2026-09-09
 
 ## Complete Visual Integration — 2026-09-09

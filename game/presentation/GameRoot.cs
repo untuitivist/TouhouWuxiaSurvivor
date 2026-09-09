@@ -77,7 +77,7 @@ public partial class GameRoot : Node
             float vertical = Input.GetAxis(GameControls.Up, GameControls.Down) + touchHud.Movement.Y;
             webCombatStress?.Refill(run);
             var started = webChecks ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
-            run.Step(new(WorldProjection.ControlDirection(new NumericsVector(horizontal, vertical)), canvas.Focused, dashRequested));
+            run.Step(new(new NumericsVector(horizontal, vertical), canvas.Focused, dashRequested));
             if (webChecks) simulationMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
             started = webChecks ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             canvas.ReceiveEvents();

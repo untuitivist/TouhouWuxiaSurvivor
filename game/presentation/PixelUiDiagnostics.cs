@@ -20,7 +20,7 @@ public partial class GameRoot
         var primaryTextures = new[] { "normal", "hover", "pressed" }
             .Select(state => ((StyleBoxTexture)primary.GetThemeStylebox(state)).Texture.ResourcePath).ToArray();
         Require(primaryTextures.Distinct().Count() == 3, "Primary button has distinct normal, hover and pressed artwork");
-        Require(primary.GetThemeColor("font_color") == PixelSkin.Ink && primary.GetThemeColor("font_hover_color") == PixelSkin.Ink, "Pale green primary states retain dark readable text");
+        Require(primary.GetThemeColor("font_color") == PixelSkin.Light && primary.GetThemeColor("font_hover_color") == PixelSkin.Light, "Dark primary states retain light readable text");
         Require(PixelSkin.Frame("panel").AxisStretchHorizontal == StyleBoxTexture.AxisStretchMode.Tile
             && PixelSkin.Frame("panel").AxisStretchVertical == StyleBoxTexture.AxisStretchMode.Tile, "Paper grain tiles without stretching");
         var count = debugOverlay.RefreshCount;

@@ -13,8 +13,7 @@ public partial class GameRoot
         {
             StartRun(OS.GetCmdlineUserArgs().Contains("--rebirth-batch-marisa") ? HeroKind.Marisa : HeroKind.Reimu, 42);
             await TestBatchColorState();
-            await TestActorAtlasRendering();
-            var texture = GD.Load<Texture2D>(VisualAssets.Root + "actors/wild_fairy.png");
+            var texture = GD.Load<Texture2D>("res://assets/internal_original/base/actors/wild_fairy.png");
             var frames = texture.GetWidth() / texture.GetHeight();
             var actual = new SubViewport { Size = new(512, 512), TransparentBg = true, Disable3D = true, RenderTargetUpdateMode = SubViewport.UpdateMode.Always, World2D = new() };
             var expected = new SubViewport { Size = new(512, 512), TransparentBg = true, Disable3D = true, RenderTargetUpdateMode = SubViewport.UpdateMode.Always, World2D = new() };
@@ -84,7 +83,7 @@ public partial class GameRoot
                 if (checks % 6 == 0) await CompareBattleBatchRendering(checks);
             }
             batch.Hide();
-            var fixedTexture = GD.Load<Texture2D>(VisualAssets.Root + "combat/red_pellet.png");
+            var fixedTexture = GD.Load<Texture2D>("res://assets/internal_original/base/combat/red_pellet.png");
             var fixedBatch = new SpriteBatch(fixedTexture, 24);
             actual.AddChild(fixedBatch);
             foreach (var count in new[] { 0, 1, 32, 33, 65, 257, 0, 1, 257 })
@@ -224,10 +223,9 @@ public partial class SpriteBatch
                 for (var index = 0; index < count; index++)
                 {
                     var offset = index * 16;
-                    var mirror = snapshot[offset + 14] < 0 ? -1 : 1;
-                    target.DrawSetTransformMatrix(new(new(snapshot[offset] * mirror, snapshot[offset + 4] * mirror), new(snapshot[offset + 1], snapshot[offset + 5]), new(snapshot[offset + 3], snapshot[offset + 7])));
-                    var source = new Rect2(new Vector2(snapshot[offset + 12], snapshot[offset + 13]) * texture.GetSize(), new Vector2(snapshot[offset + 14], snapshot[offset + 15]) * texture.GetSize()).Abs();
-                    target.DrawTextureRectRegion(texture, new(-0.5f, -0.5f, 1, 1), source,
+                    target.DrawSetTransformMatrix(new(new(snapshot[offset], snapshot[offset + 4]), new(snapshot[offset + 1], snapshot[offset + 5]), new(snapshot[offset + 3], snapshot[offset + 7])));
+                    var width = texture.GetWidth() * snapshot[offset + 13];
+                    target.DrawTextureRectRegion(texture, new(-0.5f, -0.5f, 1, 1), new(snapshot[offset + 12] * width, 0, width, texture.GetHeight()),
                         new(snapshot[offset + 8], snapshot[offset + 9], snapshot[offset + 10], snapshot[offset + 11]));
                 }
             }

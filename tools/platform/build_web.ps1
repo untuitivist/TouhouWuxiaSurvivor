@@ -2,8 +2,6 @@ param([switch]$Threadless)
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $encoding = [Text.UTF8Encoding]::new($false)
-& "$root/tools/aseprite/verify_redraw.cmd"
-if ($LASTEXITCODE -ne 0) { throw 'Aseprite artwork provenance verification failed.' }
 $toolRoot = Join-Path $root 'artifacts/web-probe-20260906'
 & "$root/tools/web_probe/bootstrap.ps1" -EditorVersion '4.6.1'
 & 'C:\Users\untuitivist\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' "$PSScriptRoot/subset_font.py" --check
@@ -12,7 +10,7 @@ $build = Join-Path $root ('artifacts/web-builds/' + [DateTime]::Now.ToString('yy
 $stage = Join-Path $build 'stage'
 $site = Join-Path $build 'site/TouhouSurvivor'
 New-Item -ItemType Directory -Force -Path $stage, $site | Out-Null
-$paths = @('game', 'assets/aseprite/shrine-v04', 'assets/fonts', 'assets/internal_original/base/audio', 'platform/web', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
+$paths = @('game', 'assets/ui/title', 'assets/aseprite', 'assets/fonts', 'assets/internal_original/base', 'platform/web', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
 $manifest = [Collections.Generic.List[object]]::new()
 foreach ($relative in $paths) {
     $source = Join-Path $root $relative

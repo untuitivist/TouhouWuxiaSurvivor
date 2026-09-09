@@ -12,7 +12,7 @@ public partial class GameRoot
         AddChild(expected);
         try
         {
-            var texture = GD.Load<Texture2D>(VisualAssets.Root + "actors/wild_fairy.png");
+            var texture = GD.Load<Texture2D>("res://assets/internal_original/base/actors/wild_fairy.png");
             var frames = texture.GetWidth() / texture.GetHeight();
             var colors = new[] { Colors.Black, new Color(0.2f, 0.8f, 0.4f), new Color(1, 0.1f, 0.3f, 0.4f), Colors.White };
             var predecessors = new List<CanvasPass>();

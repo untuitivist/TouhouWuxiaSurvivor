@@ -13,18 +13,25 @@ public partial class GameCanvas : Node2D
     public float Clock;
     private Vector2 camera;
     private float shake;
-
-    private ActorAtlas actorAtlas = null!;
+    private readonly Dictionary<string, Texture2D> textures = [];
+    private readonly Dictionary<string, (int Size, int Frames)> spriteFrames = [];
     private Texture2D titleLandscape = null!;
+    private Texture2D toriiTexture = null!;
+    private Texture2D[] treeCanopies = [];
     private readonly List<VisualEvent> effects = [];
-    private const string BaseArt = VisualAssets.Root;
+    private const string BaseArt = "res://assets/internal_original/base/";
 
     public override void _Ready()
     {
         TextureFilter = TextureFilterEnum.Nearest;
-        titleLandscape = GD.Load<Texture2D>(VisualAssets.Title);
-        actorAtlas = new ActorAtlas();
-        LoadEffectArtwork();
+        titleLandscape = GD.Load<Texture2D>("res://assets/ui/title/moonlit_shrine.png");
+        toriiTexture = PixelLandscape.Load("torii");
+        treeCanopies = [PixelLandscape.Load("tree_canopy_a"), PixelLandscape.Load("tree_canopy_b")];
+        foreach (var name in new[] { "players/reimu", "players/marisa", "actors/kedama", "actors/wild_fairy", "actors/mountain_spirit", "actors/great_youkai", "actors/yin_yang_orb" })
+            textures[name] = GD.Load<Texture2D>($"{BaseArt}{name}.png");
+        textures["path"] = PixelSkin.Artwork("stone");
+        foreach (var entry in textures) spriteFrames[entry.Key] = (entry.Value.GetHeight(), Math.Max(1, entry.Value.GetWidth() / entry.Value.GetHeight()));
+        LoadOriginalEffects();
         InitializeRenderLayers();
     }
 
@@ -76,7 +83,7 @@ public partial class GameCanvas : Node2D
     private Vector2 CameraTarget()
     {
         if (Run == null) return Vector2.Zero;
-        return Palette.Vector(Run.PlayerPosition).Clamp(new Vector2(-RunState.ArenaHalfWidth + 640, -RunState.ArenaHalfHeight + 360 * WorldProjection.UprightScale), new Vector2(RunState.ArenaHalfWidth - 640, RunState.ArenaHalfHeight - 360 * WorldProjection.UprightScale));
+        return Palette.Vector(Run.PlayerPosition).Clamp(new Vector2(-RunState.ArenaHalfWidth + 640, -RunState.ArenaHalfHeight + 282), new Vector2(RunState.ArenaHalfWidth - 640, RunState.ArenaHalfHeight - 282));
     }
 
     public void RefreshLanguage() => hudLayer.QueueRedraw();
@@ -101,12 +108,11 @@ public partial class GameCanvas : Node2D
 
     private void Sprite(string name, Vector2 position, float scale, float phase = 0, Color? tint = null)
     {
-        var artwork = actorAtlas[name];
-        var frame = name.StartsWith("players/", StringComparison.Ordinal) ? 0 : (int)(Clock * 9 + phase) % artwork.Columns;
-        var region = artwork.Region(frame);
-        surface.DrawTextureRectRegion(actorAtlas.Texture,
-            new(position - new Vector2(artwork.FrameSize.X * 0.5f, artwork.FootAnchor) * scale, artwork.FrameSize * scale),
-            new(region.Position * actorAtlas.Texture.GetSize(), region.Size * actorAtlas.Texture.GetSize()), tint ?? Colors.White);
+        var texture = textures[name];
+        var size = texture.GetHeight();
+        var frameCount = Math.Max(1, texture.GetWidth() / size);
+        var frame = (int)(Clock * 9 + phase) % frameCount;
+        surface.DrawTextureRectRegion(texture, new(position - new Vector2(size * scale / 2, size * scale * 0.75f), new(size * scale, size * scale)), new(frame * size, 0, size, size), tint ?? Colors.White);
     }
 
     private void Diamond(Vector2 position, float size, Color color)

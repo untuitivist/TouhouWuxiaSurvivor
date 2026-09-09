@@ -45,21 +45,12 @@ public partial class GameRoot
         {
             var hero = heroes[index];
             var card = ui.Panel(panel, new(35 + index * 515, 136, 495, 351), new Color("14272d"));
-            card.AddChild(new TextureRect
-            {
-                Name = "hero_portrait_" + hero.Item1,
-                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                Texture = GD.Load<Texture2D>(VisualAssets.Root + (hero.Item1 == HeroKind.Reimu ? "portraits/reimu.png" : "portraits/marisa.png")),
-                Position = new(334, 86), Size = new(148, 205),
-                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-                TextureFilter = CanvasItem.TextureFilterEnum.Nearest,
-                MouseFilter = Control.MouseFilterEnum.Ignore
-            });
+            ui.Label(card, hero.Item8, new(361, 10, 114, 103), 78, Palette.Alpha(hero.Item7, 0.28f), true);
             ui.Label(card, hero.Item3, new(23, 22, 350, 24), 14, hero.Item7);
             ui.Label(card, hero.Item2, new(20, 53, 345, 50), 35, Palette.Paper, true);
             ui.Label(card, hero.Item4, new(24, 111, 440, 25), 14, Palette.Gold);
-            ui.Label(card, hero.Item5, new(24, 152, 300, 88), 18, Palette.Paper);
-            if (!TouchLayout) ui.Label(card, hero.Item6, new(24, 244, 300, 56), 15, Palette.Muted);
+            ui.Label(card, hero.Item5, new(24, 152, 445, 88), 18, Palette.Paper);
+            if (!TouchLayout) ui.Label(card, hero.Item6, new(24, 244, 445, 56), 15, Palette.Muted);
             var button = ui.Button(card, GameText.Format($"执此道 · {hero.Item2}"), new(23, TouchLayout ? 269 : 302, 449, TouchLayout ? 76 : 38), () => StartRun(hero.Item1), true);
             first ??= button;
         }

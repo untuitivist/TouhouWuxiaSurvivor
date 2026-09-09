@@ -90,7 +90,6 @@ async function verify(playwright, repository, { compatible = false, isolation = 
             assert.equal((await state()).MasterVolume, volume);
             entry.saveReloadPassed = true;
             await click('开始游戏     →');
-            await screenshot('heroes');
             await click('选择 博丽灵梦');
             await wait(() => window.__touhouProbe.Screen === 'playing');
             const before = await state();
@@ -185,5 +184,5 @@ async function verify(playwright, repository, { compatible = false, isolation = 
     console.log('SHARED_WEB_VALIDATION_PASS', output);
 }
 
-if (require.main === module) verify(require('playwright'), path.resolve(__dirname, '../..'), { compatible: process.argv.includes('--compatible'), isolation: !process.argv.includes('--unisolated') }).catch(error => { console.error(error); process.exitCode = 1; });
+if (require.main === module) verify(require('playwright'), path.resolve(__dirname, '../..')).catch(error => { console.error(error); process.exitCode = 1; });
 module.exports = { verify };

@@ -4,9 +4,9 @@ namespace Rebirth.Presentation;
 
 public static class PixelSkin
 {
-    public static readonly Color Ink = new("382c32");
-    public static readonly Color Muted = new("786b50");
-    public static readonly Color Paper = new("f2e3bc");
+    public static readonly Color Ink = new("30413b");
+    public static readonly Color Muted = new("5d6558");
+    public static readonly Color Paper = new("e8e3cd");
     public static readonly Color Light = new("fff1ce");
     public static readonly Color Wood = new("754c38");
     public static readonly Color Gold = new("bb8c4e");
@@ -32,7 +32,7 @@ public static class PixelSkin
             AxisStretchHorizontal = StyleBoxTexture.AxisStretchMode.Tile,
             AxisStretchVertical = StyleBoxTexture.AxisStretchMode.Tile
         };
-        foreach (var side in new[] { Side.Left, Side.Top, Side.Right, Side.Bottom }) style.SetTextureMargin(side, 16);
+        foreach (var side in new[] { Side.Left, Side.Top, Side.Right, Side.Bottom }) style.SetTextureMargin(side, 14);
         style.ContentMarginLeft = 12;
         style.ContentMarginRight = 12;
         style.ContentMarginTop = 3;
@@ -52,7 +52,7 @@ public static class PixelSkin
     public static Texture2D Artwork(string name)
     {
         if (icons.TryGetValue(name, out var existing)) return existing;
-        var texture = GD.Load<Texture2D>($"{VisualAssets.InterfaceRoot}{name}.png");
+        var texture = GD.Load<Texture2D>($"res://assets/aseprite/{name}.png");
         icons[name] = texture;
         return texture;
     }
