@@ -955,3 +955,11 @@
 - Reopened and exported both complete Aseprite boards, then compared decoded RGBA with the authoritative references: both identical. Manifest checks confirm 28 files, zero recorded selected-pixel mismatches and runtime_eligible=false. This tests archival reproduction only, not mask correctness or drawing quality.
 - Added explicit archive provenance and manual-copy guidance. Updated .NOTE.md, unreleased CHANGELOG.md, task_plan.md and findings.md. No source art deletion, overwriting of hand edits, C# or active game-asset changes, version bump, release EXE, push or deployment.
 - Text encoding and git diff --check pass. Existing gameplay tests were not rerun for this research/archive-only change. Accepted Aseprite redrawing remains unfinished; the next art gate is a single faithful in-game pose rather than another bulk pixel replay.
+
+## Reimu Front Pose 03 — 2026-09-09
+
+- Constructed one front-facing pose from authored clusters through Aseprite, using the approved 112x60 reference region without resizing it. Preserved 03a and refined 03b rather than overwriting earlier sources. No automatic copying of reference pixels into drawing layers; no human mouse-painting claim.
+- Inspected same-scale comparisons and enlarged face/character previews. Revised the jaw, eyes, bow-edge folds, hair highlights and neck ribbon. The sample still differs from the reference and is not visually accepted or animated.
+- Technical checks: 11 nonempty editable drawing layers plus hidden/locked anatomy and reference layers; source reopening; guide-free RGBA equality; exact nearest-neighbor enlargement; existing-source skip; unchanged source hash. The first combined Node audit timed out, then isolated bounded CMD checks passed.
+- Current source and editing guidance are in art/trace/reimu_front_03b.aseprite and art/trace/reimu_front_03.md. Review previews and audit records remain in artifacts/aseprite-tracing/reimu-front-03b/.
+- Updated intent notes and unreleased history; local sample only. No file deletion, no active game-asset/C# changes, no gameplay tests or load-test reruns, no release/export/push/deployment.

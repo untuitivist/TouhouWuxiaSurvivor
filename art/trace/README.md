@@ -1,5 +1,7 @@
 # Rejected Tracing Studies
 
+The later `reimu_front_03a.aseprite` and `reimu_front_03b.aseprite` are new single-pose studies with their own review status, not replacements for approved runtime art. See `reimu_front_03.md` for the current sample, method, editable-layer layout and limitations.
+
 The newer `native-v01/` directory is a separately labelled automatic reference-replay experiment, also not accepted redrawing or runtime art. See its README and `docs/sprite_drawing_study.md`; no script or layer-count check establishes visual approval.
 
 These files are retained for audit and possible manual inspection, not accepted game artwork.

@@ -1,3 +1,15 @@
+## Single Front Pose Inspection — 2026-09-09
+
+- The first approved front movement pose occupies part of a 112x60 native reference region at (704, 503). Its large bow, broad upper hair shape, small visible face, detached white sleeves, yellow neck ribbon, red tunic and offset boots must retain their relative positions. The approved board itself, not a generic tutorial body ratio, is the target.
+- The old 48x48 coordinate study both rescaled its guide and changed the construction; it will not be used as a drawing base. The automatic native-v01 replay is also not a drawing base. New visible pixels will come from authored clusters, with the reference only on an excluded guide layer.
+
+- Study 03a now exists with ten authored drawing layers, one hidden anatomy guide and one hidden original reference. Same-scale comparison shows a boxy lower face, overly rigid bow folds and an overlong gold ribbon; these are visual defects, not source-file errors. Refine this single pose before adding directions.
+- The first patch command referenced an unavailable executable in the newest tool directory and failed without writing. Retried through the verified installed apply_patch entry point. No files were deleted or overwritten.
+
+- Viewed 03a against the original at 4x and the face region at 16x; authored 03b with a narrower/rounder jaw, adjusted small dark eyes, interrupted bow-edge stitching, less rigid hair highlights and a shorter ribbon. Viewed 03b at native-relative scale and 8x. Hair-lock silhouette and fabric expression still differ from the approved image, so visual_approval remains false.
+- The current source reopens with 11 populated visible/editable layers and two hidden/locked guides. Drawing PNG, reopened PNG and in-memory guide-free PNG have identical decoded RGBA; the 8x preview is exact nearest-neighbor. Source SHA-256 stayed f37280b80ad63f0f7e6d49a2315d273f30cfff83ef32dacd2cbc49d16b6812b1 across checks.
+- A combined synchronous Node audit timed out after 30 seconds without returning its output; the precise stalled operation was not isolated. No Aseprite process remained and source hash was unchanged. Changed existing-source handling from a thrown error to explicit noninteractive skip, then reran bounded CMD checks successfully. Do not describe the timed-out attempt itself as passed.
+
 ## New User Board And Browser Workflow — 2026-09-09
 
 - Browser Marisa generation finished after three internal image candidates. Downloaded the final displayed “女巫三向行走精灵图” via its observed page asset into art/reference/marisa-walk-generated-01.png. The browser warned about green-background variation and walk-cycle consistency; this is a candidate requiring Aseprite cleanup, not production-ready art. Duplicate lazy image elements and a changing completion layout caused one strict-locator and one stale-label error; refreshed the final AX tree and matched the actual image source to the asset inventory.

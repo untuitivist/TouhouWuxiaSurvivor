@@ -1,3 +1,12 @@
+## Reimu Front Pose Study — Prepared For Review 2026-09-09
+
+1. [complete] Inspected the approved first front-facing pose at native dimensions, including an enlarged face comparison; no rejected base, guide scaling or source-pixel replay.
+2. [complete] Constructed 03a and refined 03b in Aseprite from authored clusters. The current source has eleven editable drawing layers and two hidden/locked guides; the scripted method is explicit.
+3. [complete] Reviewed side-by-side previews and refined the face, eyes, bow, hair and ribbon. Reopened source, guide exclusion, nearest-neighbor and non-overwrite checks pass. Visual differences and unapproved status remain explicit.
+4. [complete] Preserved both sources, comparison images and truthful review notes for local delivery. No animation, runtime integration, version bump, release, push or deployment.
+
+Scope completion is a reviewable single pose, not accepted art. Do not expand it into other directions or a full character pack without resolving the remaining reference-fidelity issues.
+
 ## Reference-Driven Game Visual Rebuild — Active 2026-09-09
 
 1. [complete] Preserve corrected Reimu and full Marisa boards; archive sidebar-generated reference candidates and inspect the shared rendering boundary.
