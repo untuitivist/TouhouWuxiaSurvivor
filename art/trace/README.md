@@ -1,5 +1,7 @@
 # Rejected Tracing Studies
 
+The newer `native-v01/` directory is a separately labelled automatic reference-replay experiment, also not accepted redrawing or runtime art. See its README and `docs/sprite_drawing_study.md`; no script or layer-count check establishes visual approval.
+
 These files are retained for audit and possible manual inspection, not accepted game artwork.
 
 - `reimu_front_01.aseprite`: first coordinate-based reconstruction, not a faithful trace.

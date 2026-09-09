@@ -1148,3 +1148,23 @@
 - No C# or runtime-asset changes remain from this experiment. Pending projection/atlas code was moved to a checked, bounded workspace archive, not deleted. No EXE export, push or deployment.
 - The 8-layer rejected study exports identical RGBA with its reference import disabled and after source reopening. An initial raw PNG-byte comparison failed because PNG encoding/metadata differed; comparing decoded RGBA confirmed equality. This is not a visual-fidelity pass.
 - A large combined apply_patch invocation hit Windows ENAMETOOLONG before changing the verifier/build files. Those production files remain unchanged; later documentation patches were bounded.
+## Native Pencil Pilot — 2026-09-09
+
+- The first pilot paints each retained native pixel using Aseprite app.useTool with the pencil tool; no imported reference image is assigned to a visible cel. It preserves original RGB values and dimensions, without palette quantization or resizing. This is automated tracing, not human hand painting or newly designed artwork.
+- The pilot completes 2,283 native strokes / 2,290 pixels in 0.054 CPU seconds. Its enlarged preview retains the supplied Reimu silhouette and details, unlike the rejected coordinate approximations.
+- Full board exports will keep this automation explicitly labelled. Any transparent silhouette selection remains a separate review concern; pixel equality cannot validate guessed subject masks.
+## Sprite Tutorial Research — 2026-09-09
+
+- Read primary author pages: SLYNYRD Pixelblog 22 (top-down sprites), 55 (top-down character animation), 56 (attack animation); cure’s Pixel Joint tutorial; Aseprite official onion-skin documentation. These are technique references, not new style references.
+- Key correction: pixel art is about deliberate control of form, edges and pixel clusters, not the number of individual pencil clicks or merely using Aseprite. The ongoing native-pencil replay remains an automated reference reproduction, not proof of independently constructed anatomy or useful animation.
+- Apply relative scale, consistent body landmarks, a shared ground contact/pivot and cross-direction checks without changing the user-approved character silhouettes. Asymmetric braids, held implements and costume details need deliberate treatment; do not automatically mirror them.
+- SLYNYRD demonstrates blocking and comparing basic body parts before decorating, using rotation playback to expose inconsistencies, and checking head/shoulder/limb motion across directions. Tutorial example proportions/frame counts are not mandates for this game.
+- Aseprite onion skin compares adjacent frames; the project’s game F3 remains unrelated. No game binding or runtime change is authorized by reading the editor tutorial.
+
+### Verified Research And Replay Review
+
+- The earlier reading entry was premature for pages known only from search snippets. It is now backed by full author text: SLYNYRD 22, 55 and 56; Saint11 articles 1, 2 and 4; cure sections on deliberate control, clusters, jaggies, banding, pillow shading and noise; Aseprite Animation and Onion Skinning. Exact verified addresses are in docs/sprite_drawing_study.md.
+- Independently fetched all nine listed original-site pages, verified their real titles and HTTP 200 responses, and read text/captions for construction, body-part dummies, rotation comparison and animation stages. No complete-video or full-animation-viewing claim is made.
+- Tutorial conclusions are applied as project review criteria, not copied design requirements. In particular, neither a tutorial’s chibi proportions nor its sword animations authorize changes to the approved Touhou character designs.
+- The native-pencil session exited successfully with 28 sources. Inspected both transparent portraits against their references and a native-size movement sample. Visible scenery fragments and boundary concerns remain; the mask and heuristic layer divisions are not accepted. These are reference replays, not finished redraws or animations.
+- All 28 outputs remain runtime_eligible=false. No runtime files, game version, exports or deployment were changed.

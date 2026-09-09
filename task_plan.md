@@ -700,3 +700,11 @@ Phase 5
 2. [pending] Validate the same committed gameplay revision for self-contained Windows export and Web, using the actual deployment resource path without hiding request failures.
 3. [pending] Export and smoke-test the new EXE, push the release source, deploy with server Git fast-forward and preserved rollback backups, and verify the live website.
 4. [pending] Record artifact checksums, deployed revision, limitations and rollback paths; commit/push the final delivery record.
+## Sprite Drawing Tutorial Study — Complete 2026-09-09
+
+1. [complete] Read original-author sprite/anatomy/animation and pixel-cluster tutorials plus official Aseprite animation documentation; distinguish text/static-image reading from watching complete demonstrations.
+2. [complete] Record project-specific construction and review steps in docs/sprite_drawing_study.md without replacing the approved character designs or abilities with tutorial examples.
+3. [complete] Archive the finished native-v01 automatic reference replay with explicit non-production provenance; both portraits have transparency concerns and all movement outputs remain separate single-frame files.
+4. [complete] Update intent notes and unreleased change history; no runtime edits, version bump, release, push or deployment.
+
+The original drawing request remains unfinished. Aseprite automation has reproduced reference pixels, not established drawing quality or completed animation. Heuristic region layers are not accepted anatomical layers. The next drawing gate is one faithful in-game pose, followed by reviewed directional and animated work; do not restart bulk replay as a substitute.

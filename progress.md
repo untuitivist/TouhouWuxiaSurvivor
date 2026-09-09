@@ -947,3 +947,11 @@
 - Kept extraction tools artifact-only and marked their future manifest outputs runtime_eligible=false. Pending camera changes are preserved at artifacts/reference-camera-wip-20260909; all current game/test source modifications from that prototype were restored to HEAD without deleting files.
 - Current Debug build: zero warnings/errors. Existing core suite: 40/40. These validate the unchanged playable game, not the archived new camera. No unnecessary repeated load test and no release.
 - Daily local commit contains provenance, clarified requirements, rejected studies and reference-study tools; it does not update the running art, version or server.
+
+## Sprite Tutorial Study And Automatic Replay Archive — 2026-09-09
+
+- Read original-author SLYNYRD 22/55/56, Saint11 beginner/cluster/shading articles, cure pixel-art sections, and official Aseprite animation/onion-skin documentation. Independently verified all nine source-page addresses and titles. Saved project-specific application and acceptance steps in docs/sprite_drawing_study.md; text/caption research is not a claim to have watched every animation or mastered the technique.
+- The previously started native-pencil replay completed 28 editable sources: two whole boards, two transparent portraits and 24 separate movement frames. Viewed both portraits and one native-size movement sample. Background fragments and boundary concerns remain; no visual approval or completed animation.
+- Reopened and exported both complete Aseprite boards, then compared decoded RGBA with the authoritative references: both identical. Manifest checks confirm 28 files, zero recorded selected-pixel mismatches and runtime_eligible=false. This tests archival reproduction only, not mask correctness or drawing quality.
+- Added explicit archive provenance and manual-copy guidance. Updated .NOTE.md, unreleased CHANGELOG.md, task_plan.md and findings.md. No source art deletion, overwriting of hand edits, C# or active game-asset changes, version bump, release EXE, push or deployment.
+- Text encoding and git diff --check pass. Existing gameplay tests were not rerun for this research/archive-only change. Accepted Aseprite redrawing remains unfinished; the next art gate is a single faithful in-game pose rather than another bulk pixel replay.
