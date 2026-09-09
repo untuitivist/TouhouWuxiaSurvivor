@@ -1,3 +1,20 @@
+## WebGPU Feasibility Experiment — 2026-09-09 UTC
+
+- The final CMD quoted commit message was split into pathspec arguments and Git rejected it without a commit. Switched to an argument-array Git invocation to preserve the complete message; the staged file scope is unchanged.
+- Completion audit: all 15 changed/new text files are UTF-8 without BOM or NUL bytes; tested input hashes still match the passing report; game/assets/platform/version/export/changelog diff is empty. Reviewed final comparison.png with visible hardware-WebGPU rendering and explicit measurement limits. Changes are ready for the required local-only Git commit; no files deleted and no published content changed.
+- Added docs/webgpu_experiment.md with fixed-source support evidence, local-only commands, final measurements and limits. Two CMD searches encountered glob/quoted-pattern parsing errors without file changes; direct file reads and array-form Git commands verified the pinned toolchain, instance layout and unchanged game diff.
+- Final rerun passes after the last source edits: 12 tests and all six real-browser scenarios, report artifacts/webgpu-lab/2026-09-09T18-11-05-609Z/report.json. Reviewed device-loss-fallback.png and api-missing.png: both visibly render all sprite instances using WebGL2 and expose the distinct fallback reasons. No runtime changes, physical-mobile tests, release or deployment.
+- Hardware run now passes all 12 unit/server checks and six browser scenarios, including three alternating rounds per API, real device.destroy loss/recovery, missing API/adapter, rejected device, both backends unavailable and touch DPR3. The aligned half-size image matches all 921600 pixels; rotated geometry differs at 8 raster-edge pixels.
+- Reviewed the real comparison screenshot: 1000 animated, tinted fairy instances are visible with the WebGPU adapter identity and explicit rendering-only scope. The page now also displays fallback reasons and clears stale errors; final screenshots are taken before a deliberate comparison switch resets recovery state.
+- Unified texel addressing fixes the pixel failure without loosening thresholds. The next run completes actual hardware WebGPU/WebGL comparison and induced-device-loss recovery, then catches a first-animation-frame clock mismatch in the API-unavailable fallback. RAF timestamps may precede an arbitrary performance.now start; initialize the animation origin from its first RAF callback instead. All failed reports remain archived.
+- First focused run passes all 12 unit/server tests but fails cross-API pixel comparison (2.72% differing pixels; mean channel error 0.835). The failure is retained under artifacts/webgpu-lab; diagnose sampling/readback rather than relaxing thresholds or reporting a successful comparison.
+- Local Edge acquired a real NVIDIA Lovelace WebGPU device on loopback with crossOriginIsolated=false and SharedArrayBuffer absent, without unsafe/enable-WebGPU flags. This proves local API/device availability only.
+- Added a local-only lab: existing 192x48 four-frame fairy strip, the same 16-float transform/color/animation layout used by SpriteBatch.cs, cached GPU/GL resources and identical reused 1000-instance buffers. No maintained game source or assets changed.
+- The REPL ESM import of Playwright failed; loaded its existing CommonJS entry instead. A preflight variable declared inside a try block was not retained by the REPL; the first combined file call stopped before writing, then succeeded without that out-of-scope variable.
+- Began by checking the clean repository and carrying forward the single-project, compatible-fallback and no-release boundaries. Next: official support and pinned toolchain inspection.
+
+---
+
 ## alpha-0.1.7 Dual-Platform Release — 2026-09-09 UTC
 
 - Completed both exports from clean 82563e6 and 28 Windows standalone checks. Local Web gates, bilingual performance, four portrait layouts, loading faults and DPR checks all pass. Reviewed native and Web selection screenshots.

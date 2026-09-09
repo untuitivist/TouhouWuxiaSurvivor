@@ -1,3 +1,13 @@
+## WebGPU Feasibility and Local Experiment — 2026-09-09 UTC
+
+Continue the requested next-version WebGPU exploration without releasing alpha-0.1.8, changing the live site, splitting gameplay, deleting artifacts or replacing the current compatible renderer. Preserve one C# game project, current assets and controls.
+
+1. [complete] Audited official support and pinned tools. The candidate WebGPU fork lacks Mono support on Web, so no safe drop-in game switch is available; check actual browser hardware inside the isolated experiment.
+2. [complete] Implemented the isolated real-texture WebGPU/WebGL2 comparison, reusable 16-float instances, pixel checks and explicit device-loss/unavailable fallbacks; the published C# game remains unchanged.
+3. [complete] All 12 tests and six browser scenarios pass; documented measurements and the no-drop-in-engine conclusion in docs/webgpu_experiment.md. UTF-8/no-BOM, input-hash and unchanged-runtime audits pass. Delivery is a local commit only, with no version bump, push, export or deployment.
+
+---
+
 ## Dual-Platform alpha-0.1.7 Release — 2026-09-09 UTC
 
 Publish the restored alpha-0.1.6 game plus the explicitly permitted temporary AI hero-selection portraits. Deliver a self-contained Windows EXE and activate the matching threadless Web build. WebGPU is next-version research, not a renderer change in this release. Preserve all existing files, history, source artwork and release artifacts.

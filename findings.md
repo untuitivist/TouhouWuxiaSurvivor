@@ -1,3 +1,21 @@
+## WebGPU Experiment Findings — 2026-09-09 UTC
+
+- Final recheck at 2026-09-10 02:11 China Standard Time (2026-09-09 18:11 UTC): all 12 unit/server tests and six browser scenarios pass after fallback-state/UI and pixel-threshold fixes. Evidence: artifacts/webgpu-lab/2026-09-09T18-11-05-609Z/report.json. This remains a rendering-only experiment on hardware Edge, not a game or physical-mobile benchmark.
+- Final citation refresh through the Web tool returned no usable content. Direct HTTPS reads of the official documentation and both candidate build configs then returned HTTP 200 and reconfirmed WebGL-only official export and the missing Mono support flag. GitHub identifies the candidate webgpu-4.6.2 branch at f329e39ce8db7acaa5c9d6628a530fb769969228; do not infer game support from browser API availability.
+- Directed pixel diagnosis: at native 48px, single and 1000 aligned sprites match exactly; at half-size 24px, sampler/interpolation ties cause 46 differing pixels for one sprite and 25076 for 1000. Rotated 24px differs at only 9 pixels. This isolates sampling boundary behavior, not black textures, atlas orientation or byte readback. Use common integer-texel addressing with a documented 1/1024-texel tie bias in both shaders; keep existing comparison thresholds.
+- The one-line CMD NODE_PATH setup did not reach the child resolver; the dedicated CMD wrapper worked. Preserve diagnostic images/report under artifacts/webgpu-lab/pixel-diagnosis-2026-09-09T17-58-17-375Z.
+- Verified the candidate fork source: platform/web/detect.py advertises supported=[webgpu], not mono, while modules/mono/config.py explicitly aborts when mono is absent. The unchanged branch therefore cannot be used as a drop-in C# Web exporter; integrating it would require a separate audited engine/toolchain merge, not a project switch.
+- Decision: do not replace the production engine or add a second game. Build a local-only rendering experiment with existing game textures, identical deterministic sprite buffers for WebGPU/WebGL2, hardware-adapter reporting, pixel validation and explicit unavailable/lost-device fallback. Measure a bounded 1000-sprite rendering workload, not another full combat soak and not a claim about full-game FPS.
+- Primary source audit links: https://github.com/dwalter/godotwebgpu/blob/webgpu-4.6.2/platform/web/detect.py ; https://github.com/dwalter/godotwebgpu/blob/webgpu-4.6.2/modules/mono/config.py ; https://developer.chrome.com/docs/web-platform/webgpu/troubleshooting-tips . Both GPUWeb/W3C full-spec requests errored; use maintained Chrome examples for implementation details.
+- Official stable Web-export documentation specifies WebGL 2.0 / Compatibility and explicitly no WebGPU. The existing game uses its separately pinned experimental Mono Web toolchain. The support decision does not rely on the changing status of C# Web PR 106125.
+- The candidate WebGPU fork is dwalter/godotwebgpu (webgpu-4.6.2). Final conclusions rely on inspected build configuration, not README performance claims, prebuilt availability or unverified platform TODOs. Its results cannot establish this Windows/C# game or physical-mobile performance.
+- Sources: https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html ; https://github.com/godotengine/godot/pull/106125 ; https://github.com/ComplexRobot/godot-dotnet-web-export ; https://github.com/dwalter/godotwebgpu .
+- The GPUWeb specification URL returned an internal fetch error; use the W3C snapshot and browser-vendor primary documentation for the API experiment. A local search included a nonexistent optional doc path; the actual existing file is docs/csharp_web_probe.md.
+- Start from clean ae61d89, matching origin/main after the completed alpha-0.1.7 release. This task is local R&D, not another release or deployment.
+- The published game uses the same C# project for a self-contained Windows EXE and a threadless Web export. Browser API availability alone does not establish that the Godot renderer uses WebGPU.
+
+---
+
 ## alpha-0.1.7 Release Scope — 2026-09-09 UTC
 
 - Release complete: Windows is 195109656 bytes with SHA-256 B2B2F21A4A191E47A2A882CAE9ECBF6E68377853E3EB6007341042586BD8D9C1; active Web release is alpha-0.1.7-82563e6-20260909T164729Z. Both use clean 82563e6535f42e35cfe67318d16a116b7b04dee7.
