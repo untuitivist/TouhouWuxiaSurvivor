@@ -1,0 +1,86 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 909202603,
+      "steps": 28,
+      "cfg": 5,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "animagine-xl-4.0-opt.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "1girl, hakurei reimu, touhou, safe, solo, (pixel art:1.7), (pixelated:1.35), (16-bit pixel art:1.3), (single full-body sprite:1.2), (limited palette:1.15), flat colors, hard edged pixel clusters, simple shading, dark brown pixel outlines, one character only, centered, full body, natural anatomy, mature proportions, dynamic pose, martial arts stance, graceful movement, sideways stance, one knee bent, feet apart, calm expression, holding ofuda, paper talismans, casting spell, outstretched arm, brown eyes, long dark brown hair, red hair bow, white bow trim, hair tubes, red sleeveless miko outfit, white detached sleeves, yellow ascot, cloth waist sash, layered red skirt, white skirt lining, tied sleeve cuffs, white socks, black flat shoes, flowing sash, wind swept skirt, muted red, cream white, warm brown shadows, (plain grey background:1.2), masterpiece, high score, great score",
+      "clip": [
+        "4",
+        1
+      ]
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "bad anatomy, malformed hands, extra fingers, extra limbs, twisted wrists, broken legs, cropped feet, out of frame, worst quality, low quality, bad score, blurry, noisy, smooth shading, smooth lineart, gradient, anti-aliasing, painterly, digital painting, watercolor, oil painting, illustration, vector art, 3d, photorealistic, reference sheet, character sheet, sprite sheet, character design sheet, concept sheet, turnaround, multiple views, multiple poses, multiple characters, collage, panels, layout, duplicate, border, frame, text, signature, watermark, chibi, super deformed, big head, doll, sword, katana, armor, lightning, staff, high heels, neon colors, blue shadows, bare midriff, cleavage, nsfw, explicit, underwear, magic circle, background scenery",
+      "clip": [
+        "4",
+        1
+      ]
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "reimu-pixel-wuxia-reference",
+      "images": [
+        "8",
+        0
+      ]
+    }
+  }
+}
