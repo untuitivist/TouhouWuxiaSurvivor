@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 const { chromium } = require('playwright');
 const { startProbeServer } = require('../web_probe/server.cjs');
 const { installBatchColorStress } = require('./batch_color_state.cjs');
@@ -8,8 +9,8 @@ const { installBatchColorStress } = require('./batch_color_state.cjs');
 async function main({ colorStateStress = false } = {}) {
     const stress = colorStateStress || process.argv.includes('--color-state-stress');
     const root = path.resolve(__dirname, '../..');
-    const build = JSON.parse(await fs.readFile(path.join(root, 'artifacts/web-compatible-latest.json'), 'utf8'));
-    const output = path.join(build.build, 'batch-verification', new Date().toISOString().replace(/[:.]/g, '-'));
+    const build = JSON.parse(await fs.readFile(verificationBuildPath(root, 'artifacts/web-compatible-latest.json'), 'utf8'));
+    const output = path.join(verificationOutputRoot(build), 'batch-verification', new Date().toISOString().replace(/[:.]/g, '-'));
     await fs.mkdir(output, { recursive: true });
     const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
     const report = { build: build.build, browser: browser.version(), physicalDeviceTested: false, injectedDefaultColor: stress, checks: [] };
@@ -61,7 +62,7 @@ async function main({ colorStateStress = false } = {}) {
         await browser.close();
         await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
     }
-    await fs.writeFile(path.join(build.build, stress ? 'batch-color-stress-latest.json' : 'batch-verification-latest.json'), JSON.stringify({ build: build.build, report: path.join(output, 'report.json') }) + '\n', 'utf8');
+    await fs.writeFile(path.join(verificationOutputRoot(build), stress ? 'batch-color-stress-latest.json' : 'batch-verification-latest.json'), JSON.stringify({ build: build.build, report: path.join(output, 'report.json') }) + '\n', 'utf8');
     console.log('WEB_BATCH_VALIDATION_PASS', output);
 }
 

@@ -1,13 +1,14 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 const { chromium } = require('playwright');
 const { startDeploymentFixture } = require('./deployment_fixture.cjs');
 
 async function main() {
     const root = path.resolve(__dirname, '../..');
-    const build = JSON.parse(await fs.readFile(path.join(root, process.argv.includes('--compatible') ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
-    const output = path.join(build.build, 'performance-verification');
+    const build = JSON.parse(await fs.readFile(verificationBuildPath(root, process.argv.includes('--compatible') ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
+    const output = path.join(verificationOutputRoot(build), 'performance-verification');
     await fs.mkdir(output, { recursive: true });
     const host = await startDeploymentFixture(build);
     const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true, args: ['--enable-unsafe-swiftshader'] });

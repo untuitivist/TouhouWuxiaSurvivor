@@ -1,3 +1,15 @@
+## Full Actual-Game WebGPU Validation — 2026-09-10
+
+Keep one unchanged C# game and alpha-0.1.7. Validate isolated exports and existing Windows EXE; no deletion, push, deployment or release replacement.
+
+1. [complete] Pin and hash engine sources; integrate Mono and WebGPU in a separate engine copy, build and export the actual game. Title and both populated hero fixtures start on hardware WebGPU without isolation or shared memory.
+2. [complete] Isolated output selection, hardware evidence and failure injection implemented; all 47 existing/new gate groups attempted. Core/native pass; real WebGPU acceptance fails. Marisa invalid low/medium fixtures, real high-load CPU problems, missing sprites/ground, readback, persistence and lifecycle failures are retained rather than suppressed.
+3. [complete] Six actual-game image pairs reviewed: all fail equivalence, so WebGPU FPS is not comparable. Full report, 179-file input audit and final tool/UTF-8 checks pass their stated scopes; results and tooling are included in the local verification commit. Physical mobile remains untested and all four actual fallback/loss gates failed; investigation is concluded with NO-GO, not production approval or release.
+
+Retained build failures: three-way support-list conflict; Dawn download/cache contention; missing native C++ compiler. Resolved with checked Mono/WebGPU union, private dependency caches and native g++ installation (zero packages removed). Original engine source and production artifacts remain unchanged; the first Dawn attempt touched the original Emscripten dependency cache before cache isolation was added. A CMD directory command failed parsing during resume; read-only rg/Node argument arrays replace it.
+
+---
+
 ## WebGPU Feasibility and Local Experiment — 2026-09-09 UTC
 
 Continue the requested next-version WebGPU exploration without releasing alpha-0.1.8, changing the live site, splitting gameplay, deleting artifacts or replacing the current compatible renderer. Preserve one C# game project, current assets and controls.
@@ -790,3 +802,11 @@ Phase 5
 4. [complete] Update intent notes and unreleased change history; no runtime edits, version bump, release, push or deployment.
 
 The original drawing request remains unfinished. Aseprite automation has reproduced reference pixels, not established drawing quality or completed animation. Heuristic region layers are not accepted anatomical layers. The next drawing gate is one faithful in-game pose, followed by reviewed directional and animated work; do not restart bulk replay as a substitute.
+## Full Game WebGPU Validation — 2026-09-09 UTC
+
+1. [complete] Backported the fixed WebGPU driver into a separate copy of the pinned Mono 4.6.1 engine; all 1,296 files merge, both backends and C# compile, and a threadless release template is produced. Existing game/engine source remains unchanged and WSL is closed after each run.
+2. [in_progress] Export the actual alpha-0.1.7 game with the integrated template; run Windows/Web functional baselines and actual WebGPU startup checks in isolated test profiles without duplicating gameplay.
+3. [pending] Exercise actual-game rendering, combat, settings/save/input/texture and fallback gates where runnable. Compare only equivalent real backends; mark unsupported engine paths and unavailable physical mobile explicitly, never as passed.
+4. [pending] Preserve logs/artifacts, add reproducible validation evidence and outcome documentation, audit no-release boundaries, and commit locally.
+
+---

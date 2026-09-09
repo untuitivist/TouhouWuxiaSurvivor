@@ -1,13 +1,14 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 const { chromium } = require("playwright");
 const { startDeploymentFixture } = require("./deployment_fixture.cjs");
 
 async function main() {
     const root = path.resolve(__dirname, "../..");
-    const build = JSON.parse(await fs.readFile(path.join(root, "artifacts/web-compatible-latest.json"), "utf8"));
-    const output = path.join(build.build, "language-verification");
+    const build = JSON.parse(await fs.readFile(verificationBuildPath(root, "artifacts/web-compatible-latest.json"), "utf8"));
+    const output = path.join(verificationOutputRoot(build), "language-verification");
     await fs.mkdir(output, { recursive: true });
     let args = ["--", "--web-validation"];
     const host = await startDeploymentFixture(build, { isolation: false, entryArguments: () => args });

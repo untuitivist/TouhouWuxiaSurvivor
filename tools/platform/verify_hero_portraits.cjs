@@ -1,14 +1,15 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 const crypto = require('node:crypto');
 const { chromium } = require('playwright');
 const { startProbeServer } = require('../web_probe/server.cjs');
 
 async function main() {
     const root = path.resolve(__dirname, '../..');
-    const build = JSON.parse(await fs.readFile(path.join(root, 'artifacts/web-compatible-latest.json'), 'utf8'));
-    const output = path.join(build.build, 'hero-portrait-verification', new Date().toISOString().replace(/[:.]/g, '-'));
+    const build = JSON.parse(await fs.readFile(verificationBuildPath(root, 'artifacts/web-compatible-latest.json'), 'utf8'));
+    const output = path.join(verificationOutputRoot(build), 'hero-portrait-verification', new Date().toISOString().replace(/[:.]/g, '-'));
     await fs.mkdir(output, { recursive: true });
     const report = { build: build.build, physicalDeviceTested: false, sourceHashes: {}, checks: [] };
     for (const relative of ['game/presentation/HeroSelection.cs', 'assets/ui/portraits/ai-preview/reimu.png', 'assets/ui/portraits/ai-preview/marisa.png']) {

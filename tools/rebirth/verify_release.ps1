@@ -1,4 +1,4 @@
-param([string]$Executable = '')
+param([string]$Executable = '', [string]$OutputDirectory = '', [string]$ArtifactSourceCommit = '')
 
 $ErrorActionPreference = 'Stop'
 $encoding = [System.Text.UTF8Encoding]::new($false)
@@ -18,7 +18,7 @@ $configurationPath = Join-Path $root '.godot/mono/temp/bin/ExportRelease/win-x64
 $configuration = [System.IO.File]::ReadAllText($configurationPath, $encoding) | ConvertFrom-Json
 if (-not $configuration.runtimeOptions.includedFrameworks) { throw 'Export publish output is not self-contained.' }
 $isolated = Join-Path ([System.IO.Path]::GetTempPath()) ("TouhouWuxiaSurvivor-$version-" + [Guid]::NewGuid().ToString('N'))
-$logs = Join-Path $root "artifacts/$version-export-validation"
+$logs = if ($OutputDirectory) { [System.IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $root "artifacts/$version-export-validation" }
 [System.IO.Directory]::CreateDirectory($isolated) | Out-Null
 [System.IO.Directory]::CreateDirectory($logs) | Out-Null
 $portable = Join-Path $isolated $source.Name
@@ -76,8 +76,10 @@ foreach ($hero in @('reimu', 'marisa')) {
 }
 if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must still contain only the EXE after all checks.' }
 $checksum = (Get-FileHash -LiteralPath $source.FullName -Algorithm SHA256).Hash
+$verificationCommit = (& git -C $root rev-parse HEAD).Trim()
 $report = [ordered]@{
-    source_commit = (& git -C $root rev-parse HEAD).Trim()
+    source_commit = if ($ArtifactSourceCommit) { $ArtifactSourceCommit } else { $verificationCommit }
+    verification_commit = $verificationCommit
     version = $version
     windows_version = $numericVersion
     executable = $source.FullName

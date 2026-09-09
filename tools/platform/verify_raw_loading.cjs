@@ -4,10 +4,13 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { chromium } = require('playwright');
 const { startProbeServer } = require('../web_probe/server.cjs');
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 
 async function verifyRawLoading() {
     const root = path.resolve(__dirname, '../..');
-    const build = JSON.parse(await fs.readFile(path.join(root, 'artifacts/web-compatible-latest.json'), 'utf8'));
+    const build = JSON.parse(await fs.readFile(verificationBuildPath(root, 'artifacts/web-compatible-latest.json'), 'utf8'));
+    const output = verificationOutputRoot(build);
+    await fs.mkdir(output, { recursive: true });
     const pack = await fs.readFile(path.join(build.site, 'TouhouSurvivor/index.pck'));
     const expected = crypto.createHash('sha256').update(pack).digest('hex');
     const loader = await fs.readFile(path.join(build.site, 'TouhouSurvivor/index.loader.js'), 'utf8');
@@ -61,7 +64,7 @@ async function verifyRawLoading() {
         }
         report.passed = true;
     } finally {
-        await fs.writeFile(path.join(build.build, 'raw-loading-verification.json'), JSON.stringify(report, null, 2), 'utf8');
+        await fs.writeFile(path.join(output, 'raw-loading-verification.json'), JSON.stringify(report, null, 2), 'utf8');
         await browser.close();
         host.server.closeAllConnections();
         await new Promise(resolve => host.server.close(resolve));

@@ -1,13 +1,19 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 const assert = require('node:assert/strict');
 const { startProbeServer } = require('../web_probe/server.cjs');
 const { startDeploymentFixture } = require('./deployment_fixture.cjs');
+const bounded = async (operation, milliseconds = 10000) => {
+    let timer;
+    try { return await Promise.race([operation, new Promise((resolve, reject) => { timer = setTimeout(() => reject(new Error('Browser operation did not complete within ' + milliseconds + ' ms')), milliseconds); })]); }
+    finally { clearTimeout(timer); }
+};
 
 async function verify(playwright, repository, { compatible = false, isolation = true, deployment = false } = {}) {
-    const latest = JSON.parse(await fs.readFile(path.join(repository, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
+    const latest = JSON.parse(await fs.readFile(verificationBuildPath(repository, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
     const raw = !deployment && (compatible || process.argv.includes('--raw'));
-    const output = path.join(latest.build, compatible ? `verification-compatible-${deployment ? 'deployment-' : ''}${isolation ? 'isolated' : 'unisolated'}` : raw ? 'verification-raw' : 'verification');
+    const output = path.join(verificationOutputRoot(latest), compatible ? `verification-compatible-${deployment ? 'deployment-' : ''}${isolation ? 'isolated' : 'unisolated'}` : raw ? 'verification-raw' : 'verification');
     await fs.mkdir(output, { recursive: true });
     let launchArguments = [];
     const hostOptions = { isolation, entryArguments: () => launchArguments };
@@ -26,12 +32,12 @@ async function verify(playwright, repository, { compatible = false, isolation = 
             try { await page.waitForFunction(predicate, undefined, { timeout: 45000 }); }
             catch (error) { throw new Error(`${predicate}: ${error}`); }
         };
-        const state = () => page.evaluate(() => window.__touhouProbe);
+        const state = () => bounded(page.evaluate(() => window.__touhouProbe));
         async function point(horizontal, vertical) {
-            return page.evaluate(({ horizontal, vertical }) => {
+            return bounded(page.evaluate(({ horizontal, vertical }) => {
                 const scale = Math.min(innerWidth / 1280, innerHeight / 720);
                 return { x: (innerWidth - 1280 * scale) / 2 + horizontal * scale, y: (innerHeight - 720 * scale) / 2 + vertical * scale };
-            }, { horizontal, vertical });
+            }, { horizontal, vertical }));
         }
         async function click(text, name = null, fraction = 0.5) {
             await page.waitForFunction(({ text, name }) => window.__touhouProbe.Controls.some(control => name ? control.Name === name : control.Text === text), { text, name });
@@ -41,7 +47,7 @@ async function verify(playwright, repository, { compatible = false, isolation = 
             else await page.mouse.click(position.x, position.y);
             await page.waitForTimeout(250);
         }
-        const screenshot = async suffix => page.screenshot({ path: path.join(output, name + '-' + suffix + '.png') });
+        const screenshot = async suffix => bounded(page.screenshot({ path: path.join(output, name + '-' + suffix + '.png'), timeout: 10000 }));
         try {
             await page.goto(host.origin + '/TouhouSurvivor/', { waitUntil: 'domcontentloaded' });
             await wait(() => !!window.__touhouProbe && !document.querySelector('#loading'));
@@ -64,7 +70,7 @@ async function verify(playwright, repository, { compatible = false, isolation = 
             report.checks.push(entry);
             await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
             console.log(name, entry.passed ? 'PASS' : entry.error);
-            await context.close();
+            await bounded(context.close());
         }
     }
     try {
@@ -175,14 +181,16 @@ async function verify(playwright, repository, { compatible = false, isolation = 
         }
         report.passed = report.checks.every(entry => entry.passed);
     } finally {
-        await browser?.close();
-        host.server.closeAllConnections();
-        await new Promise(resolve => host.server.close(resolve));
-        await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
+        try { if (browser) await bounded(browser.close()); }
+        finally {
+            host.server.closeAllConnections();
+            await new Promise(resolve => host.server.close(resolve));
+            await fs.writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
+        }
     }
     assert.equal(report.passed, true, 'See verification/report.json for failures');
     console.log('SHARED_WEB_VALIDATION_PASS', output);
 }
 
-if (require.main === module) verify(require('playwright'), path.resolve(__dirname, '../..')).catch(error => { console.error(error); process.exitCode = 1; });
+if (require.main === module) verify(require('playwright'), path.resolve(__dirname, '../..'), { compatible: process.argv.includes('--compatible'), isolation: !process.argv.includes('--unisolated'), deployment: process.argv.includes('--deployment') }).catch(error => { console.error(error); process.exitCode = 1; });
 module.exports = { verify };

@@ -1,7 +1,11 @@
-param([switch]$Threadless)
+param([switch]$Threadless, [string]$ExperimentalWebGpuTemplate = '')
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $encoding = [Text.UTF8Encoding]::new($false)
+if ($ExperimentalWebGpuTemplate) {
+    if (!$Threadless -or !(Test-Path -LiteralPath $ExperimentalWebGpuTemplate -PathType Leaf)) { throw 'Experimental WebGPU requires threadless mode and an existing integrated template.' }
+    $ExperimentalWebGpuTemplate = [IO.Path]::GetFullPath($ExperimentalWebGpuTemplate)
+}
 $toolRoot = Join-Path $root 'artifacts/web-probe-20260906'
 & "$root/tools/web_probe/bootstrap.ps1" -EditorVersion '4.6.1'
 & 'C:\Users\untuitivist\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' "$PSScriptRoot/subset_font.py" --check
@@ -43,6 +47,14 @@ if ($Threadless) {
     $presetText = [IO.File]::ReadAllText($presetPath, $encoding)
     if (!$presetText.Contains('variant/thread_support=true')) { throw 'Unexpected maintained Web thread preset.' }
     [IO.File]::WriteAllText($presetPath, $presetText.Replace('variant/thread_support=true', 'variant/thread_support=false'), $encoding)
+}
+if ($ExperimentalWebGpuTemplate) {
+    $presetPath = Join-Path $stage 'export_presets.cfg'
+    $presetText = [IO.File]::ReadAllText($presetPath, $encoding)
+    if ([regex]::Matches($presetText, '(?m)^\[preset\.2\.options\]\r?$').Count -ne 1 -or $presetText -notmatch '(?ms)\[preset\.2\]\s+name="Web"') { throw 'Unexpected Web preset identity.' }
+    $templatePath = $ExperimentalWebGpuTemplate.Replace('\', '/')
+    $presetText = $presetText.Replace('[preset.2.options]', "[preset.2.options]`ncustom_template/release=`"$templatePath`"")
+    [IO.File]::WriteAllText($presetPath, $presetText, $encoding)
 }
 $presetHash = (Get-FileHash -LiteralPath "$stage/export_presets.cfg").Hash
 $dotnet = Join-Path $toolRoot 'dotnet/dotnet.exe'
@@ -97,6 +109,13 @@ try {
     if (-not (Test-Path "$site/index.html") -or -not (Select-String -Path "$build/export.log" -SimpleMatch 'TouhouWuxiaSurvivor.dll' -Quiet)) { throw 'Web output is incomplete.' }
     Copy-Item -LiteralPath "$root/assets/fonts/OFL.txt" -Destination "$site/FONT_LICENSE.txt"
     Copy-Item -LiteralPath "$root/platform/web/loader.js" -Destination "$site/index.loader.js"
+    if ($ExperimentalWebGpuTemplate) {
+        $entry = [IO.File]::ReadAllText("$site/index.html", $encoding)
+        $configuration = [regex]::Match($entry, '(?m)^\s*const GODOT_CONFIG = \{[^\r\n]+;')
+        if (!$configuration.Success -or !$entry.Contains('"args":[]')) { throw 'Experimental renderer bootstrap requires the known engine configuration.' }
+        $bootstrap = "`n    GODOT_CONFIG.renderingDriver = 'webgpu';`n    GODOT_CONFIG.args = ['--rendering-method', 'mobile', '--rendering-driver', 'webgpu'].concat(GODOT_CONFIG.args);"
+        [IO.File]::WriteAllText("$site/index.html", $entry.Replace($configuration.Value, $configuration.Value + $bootstrap), $encoding)
+    }
     if ((Get-FileHash -LiteralPath $projectPath).Hash -ne $projectHash) { throw 'Editor modified staged project configuration.' }
     if ((Get-FileHash -LiteralPath "$stage/export_presets.cfg").Hash -ne $presetHash) { throw 'Editor modified staged export configuration.' }
     $summary = @{ sourceCommit = (& git -C $root rev-parse HEAD).Trim(); sourceDirty = [bool](& git -C $root status --porcelain); sourceFiles = $manifest.ToArray(); sourceUnmodifiedInStage = $true; projectOverrides = @('SDK 4.7.1 -> 4.6.1', 'Resolve GodotWebBuild=true and TargetFramework=net9.0 for exporter parser'); generatedMetadataExcluded = @('*.import', '*.uid'); webToolchain = 'Godot C# experimental 4.6.1 / .NET 9.0.317'; files = @(Get-ChildItem $site -File | ForEach-Object { @{ name=$_.Name; bytes=$_.Length; sha256=(Get-FileHash $_.FullName).Hash } }) }
@@ -107,8 +126,15 @@ try {
         $summary.webToolchain = 'Godot C# 4.6.1 threadless rebuild b94985982075d0c7d73bbced427516ce5f3e140f / .NET 9.0.317'
         $summary.templateSha256 = (Get-FileHash -LiteralPath $compatible.Template).Hash
     }
+    $summary.experimentalRenderer = [bool]$ExperimentalWebGpuTemplate
+    $summary.renderingDriver = if ($ExperimentalWebGpuTemplate) { 'webgpu' } else { 'opengl3' }
+    if ($ExperimentalWebGpuTemplate) {
+        $summary.templateSha256 = (Get-FileHash -LiteralPath $ExperimentalWebGpuTemplate).Hash
+        $summary.webToolchain += ' / isolated WebGPU backport f329e39ce8db7acaa5c9d6628a530fb769969228'
+        $summary.projectOverrides += 'Exported bootstrap only: mobile renderer / webgpu driver; maintained project and gameplay unchanged'
+    }
     [IO.File]::WriteAllText("$build/build-manifest.json", ($summary | ConvertTo-Json -Depth 6), $encoding)
-    $pointer = if ($Threadless) { 'web-compatible-latest.json' } else { 'web-latest.json' }
+    $pointer = if ($ExperimentalWebGpuTemplate) { 'web-webgpu-latest.json' } elseif ($Threadless) { 'web-compatible-latest.json' } else { 'web-latest.json' }
     [IO.File]::WriteAllText("$root/artifacts/$pointer", (@{ build=$build; site=(Split-Path $site -Parent); manifest="$build/build-manifest.json" } | ConvertTo-Json), $encoding)
     Write-Host "SHARED_WEB_BUILD_PASS $site"
 } finally { Pop-Location }

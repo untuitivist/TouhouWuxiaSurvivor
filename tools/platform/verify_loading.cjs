@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { verificationBuildPath, verificationOutputRoot } = require('./verification_paths.cjs');
 const http = require('node:http');
 const { gzipSync } = require('node:zlib');
 const { execFileSync } = require('node:child_process');
@@ -10,9 +11,9 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '../..');
 const compatible = process.argv.includes('--compatible');
-const build = JSON.parse(fs.readFileSync(path.join(root, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
+const build = JSON.parse(fs.readFileSync(verificationBuildPath(root, compatible ? 'artifacts/web-compatible-latest.json' : 'artifacts/web-latest.json'), 'utf8'));
 const site = path.join(build.site, 'TouhouSurvivor');
-const output = path.join(build.build, 'loading-verification', new Date().toISOString().replace(/[:.]/g, '-'));
+const output = path.join(verificationOutputRoot(build), 'loading-verification', new Date().toISOString().replace(/[:.]/g, '-'));
 fs.mkdirSync(output, { recursive: true });
 const runtime = 'C:/Users/untuitivist/.cache/codex-runtimes/codex-primary-runtime/dependencies';
 const prefix = '/TouhouSurvivor/releases/loading-fixture/';
