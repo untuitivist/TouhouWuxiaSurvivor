@@ -1,6 +1,14 @@
 # Character Proportion and Costume Study
 
-Status: design study, pending user review. Not runtime artwork or an approved animation sheet.
+Status: rejected by the user for anatomy on 2026-09-09. Retained as a failed study, not a base approved for refinement, runtime artwork or an animation sheet.
+
+## Anatomy review
+
+The user supplied the Mystia's Izakaya character page. Reimu and Marisa's expanded portrait cards were visually inspected in the browser. The current studies lack coherent shoulder/neck connections, ribcage/pelvis orientation, believable joint transitions and supporting/free-leg relationships. Costume detail and nominal head counts did not solve these problems. Their export verification was technical only.
+
+Next artwork must start with independently viewable gesture, torso/pelvis masses and joint/hand/foot construction in Aseprite, before costume silhouettes or theme accessories. Full portraits and gameplay sprites require separate visual design checks. No corrected anatomy drawing has been completed in this review.
+
+User-specified reference: https://mzh.moegirl.org.cn/东方夜雀食堂/登场人物
 
 ## Reference and constraints
 
