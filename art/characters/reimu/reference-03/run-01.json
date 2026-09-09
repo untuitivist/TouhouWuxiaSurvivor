@@ -1,0 +1,175 @@
+{
+  "stage": "AI reference only; not an Aseprite redraw",
+  "prompt_id": "46b21c43-928a-4d5c-bd8e-4dada14c443a",
+  "elapsed_seconds": 1193.5,
+  "device": "CPU",
+  "threads": 8,
+  "workflow": {
+    "3": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 909202601,
+        "steps": 28,
+        "cfg": 5,
+        "sampler_name": "euler_ancestral",
+        "scheduler": "normal",
+        "denoise": 1,
+        "model": [
+          "4",
+          0
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "5",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "animagine-xl-4.0-opt.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 832,
+        "height": 1216,
+        "batch_size": 1
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "1girl, hakurei reimu, touhou, safe, solo, full body, standing, contrapposto, three-quarter view, looking at viewer, gentle smile, brown eyes, long dark brown hair, red hair bow, white frilled bow, hair tubes, red sleeveless miko outfit, yellow ascot, white detached sleeves, red pleated skirt, white frilled skirt hem, white socks, black mary janes, holding gohei, paper streamers, wooden wand, other hand on own waist, red waist sash, subtle cord knot, flowing fabric, natural proportions, elegant pose, clear hands, anime illustration, clean lineart, cel shading, restrained colors, burgundy red, warm ivory, simple beige background, character design, entire feet visible, masterpiece, high score, great score, absurdres",
+        "clip": [
+          "4",
+          1
+        ]
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "lowres, bad anatomy, bad hands, text, error, missing fingers, extra digits, fewer digits, extra limbs, fused fingers, twisted wrist, dislocated joints, malformed feet, cropped, out of frame, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, chibi, super deformed, big head, doll, stick figure, sword, katana, armor, lightning, staff, high heels, cleavage, bare midriff, underwear, nsfw, explicit, photorealistic, 3d, multiple views, multiple girls, busy background",
+        "clip": [
+          "4",
+          1
+        ]
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "3",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "reimu-reference",
+        "images": [
+          "8",
+          0
+        ]
+      }
+    }
+  },
+  "system_stats": {
+    "system": {
+      "os": "win32",
+      "ram_total": 85654831104,
+      "ram_free": 45175582720,
+      "comfyui_version": "0.33.1",
+      "required_frontend_version": "1.48.7",
+      "installed_templates_version": "0.11.41",
+      "required_templates_version": "0.11.41",
+      "comfy_package_versions": [
+        {
+          "name": "comfyui-frontend-package",
+          "installed": "1.48.7",
+          "required": "1.48.7"
+        },
+        {
+          "name": "comfyui-workflow-templates",
+          "installed": "0.11.41",
+          "required": "0.11.41"
+        },
+        {
+          "name": "comfyui-embedded-docs",
+          "installed": "0.5.9",
+          "required": "0.5.9"
+        },
+        {
+          "name": "comfy-kitchen",
+          "installed": "0.2.31",
+          "required": "0.2.31"
+        },
+        {
+          "name": "comfy-aimdo",
+          "installed": "0.4.13",
+          "required": "0.4.13"
+        }
+      ],
+      "python_version": "3.13.12 (main, Feb 12 2026, 00:38:53) [MSC v.1944 64 bit (AMD64)]",
+      "pytorch_version": "2.12.1+cu130",
+      "embedded_python": false,
+      "deploy_environment": "local-desktop2-standalone",
+      "argv": [
+        "D:\\Comfy-Desktop\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\main.py",
+        "--cpu",
+        "--force-fp32",
+        "--disable-all-custom-nodes",
+        "--disable-api-nodes",
+        "--disable-auto-launch",
+        "--cache-none",
+        "--listen",
+        "127.0.0.1",
+        "--port",
+        "8189",
+        "--base-directory",
+        "U:\\Project\\MainCode\\2.Learn\\godot\\touhou-wuxia-survivor\\touhou-wuxia-survivor\\artifacts\\comfyui-reference\\workspace",
+        "--models-directory",
+        "D:\\Comfy-Desktop\\ComfyUI-Shared\\models",
+        "--output-directory",
+        "U:\\Project\\MainCode\\2.Learn\\godot\\touhou-wuxia-survivor\\touhou-wuxia-survivor\\art\\characters\\reimu\\reference-03",
+        "--user-directory",
+        "U:\\Project\\MainCode\\2.Learn\\godot\\touhou-wuxia-survivor\\touhou-wuxia-survivor\\artifacts\\comfyui-reference\\workspace\\user",
+        "--database-url",
+        "sqlite:///:memory:"
+      ]
+    },
+    "devices": [
+      {
+        "name": "cpu",
+        "type": "cpu",
+        "index": null,
+        "vram_total": 85654831104,
+        "vram_free": 45177511936,
+        "torch_vram_total": 85654831104,
+        "torch_vram_free": 45177511936
+      }
+    ]
+  },
+  "images": [
+    {
+      "file": "reimu-reference_00001_.png",
+      "sha256": "6fd54acf8695d3e57b72344573bd8c45a7adf5220584f905a1a8b9e938a33f24"
+    }
+  ]
+}
