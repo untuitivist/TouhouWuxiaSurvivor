@@ -1,3 +1,18 @@
+## Hero Selection Portrait Scope — 2026-09-09
+
+- The current selection screen has two 495x351 text-only cards with 449-pixel start buttons; both Chinese and English and touch layouts must remain usable.
+- The request explicitly permits temporary AI illustrations only here. Keep original gameplay sprites/effects/landscape and all character ability data untouched.
+- Source boards are the two 1536x1024 images in ai-assets. Extract the large character art, not the gameplay panels or the small movement sprites. Label the result honestly as an AI-image extract, not an Aseprite redraw.
+- Aseprite through a logged CMD entry succeeds. Both left-panel crops are 520x800 at (16,140); masking must exclude embedded labels, side sprites and loose diagram elements while retaining full bodies and original colors.
+- First Aseprite extracts retain both full-body poses and omit the diagrams/text. Visual review finds small backdrop remnants near boots, the Marisa hat brim and a few loose petals; refine alpha boundaries before integration. No recoloring, resizing or redraw is performed.
+- Zoomed source review locates the original boot edges beyond the first mask: retain Reimu through x295 and Marisa through x303, and trace the gap between each pair of boots rather than cutting their soles.
+- Native build, 40/40 core regressions, portrait-specific UI checks, full UI/language smoke and the unchanged 1247-character font check pass. Desktop Chinese and 640x360 English captures show full bodies, separate text and preserved buttons; no gameplay sprite/effect changes.
+- Corrected Web verifier teardown and reran successfully: four unisolated desktop/touch, Chinese/English cases pass, including both hero callbacks and return. Actual phone-DPR3 Chinese and small-touch English screenshots reviewed. Web stage code and both PNG hashes match the maintained native inputs.
+- Aseprite source verification passes for 191598 Reimu and 219711 Marisa visible pixels, all equal to the matching original-board pixels. Both archived board hashes are unchanged.
+
+---
+
+
 ## Published Version Rollback — 2026-09-09
 
 - The user requests returning to 0.1.6, ending the unaccepted visual rebuild. The published baseline is e902d466deaf5757ad34cc69dd1686e7a481a641; origin/main currently references it. The pre-rollback HEAD is 072a2eb369522dad3528042e008a663baa849777, 15 local commits later.

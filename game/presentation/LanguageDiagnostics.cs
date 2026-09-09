@@ -34,6 +34,7 @@ public partial class GameRoot
                     show();
                     await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
                     AssertEnglishScreen();
+                    if (currentScreen == "heroes") AssertHeroSelectionPortraits();
                 }
                 for (var tab = 0; tab < 4; tab++)
                 {

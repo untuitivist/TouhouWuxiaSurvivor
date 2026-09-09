@@ -1,3 +1,15 @@
+## Temporary Hero-Selection AI Illustrations — 2026-09-09
+
+- Started from clean 8e8d4be. Inspecting the existing shared menu and Aseprite batch export. No version bump, publish, deployment or deletion is authorized.
+- Both AI portrait extracts now exist as layered Aseprite sources and 520x800 transparent PNGs. The original boards remain untouched.
+- Shared selection UI uses dedicated portrait frames with IgnoreSize before texture assignment, aspect-preserving nearest sampling and non-intercepting mouse filters. Both export staging allowlists include the new portrait directory.
+- Native build has zero warnings/errors; 40/40 core tests, portrait-specific checks, UI/settings/journal and bilingual/touch layout smoke, and font coverage pass. Four native selection captures are preserved in artifacts/hero-ai-portraits.
+- Web build 20260909-235014-442 succeeds without shared memory. Final four-case selection report: artifacts/web-builds/20260909-235014-442/hero-portrait-verification/2026-09-09T15-57-58-838Z/report.json. Both heroes and return work in every case; stage/source code and PNG equality checks pass.
+- Aseprite visible-layer export and original-color checks pass; original archive hashes remain unchanged. Reviewed native desktop/small English plus Web touch Chinese/small English captures. No physical-device FPS claim, Windows release export, push or deployment; the Web build is local validation only.
+
+---
+
+
 ## Rollback to Published alpha-0.1.6 — 2026-09-09
 
 - Confirmed clean main, original HEAD 072a2eb, baseline e902d46; no reset, force-push or file deletion.

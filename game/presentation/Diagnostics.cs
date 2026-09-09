@@ -159,6 +159,7 @@ public partial class GameRoot
         TestPixelUiAndDebug();
         TestRenderInvalidation();
         TestJournal();
+        TestHeroSelectionPortraits();
         ShowTitle();
         AssertUiBounds();
         PressButton("踏入夜境     →");

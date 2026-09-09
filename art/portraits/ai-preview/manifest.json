@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourcePolicy": "Temporary user-approved selection-screen exception; general policy remains Aseprite plus original assets.",
+  "assets": [
+    {
+      "character": "reimu",
+      "provenance": "AI_IMAGE_EXTRACT_IN_ASEPRITE",
+      "usage": "hero_selection_only",
+      "board": "ai-assets/reimu_pixel_concept.png",
+      "source": "art/portraits/ai-preview/reimu.aseprite",
+      "texture": "assets/ui/portraits/ai-preview/reimu.png",
+      "crop": [
+        16,
+        140,
+        520,
+        800
+      ],
+      "layers": 2,
+      "frames": 1,
+      "visiblePixels": 191598,
+      "boardSha256": "91483f7c02bfdb2e3ee5bb86589368d2e9526739ec83295cd703525b91bd2464",
+      "boardBytes": 2678745,
+      "sourceSha256": "26bc64ec74a13c8eab906839ad319187250bf4a0524ec02139bb7b6f30045aa0",
+      "sourceBytes": 1615350,
+      "textureSha256": "e921e78fad360f3d3e11f751028fb5b93b80c3929c76b4abc564bb327e2df707",
+      "textureBytes": 378101
+    },
+    {
+      "character": "marisa",
+      "provenance": "AI_IMAGE_EXTRACT_IN_ASEPRITE",
+      "usage": "hero_selection_only",
+      "board": "ai-assets/marisa_pixel_concept.png",
+      "source": "art/portraits/ai-preview/marisa.aseprite",
+      "texture": "assets/ui/portraits/ai-preview/marisa.png",
+      "crop": [
+        16,
+        140,
+        520,
+        800
+      ],
+      "layers": 2,
+      "frames": 1,
+      "visiblePixels": 219711,
+      "boardSha256": "320a4f1c550c894982b55477273462ae9a4d596e3f95d46bc22793581362d4cb",
+      "boardBytes": 2754989,
+      "sourceSha256": "f147158881fce4aaefb1101d978a69d7f044e9fb64e7d43888281cf268c1b899",
+      "sourceBytes": 1768466,
+      "textureSha256": "c4b0bff857f1e41b7d2c826d32cb513a32f92a4c48a5ca96d23d023dc311ffde",
+      "textureBytes": 462718
+    }
+  ],
+  "validation": {
+    "aseprite": "Exact visible PNG/source equality and original visible pixel colors; hidden locked reference, editable foreground.",
+    "native": "Zero-warning build, 40/40 core tests, UI and bilingual/touch portrait checks, language smoke, 1247-glyph coverage; four selection captures.",
+    "webReport": "artifacts/web-builds/20260909-235014-442/hero-portrait-verification/2026-09-09T15-57-58-838Z/report.json",
+    "webChecks": 4,
+    "sharedSourceAndTextureHashes": true,
+    "physicalDeviceTested": false,
+    "published": false
+  }
+}

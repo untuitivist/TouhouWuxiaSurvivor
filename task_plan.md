@@ -1,3 +1,19 @@
+## Temporary AI Portraits on Hero Selection — 2026-09-09
+
+Only the hero-selection illustrations are authorized to use the two archived AI boards. Preserve alpha-0.1.6 gameplay, all in-run artwork, the general Aseprite + original asset policy, archived originals and release/deployment state.
+
+1. [complete] Extracted both main illustrations in Aseprite with hidden locked references and editable alpha-masked foregrounds; no redraw, rescaling or recoloring.
+2. [complete] Isolated hero-selection layout in its own partial file, preserved original text/actions and 76-pixel touch targets; added portrait paths to both export staging lists.
+3. [complete] Native build, 40/40 core tests, UI/portrait/language checks, unchanged font coverage and Aseprite source fidelity pass; four unisolated Web desktop/touch cases pass and native/Web captures are reviewed.
+4. [complete] Recorded the narrow policy exception, editable source instructions, hashes and unreleased log; archives are unchanged. Include all verified changes in the local commit, without publish or deployment.
+
+Errors: CMD grep yielded no matches; switched to argument-array Git. One diagnostic grep used unescaped parentheses; use literal patterns or valid expressions.
+Aseprite preview via synchronous Node timed out without producing images; no process remained. Version check passes; retry through a logged CMD entry. Tasklist quoting failed in CMD; native process query through PowerShell 7 succeeded.
+All four Web portrait scenarios passed, but the new verifier used an incorrect server teardown method and did not exit. Use the existing server.closeAllConnections/close convention, stop only that owned verifier process, and rerun.
+
+---
+
+
 ## Restore Published alpha-0.1.6 — 2026-09-09
 
 Current request supersedes all visual-rebuild plans below. Restore the actual published tree, not only its version string. Preserve files and history; do not release, push, deploy, or change branches.

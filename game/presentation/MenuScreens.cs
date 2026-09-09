@@ -32,32 +32,6 @@ public partial class GameRoot
         first.GrabFocus();
     }
 
-    private void ShowHeroes()
-    {
-        var panel = Modal("heroes", GameText.Get("CHOOSE YOUR PATH  /  选择行者"), GameText.Get("今夜，由谁来平息异变？"), 1080, 570);
-        var heroes = new[]
-        {
-            (HeroKind.Reimu, GameText.Get("博丽灵梦"), GameText.Get("乐园的巫女"), GameText.Get("御札 · 阴阳玉 · 封魔"), GameText.Get("110 点生命\n初始：基础直射御札\n需解锁：灵符「梦想封印」"), GameText.Get("修习解锁阵与玉，符可追踪、爆炸。\n从容穿行弹隙，守住进退之路。"), Palette.Red, GameText.Get("灵")),
-            (HeroKind.Marisa, GameText.Get("雾雨魔理沙"), GameText.Get("普通的魔法使"), GameText.Get("星屑 · 光热 · 魔炮"), GameText.Get("85 点生命，伤害 +16%\n初始：星光射击 + Master Spark\n满蓄势：强化魔炮"), GameText.Get("星弹散射，慢移时收束。\n魔炮蓄势锁向，走位可平移火线。"), Palette.Violet, GameText.Get("魔"))
-        };
-        Button? first = null;
-        for (var index = 0; index < heroes.Length; index++)
-        {
-            var hero = heroes[index];
-            var card = ui.Panel(panel, new(35 + index * 515, 136, 495, 351), new Color("14272d"));
-            ui.Label(card, hero.Item8, new(361, 10, 114, 103), 78, Palette.Alpha(hero.Item7, 0.28f), true);
-            ui.Label(card, hero.Item3, new(23, 22, 350, 24), 14, hero.Item7);
-            ui.Label(card, hero.Item2, new(20, 53, 345, 50), 35, Palette.Paper, true);
-            ui.Label(card, hero.Item4, new(24, 111, 440, 25), 14, Palette.Gold);
-            ui.Label(card, hero.Item5, new(24, 152, 445, 88), 18, Palette.Paper);
-            if (!TouchLayout) ui.Label(card, hero.Item6, new(24, 244, 445, 56), 15, Palette.Muted);
-            var button = ui.Button(card, GameText.Format($"执此道 · {hero.Item2}"), new(23, TouchLayout ? 269 : 302, 449, TouchLayout ? 76 : 38), () => StartRun(hero.Item1), true);
-            first ??= button;
-        }
-        ui.Button(panel, GameText.Get("返回"), new(35, 507, 115, 37), ShowTitle);
-        ui.Label(panel, GameText.Get("没有局外数值加成。每一次异闻，都从一次新的出发开始。"), new(210, 511, 820, 30), 15, Palette.Muted);
-        first?.GrabFocus();
-    }
 
     private void ShowHelp()
     {
