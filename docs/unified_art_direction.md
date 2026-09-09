@@ -1,5 +1,19 @@
 # Unified Aseprite Visual Direction
 
+## Latest gameplay reference — 2026-09-09
+
+The user explicitly approved the viewpoint and visual style in `art/reference/reimu-gameplay-style-approved.png` and requested corresponding in-game changes. This supersedes earlier character/gameplay styling where inconsistent; it is not permission to copy every mechanic, caption, pixel dimension, or layout in the reference. Preserve the previously approved startup scene until separately changed.
+
+- View: top-down 2D with an oblique view of standing characters and scenery, not a side-scroller or a mandatory 3D/isometric conversion. Keep feet, silhouettes and front/side/back directions readable.
+- Scale: draw small gameplay sprites independently from the full-body illustration. The reference caption of 32–48 pixels is a design clue, not a locked export specification. The existing 48-pixel strips describe the current implementation, not a requirement to retain one-direction artwork.
+- Palette and environment: ink-blue shadows, warm ivory, vermilion, subdued stone paving, moss, restrained red foliage and warm shrine lamps. Environment detail must remain quieter than hostile bullets and actor silhouettes.
+- Ability correction: orbiting objects are yin-yang orbs, NOT ofuda. Ofuda are fired attacks. Unlocking the orb grants its existing orbit behavior; clearing bullets and charged launches remain separate growth branches. The ground boundary retains its existing placement and control behavior. Do not copy the reference caption or persistent player-centered ofuda formation as a new mechanic.
+- Effects: distinguish friendly orbs, fired ofuda, ground seals and enemy bullets by shape as well as color. Avoid opaque rings hiding the player, hitbox or incoming bullets.
+- First proposed in-game sample: Reimu front/side/back movement, yin-yang orbit, fired ofuda, the boundary, and one shrine-ground patch viewed together. Review this at actual gameplay scale before extending to other characters, enemies, scenery or HUD.
+- Production: the user permits image editing followed by Aseprite correction and another image-editing pass. Preserve immutable references and versioned outputs; keep real editable Aseprite sources and separate AI reference layers. Do not label copied/cut layers as a full redraw.
+
+This update records an approved visual target and a proposed implementation slice. No runtime art or game behavior has been replaced in this step. The existing implementation already uses yin-yang orbs for orbiting; no gameplay bug is claimed.
+
 ## User reference correction
 
 The user rejected the visual direction in 6917463. Technical checks were not aesthetic approval. The supplied startup screenshot (art/reference/approved-startup.png) is the visual reference: ink-blue layered mountains, muted foliage and blossoms, warm lamps, brown/gold paper panels and a pale-green primary button. Reuse the existing project-drawn Aseprite title landscape exactly. Redraw Reimu and Marisa with slimmer proportions rather than importing original sprites. This correction is a startup/UI/two-character sample; other artwork remains pending user review. No gameplay, version or deployment changes.
