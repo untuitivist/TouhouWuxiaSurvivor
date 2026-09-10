@@ -14,7 +14,10 @@ public sealed class CombatStressScenario
         EnemyCount = Math.Clamp(enemyCount, 40, RunState.EnemyLimit);
         run.Timings = new();
         ProjectileCount = EnemyCount == 320 ? 1600 : EnemyCount == 180 ? 600 : 200;
-        foreach (var node in new[] { UpgradeCatalog.BoundaryUnlock, UpgradeCatalog.YinYangUnlock, UpgradeCatalog.Homing, UpgradeCatalog.Blast, UpgradeCatalog.Cluster, UpgradeCatalog.Bind, UpgradeCatalog.Clear, UpgradeCatalog.Launch })
+        var nodes = run.Hero == HeroKind.Reimu
+            ? new[] { UpgradeCatalog.BoundaryUnlock, UpgradeCatalog.YinYangUnlock, UpgradeCatalog.Homing, UpgradeCatalog.Blast, UpgradeCatalog.Cluster, UpgradeCatalog.Bind, UpgradeCatalog.Clear, UpgradeCatalog.Launch }
+            : new[] { UpgradeCatalog.StardustUnlock, UpgradeCatalog.MasterSparkUnlock, UpgradeCatalog.StarPierce, UpgradeCatalog.StarSplit, UpgradeCatalog.StardustRecall, UpgradeCatalog.StardustEcho, UpgradeCatalog.SparkSweep, UpgradeCatalog.SparkClear };
+        foreach (var node in nodes)
             run.Build.TryApply(UpgradeCatalog.Get(node), 100);
         run.Enemies.Clear();
         run.Projectiles.Clear();

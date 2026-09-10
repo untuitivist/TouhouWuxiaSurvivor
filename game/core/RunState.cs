@@ -21,6 +21,7 @@ public sealed partial class RunState
     public BuildState Build { get; }
     public int[] Ranks => Build.Ranks;
     public ReimuAbilityState Reimu { get; } = new();
+    public MarisaAbilityState Marisa { get; } = new();
     public readonly Seal[] Seals =
     [
         new() { Name = "天之印", Position = new(-680, -430) },
@@ -29,7 +30,7 @@ public sealed partial class RunState
     ];
     public HeroKind Hero { get; }
     public bool Focused { get; private set; }
-    public BeamState? Beam { get; private set; }
+    public BeamState? Beam { get; internal set; }
 public BoundaryField? Field { get; internal set; }
     public int Seed { get; }
     public RunPhase Phase { get; private set; } = RunPhase.Playing;
@@ -67,10 +68,6 @@ public BoundaryField? Field { get; internal set; }
     private int nextEnemyId;
     private float spawnTimer = 0.4f;
     private float nextElite = 55;
-    private float primaryTimer;
-
-    private float stardustTimer;
-    private float beamCooldown;
     private Vector2 dashDirection;
 
     public RunState(HeroKind hero, int seed)

@@ -37,15 +37,15 @@ internal static class JournalCatalog
             var abilities = ArtCatalog.Abilities(hero).ToArray();
             var initial = string.Join("、", abilities.Where(art => preview.Ranks[(int)art.Id] > 0).Select(art => GameText.Get(art.Name)));
             yield return new("hero-" + hero, JournalCategory.Character, name,
-                reimu ? GameText.Get("基础御札 · 解锁与兼修") : GameText.Get("星弹散射 · 锁向魔炮"), GameText.Get("角色设定沿用现有角色目录；数值为本作改编。"),
+                reimu ? GameText.Get("基础御札 · 解锁与兼修") : GameText.Get("基础星光 · 解锁与兼修"), GameText.Get("角色设定沿用现有角色目录；数值为本作改编。"),
                 reimu ? "players/reimu.png" : "players/marisa.png", true,
                 GameText.Format($"初始生命  {preview.MaxHealth:0}\n移动速度  {preview.MoveSpeed:0}\n基础威力  ×{preview.Power:0.00}\n初始术式  {initial}\n专属术式  {string.Join("、", abilities.Select(art => GameText.Get(art.Name)))}\n满蓄势符卡  {ArtCatalog.SignatureName(hero)}\n\n没有局外数值加成。武侠体现在走位、进退与修习，不替换角色原有能力身份。"));
             yield return new("spell-" + hero, JournalCategory.Spell, ArtCatalog.SignatureName(hero),
                 reimu ? GameText.Get("满蓄势自动释放追踪灵光") : GameText.Get("满蓄势自动释放强化魔炮"), GameText.Get("原作命名沿用现有符卡目录；施放时序与战斗效果为本作改编。"),
                 reimu ? "effects/reimu_aura.png" : "effects/master_spark.png", false,
-                (reimu ? GameText.Get("先领悟梦想封印（修习 5 起可选），未解锁时不会自动施放。\n\n") : "") +
+                (reimu ? GameText.Get("先领悟梦想封印（修习 5 起可选），未解锁时不会自动施放。\n\n") : GameText.Get("先解锁魔炮，再领悟满蓄势魔炮（修习 5 起可选）；未解锁时只积累蓄势。\n\n")) +
                 GameText.Get("擦弹与退治积累蓄势；解锁后蓄势满时自动发动，无需额外按键。发动时清除敌弹并吸取场上拾取物。\n\n") +
-                (reimu ? GameText.Get("梦想封印：释放追踪灵光，寻找妖怪并造成范围爆发。") : GameText.Get("强化魔炮：先蓄势锁向，再持续照射；移动可平移火线，方向不会跟随重新索敌。")) +
+                (reimu ? GameText.Get("梦想封印：释放追踪灵光，寻找妖怪并造成范围爆发。") : GameText.Get("强化魔炮：蓄势后持续照射，走位平移火线。已学横扫或消弹分支同样生效；不自动追踪。")) +
                 GameText.Get("\n\n图中为当前局内使用的素材，不是原作符卡逐帧复刻。"));
         }
         foreach (var art in ArtCatalog.All)
@@ -56,12 +56,10 @@ internal static class JournalCatalog
                 details += GameText.Get("各重基础效果（未乘本局威力加成）\n");
                 for (var rank = 1; rank <= art.MaxRank; rank++) details += GameText.Format($"第 {rank} 重  {ArtCatalog.UpgradeText(art.Id, rank - 1)}\n");
                 details += GameText.Get("\n圆满  ") + GameText.Get(art.Mastery);
-                if (art.Owner == HeroKind.Reimu)
-                {
-                    details += art.Id == ArtKind.Ofuda ? GameText.Get("\n\n初始能力：只有直射符。") : GameText.Get("\n\n需先在修习中解锁此能力。");
-                    foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior))
-                        details += GameText.Format($"\n\n{upgrade.Name} · {UpgradeCatalog.Requirement(upgrade)}\n{upgrade.Description}");
-                }
+                details += art.Id == ArtKind.Ofuda ? GameText.Get("\n\n初始能力：只有直射符。")
+                    : art.Id == ArtKind.Stars ? GameText.Get("\n\n初始能力：只有直射星光，慢移收束。") : GameText.Get("\n\n需先在修习中解锁此能力。");
+                foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior))
+                    details += GameText.Format($"\n\n{upgrade.Name} · {UpgradeCatalog.Requirement(upgrade)}\n{upgrade.Description}");
             }
             else details += art.Id == ArtKind.Recovery ? GameText.Get("即时恢复，不累计重数；候选不足时提供调息。") : GameText.Format($"最多修习 {art.MaxRank} 重；只影响本局。");
             yield return new("art-" + art.Id, art.Owner.HasValue ? JournalCategory.Ability : JournalCategory.Training,

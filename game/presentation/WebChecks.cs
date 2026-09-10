@@ -35,6 +35,7 @@ public partial class GameRoot
         var fixture = arguments.FirstOrDefault(argument => argument.StartsWith("--web-fixture=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "";
         webPerformance = fixture == "performance";
         if (fixture == "growth-choices") { PrepareGrowthPreview(); return; }
+        if (PrepareMarisaGrowthFixture(fixture)) return;
         webArtPreview = fixture is "reimu-field" or "reimu-spell" or "marisa-stars" or "marisa-warmup" or "marisa-beam";
         if (webPilot || fixture.Length > 0)
         {
@@ -79,6 +80,9 @@ public partial class GameRoot
             SystemMilliseconds = run?.Timings?.Milliseconds ?? [],
             Screen = currentScreen, Hero = run?.Hero.ToString() ?? "", Phase = run?.Phase.ToString() ?? "",
             Language = GameText.Language,
+            AbilityRanks = run?.Ranks ?? [], Traits = (int)(run?.Build.Traits ?? AbilityTraits.None),
+            SignatureUnlocked = run?.Build.SignatureUnlocked ?? false,
+            ChoiceIds = run?.Choices.Select(upgrade => upgrade.Id).ToArray() ?? [],
             Tick = run?.Ticks ?? 0, Time = run?.Time ?? 0, X = run?.PlayerPosition.X ?? 0, Y = run?.PlayerPosition.Y ?? 0,
             Focused = run?.Focused ?? false, DashCooldown = run?.DashCooldown ?? 0, MoveX = touchHud.Movement.X, MoveY = touchHud.Movement.Y,
             TouchVisible = touchHud.Visible, TouchFocus = touchHud.FocusHeld, DebugVisible = debugOverlay.Visible,

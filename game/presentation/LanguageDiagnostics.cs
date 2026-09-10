@@ -75,6 +75,13 @@ public partial class GameRoot
                 AssertEnglishScreen();
                 ShowResult();
                 AssertEnglishScreen();
+                PrepareGrowthPreview(HeroKind.Marisa);
+                AssertEnglishScreen();
+                ShowBuild();
+                AssertEnglishScreen();
+                PrepareGrowthCombatPreview(HeroKind.Marisa);
+                OpenBuild();
+                AssertEnglishScreen();
             }
             GD.Print("LANGUAGE_SMOKE_PASS: bilingual settings, persistence, legacy saves, desktop/touch UI, journal, upgrades and paused-run safety");
             if (!GamePlatform.IsWeb) GetTree().Quit();

@@ -1274,3 +1274,15 @@
 - New full suite: artifacts/webgpu-validation/2026-09-09T20-26-51-285Z. Fresh 37/37 Node tests, Debug build, 40/40 core cases, six deterministic journeys, localization and 28 isolated Windows EXE checks pass; no historical evidence is reused as a new run.
 - Hardware WebGL2 probe identifies RTX 4070 Ti through ANGLE D3D11 without unsafe SwiftShader flags. The compatible and experimental export pointers are independently selected; validation outputs do not overwrite earlier reports.
 - Reimu measured combat gates pass so far. Marisa low/medium load fixtures enter Choosing around 15 simulated seconds: these runs fail workload validity, not a rendering correctness assertion. Marisa 320-load stays Playing but the first 15-second measurement falls to mean 25.94 FPS, 6 sampled minimum and simulation p95 20 ms. Full comparison is still running; no overall pass or WebGPU speedup is claimed.
+# Marisa Growth Rebuild — 2026-09-10
+
+- Visual review: all four Web layouts pass real choice/inspect/resume tests. English branch rows fit; touch choices retain large buttons. Chinese percentages could wrap after a culture-added space, fixed using explicit numeric percent text; recall now states its reduced outward reach.
+- Current-source Windows UI/language smoke and localization 932/932 pass. First Web export contains 184 matching source/asset inputs on threadless WebGL2. No physical mobile claim.
+- Additional tooling errors retained: missing RunPilot namespace was caught by native build and fixed; compound CMD environment assignment did not expose NODE_PATH, so a reusable .cmd wrapper now sets the known existing Playwright directory. An escaped newline invalidated the first web-test patch before edits; raw template literals fixed it. Release artifacts are ignored by Git, so file enumeration now uses the release directory (31 files) rather than an empty git file list.
+
+- Current Marisa starts with both stars and a beam, receives signature automatically, and uses legacy rank-only offers; Reimu already separates unlock/refine/behavior. Rebuild on that shared model without changing Reimu trait IDs.
+- Move Marisa timers, echo snapshots and bounded deferred fragments out of RunState. Do not append projectiles while a component-store ref is live. Split once; fragments cannot split and exclude the triggering target. Recall keeps hit history.
+- Beam currently scans/removes hostile bullets every frame. Make clearing an explicit pulse-timed, capped branch; keep ordinary beam damage and signature one-shot global clearing separate.
+- Existing diagnostic stress setup always grants Reimu upgrades; low/medium Marisa can stall at choices. Repair hero-specific fixture setup and auto-choice only in diagnostics, preserving load counts.
+- Source boundary: web searches returned no usable results. Preserve the existing ArtCatalog original-work references; proposed return/echo/sweep are game adaptations, not newly verified canonical spellcards.
+- Tool errors: guessed ReimuAbilityState.cs does not exist (state is in ReimuTuning.cs); a JS regex lost escaped parentheses, fixed with plain identifier alternatives. No files deleted.

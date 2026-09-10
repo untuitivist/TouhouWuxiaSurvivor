@@ -107,7 +107,7 @@ public sealed partial class RunState
         Invulnerability = Math.Max(Invulnerability, 0.6f);
         Projectiles.RemoveAll(projectile => projectile.Hostile);
         if (Hero == HeroKind.Reimu) CastDreamSeal();
-        else StartBeam(true);
+        else MarisaBeamSystem.Start(this, true);
         foreach (ref var pickup in Pickups.Active) pickup.Attracted = true;
         Emit(EffectKind.Spell, PlayerPosition);
     }

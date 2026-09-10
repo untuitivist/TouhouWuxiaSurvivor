@@ -17,6 +17,8 @@ internal static class ProjectileSystem
         {
             ref var projectile = ref world.Projectiles[index];
             if (projectile.Life <= 0) continue;
+            MarisaProjectileSystem.Move(run, ref projectile);
+            if (projectile.Life <= 0) continue;
             if (projectile.TurnRate > 0 && !projectile.Hostile)
             {
                 var target = world.Grid.FindById(projectile.TargetId);
@@ -66,6 +68,7 @@ internal static class ProjectileSystem
                     var hitRadius = enemy.Radius + projectile.Radius;
                     if (projectile.HitIds.Contains(enemy.Id) || Geometry.SegmentDistanceSquared(enemy.Position, previous, projectile.Position) >= hitRadius * hitRadius) continue;
                     projectile.HitIds.Add(enemy.Id);
+                    MarisaProjectileSystem.OnHit(run, ref projectile, enemy.Id);
                     if (projectile.DreamOrb) run.Explode(projectile.Position, projectile.Damage);
                     else
                     {
@@ -78,5 +81,6 @@ internal static class ProjectileSystem
             }
         }
         world.Projectiles.RemoveAll(static projectile => projectile.Life <= 0);
+        MarisaProjectileSystem.Flush(run);
     }
 }

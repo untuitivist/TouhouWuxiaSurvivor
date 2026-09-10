@@ -6,6 +6,7 @@ using Rebirth.Tests;
 
 if (args.Contains("--performance")) return PerformanceBenchmarks.Run(args);
 if (args.Contains("--growth-balance")) return GrowthBalance.Run();
+if (args.Contains("--marisa-balance")) return MarisaBalance.Run();
 
 var tests = new (string Name, Action Body)[]
 {
@@ -15,6 +16,15 @@ var tests = new (string Name, Action Body)[]
     ("scalar hot geometry matches vector reference", EcsTests.GeometryEquivalence),
     ("dense grid and overflow preserve reference query order", EcsTests.GridEquivalence),
     ("hero identities and initial weapons", HeroIdentity),
+    ("Marisa unlocks, prerequisites and compatible choices", MarisaGrowthTests.Offers),
+    ("Marisa starts with stars and learns her signature", MarisaGrowthTests.Starter),
+    ("Marisa split is deferred, bounded and nonrecursive", MarisaGrowthTests.Split),
+    ("Marisa return keeps hit history and finite lifetime", MarisaGrowthTests.Recall),
+    ("Marisa echo snapshots origin and pauses with choices", MarisaGrowthTests.Echo),
+    ("Marisa beam sweep and capped pulse clear", MarisaBeamTests.Branches),
+    ("Marisa descriptions translate in both languages", MarisaGrowthTests.Language),
+    ("both diagnostic hero builds continue through upgrades", MarisaBeamTests.Stress),
+    ("Marisa equal-point routes have bounded distinct niches", MarisaBalance.Guardrails),
     ("growth prerequisites, uniqueness and mixed offers", GrowthTests.Offers),
     ("compatible branches commute and reject repeats", GrowthTests.Combinations),
     ("basic ofuda stays straight and signature stays locked", GrowthTests.Basic),
@@ -79,7 +89,7 @@ static void HeroIdentity()
     var reimu = NewRun();
     var marisa = NewRun(HeroKind.Marisa);
     Check(reimu.MaxHealth > marisa.MaxHealth && marisa.MoveSpeed > reimu.MoveSpeed, "Different strengths");
-    Check(reimu.Ranks[(int)ArtKind.Ofuda] == 1 && reimu.Ranks[(int)ArtKind.YinYang] == 0 && marisa.Ranks[(int)ArtKind.Stars] == 1 && marisa.Ranks[(int)ArtKind.MasterSpark] == 1 && marisa.Ranks[(int)ArtKind.Ofuda] == 0, "Different starter arts");
+    Check(reimu.Ranks[(int)ArtKind.Ofuda] == 1 && reimu.Ranks[(int)ArtKind.YinYang] == 0 && marisa.Ranks[(int)ArtKind.Stars] == 1 && marisa.Ranks[(int)ArtKind.MasterSpark] == 0 && marisa.Ranks[(int)ArtKind.Ofuda] == 0, "Different starter arts");
 }
 
 static void Movement()

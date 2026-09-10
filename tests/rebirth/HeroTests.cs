@@ -113,6 +113,7 @@ internal static class HeroTests
     {
         var run = Empty(HeroKind.Marisa);
         run.Ranks[(int)ArtKind.MasterSpark] = 3;
+        run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.SparkClear), 3);
         var inside = Target(run, new(400, 0));
         run.Step(default);
         var outside = Target(run, new(400, 180));
@@ -158,6 +159,11 @@ internal static class HeroTests
             {
                 run.Ranks[(int)ArtKind.Ofuda] = 1;
                 run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.DreamSeal), 5);
+            }
+            else
+            {
+                run.Ranks[(int)ArtKind.MasterSpark] = 1;
+                run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.FinalSpark), 5);
             }
             var count = hero == HeroKind.Reimu ? 20 : 27;
             for (var index = 0; index < count; index++)

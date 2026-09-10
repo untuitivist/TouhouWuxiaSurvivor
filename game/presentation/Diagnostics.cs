@@ -49,6 +49,7 @@ public partial class GameRoot
         if (mode == "journal-detail") { ShowJournalDetail(JournalCatalog.All.Single(entry => entry.Id == "art-MasterSpark")); return; }
         if (mode == "growth-choices") { PrepareGrowthPreview(); return; }
         if (mode == "growth-orbit") { PrepareGrowthCombatPreview(); return; }
+        if (PrepareMarisaGrowthFixture(mode)) return;
         PrepareBattlePreview(mode);
     }
 

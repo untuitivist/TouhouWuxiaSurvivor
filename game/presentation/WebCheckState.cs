@@ -6,6 +6,10 @@ internal sealed class WebCheckState
     public string Language { get; set; } = "zh";
     public string Hero { get; set; } = "";
     public string Phase { get; set; } = "";
+    public int[] AbilityRanks { get; set; } = [];
+    public int Traits { get; set; }
+    public bool SignatureUnlocked { get; set; }
+    public string[] ChoiceIds { get; set; } = [];
     public int Tick { get; set; }
     public float Time { get; set; }
     public float X { get; set; }

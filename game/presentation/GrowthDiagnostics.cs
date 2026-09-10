@@ -4,10 +4,13 @@ namespace Rebirth.Presentation;
 
 public partial class GameRoot
 {
-    private void PrepareGrowthCombatPreview()
+    private void PrepareGrowthCombatPreview(HeroKind hero = HeroKind.Reimu)
     {
-        StartRun(HeroKind.Reimu, 260906);
-        foreach (var id in new[] { UpgradeCatalog.YinYangUnlock, UpgradeCatalog.BoundaryUnlock, UpgradeCatalog.Launch, UpgradeCatalog.Clear, UpgradeCatalog.Cluster, UpgradeCatalog.Bind, UpgradeCatalog.Homing, UpgradeCatalog.Blast })
+        StartRun(hero, 260906);
+        var nodes = hero == HeroKind.Reimu
+            ? new[] { UpgradeCatalog.YinYangUnlock, UpgradeCatalog.BoundaryUnlock, UpgradeCatalog.Launch, UpgradeCatalog.Clear, UpgradeCatalog.Cluster, UpgradeCatalog.Bind, UpgradeCatalog.Homing, UpgradeCatalog.Blast }
+            : new[] { UpgradeCatalog.StardustUnlock, UpgradeCatalog.MasterSparkUnlock, UpgradeCatalog.StarPierce, UpgradeCatalog.StarSplit, UpgradeCatalog.StardustRecall, UpgradeCatalog.StardustEcho, UpgradeCatalog.SparkSweep, UpgradeCatalog.SparkClear };
+        foreach (var id in nodes)
             run!.Build.TryApply(UpgradeCatalog.Get(id), 100);
         foreach (var position in new[] { new System.Numerics.Vector2(400, -90), new System.Numerics.Vector2(420, -70), new System.Numerics.Vector2(-300, 90) })
         {
@@ -23,17 +26,31 @@ public partial class GameRoot
         RefreshRunScreen();
     }
 
-    private void PrepareGrowthPreview()
+    private void PrepareGrowthPreview(HeroKind hero = HeroKind.Reimu)
     {
-        StartRun(HeroKind.Reimu, 260906);
-        run!.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.YinYangUnlock), 1);
-        run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.BoundaryUnlock), 1);
+        StartRun(hero, 260906);
+        run!.Build.TryApply(UpgradeCatalog.Get(hero == HeroKind.Reimu ? UpgradeCatalog.YinYangUnlock : UpgradeCatalog.StardustUnlock), 1);
+        run.Build.TryApply(UpgradeCatalog.Get(hero == HeroKind.Reimu ? UpgradeCatalog.BoundaryUnlock : UpgradeCatalog.MasterSparkUnlock), 1);
         run.AddExperience(50);
         run.Step(default);
         run.Choices.Clear();
-        foreach (var id in new[] { UpgradeCatalog.Blast, UpgradeCatalog.Bind, UpgradeCatalog.Launch })
+        var choices = hero == HeroKind.Reimu ? new[] { UpgradeCatalog.Blast, UpgradeCatalog.Bind, UpgradeCatalog.Launch }
+            : new[] { UpgradeCatalog.StarPierce, UpgradeCatalog.StardustEcho, UpgradeCatalog.SparkSweep };
+        foreach (var id in choices)
             run.Choices.Add(UpgradeCatalog.Get(id));
         canvas.ResetView();
         RefreshRunScreen();
+    }
+
+    private bool PrepareMarisaGrowthFixture(string mode)
+    {
+        if (mode == "marisa-growth-choices") PrepareGrowthPreview(HeroKind.Marisa);
+        else if (mode is "marisa-growth-combat" or "marisa-growth-build")
+        {
+            PrepareGrowthCombatPreview(HeroKind.Marisa);
+            if (mode == "marisa-growth-build") OpenBuild();
+        }
+        else return false;
+        return true;
     }
 }

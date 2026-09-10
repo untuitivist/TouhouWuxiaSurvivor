@@ -810,3 +810,12 @@ The original drawing request remains unfinished. Aseprite automation has reprodu
 4. [pending] Preserve logs/artifacts, add reproducible validation evidence and outcome documentation, audit no-release boundaries, and commit locally.
 
 ---
+## Marisa Growth Rebuild — 2026-09-10
+
+Rebuild Marisa's upgrade route in the shared C# game, following the accepted basic-attack-first, unlockable branches and compatible combinations model. Preserve Reimu, inputs, assets/art policy, one Windows/Web project, alpha-0.1.7 and production artifacts. This is local development, not publication or renewed WebGPU work.
+
+1. [complete] Inspected growth/abilities/UI/tests and existing character-source references; defined stars, stardust and beam unlock/refine/compatible behavior routes.
+2. [complete] Implemented separate Marisa state/tuning/casting/projectile/beam systems, bilingual UI and journal, bounded mechanics tests and hero-correct continuous diagnostics. Core 49/49 and initial 16 equal-budget arenas pass; nine route-priority pilots include one loss, retained as evidence rather than hidden.
+3. [complete] Current-source core 49/49, localization 933/933, Windows UI/language/five captures, four bilingual desktop/touch Web flows, persistence and all three continuous combat budgets pass. Documented first-pass balance and physical-mobile limitations; audited 184 staged inputs, unchanged release/history and UTF-8. Implementation and evidence are included in the local completion commit; no push, version bump, deployment or replacement of release EXEs.
+
+---

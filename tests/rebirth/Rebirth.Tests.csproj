@@ -15,6 +15,9 @@
     <Compile Include="HeroTests.cs" />
     <Compile Include="GrowthTests.cs" />
     <Compile Include="GrowthBalance.cs" />
+    <Compile Include="MarisaGrowthTests.cs" />
+    <Compile Include="MarisaBeamTests.cs" />
+    <Compile Include="MarisaBalance.cs" />
     <Compile Include="PerformanceBenchmarks.cs" />
     <Compile Include="EcsTests.cs" />
   </ItemGroup>

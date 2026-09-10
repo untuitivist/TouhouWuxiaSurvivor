@@ -24,7 +24,7 @@ public partial class GameRoot
             ui.Label(card, rank == 0 ? GameText.Get("未习得") : GameText.Format($"{rank} / {art.MaxRank} 重"), new(617, 14, 92, 25), 14, color);
             var branches = UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior);
             var branchText = string.Join(" · ", branches.Select(upgrade => GameText.Format($"{(run.Build.Rank(upgrade) > 0 ? GameText.Get("已悟") : GameText.Get("待悟"))} {upgrade.Name}")));
-            ui.Label(card, run.Hero == HeroKind.Reimu ? branchText : art.Source, new(17, 42, 689, 23), 12, Palette.Muted);
+            ui.Label(card, branchText, new(17, 42, 689, 23), 12, Palette.Muted);
             ui.Label(card, rank >= art.MaxRank ? GameText.Get("圆满：") + GameText.Get(art.Mastery) : ArtCatalog.UpgradeText(art.Id, rank), new(17, 68, 689, 36), 15, Palette.Paper);
         }
         var training = ArtCatalog.Training.Select(art => GameText.Format($"{art.Name} {run.Ranks[(int)art.Id]}/{art.MaxRank}"));

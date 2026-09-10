@@ -3,7 +3,9 @@ namespace Rebirth.Core;
 [Flags]
 public enum AbilityTraits
 {
-    None = 0, Homing = 1, Blast = 2, Cluster = 4, Bind = 8, Clear = 16, Launch = 32, DreamSeal = 64
+    None = 0, Homing = 1, Blast = 2, Cluster = 4, Bind = 8, Clear = 16, Launch = 32, DreamSeal = 64,
+    StarPierce = 128, StarSplit = 256, StardustRecall = 512, StardustEcho = 1024,
+    SparkSweep = 2048, SparkClear = 4096, FinalSpark = 8192
 }
 
 public enum UpgradeKind { Unlock, Refine, Behavior, Legacy, Recovery }
@@ -25,7 +27,7 @@ public sealed class BuildState
     public int[] Ranks { get; } = new int[ArtCatalog.All.Length];
     public AbilityTraits Traits { get; private set; }
     public int AllocatedPoints { get; private set; }
-    public bool SignatureUnlocked => Hero == HeroKind.Marisa || Has(AbilityTraits.DreamSeal);
+    public bool SignatureUnlocked => Has(Hero == HeroKind.Reimu ? AbilityTraits.DreamSeal : AbilityTraits.FinalSpark);
 
     public BuildState(HeroKind hero)
     {
@@ -62,7 +64,7 @@ public sealed record HeroDefinition(HeroKind Id, string Name, float Health, floa
 public static class HeroCatalog
 {
     private static readonly HeroDefinition Reimu = new(HeroKind.Reimu, "博丽灵梦", 110, 1, 205, Array.AsReadOnly(new[] { ArtKind.Ofuda }));
-    private static readonly HeroDefinition Marisa = new(HeroKind.Marisa, "雾雨魔理沙", 85, 1.16f, 220, Array.AsReadOnly(new[] { ArtKind.Stars, ArtKind.MasterSpark }));
+    private static readonly HeroDefinition Marisa = new(HeroKind.Marisa, "雾雨魔理沙", 85, 1.16f, 220, Array.AsReadOnly(new[] { ArtKind.Stars }));
     public static HeroDefinition Get(HeroKind hero) => hero switch
     {
         HeroKind.Reimu => Reimu, HeroKind.Marisa => Marisa, _ => throw new ArgumentOutOfRangeException(nameof(hero))

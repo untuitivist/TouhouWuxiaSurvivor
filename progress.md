@@ -1050,3 +1050,13 @@
 - Tool-only recoveries retained: an absent historical CMD filename was read unsuccessfully; Sharp import through REPL rejected package.json, so the existing native Node runtime composed diagnostic screenshots instead. Browser identity in the report was checked against the actual probe (Edge 152.0.4191.62), not inferred.
 
 ---
+# Marisa Growth — 2026-09-10
+
+- Final checks pass: core 49/49, localization 933/933, font coverage 1253, current-source Windows build/UI/language smoke plus five real-render captures. The new web export has 184 unmodified staged inputs and uses WebGL2 without shared memory.
+- Four desktop/touch bilingual Marisa gameplay flows and full Web language persistence pass. Continuous 15-second reference measurements pass all existing budgets: Marisa 40/180/320 enemy means 60/60/59.47 FPS; Reimu 320 mean 60 FPS. Hardware is desktop RTX 4070 Ti, not a physical phone.
+- Reviewed native beam/rings, unchanged character portraits, final Chinese percentages, English branch rows and touch cards visually. Preserved nine pilot outcomes, including one dust-route loss; no false claim of final balance or WebGPU readiness.
+- Font check through the Node-host environment lacked fontTools; the configured CMD environment passed without downloads or font changes. Final audit passes: 184/184 staged inputs match current source, all 31 existing release files retain hashes, historical changelog is byte-for-byte preserved, 47 changed/new text files are UTF-8 without BOM, and git diff --check is clean. All changes are part of the local completion commit; no push or publication.
+
+- Implemented shared unlock/refine offers, six combinable Marisa branches and a gated charged spell. Separated casting, projectile traits and pulse-timed beam behavior; UI, journal and English catalog follow the same definitions.
+- Added mechanics, prerequisites, pause/choice, capacity, stress and equal-budget tests. First compile found a C# top-level Check name collision with static imports; calls are now explicitly qualified. A prior large patch invocation failed JS parsing before execution; split it into template-literal patches, with no partial edits.
+- Validation underway; no release, push or deployment. Historical binaries and WebGPU experiment remain unchanged.

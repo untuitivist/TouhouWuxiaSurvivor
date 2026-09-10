@@ -1,5 +1,6 @@
 using Godot;
 using Rebirth.Core;
+using Rebirth.Diagnostics;
 using NumericsVector = System.Numerics.Vector2;
 
 namespace Rebirth.Presentation;
@@ -71,6 +72,7 @@ public partial class GameRoot : Node
         if (diagnosticMode || webPilot || webPerformance || webArtPreview) return;
         if (run == null) return;
         canvas.Focused = Input.IsActionPressed(GameControls.Focus) || touchHud.FocusHeld;
+        if (run.Phase == RunPhase.Choosing && webCombatStress != null) RunPilot.ResolveChoices(run);
         if (run.Phase == RunPhase.Playing)
         {
             float horizontal = Input.GetAxis(GameControls.Left, GameControls.Right) + touchHud.Movement.X;

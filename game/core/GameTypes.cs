@@ -46,6 +46,8 @@ public struct Projectile
     public int TargetId;
     public bool DreamOrb;
     public bool Blast;
+    public bool StarSplit;
+    public float RecallRemaining;
     public int ClearBudget;
     public int TintIndex;
     public HitHistory HitIds;
@@ -54,6 +56,10 @@ public struct Projectile
 public sealed class BeamState
 {
     public Vector2 Direction;
+    public Vector2 AimDirection;
+    public bool Sweep;
+    public bool ClearsBullets;
+    public float Duration;
     public float Warmup;
     public float Remaining;
     public float PulseTimer;
