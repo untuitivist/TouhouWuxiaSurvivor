@@ -25,6 +25,8 @@ $portable = Join-Path $isolated $source.Name
 Copy-Item -LiteralPath $source.FullName -Destination $portable
 if (@(Get-ChildItem -LiteralPath $isolated -Force).Count -ne 1) { throw 'Standalone directory must contain only the EXE before launch.' }
 
+$completedChecks = [Collections.Generic.List[string]]::new()
+
 function Invoke-ReleaseCheck([string]$Name, [string[]]$GameArguments, [string]$Expected) {
     $start = [System.Diagnostics.ProcessStartInfo]::new()
     $start.FileName = $portable
@@ -50,6 +52,7 @@ function Invoke-ReleaseCheck([string]$Name, [string[]]$GameArguments, [string]$E
     $text = $output.GetAwaiter().GetResult() + $errors.GetAwaiter().GetResult()
     [System.IO.File]::WriteAllText((Join-Path $logs "$Name.log"), $text, $encoding)
     if ($process.ExitCode -ne 0 -or -not $text.Contains($Expected) -or $text -match '(?m)^ERROR:') { throw "$Name failed: $text" }
+    $completedChecks.Add($Name)
     Write-Output "PASS $Name"
     $process.Dispose()
 }
@@ -91,7 +94,7 @@ $report = [ordered]@{
     isolated_directory = $isolated
     isolated_files = @(Get-ChildItem -LiteralPath $isolated -Force | ForEach-Object { $_.Name })
     embedded_runtime = $configuration.runtimeOptions.includedFrameworks
-    checks = @('standalone-smoke', 'standalone-language', 'standalone-language-settings', 'standalone-display', 'standalone-title', 'standalone-boss') + @($screens | ForEach-Object { "standalone-$_" }) + @('standalone-controls-small', 'standalone-heroes-small', 'standalone-batch-reimu', 'standalone-batch-marisa')
+    checks = $completedChecks.ToArray()
 }
 [System.IO.File]::WriteAllText((Join-Path $logs 'report.json'), ($report | ConvertTo-Json -Depth 5), $encoding)
 Write-Output "SINGLE_EXE_VALIDATION_PASS version=$version bytes=$($source.Length) sha256=$checksum"

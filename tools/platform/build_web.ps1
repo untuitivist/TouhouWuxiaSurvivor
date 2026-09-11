@@ -1,5 +1,6 @@
 param([switch]$Threadless, [string]$ExperimentalWebGpuTemplate = '')
 $ErrorActionPreference = 'Stop'
+if ($IsWindows) { $env:OS = 'Windows_NT' }
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $encoding = [Text.UTF8Encoding]::new($false)
 if ($ExperimentalWebGpuTemplate) {
@@ -62,6 +63,7 @@ $godot = Join-Path $editor 'Godot_v4.6.1-stable_mono_web_export_win64_console.ex
 $env:GodotWebBuild = 'true'
 $env:DOTNET_ROOT = Join-Path $toolRoot 'dotnet'
 $env:DOTNET_ROOT_X64 = $env:DOTNET_ROOT
+$env:DOTNET_HOST_PATH = $dotnet
 $env:DOTNET_CLI_HOME = Join-Path $cacheRoot "$cachePrefix-cli-home"
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 $env:DOTNET_GENERATE_ASPNET_CERTIFICATE = 'false'
