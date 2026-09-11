@@ -1,3 +1,11 @@
+## Marisa Gravity and Sustain Release — 2026-09-11
+
+- Audited run order, dense stores, local grid, projectile collisions, pickup healing and old Marisa tests. Implementation will preserve rendering batches and fixed-step timing while replacing the unreleased collision-based routes.
+- Began release implementation from clean df35ff9. Inspected existing plans and published history; no code, version, artifact or server changes yet.
+- Created phased plan; next is bounded code/release audit. Missing rg on PATH is recorded, not silently retried.
+
+---
+
 ## WebGPU Feasibility Experiment — 2026-09-09 UTC
 
 - The final CMD quoted commit message was split into pathspec arguments and Git rejected it without a commit. Switched to an argument-array Git invocation to preserve the complete message; the staged file scope is unchanged.

@@ -1,3 +1,16 @@
+## Marisa Gravity and Sustain Release — 2026-09-11
+
+- Runtime audit: Marisa currently creates ordinary collision projectiles with splitting/recall queues. Replace that active mechanism with a separate bounded dense StarBody store, local-grid damage/pull queries and batched existing star textures; do not run N-body all-pairs physics. OOP remains at build/run/UI boundaries.
+- Repurpose the unreleased Stardust ability slot as Herbs while preserving numeric ArtKind ordering and all Reimu slots. New branches cover mass, lifetime, distributed coverage, planet core, beam steering/width/resonance and limited healing storage/brewing. No speculative beam-push or new renderer.
+- Fixed-step enemy movement precedes grid rebuild: accumulate bounded attraction for the following movement step rather than teleport enemies after indexing. Snapshot star mass/DPS/lifetime on generation; no split/merge damage duplication.
+- Existing core test project is tests/rebirth/Rebirth.Tests.csproj; native and Web diagnostics already expose growth state. These fixtures must be updated to assert the new mechanic, not merely the old trait flags.
+- Starting clean at df35ff9, six local commits ahead of origin/main. Published baseline remains alpha-0.1.7; the implemented September 10 Marisa sample has no new gravity/healing mechanics.
+- User accepts bounded random mass distribution and asks for a new release. One shared C# Windows/Web project, existing art/controls and history remain unchanged. Prior tests do not validate this new design.
+- Confirmed design: sustained proximity tearing; enemy-attracted stars grow into enemy-attracting planets; damage, mass/distribution and lifetime are separate growth axes. Generation-time mass randomization stays stable, with a guaranteed core for planet growth. Healing uses mushrooms/herbs; beam widens and later steers with movement.
+- Tooling: Git is D:/_soft/Git/cmd/git.exe. Windows PowerShell 5.1 is forbidden. Use CMD/argument arrays and UTF-8 without BOM. No permission to delete any existing file; preserve old artifacts.
+
+---
+
 ## WebGPU Experiment Findings — 2026-09-09 UTC
 
 - Final recheck at 2026-09-10 02:11 China Standard Time (2026-09-09 18:11 UTC): all 12 unit/server tests and six browser scenarios pass after fallback-state/UI and pixel-threshold fixes. Evidence: artifacts/webgpu-lab/2026-09-09T18-11-05-609Z/report.json. This remains a rendering-only experiment on hardware Edge, not a game or physical-mobile benchmark.

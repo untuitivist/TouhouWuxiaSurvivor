@@ -1,3 +1,17 @@
+## Marisa Gravity and Sustain Release — 2026-09-11
+
+Implement the accepted randomized-mass star growth, sustained gravity damage, directional growing beam and limited mushroom/herb sustain in the existing shared C# game. Preserve Reimu, established controls/art, all release history and the compatible threadless Web renderer. Publish only after new validation: self-contained Windows EXE plus matching Web deployment. No deletions or speculative WebGPU work.
+
+1. [in_progress] Audit growth/runtime/render/test architecture and release gates; confirm the next version against local and remote history.
+2. [pending] Implement bounded random star mass, attraction/planet progression, sustained damage, beam and healing growth with decoupled systems and localization.
+3. [pending] Add focused deterministic tests, balance and entity-budget checks; validate actual native and Web gameplay/UI.
+4. [pending] Update preserved changelog/version/docs, build immutable Windows/Web artifacts from committed inputs, verify and publish/deploy.
+5. [pending] Verify public deployment and final artifacts, record receipts and honest validation boundaries, commit final records.
+
+Errors: rg is not on the inherited PATH; locate the bundled executable or use argument-array file inspection.
+
+---
+
 ## Full Actual-Game WebGPU Validation — 2026-09-10
 
 Keep one unchanged C# game and alpha-0.1.7. Validate isolated exports and existing Windows EXE; no deletion, push, deployment or release replacement.
