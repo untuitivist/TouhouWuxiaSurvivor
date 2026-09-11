@@ -2,7 +2,7 @@
 
 1. [complete] Inspect supplied TH10 star atlas and TH08 beam texture; retain original pixels and separate cosmetic RNG.
 2. [complete] Implement multi-color stars and spatially flowing rainbow beam with pause/reduced-motion behavior. Native rendering and core regressions pass.
-3. [in_progress] Prepare current fonts, verify fresh compatible Web rendering, record results and commit. No release claim until complete candidate gates pass.
+3. [complete] Fonts, native UI/core/rendering and fresh compatible-Web color/flow checks verified; source committed as 13a3d91. Actual browser frames archived as an Aseprite GIF preview. Full Web long-run gate still times out, so release remains pending.
 
 ---
 

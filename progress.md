@@ -5,7 +5,9 @@
 - Original color stars extracted by Aseprite. First 14-column atlas failed strict sampling comparison (260 pixels); full 16-cell original row with only 14 chromatic cells selected fixes root cause (0 pixels), no threshold relaxation. Failed atlas and images retained.
 - Native actual-renderer regression passes all 81 batch checks plus 24 color-state checks, original-color atlas checks and flowing-beam checks. Beam has 6 simultaneous color families, 75847 changing pixels, unchanged alpha, frozen pause and static-rainbow reduced motion.
 - Native UI smoke exposed a stale literal expecting the old star-group display name; update it to the actual star-stream title without weakening ownership checks.
-- Fresh Web build and dual-platform release gates remain pending; no push or deployment of the superseded candidate.
+- Source commit 13a3d91b65ad5719ccf7ad48469d67d6f1dd54c8; clean-source compatible Web build artifacts/web-builds/20260911-200301-086. No isolation or SharedArrayBuffer required in the verified desktop browser. Both hero contexts pass new original-star and flowing-beam pixel checks, including pause/reduced-motion, with zero browser errors.
+- Full Web batch gate: Reimu passes 81 checks; Marisa exceeds the existing 180-second deadline after battle check 42, with zero pixel errors in completed comparisons. Do not raise the deadline or call the whole gate passed. The combined tool call then hit its 300-second limit; the second injected-color run has only a partial Reimu result and is incomplete. No push/deployment or replacement release EXE.
+- Fixed-state actual Web preview: 40 PNG frames, Aseprite-assembled 960x540 GIF at artifacts/marisa-gravity-20260911/marisa-rainbow-web-preview.gif. It demonstrates rendering, not live combat performance. An initial GIF export lacked inherited APPDATA after the tool session reset and timed out; explicit Windows environment fixes export. Frames and failed logs retained.
 
 ## Marisa Many-Body Correction — 2026-09-11
 

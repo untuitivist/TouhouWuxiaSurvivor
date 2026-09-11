@@ -1,5 +1,9 @@
 ## Multi-Color Source Audit — 2026-09-11
 
+- Final native and fresh Web color-specific checks both pass: original atlas 14 colors / 0 mismatches, beam 6 simultaneous color families / 75847 changed pixels / preserved alpha / pause freeze / reduced-motion static rainbow. Actual fixed-state Web footage saved as a 40-frame Aseprite GIF.
+- Full Web long-run verification is NOT passed: Reimu completes 81 cases, Marisa times out at the existing 180-second limit after battle check 42. Completed comparisons show no visual mismatch, but that does not establish acceptable performance or justify relaxing the gate. The separate injected-color run is incomplete after a tool timeout.
+- A tool timeout reset the persistent runtime. Recover explicit Windows environment and local helpers; do not assume prior bindings survive. ESM Playwright import failed; use its local CommonJS entry. Aseprite export needs explicit APPDATA/LOCALAPPDATA in this runtime.
+
 - Native comparison found 260/12123 boundary pixels differ between a 14-column atlas and independent Sprite2D sampling at 2.5x scaling. Preserve the failed images; retain the original 16-cell row (power-of-two UV spacing), selecting only the 14 chromatic cells. Do not loosen the pixel threshold.
 
 - Actual active star body rendering uses batches["star"] with combat/star.png: yellow crop [208,160,224,176]. Original TH10 bullet/etama.png visually contains 14 chromatic 16px variants in [16,160,240,176], plus neutral end cells.
