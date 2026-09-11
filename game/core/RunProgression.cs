@@ -80,13 +80,14 @@ public sealed partial class RunState
         Pickups.Add(new() { Position = position, Value = value, Healing = healing });
     }
 
-    internal void DamageEnemy(Enemy enemy, float damage, Vector2 knockback)
+    internal void DamageEnemy(Enemy enemy, float damage, Vector2 knockback, bool showHit = true)
     {
         if (enemy.Health <= 0) return;
         enemy.Health -= damage;
         enemy.Flash = 0.1f;
-        if (enemy.Kind != EnemyKind.Boss) enemy.Position = ClampToArena(new(enemy.Position.X + knockback.X, enemy.Position.Y + knockback.Y));
-        Emit(EffectKind.Hit, enemy.Position, damage);
+        if (enemy.Kind != EnemyKind.Boss && (knockback.X != 0 || knockback.Y != 0))
+            enemy.Position = ClampToArena(new(enemy.Position.X + knockback.X, enemy.Position.Y + knockback.Y));
+        if (showHit) Emit(EffectKind.Hit, enemy.Position, damage);
         if (enemy.Health > 0) return;
         Kills++;
         SpellCharge = Math.Min(100, SpellCharge + (enemy.Kind == EnemyKind.Elite ? 8 : 0.42f));

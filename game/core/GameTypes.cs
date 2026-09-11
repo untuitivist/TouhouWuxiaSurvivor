@@ -31,6 +31,7 @@ public sealed class Enemy
     public float ContactDamage;
     public bool Charging;
     public float BoundRemaining;
+    public float StarHitDisplayDamage;
 }
 
 public struct Projectile

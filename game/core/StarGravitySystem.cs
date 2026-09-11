@@ -52,7 +52,7 @@ internal static class StarGravitySystem
                 other.Acceleration.X -= accelerationX * mass;
                 other.Acceleration.Y -= accelerationY * mass;
             }
-            foreach (var enemy in run.World.Grid.Query(star.Position, MarisaTuning.TargetRange))
+            foreach (var enemy in run.Enemies.Active)
             {
                 if (enemy.Health <= 0) continue;
                 var offsetX = enemy.Position.X - positionX;

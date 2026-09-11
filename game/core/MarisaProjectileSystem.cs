@@ -46,6 +46,12 @@ internal static class MarisaProjectileSystem
             star.PulseTimer += MarisaTuning.StarPulse;
             Tear(run, star);
         }
+        foreach (var enemy in run.Enemies.Active)
+        {
+            if (enemy.StarHitDisplayDamage <= 0) continue;
+            run.Emit(EffectKind.Hit, enemy.Position, enemy.StarHitDisplayDamage);
+            enemy.StarHitDisplayDamage = 0;
+        }
         run.Stars.RemoveAll(static star => star.Life <= 0);
         if (measured) run.Marisa.StarUpdateMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
     }
@@ -61,7 +67,8 @@ internal static class MarisaProjectileSystem
             if (distanceSquared >= reach * reach) continue;
             var falloff = 1 - 0.4f * Math.Clamp(MathF.Sqrt(distanceSquared) / reach, 0, 1);
             var damage = star.DamageRate * MarisaTuning.StarPulse * falloff * (star.Resonating ? MarisaTuning.ResonanceMultiplier : 1);
-            run.DamageEnemy(enemy, damage, Vector2.Zero);
+            run.DamageEnemy(enemy, damage, Vector2.Zero, false);
+            enemy.StarHitDisplayDamage += damage;
         }
     }
 }
