@@ -127,6 +127,7 @@ try {
         $summary.projectOverrides += 'Web variant/thread_support=false'
         $summary.webToolchain = 'Godot C# 4.6.1 threadless rebuild b94985982075d0c7d73bbced427516ce5f3e140f / .NET 9.0.317'
         $summary.templateSha256 = (Get-FileHash -LiteralPath $compatible.Template).Hash
+        $summary.monoRuntimeMode = $compatible.RuntimeMode
     }
     $summary.experimentalRenderer = [bool]$ExperimentalWebGpuTemplate
     $summary.renderingDriver = if ($ExperimentalWebGpuTemplate) { 'webgpu' } else { 'opengl3' }

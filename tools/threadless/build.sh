@@ -38,8 +38,22 @@ mkdir -p "$workspace/signatures"
 cp "$repository/tools/threadless/signatures/Signatures.csproj" "$repository/tools/threadless/signatures/Program.cs" "$workspace/signatures/"
 dotnet run --project "$workspace/signatures/Signatures.csproj" --configuration Release -- "$workspace/engine/bin/GodotSharp/Api/Release/GodotSharp.dll" "$workspace/engine/modules/mono/runtime/GetRuntimePack/NativeSignatures.cs"
 python3 -c 'import SCons.Script; SCons.Script.main()' platform=web target=template_release module_mono_enabled=yes threads=no optimize=speed lto=none linkflags=--emit-symbol-map -j12
-mkdir -p "$cache/output"
-cp -a bin/*.zip "$cache/output/"
-cp -a bin/*.symbols "$cache/output/"
-cp -a bin/nuget "$cache/output/"
-printf 'THREADLESS_TEMPLATE_BUILD_PASS %s\n' "$cache/output"
+output_name="release-runtime-$(date -u +%Y%m%dT%H%M%SZ)-$$"
+output="$cache/output/$output_name"
+mkdir -p "$output"
+cp -a bin/*.zip "$output/"
+cp -a bin/*.symbols "$output/"
+cp -a bin/nuget "$output/"
+python3 - "$cache" "$output_name" <<'PY'
+import hashlib
+import json
+import pathlib
+import sys
+
+cache = pathlib.Path(sys.argv[1])
+output = "output/" + sys.argv[2]
+template = cache / output / "godot.web.template_release.wasm32.nothreads.mono.zip"
+record = {"output": output, "runtimeMode": "release-optimized", "debugLevel": 0, "sha256": hashlib.sha256(template.read_bytes()).hexdigest()}
+(cache / "release-runtime-latest.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+PY
+printf 'THREADLESS_TEMPLATE_BUILD_PASS %s\n' "$output"

@@ -13,6 +13,9 @@ def main():
     source = pathlib.Path(sys.argv[1]).resolve()
     archive_path = pathlib.Path(__file__).resolve().parents[2] / 'artifacts/threadless-toolchain/engine.tar.gz'
     patches = {
+        'modules/mono/mono_gd/gd_mono.cpp': [
+            ('\tmono_wasm_load_runtime(1);', '#ifdef DEBUG_ENABLED\n\tmono_wasm_load_runtime(1);\n#else\n\tmono_wasm_load_runtime(0);\n#endif')
+        ],
         'SConstruct': [('        else:\n            env.AppendUnique(LINKFLAGS=["-s"])', '        elif not methods.using_emcc(env):\n            env.AppendUnique(LINKFLAGS=["-s"])')],
         'modules/mono/editor/Godot.NET.Sdk/Godot.NET.Sdk/Sdk/Browser.targets': [('<WasmEnableThreads>true</WasmEnableThreads>', '<WasmEnableThreads>false</WasmEnableThreads>')],
         'modules/mono/runtime/GetRuntimePack/GetRuntimePack.csproj': [
