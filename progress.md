@@ -1,5 +1,15 @@
 ## Many-Body Balance And Original Colors — 2026-09-11
 
+## Alpha-0.1.8 Delivered — 2026-09-11
+
+- Diagnosed the pinned Web host always using Mono debug level 1; it disabled interpreter optimization in release. Rebuilt a new immutable template with debug/release separation and retained all previous outputs. CMD failures are preserved; successful build uses explicit PS7, and its owned WSL distribution is closed.
+- Same clean source 7aca71e produces Windows 195187584-byte self-contained EXE and Web build 20260911-212025-699. Ninety C# files match across source and both stages. Core 60/60, platform 21/21, EXE 31, Web four compatibility modes, both heroes/both languages/all three load gates, colors and interface regressions pass.
+- Source pushed; server fast-forward pull and deployment activate alpha-0.1.8-7aca71e-20260911T133928Z. Main Caddy hash and unrelated route behavior remain unchanged; rollback and all historical files retained.
+- Public direct startup timed out after 180 seconds at about 4.02/32.54 MB. Its report/screenshots are archived separately. Existing-local-proxy browser verification passes desktop, touch and unisolated touch; initial loads 17.734/52.506/19.265 s. Direct download speed is not fixed and physical mobile FPS is untested.
+- Existing unassisted pilot wins Reimu 3/3 and Marisa 1/3 (seed 42); matched-DPS gates pass independently. Do not propagate the earlier mistaken summary claiming both heroes won all three seeds.
+- Local release changelog/receipt and tracked deployment/intent/plan records contain hashes and evidence paths. Final record commit leaves game/asset inputs untouched.
+
+
 - Latest core: 58/58. Stationary equal-investment single-target DPS at 0/4/8/12 points: Reimu 68.33/246.00/535.32/606.39; Marisa 69.06/246.64/516.79/591.54. Extra near/far/moving and AoE-route measurements retained; early AoE is not equal in every layout. Both heroes pass three automated journeys.
 - Localization 998/998 before cosmetic-only additions. Native build passes. Native core stress includes 96 stars/320 enemies/1600 projectiles, mean 0.246ms and P95 0.462ms per step; this is not rendered/Web/mobile FPS.
 - Original color stars extracted by Aseprite. First 14-column atlas failed strict sampling comparison (260 pixels); full 16-cell original row with only 14 chromatic cells selected fixes root cause (0 pixels), no threshold relaxation. Failed atlas and images retained.

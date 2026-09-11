@@ -3,8 +3,8 @@
 User explicitly requested publication after the color/flow correction. Keep this existing candidate version, ship one committed C# source to Windows EXE and compatible Web, preserve historical artifacts and logs.
 
 1. [complete] Resolved the release template accidentally disabling Mono interpreter optimizations. Correct-mass high-load Marisa now passes unchanged thresholds at 60 FPS; core 60/60 and same-investment DPS remain valid.
-2. [in_progress] Commit release sources, archive only superseded unpublished candidates within the workspace, then build and verify Windows and Web from the same clean commit.
-3. [pending] Push fast-forward source, update the domain subpath with existing deployment tooling, verify public site and EXE, record hashes/receipts and commit records.
+2. [complete] Archived the old unpublished candidate; Windows EXE and optimized compatible Web were built and verified from clean 7aca71e. All 90 C# files match, Windows has 31 standalone checks, and both heroes pass all three loads in both languages.
+3. [complete] Pushed and deployed alpha-0.1.8-7aca71e-20260911T133928Z. Three public browser entrances pass through the existing local proxy; direct header/routes pass but direct download timed out and remains explicitly unresolved. Receipts/hashes/history and limitations are recorded; final documentation commit does not change the shipped source.
 
 ---
 
@@ -20,8 +20,8 @@ User explicitly requested publication after the color/flow correction. Keep this
 
 1. [complete] Replace group casts/guaranteed planets with frequent single-star radial emission and independently sampled mass distribution. Add explicit enemy masses and reciprocal star-star/star-enemy gravity.
 2. [complete] Make distribution and lifetime training repeatable; retain nearest-enemy beam tracking, finite remedies, original-first art and shared C# runtime.
-3. [in_progress] Test many-body reciprocity, heavy-star rarity, attainable boss attraction, bounded runtime work and matched-investment DPS against Reimu; rerun native/Web acceptance.
-4. [pending] Publish only after corrected-build gates pass. Previous candidate failed a high-load rendered-FPS gate (minimum 41 < 45); do not reuse it or weaken the threshold. No deployment occurred.
+3. [complete] Many-body, mass/lifetime, Boss attraction, matched-investment DPS, core 60/60 and native/Web release acceptance completed. Automatic route outcomes and real-device/network limits are recorded without claiming all seed routes win.
+4. [complete] Corrected runtime and final 7aca71e artifacts pass unchanged gates and are published. The previous failed candidate (minimum 41 < 45) remains archived and was not deployed.
 
 ---
 
