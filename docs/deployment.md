@@ -2,6 +2,10 @@
 
 ## Web 首载包体维护（2026-09-11）
 
+- 传输进一步定位：CUBIC 活跃连接出现大量重传且 cwnd 降至 1；固定 Linux v6.8 源码核对新连接继承规则后，用服务器已安装的 `tcp_bbr` 模块做运行时试验，预设 240 秒自动回滚，不重启服务。相同 URL、范围、无代理条件下，CUBIC 16.9 KB/s → BBR 295.6/290.1 KB/s → 切回 CUBIC 18.3 KB/s，内容逐字节相同。
+- BBR 冷启动：实际浏览器无代理、无缓存、HTTP/2 直连 170.106.119.27，21,610,672 字节压缩正文全量收到，20.549 秒进入标题，无页面异常或请求失败。报告/截图在 `artifacts/download-delivery-20260911/public-direct-bbr/`。旧 CUBIC 慢速浏览器取样后主动结束，不声称等待满 900 秒。
+- 持久化配置源：`platform/web/touhou-download.sysctl.conf` 和 `platform/web/touhou-download.modules.conf`，目标分别为 `/etc/sysctl.d/90-touhou-download.conf` 和 `/etc/modules-load.d/touhou-download.conf`。只配置 `net.ipv4.tcp_congestion_control=bbr` 和模块启动加载；排队规则仍为 `fq_codel`，DNS/Caddy/路由不改。**此配置影响整台服务器的新 TCP 连接，非仅游戏 URL**；旧连接保留自身策略。实测及回滚核对后才安装，不由普通游戏发布隐式重复修改。
+- 传输回滚不需要删除文件：将上述 sysctl 文件内容改回 `net.ipv4.tcp_congestion_control = cubic`，显式应用该单项；加载 BBR 模块本身不会强制连接使用它。不要使用全局 `sysctl --system` 顺带改动未知配置。配置原值、安装与复验日志在本次交付证据目录，站点资源仍可单独回滚。
 - 本次是 alpha-0.1.8 既有产物的交付瘦身，不是新游戏版本，也不重新导出 Windows。候选从已验证的 `20260911-212025-699` Web 产物派生，玩法源仍是 `7aca71e`；原始导出与正式部署完整保留。上线回执另记，不把本节的本地候选当成上线证据。
 - 根因之一：固定 C# Web 导出器把 Mono 发布目录中的 26 个 `.a` 静态库也打进 PCK，而这些库已经在模板构建时链接进 WASM，浏览器运行时加载的是 DLL。`optimize_web_payload.py` 只排除该目录直属且具有真实 archive 文件头的 `.a`，其他位置和格式不推测删除；保留全部 ICU 数据、DLL、游戏资源和音频。
 - 安全检查：仅接受独立、未加密的 Godot PCK v3；校验路径、条目边界、不重叠、MD5、发布清单 SHA-512。只重写被排除库对应的发布清单项，逐字节比较其余 289 个运行内容，更新入口的精确 PCK 大小；WASM/JS/图标原字节不变。输出及报告必须是新位置，禁止覆盖输入或已有构建。
