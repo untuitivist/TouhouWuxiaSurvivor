@@ -27,7 +27,7 @@ public static class PerformanceBenchmarks
         if (!growth) Array.Clear(run.Ranks);
         var random = new Random(17);
         for (var index = 0; index < enemyCount; index++)
-            run.Enemies.Add(new() { Id = index + 10000, Kind = EnemyKind.Kedama, Position = new(index % 20 * 65 - 620, index / 20 * 65 - 480), Radius = 14, Health = 1000000, MaxHealth = 1000000 });
+            run.Enemies.Add(new() { Id = index + 10000, Kind = EnemyKind.Kedama, Mass = EnemyMassCatalog.Kedama, Position = new(index % 20 * 65 - 620, index / 20 * 65 - 480), Radius = 14, Health = 1000000, MaxHealth = 1000000 });
         var scenario = growth ? new CombatStressScenario(run, enemyCount) : null;
         if (fullStarCapacity)
         {

@@ -10,6 +10,8 @@ public sealed class MarisaAbilityState(int seed)
     public float PendingHealing;
     internal int GravityTick;
     public int GravityInteractions;
+    public double GravityMilliseconds;
+    public double StarUpdateMilliseconds;
     internal float EmissionAngle = (seed & 1023) * MathF.Tau / 1024;
     internal readonly Random MassRandom = new(unchecked(seed ^ 0x4D415253));
     internal readonly Random VisualRandom = new(unchecked(seed ^ 0x53544152));

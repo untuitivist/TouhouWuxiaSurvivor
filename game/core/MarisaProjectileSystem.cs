@@ -26,7 +26,14 @@ internal static class MarisaProjectileSystem
 
     internal static void Step(RunState run)
     {
+        var measured = run.Timings != null;
+        var started = measured ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
         StarGravitySystem.Step(run);
+        if (measured)
+        {
+            run.Marisa.GravityMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
+            started = System.Diagnostics.Stopwatch.GetTimestamp();
+        }
         foreach (ref var star in run.Stars.Active)
         {
             star.Life = Math.Max(0, star.Life - RunState.StepSeconds);
@@ -40,6 +47,7 @@ internal static class MarisaProjectileSystem
             Tear(run, star);
         }
         run.Stars.RemoveAll(static star => star.Life <= 0);
+        if (measured) run.Marisa.StarUpdateMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
     }
 
     private static void Tear(RunState run, StarBody star)

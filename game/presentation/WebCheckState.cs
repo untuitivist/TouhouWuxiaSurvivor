@@ -49,6 +49,8 @@ internal sealed class WebCheckState
     public float MassSigma { get; set; }
     public float StarLifetime { get; set; }
     public int GravityInteractions { get; set; }
+    public double GravityMilliseconds { get; set; }
+    public double StarUpdateMilliseconds { get; set; }
     public int Planets { get; set; }
     public float StarMass { get; set; }
     public int ResonatingStars { get; set; }

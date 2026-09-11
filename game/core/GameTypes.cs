@@ -19,7 +19,7 @@ public sealed class Enemy
     public Vector2 Velocity;
     public Vector2 GravityVelocity;
     public Vector2 GravityAcceleration;
-    public float Mass;
+    public float Mass = EnemyMassCatalog.Kedama;
     public Vector2 Aim;
     public float Health;
     public float MaxHealth;

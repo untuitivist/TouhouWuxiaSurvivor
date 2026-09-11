@@ -81,6 +81,8 @@ public partial class GameRoot
             MassSigma = run == null ? 0 : MarisaTuning.MassSigma(run.Build),
             StarLifetime = run == null ? 0 : MarisaTuning.Lifetime(run.Build),
             GravityInteractions = run?.Marisa.GravityInteractions ?? 0,
+            GravityMilliseconds = run?.Marisa.GravityMilliseconds ?? 0,
+            StarUpdateMilliseconds = run?.Marisa.StarUpdateMilliseconds ?? 0,
             Stars = run?.Stars.Count ?? 0, Planets = run?.Stars.Count(star => star.Planet) ?? 0, StarMass = run?.Stars.Sum(star => star.Mass) ?? 0,
             ResonatingStars = run?.Stars.Count(star => star.Resonating) ?? 0, Herbs = run?.Pickups.Count(pickup => pickup.Herbal) ?? 0,
             PendingHealing = run?.Marisa.PendingHealing ?? 0, BeamSteering = run?.Beam?.Steering ?? false,

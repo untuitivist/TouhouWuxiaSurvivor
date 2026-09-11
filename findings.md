@@ -1,6 +1,7 @@
 ## Release Gate Investigation — 2026-09-11
 
 - Fresh high-load Web baseline (320 enemies/1600 bullets, Marisa) fails: rendered FPS mean 2.43, simulation 77.99ms mean, weapons 64.19ms mean / 267.8ms P95. This is a real gameplay bottleneck, not merely a test timeout. Report: artifacts/marisa-gravity-20260911/release-marisa-baseline.json.
+- Follow-up found the inherited stress fixture constructed enemies without assigning the newly required mass. Fix the default Kedama mass and explicitly assign it in both stress fixtures before treating the measurements as representative; preserve the zero-mass baseline as diagnostic evidence, not actual gameplay FPS. Scalar optimization reduces that diagnostic mean from 77.99ms to 12.48ms but its gate still fails.
 - Replace Vector2 arithmetic/equality in pairwise gravity and integration with equivalent scalar operations; retain all pairs, masses, range, 20Hz force updates, 60Hz integration and damage. Also replace per-pixel engine calls in visual validation with the same byte-level comparisons. Performance still requires a fresh Web measurement.
 - Read-only searches guessed two old file names; actual grid/math/progression files located in EnemyGrid.cs, GameTypes.cs and RunProgression.cs. No source data lost.
 

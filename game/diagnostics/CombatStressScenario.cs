@@ -22,7 +22,7 @@ public sealed class CombatStressScenario
         run.Enemies.Clear();
         run.Projectiles.Clear();
         for (var index = 0; index < EnemyCount; index++)
-            run.Enemies.Add(new() { Id = index + 10000, Kind = EnemyKind.Kedama, Position = new(index % 20 * 60 - 580, index / 20 * 40 - 300), Radius = 14, Health = 1000000, MaxHealth = 1000000 });
+            run.Enemies.Add(new() { Id = index + 10000, Kind = EnemyKind.Kedama, Mass = EnemyMassCatalog.Kedama, Position = new(index % 20 * 60 - 580, index / 20 * 40 - 300), Radius = 14, Health = 1000000, MaxHealth = 1000000 });
         for (var index = 0; index < 400; index++)
             run.Pickups.Add(new() { Position = new(index % 40 * 29 - 580, index / 40 * 62 - 280), Value = 0 });
         Refill(run);
