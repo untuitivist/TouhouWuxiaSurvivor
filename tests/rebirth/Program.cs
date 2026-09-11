@@ -19,6 +19,7 @@ var tests = new (string Name, Action Body)[]
     ("Marisa unlocks, prerequisites and compatible choices", MarisaGrowthTests.Offers),
     ("Marisa starts with stars and learns her signature", MarisaGrowthTests.Starter),
     ("Marisa samples a trainable distribution without a guaranteed heavy star", MarisaGrowthTests.Mass),
+    ("Marisa scalar gravity and integration match vector reference", MarisaGrowthTests.ScalarGravityReference),
     ("Marisa cosmetic colors do not alter mass, damage or lifetime", MarisaGrowthTests.CosmeticIsolation),
     ("Marisa emits individual stars frequently in every direction", MarisaGrowthTests.Emission),
     ("Marisa tears continuously and retargets without renewed life", MarisaGrowthTests.Sustain),

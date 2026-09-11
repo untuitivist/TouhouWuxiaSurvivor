@@ -36,11 +36,11 @@ internal static class EnemySystem
                 enemy.Velocity *= enemy.Kind == EnemyKind.Boss ? ReimuTuning.BossSlowMultiplier : 0;
                 enemy.BoundRemaining = Math.Max(0, enemy.BoundRemaining - RunState.StepSeconds);
             }
-            if (enemy.GravityAcceleration != Vector2.Zero || enemy.GravityVelocity != Vector2.Zero)
+            if (enemy.GravityAcceleration.X != 0 || enemy.GravityAcceleration.Y != 0 || enemy.GravityVelocity.X != 0 || enemy.GravityVelocity.Y != 0)
             {
-                var gravity = MarisaTuning.LimitVector(enemy.GravityAcceleration, MarisaTuning.GravityAccelerationLimit);
-                enemy.GravityVelocity = MarisaTuning.LimitVector((enemy.GravityVelocity + gravity * RunState.StepSeconds) / (1 + MarisaTuning.EnemyGravityDrag * RunState.StepSeconds), MarisaTuning.EnemyGravityVelocityLimit);
-                enemy.Velocity += enemy.GravityVelocity;
+                enemy.GravityVelocity = MarisaTuning.IntegrateGravity(enemy.GravityVelocity, enemy.GravityAcceleration, MarisaTuning.EnemyGravityDrag, MarisaTuning.EnemyGravityVelocityLimit);
+                enemy.Velocity.X += enemy.GravityVelocity.X;
+                enemy.Velocity.Y += enemy.GravityVelocity.Y;
             }
             enemy.Position = RunState.ClampToArena(Geometry.Advance(enemy.Position, enemy.Velocity, RunState.StepSeconds));
             var contactRadius = enemy.Radius + 6;

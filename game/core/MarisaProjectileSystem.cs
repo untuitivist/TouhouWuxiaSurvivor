@@ -31,9 +31,8 @@ internal static class MarisaProjectileSystem
         {
             star.Life = Math.Max(0, star.Life - RunState.StepSeconds);
             if (star.Life <= 0) continue;
-            var acceleration = MarisaTuning.LimitVector(star.Acceleration, MarisaTuning.GravityAccelerationLimit);
-            star.Velocity = MarisaTuning.LimitVector((star.Velocity + acceleration * RunState.StepSeconds) / (1 + MarisaTuning.StarDrag * RunState.StepSeconds), MarisaTuning.StarVelocityLimit);
-            star.Position = RunState.ClampToArena(star.Position + star.Velocity * RunState.StepSeconds);
+            star.Velocity = MarisaTuning.IntegrateGravity(star.Velocity, star.Acceleration, MarisaTuning.StarDrag, MarisaTuning.StarVelocityLimit);
+            star.Position = RunState.ClampToArena(Geometry.Advance(star.Position, star.Velocity, RunState.StepSeconds));
             star.Resonating = run.Build.Has(AbilityTraits.SparkResonance) && run.BeamContains(star.Position);
             star.PulseTimer -= RunState.StepSeconds;
             if (star.PulseTimer > 0) continue;

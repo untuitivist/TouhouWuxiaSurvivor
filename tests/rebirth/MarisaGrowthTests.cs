@@ -5,6 +5,29 @@ namespace Rebirth.Tests;
 
 internal static class MarisaGrowthTests
 {
+    public static void ScalarGravityReference()
+    {
+        var random = new Random(1708);
+        for (var index = 0; index < 2048; index++)
+        {
+            var offset = new Vector2(random.NextSingle() * 2000 - 1000, random.NextSingle() * 2000 - 1000);
+            var distanceSquared = offset.LengthSquared();
+            var softened = distanceSquared + MarisaTuning.GravitySoftening * MarisaTuning.GravitySoftening;
+            var falloff = 1 - distanceSquared / (MarisaTuning.TargetRange * MarisaTuning.TargetRange);
+            var expected = distanceSquared >= MarisaTuning.TargetRange * MarisaTuning.TargetRange ? Vector2.Zero
+                : offset * (MarisaTuning.GravityStrength * falloff * falloff / (softened * MathF.Sqrt(softened)));
+            Check(Geometry.DistanceSquared(StarGravitySystem.AccelerationPerMass(offset), expected) < 0.000001f, "Scalar force matches independent vector reference");
+            var velocity = new Vector2(random.NextSingle() * 1000 - 500, random.NextSingle() * 1000 - 500);
+            var acceleration = offset * 20;
+            var limited = acceleration.LengthSquared() > MarisaTuning.GravityAccelerationLimit * MarisaTuning.GravityAccelerationLimit
+                ? Vector2.Normalize(acceleration) * MarisaTuning.GravityAccelerationLimit : acceleration;
+            var integrated = (velocity + limited * RunState.StepSeconds) / (1 + MarisaTuning.StarDrag * RunState.StepSeconds);
+            if (integrated.LengthSquared() > MarisaTuning.StarVelocityLimit * MarisaTuning.StarVelocityLimit)
+                integrated = Vector2.Normalize(integrated) * MarisaTuning.StarVelocityLimit;
+            Check(Geometry.DistanceSquared(MarisaTuning.IntegrateGravity(velocity, acceleration, MarisaTuning.StarDrag, MarisaTuning.StarVelocityLimit), integrated) < 0.00001f, "Scalar damping and limits match vector reference");
+        }
+    }
+
     public static void CosmeticIsolation()
     {
         var first = new RunState(HeroKind.Marisa, 42);

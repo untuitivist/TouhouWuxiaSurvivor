@@ -1,3 +1,13 @@
+## Alpha-0.1.8 Release — 2026-09-11
+
+User explicitly requested publication after the color/flow correction. Keep this existing candidate version, ship one committed C# source to Windows EXE and compatible Web, preserve historical artifacts and logs.
+
+1. [in_progress] Profile and resolve the outstanding Web long-run gate without weakening its thresholds; recheck many-body DPS and original-color rendering.
+2. [pending] Commit release sources, archive only superseded unpublished candidates within the workspace, then build and verify Windows and Web from the same clean commit.
+3. [pending] Push fast-forward source, update the domain subpath with existing deployment tooling, verify public site and EXE, record hashes/receipts and commit records.
+
+---
+
 ## Original Color Effects — 2026-09-11
 
 1. [complete] Inspect supplied TH10 star atlas and TH08 beam texture; retain original pixels and separate cosmetic RNG.

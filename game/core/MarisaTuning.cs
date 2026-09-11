@@ -44,9 +44,19 @@ public static class MarisaTuning
     public static Vector2 LimitVector(Vector2 velocity, float limit)
     {
         var maximum = Math.Max(Math.Abs(velocity.X), Math.Abs(velocity.Y));
-        if (maximum == 0 || maximum <= limit && velocity.LengthSquared() <= limit * limit) return velocity;
-        var scaled = velocity / maximum;
-        return scaled * (limit / MathF.Sqrt(scaled.LengthSquared()));
+        if (maximum == 0 || maximum <= limit && velocity.X * velocity.X + velocity.Y * velocity.Y <= limit * limit) return velocity;
+        var scaledX = velocity.X / maximum;
+        var scaledY = velocity.Y / maximum;
+        var multiplier = limit / MathF.Sqrt(scaledX * scaledX + scaledY * scaledY);
+        return new(scaledX * multiplier, scaledY * multiplier);
+    }
+
+    public static Vector2 IntegrateGravity(Vector2 velocity, Vector2 acceleration, float drag, float velocityLimit)
+    {
+        var limited = LimitVector(acceleration, GravityAccelerationLimit);
+        var damping = 1 + drag * RunState.StepSeconds;
+        return LimitVector(new((velocity.X + limited.X * RunState.StepSeconds) / damping,
+            (velocity.Y + limited.Y * RunState.StepSeconds) / damping), velocityLimit);
     }
 
     public static float RollMass(Random random, BuildState build)

@@ -1,3 +1,9 @@
+## Release Gate Investigation — 2026-09-11
+
+- Fresh high-load Web baseline (320 enemies/1600 bullets, Marisa) fails: rendered FPS mean 2.43, simulation 77.99ms mean, weapons 64.19ms mean / 267.8ms P95. This is a real gameplay bottleneck, not merely a test timeout. Report: artifacts/marisa-gravity-20260911/release-marisa-baseline.json.
+- Replace Vector2 arithmetic/equality in pairwise gravity and integration with equivalent scalar operations; retain all pairs, masses, range, 20Hz force updates, 60Hz integration and damage. Also replace per-pixel engine calls in visual validation with the same byte-level comparisons. Performance still requires a fresh Web measurement.
+- Read-only searches guessed two old file names; actual grid/math/progression files located in EnemyGrid.cs, GameTypes.cs and RunProgression.cs. No source data lost.
+
 ## Multi-Color Source Audit — 2026-09-11
 
 - Final native and fresh Web color-specific checks both pass: original atlas 14 colors / 0 mismatches, beam 6 simultaneous color families / 75847 changed pixels / preserved alpha / pause freeze / reduced-motion static rainbow. Actual fixed-state Web footage saved as a 40-frame Aseprite GIF.

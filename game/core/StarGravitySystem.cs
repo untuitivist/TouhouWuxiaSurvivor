@@ -4,20 +4,26 @@ namespace Rebirth.Core;
 
 internal static class StarGravitySystem
 {
-    internal static Vector2 AccelerationPerMass(Vector2 offset)
+    private static float AccelerationFactor(float offsetX, float offsetY)
     {
-        var distanceSquared = offset.LengthSquared();
+        var distanceSquared = offsetX * offsetX + offsetY * offsetY;
         var rangeSquared = MarisaTuning.TargetRange * MarisaTuning.TargetRange;
-        if (distanceSquared >= rangeSquared) return Vector2.Zero;
+        if (distanceSquared >= rangeSquared) return 0;
         var softened = distanceSquared + MarisaTuning.GravitySoftening * MarisaTuning.GravitySoftening;
         var falloff = 1 - distanceSquared / rangeSquared;
-        return offset * (MarisaTuning.GravityStrength * falloff * falloff / (softened * MathF.Sqrt(softened)));
+        return MarisaTuning.GravityStrength * falloff * falloff / (softened * MathF.Sqrt(softened));
+    }
+
+    internal static Vector2 AccelerationPerMass(Vector2 offset)
+    {
+        var factor = AccelerationFactor(offset.X, offset.Y);
+        return new(offset.X * factor, offset.Y * factor);
     }
 
     internal static void Step(RunState run)
     {
         if (run.Marisa.GravityTick++ % MarisaTuning.GravityIntervalTicks != 0) return;
-        run.Marisa.GravityInteractions = 0;
+        var interactions = 0;
         foreach (var enemy in run.Enemies) enemy.GravityAcceleration = Vector2.Zero;
         var stars = run.Stars.Active;
         foreach (ref var star in stars) star.Acceleration = Vector2.Zero;
@@ -25,25 +31,44 @@ internal static class StarGravitySystem
         {
             ref var star = ref stars[first];
             if (star.Life <= 0) continue;
+            var positionX = star.Position.X;
+            var positionY = star.Position.Y;
+            var mass = star.Mass;
+            var accumulatedX = star.Acceleration.X;
+            var accumulatedY = star.Acceleration.Y;
             for (var second = first + 1; second < stars.Length; second++)
             {
                 ref var other = ref stars[second];
                 if (other.Life <= 0) continue;
-                var acceleration = AccelerationPerMass(other.Position - star.Position);
-                if (acceleration == Vector2.Zero) continue;
-                run.Marisa.GravityInteractions++;
-                star.Acceleration += acceleration * other.Mass;
-                other.Acceleration -= acceleration * star.Mass;
+                var offsetX = other.Position.X - positionX;
+                var offsetY = other.Position.Y - positionY;
+                var factor = AccelerationFactor(offsetX, offsetY);
+                if (factor == 0 || offsetX == 0 && offsetY == 0) continue;
+                var accelerationX = offsetX * factor;
+                var accelerationY = offsetY * factor;
+                interactions++;
+                accumulatedX += accelerationX * other.Mass;
+                accumulatedY += accelerationY * other.Mass;
+                other.Acceleration.X -= accelerationX * mass;
+                other.Acceleration.Y -= accelerationY * mass;
             }
             foreach (var enemy in run.World.Grid.Query(star.Position, MarisaTuning.TargetRange))
             {
                 if (enemy.Health <= 0) continue;
-                var acceleration = AccelerationPerMass(enemy.Position - star.Position);
-                if (acceleration == Vector2.Zero) continue;
-                run.Marisa.GravityInteractions++;
-                star.Acceleration += acceleration * enemy.Mass;
-                enemy.GravityAcceleration -= acceleration * star.Mass;
+                var offsetX = enemy.Position.X - positionX;
+                var offsetY = enemy.Position.Y - positionY;
+                var factor = AccelerationFactor(offsetX, offsetY);
+                if (factor == 0 || offsetX == 0 && offsetY == 0) continue;
+                var accelerationX = offsetX * factor;
+                var accelerationY = offsetY * factor;
+                interactions++;
+                accumulatedX += accelerationX * enemy.Mass;
+                accumulatedY += accelerationY * enemy.Mass;
+                enemy.GravityAcceleration.X -= accelerationX * mass;
+                enemy.GravityAcceleration.Y -= accelerationY * mass;
             }
+            star.Acceleration = new(accumulatedX, accumulatedY);
         }
+        run.Marisa.GravityInteractions = interactions;
     }
 }

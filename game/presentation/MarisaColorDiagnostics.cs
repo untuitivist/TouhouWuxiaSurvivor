@@ -52,9 +52,10 @@ public partial class GameRoot
             using var flowing = actual.GetTexture().GetImage();
             var changed = CompareRenderedImages(initial, flowing, 7, out _);
             Require(changed > 10000, "Rainbow flows spatially through the original beam texture");
-            for (var vertical = 0; vertical < initial.GetHeight(); vertical++)
-            for (var horizontal = 0; horizontal < initial.GetWidth(); horizontal++)
-                Require(Math.Abs(initial.GetPixel(horizontal, vertical).A - flowing.GetPixel(horizontal, vertical).A) < 0.005f, "Flow preserves original transparency");
+            var initialPixels = initial.GetData();
+            var flowingPixels = flowing.GetData();
+            for (var offset = 3; offset < initialPixels.Length; offset += 4)
+                Require(Math.Abs(initialPixels[offset] - flowingPixels[offset]) <= 1, "Flow preserves original transparency");
             await DrawTwice();
             using var frozen = actual.GetTexture().GetImage();
             Require(flowing.GetData().SequenceEqual(frozen.GetData()), "Unchanged gameplay clock freezes beam flow");
@@ -82,16 +83,23 @@ public partial class GameRoot
 
     private static int ColorFamilies(Image image)
     {
+        image.Convert(Image.Format.Rgba8);
+        var pixels = image.GetData();
+        var width = image.GetWidth();
+        var height = image.GetHeight();
         var families = new HashSet<int>();
-        for (var vertical = 0; vertical < image.GetHeight(); vertical += 2)
-        for (var horizontal = 0; horizontal < image.GetWidth(); horizontal += 2)
+        for (var vertical = 0; vertical < height; vertical += 2)
+        for (var horizontal = 0; horizontal < width; horizontal += 2)
         {
-            var pixel = image.GetPixel(horizontal, vertical);
-            var maximum = Math.Max(pixel.R, Math.Max(pixel.G, pixel.B));
-            var minimum = Math.Min(pixel.R, Math.Min(pixel.G, pixel.B));
-            if (pixel.A < 0.1f || maximum < 0.2f || maximum - minimum < 0.15f) continue;
+            var offset = (vertical * width + horizontal) * 4;
+            var red = pixels[offset];
+            var green = pixels[offset + 1];
+            var blue = pixels[offset + 2];
+            var maximum = Math.Max(red, Math.Max(green, blue));
+            var minimum = Math.Min(red, Math.Min(green, blue));
+            if (pixels[offset + 3] < 26 || maximum < 51 || maximum - minimum < 39) continue;
             var threshold = maximum * 0.75f;
-            families.Add((pixel.R > threshold ? 1 : 0) | (pixel.G > threshold ? 2 : 0) | (pixel.B > threshold ? 4 : 0));
+            families.Add((red > threshold ? 1 : 0) | (green > threshold ? 2 : 0) | (blue > threshold ? 4 : 0));
         }
         return families.Count;
     }
