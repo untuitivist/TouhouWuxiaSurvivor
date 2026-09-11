@@ -2,8 +2,8 @@
 
 User explicitly requested publication after the color/flow correction. Keep this existing candidate version, ship one committed C# source to Windows EXE and compatible Web, preserve historical artifacts and logs.
 
-1. [in_progress] Profile and resolve the outstanding Web long-run gate without weakening its thresholds; recheck many-body DPS and original-color rendering.
-2. [pending] Commit release sources, archive only superseded unpublished candidates within the workspace, then build and verify Windows and Web from the same clean commit.
+1. [complete] Resolved the release template accidentally disabling Mono interpreter optimizations. Correct-mass high-load Marisa now passes unchanged thresholds at 60 FPS; core 60/60 and same-investment DPS remain valid.
+2. [in_progress] Commit release sources, archive only superseded unpublished candidates within the workspace, then build and verify Windows and Web from the same clean commit.
 3. [pending] Push fast-forward source, update the domain subpath with existing deployment tooling, verify public site and EXE, record hashes/receipts and commit records.
 
 ---

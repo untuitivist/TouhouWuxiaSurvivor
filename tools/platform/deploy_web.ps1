@@ -13,6 +13,7 @@ foreach ($name in $reports) {
     if (-not $report.passed -or $report.build -ne $latest.build -or $report.transferMode -ne $transferMode) { throw "Matching successful browser verification required: $name" }
 }
 if ($Threadless -and $manifest.threadSupport -ne $false) { throw 'The selected artifact is not threadless.' }
+if ($Threadless -and $manifest.monoRuntimeMode -ne 'release-optimized') { throw 'An optimized non-debug Mono release runtime is required.' }
 if ($Threadless) {
     $rawLoading = Get-Content -LiteralPath (Join-Path $latest.build 'raw-loading-verification.json') -Raw | ConvertFrom-Json
     if (!$rawLoading.passed -or $rawLoading.build -ne $latest.build -or $rawLoading.checks.Count -ne 20) { throw 'Repeated raw loading verification is required.' }
@@ -37,10 +38,13 @@ foreach ($file in $manifest.sourceFiles) {
     if ((Get-FileHash -LiteralPath (Join-Path $root $file.path)).Hash -ne $file.sha256) { throw "Source changed since verified build: $($file.path)" }
 }
 $dirty = & git -C $root status --porcelain -- game assets project.godot export_presets.cfg TouhouWuxiaSurvivor.csproj CHANGELOG.md tools/platform/activate_deployment.py tools/platform/deploy_web.ps1 platform/web/touhou-survivor.caddy
-foreach ($language in @('zh', 'en')) {
-    $combat = Get-Content -LiteralPath (Join-Path $latest.build "combat-gate-$language.json") -Raw | ConvertFrom-Json
-    if (!$combat.passed -or !$combat.gatesEnforced -or $combat.build.build -ne $latest.build -or $combat.language -ne $language -or $combat.isolation -ne $false -or $combat.scenarios.Count -ne 3) { throw "Matching unisolated combat release gate required: $language" }
-    if ((@($combat.scenarios.load | Sort-Object) -join ',') -ne '40,180,320') { throw 'Incomplete combat load coverage' }
+foreach ($hero in @('reimu', 'marisa')) {
+    foreach ($language in @('zh', 'en')) {
+        $name = if ($hero -eq 'reimu') { "combat-gate-$language.json" } else { "combat-gate-$hero-$language.json" }
+        $combat = Get-Content -LiteralPath (Join-Path $latest.build $name) -Raw | ConvertFrom-Json
+        if (!$combat.passed -or !$combat.gatesEnforced -or $combat.build.build -ne $latest.build -or $combat.language -ne $language -or $combat.hero -ne $hero -or $combat.isolation -ne $false -or $combat.scenarios.Count -ne 3) { throw "Matching unisolated combat release gate required: $hero/$language" }
+        if ((@($combat.scenarios.load | Sort-Object) -join ',') -ne '40,180,320') { throw 'Incomplete combat load coverage' }
+    }
 }
 $languageReport = Get-Content -LiteralPath (Join-Path $latest.build 'language-verification/report.json') -Raw | ConvertFrom-Json
 if (!$languageReport.passed -or $languageReport.build -ne $latest.build -or $languageReport.checks.Count -ne 3) { throw 'Matching Web language persistence and smoke verification required' }

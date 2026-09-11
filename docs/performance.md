@@ -1,5 +1,14 @@
 # Active Combat Runtime And Performance
 
+## Optimized Release Runtime — 2026-09-11
+
+- The pinned Godot b94985982 Web host called `mono_wasm_load_runtime(1)` in release builds. The official .NET 9.0.19 `src/mono/browser/runtime/runtime.c` disables interpreter optimizations (`interp_opts = "-all"`) whenever the debug level is nonzero. Runtime sampling resolved 4.97/6 seconds to `mono_interp_exec_method`.
+- The reproducible threadless source patch now uses level 1 only under `DEBUG_ENABLED` and level 0 for release. Previous templates remain in place; new timestamped builds have a hashed `release-optimized` receipt. Export and deployment reject missing optimized-runtime evidence. This is not WebGPU, AOT, a second gameplay implementation, or a shared-memory requirement.
+- Correct-mass Marisa high-load diagnostic: before runtime correction 38.49 mean FPS/minimum 7; after correction 60/60 FPS, 60.09 ticks/s, core mean 2.93 ms/P95 5.1 ms, batch mean 0.96 ms. Both use 320 enemies, approximately 1590 projectiles and 44 stars with unchanged physics and thresholds; see `artifacts/marisa-gravity-20260911/release-marisa-{inline,optimized-runtime}.json`. Earlier zero-mass diagnostic fixtures are not valid gameplay comparisons.
+- Same-step star hit numbers may combine per target, but actual per-star damage, hit/death ordering, mass distribution, lifetime and attraction pairs remain independent. Reference-predicate compaction and span iteration avoid large-struct copies while preserving stable ordering. Native core regression now contains 60 checks.
+- This evidence is desktop Edge/NVIDIA WebGL2 without isolation or SharedArrayBuffer, not a mobile-device measurement. Final same-commit release gates and public verification are recorded separately in deployment receipts.
+
+
 ## Scope And Architecture
 
 The active project compiles `game/**/*.cs`; the old ECS under `src` is not part of the rebuilt executable. Before this change, active combat used lists of mutable objects. It was not accurate to describe the old implementation as a completed ECS/OOP hybrid just because old architecture documents existed.
