@@ -1,6 +1,12 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { classifyBrowserConsole, startupTimeout } = require('./verify_deployment.cjs');
+const { classifyBrowserConsole, startupTimeout, publicBrowserOptions } = require('./verify_deployment.cjs');
+
+test('public verification cannot silently inherit a system browser proxy', () => {
+    const options = publicBrowserOptions();
+    assert.ok(options.args.includes('--no-proxy-server'));
+    assert.equal(options.args.some(argument => argument.startsWith('--proxy-server=')), false);
+});
 
 test('public startup budget is explicit, bounded and cannot disable timeouts', () => {
     assert.equal(startupTimeout('180000'), 180000);

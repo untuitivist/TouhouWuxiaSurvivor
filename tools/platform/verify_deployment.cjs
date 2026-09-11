@@ -10,6 +10,10 @@ function startupTimeout(value = process.env.TOUHOU_PUBLIC_STARTUP_TIMEOUT_MS) {
     return timeout;
 }
 
+function publicBrowserOptions() {
+    return { headless: true, executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', args: ['--no-proxy-server', '--enable-unsafe-swiftshader'] };
+}
+
 function classifyBrowserConsole(events) {
     const errors = [];
     const startupDiagnostics = [];
@@ -32,7 +36,7 @@ async function main() {
     const output = path.join(deployment.output, 'public-verification');
     await fs.mkdir(output, { recursive: true });
     const startupBudgetMs = startupTimeout();
-    const report = { url: deployment.url, releaseId: deployment.releaseId, physicalMobileTested: false, startupBudgetMs, checks: [] };
+    const report = { url: deployment.url, releaseId: deployment.releaseId, physicalMobileTested: false, startupBudgetMs, networkMode: 'direct', proxyDisabledByBrowserFlag: true, checks: [] };
     let browser;
     try {
         const redirect = await fetch(origin + '/TouhouSurvivor', { redirect: 'manual' });
@@ -75,7 +79,7 @@ async function main() {
             report.checks.push({ name: 'compressed-asset', file: name, gzipBytes: Number(response.headers.get('content-length')) });
         }
         assert.equal((await fetch(deployment.url + 'missing-deployment-probe.wasm')).status, 404);
-        browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', args: ['--enable-unsafe-swiftshader'] });
+        browser = await chromium.launch(publicBrowserOptions());
         report.browser = browser.version();
         for (const { mobile, isolation } of [{ mobile: false, isolation: true }, { mobile: true, isolation: true }, { mobile: true, isolation: false }]) {
             const context = await browser.newContext({ viewport: mobile ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: mobile, isMobile: mobile });
@@ -200,5 +204,5 @@ async function main() {
     console.log('PUBLIC_WEB_DEPLOYMENT_PASS ' + deployment.url);
 }
 
-module.exports = { classifyBrowserConsole, startupTimeout };
+module.exports = { classifyBrowserConsole, startupTimeout, publicBrowserOptions };
 if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1; });

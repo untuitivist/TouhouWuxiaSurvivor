@@ -1,5 +1,9 @@
 ## Direct First-Download Maintenance — 2026-09-11
 
+- Completed delivery alpha-0.1.8-7aca71e-delivery-20260911T151234Z. Server source is fast-forwarded; original EXE, assets and previous deployment remain unchanged.
+- A/B/A direct range checks prove CUBIC collapse versus BBR (16.9 -> 295.6/290.1 -> 18.3 KB/s). Dedicated module/sysctl files preserve the measured improvement without restarting Caddy or changing domain/routes/qdisc. Safety timer expired and unloaded before durable installation; final state remains BBR.
+- Cold no-proxy/no-cache browsers reach the game in 20.549/25.290s; final direct desktop/touch/unisolated-touch flows pass at 17.751/26.171/31.445s startup. All local compatibility/byte-count/error/cache/language/combat tests pass; platform Python 20/20, JS 22/22 and font check pass. No phone or reboot test is claimed.
+- Reworded maintenance log to retain current font asset after font preflight caught four uncovered new glyphs. Only the owned slow CUBIC measurement browser was ended after the paired trial; evidence explicitly marks that manual stop instead of inventing a 900s timeout.
 - Confirmed slow no-proxy WAN transfer independently of a healthy origin and identified 26 statically linked archives unnecessarily shipped in the PCK.
 - Added guarded, reproducible Web payload compaction and export integration. The derived release retains byte-identical WASM and 289 runtime/game payloads, with core gzip transfer reduced by 33.6% (32.54 to 21.61 MB). Windows SHA-256 remains unchanged; no gameplay/asset/project changes.
 - Python platform tests 20/20 (13 payload + 7 deployment), JavaScript platform tests 21/21 and PS7 build-script syntax pass. Existing download/cache/failure scenarios and 20 raw reads pass; four-mode game regression and language/combat checks are in progress. No deployment or server configuration has changed yet.

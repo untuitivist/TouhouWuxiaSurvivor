@@ -1,8 +1,8 @@
 ## Direct First-Download Optimization — 2026-09-11
 
 1. [complete] Measured direct range transfer (16.9 KB/s), fast origin-local transfer, and 26 erroneously packed static archives. Preserve alpha-0.1.8 EXE/gameplay and all histories.
-2. [complete] Implemented allowlisted pack compaction and automatic Web export integration. Candidate transfer is 32.54 -> 21.61 MB; 289 runtime/game payloads unchanged, 13 unit tests pass. No global network, domain or paid-service changes.
-3. [in_progress] Run existing browser, failure/cache, language and dual-hero combat checks; then verify uncached direct loading, apply only validated delivery changes and record limitations/commit evidence.
+2. [complete] Implemented guarded export compaction (32.54 -> 21.61 MB; 289 runtime/game payloads unchanged), then measured severe CUBIC retransmission. A rollback-guarded BBR A/B/A trial proved the transport bottleneck; installed the two dedicated persistent files affecting new server TCP connections. No DNS, routes, qdisc, paid service or engine/gameplay changes.
+3. [complete] Deployed alpha-0.1.8-7aca71e-delivery-20260911T151234Z; cold direct startup passes at 20.549/25.290s. All three public direct entrances pass, together with local four-mode gameplay, failures/cache, languages and dual-hero load gates; Python 20/20, JavaScript 22/22, font coverage pass. Original EXE/assets/releases and rollback state are retained; device/route variability is explicit.
 
 ---
 
