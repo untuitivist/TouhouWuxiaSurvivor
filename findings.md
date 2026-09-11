@@ -1,3 +1,11 @@
+# Direct Download Investigation — 2026-09-11
+
+- Released core transfer: 32,543,448 gzip bytes; previous uncached direct run received only about 4.02 MB in 180 seconds, while proxy-assisted verification was separate.
+- Server is idle (Caddy 0% CPU), origin is in Silicon Valley, TCP uses cubic; no network settings changed.
+- Read-only PCK v3 inspection: 316 entries, including 26 `.godot/mono/publish/wasm32/*.a` static libraries totalling 26,866,406 raw bytes. Verify fixed engine runtime usage before excluding them from new derived Web packages. Preserve all DLLs, ICU data, art, audio, source and old outputs.
+- Tool recovery: persistent fs is callback-based; use readFileSync/readdirSync, not promise-style fs.readdir.
+
+
 ## Release Gate Investigation — 2026-09-11
 
 - Fresh high-load Web baseline (320 enemies/1600 bullets, Marisa) fails: rendered FPS mean 2.43, simulation 77.99ms mean, weapons 64.19ms mean / 267.8ms P95. This is a real gameplay bottleneck, not merely a test timeout. Report: artifacts/marisa-gravity-20260911/release-marisa-baseline.json.

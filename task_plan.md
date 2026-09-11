@@ -1,3 +1,11 @@
+## Direct First-Download Optimization — 2026-09-11
+
+1. [in_progress] Measure direct transport, server health and packed resource composition. Preserve alpha-0.1.8 EXE/gameplay and all histories.
+2. [pending] Implement measured, reversible, no-purchase delivery improvements with truthful byte accounting, existing-browser fallback and focused tests. Do not change global domain routing or buy CDN services without confirmation.
+3. [pending] Verify uncached direct loading against baseline, apply only validated delivery changes and record limitations/commit evidence.
+
+---
+
 ## Alpha-0.1.8 Release — 2026-09-11
 
 User explicitly requested publication after the color/flow correction. Keep this existing candidate version, ship one committed C# source to Windows EXE and compatible Web, preserve historical artifacts and logs.
