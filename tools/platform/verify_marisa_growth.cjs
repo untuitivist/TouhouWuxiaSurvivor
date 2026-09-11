@@ -49,7 +49,7 @@ async function main() {
                 assert.equal(before.Hero, 'Marisa');
                 assert.equal(before.Language, layout.language);
                 assert.equal(before.SignatureUnlocked, false);
-                assert.deepEqual(before.ChoiceIds, ['marisa.stars.pierce', 'marisa.stardust.echo', 'marisa.masterspark.sweep']);
+                assert.deepEqual(before.ChoiceIds, ['marisa.stars.mass', 'marisa.herbs.brew', 'marisa.masterspark.steer']);
                 const buttons = before.Controls.filter(control => control.Kind === 'Button');
                 assert.equal(buttons.length, 4);
                 assert.ok(buttons.every(control => control.X >= 0 && control.Y >= 0 && control.X + control.Width <= 1280 && control.Y + control.Height <= 720));
@@ -62,7 +62,7 @@ async function main() {
                 await ready('choices');
                 assert.deepEqual((await state()).ChoiceIds, before.ChoiceIds);
                 await click((await state()).Controls.find(control => control.Kind === 'Button'));
-                assert.ok(((await state()).Traits & 128) !== 0, 'Actual UI choice grants Star Pierce');
+                assert.ok(((await state()).Traits & 128) !== 0, 'Actual UI choice grants Star Mass');
                 assert.equal((await state()).Tick, before.Tick, 'Queued choices still freeze combat');
                 for (let index = 0; index < 5 && (await state()).Screen === 'choices'; index++)
                     await click((await state()).Controls.find(control => control.Kind === 'Button'));
@@ -72,13 +72,15 @@ async function main() {
                 await page.reload();
                 await ready('build');
                 const combined = await state();
-                assert.equal(combined.Traits, 8064, 'All six compatible Marisa behavior traits are present');
+                assert.equal(combined.Traits, 232064, 'All six gravity, remedy and beam behaviors are present');
+                assert.ok(combined.Stars > 0 && combined.Stars <= 32 && combined.Planets > 0, 'Actual bounded planet bodies are present');
+                assert.ok(Number.isFinite(combined.StarMass) && combined.StarMass > 0 && combined.Herbs > 0, 'Independent star masses and real remedies are present');
                 assert.equal(combined.SignatureUnlocked, false);
                 assert.deepEqual(combined.AbilityRanks.slice(0, 6), [0, 0, 0, 1, 1, 1]);
                 await page.screenshot({ path: path.join(output, layout.name + '-combined-build.png') });
                 await click(combined.Controls.find(control => control.Kind === 'Button'));
                 await ready('playing');
-                await page.waitForFunction(tick => window.__touhouProbe.Tick > tick + 60 && window.__touhouProbe.Projectiles > 0, combined.Tick);
+                await page.waitForFunction(tick => window.__touhouProbe.Tick > tick + 60 && window.__touhouProbe.Stars > 0, combined.Tick);
                 await page.screenshot({ path: path.join(output, layout.name + '-combat.png') });
                 await page.keyboard.press('KeyE');
                 await ready('build');

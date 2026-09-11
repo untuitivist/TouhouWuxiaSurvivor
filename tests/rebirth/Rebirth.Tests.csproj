@@ -17,6 +17,7 @@
     <Compile Include="GrowthBalance.cs" />
     <Compile Include="MarisaGrowthTests.cs" />
     <Compile Include="MarisaBeamTests.cs" />
+    <Compile Include="MarisaHerbTests.cs" />
     <Compile Include="MarisaBalance.cs" />
     <Compile Include="PerformanceBenchmarks.cs" />
     <Compile Include="EcsTests.cs" />

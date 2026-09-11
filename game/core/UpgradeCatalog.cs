@@ -12,13 +12,17 @@ public static class UpgradeCatalog
     public const string BoundaryUnlock = "reimu.boundary.unlock";
     public const string YinYangUnlock = "reimu.yinyang.unlock";
     public const string Recovery = "shared.recovery";
-    public const string StardustUnlock = "marisa.stardust.unlock";
+    public const string HerbsUnlock = "marisa.herbs.unlock";
     public const string MasterSparkUnlock = "marisa.masterspark.unlock";
-    public const string StarPierce = "marisa.stars.pierce";
-    public const string StarSplit = "marisa.stars.split";
-    public const string StardustRecall = "marisa.stardust.recall";
-    public const string StardustEcho = "marisa.stardust.echo";
-    public const string SparkSweep = "marisa.masterspark.sweep";
+    public const string StarMass = "marisa.stars.mass";
+    public const string StarSpread = "marisa.stars.spread";
+    public const string StarLifetime = "marisa.stars.lifetime";
+    public const string StarPlanet = "marisa.stars.planet";
+    public const string HerbBrew = "marisa.herbs.brew";
+    public const string HerbReserve = "marisa.herbs.reserve";
+    public const string SparkSteer = "marisa.masterspark.steer";
+    public const string SparkWide = "marisa.masterspark.wide";
+    public const string SparkResonance = "marisa.masterspark.resonance";
     public const string SparkClear = "marisa.masterspark.clear";
     public const string FinalSpark = "marisa.final-spark";
     public static readonly IReadOnlyList<UpgradeDefinition> All = Array.AsReadOnly(Create().ToArray());
@@ -50,12 +54,16 @@ public static class UpgradeCatalog
         yield return Behavior(Launch, ArtKind.YinYang, "玉 · 蓄力发射", $"自动蓄力 {ReimuTuning.OrbChargeDuration:0.0} 秒后射出一枚玉，贯穿三敌；飞行时少一枚护身玉，可与消弹兼修。", AbilityTraits.Launch);
         yield return new(DreamSeal, ArtKind.Ofuda, UpgradeKind.Behavior, "解锁 · 梦想封印",
             "解锁满蓄势自动发动的梦想封印。此前蓄势可以积累，但不会自动清弹或攻击。", HeroKind.Reimu, 1, AbilityTraits.DreamSeal, 1, 5);
-        yield return Behavior(StarPierce, ArtKind.Stars, "星 · 贯穿", $"星弹额外贯穿一敌，单弹伤害降低 {(1 - MarisaTuning.PierceDamageMultiplier) * 100:0}%。可与分裂兼修。", AbilityTraits.StarPierce);
-        yield return Behavior(StarSplit, ArtKind.Stars, "星 · 分裂", $"星弹首次命中时分出 {MarisaTuning.FragmentCount} 枚短程碎星，各造成 {MarisaTuning.FragmentDamageMultiplier * 100:0}% 单弹伤害；不回击原目标、不连锁分裂。", AbilityTraits.StarSplit);
-        yield return Behavior(StardustRecall, ArtKind.Stardust, "尘 · 回旋", $"星屑飞行 {MarisaTuning.RecallDelay:0.00} 秒后返身，额外贯穿一敌，伤害降低 {(1 - MarisaTuning.RecallDamageMultiplier) * 100:0}%；缩短外射距离，同一星屑不重复命中同一敌人。", AbilityTraits.StardustRecall);
-        yield return Behavior(StardustEcho, ArtKind.Stardust, "尘 · 双重星环", $"原地相隔 {MarisaTuning.EchoDelay:0.0} 秒放出两轮错位星环，每轮造成原伤害的 {MarisaTuning.EchoDamageMultiplier * 100:0}%；可与回旋兼修。", AbilityTraits.StardustEcho);
-        yield return Behavior(SparkSweep, ArtKind.MasterSpark, "炮 · 横扫", $"魔炮从瞄准方向左侧扫向右侧，总角度 {MarisaTuning.SweepDegrees * 2:0}°；扩大覆盖，但不增加每次伤害。", AbilityTraits.SparkSweep);
-        yield return Behavior(SparkClear, ArtKind.MasterSpark, "炮 · 消弹", $"魔炮每次伤害脉冲最多消除火线内 {MarisaTuning.BeamClearLimit} 发敌弹；蓄势期间不消弹，可与横扫兼修。", AbilityTraits.SparkClear);
+        yield return Behavior(StarMass, ArtKind.Stars, "星 · 增质", "每颗星的随机质量提高约 67%，扩大撕扯范围与牵引强度；各星独立，不设总质量池。", AbilityTraits.StarMass);
+        yield return Behavior(StarSpread, ArtKind.Stars, "星 · 星群", "每轮星体由四颗增加到六颗；新增星体独立随机质量并造成伤害，不摊薄其他星体。", AbilityTraits.StarSpread);
+        yield return Behavior(StarLifetime, ArtKind.Stars, "星 · 长明", "星体持续时间增加 1.4 秒；最多同时存在四组星群，不无限堆积。", AbilityTraits.StarLifetime);
+        yield return new(StarPlanet, ArtKind.Stars, UpgradeKind.Behavior, "星 · 行星", "每组一颗星成为独立质量的行星，抵达落点后牵引附近敌人；不扣除其他星体质量。首领强烈抵抗牵引。", HeroKind.Marisa, 1, AbilityTraits.StarPlanet, 1, 5);
+        yield return Behavior(HerbBrew, ArtKind.Herbs, "药 · 缓释", "拾取药菇后额外缓慢恢复其一半药量，每秒最多 2 点，待恢复量最多 18；不靠伤害或击杀无限吸血。", AbilityTraits.HerbBrew);
+        yield return Behavior(HerbReserve, ArtKind.Herbs, "药 · 留药", "药菇保存时间增加 16 秒，在场上限由三份变为五份；满血时不消耗药菇。", AbilityTraits.HerbReserve);
+        yield return Behavior(SparkSteer, ArtKind.MasterSpark, "炮 · 追敌", "魔炮持续瞄准最近的存活敌人并平滑转向；停步也会追踪，无目标时保持方向。", AbilityTraits.SparkSteer);
+        yield return Behavior(SparkWide, ArtKind.MasterSpark, "炮 · 广域", "魔炮宽度增加 60%，每次伤害不变；可与追敌和共鸣兼修。", AbilityTraits.SparkWide);
+        yield return Behavior(SparkResonance, ArtKind.MasterSpark, "炮 · 星光共鸣", "正在照射的魔炮使火线内星体的持续撕扯增强 25%；离开火线即结束，不增加质量或刷新寿命。", AbilityTraits.SparkResonance);
+        yield return Behavior(SparkClear, ArtKind.MasterSpark, "炮 · 消弹", $"魔炮每次伤害脉冲最多消除火线内 {MarisaTuning.BeamClearLimit} 发敌弹；蓄势期间不消弹，可与追敌兼修。", AbilityTraits.SparkClear);
         yield return new(FinalSpark, ArtKind.MasterSpark, UpgradeKind.Behavior, "解锁 · 满蓄势魔炮",
             "已学魔炮后，解锁满蓄势自动发动的强化 Master Spark 与发动时全屏消弹。此前只积累蓄势。", HeroKind.Marisa, 1, AbilityTraits.FinalSpark, 1, 5);
     }

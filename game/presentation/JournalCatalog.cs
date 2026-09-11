@@ -9,6 +9,7 @@ internal sealed record JournalEntry(string Id, JournalCategory Category, string 
 internal static class JournalCatalog
 {
     public const string ArtRoot = "res://assets/internal_original/base/";
+    public static string AssetPath(string asset) => asset.StartsWith("res://", StringComparison.Ordinal) ? asset : ArtRoot + asset;
     private static string cachedLanguage = "";
     private static IReadOnlyList<JournalEntry> cachedEntries = [];
     public static IReadOnlyList<JournalEntry> All
@@ -45,7 +46,7 @@ internal static class JournalCatalog
                 reimu ? "effects/reimu_aura.png" : "effects/master_spark.png", false,
                 (reimu ? GameText.Get("先领悟梦想封印（修习 5 起可选），未解锁时不会自动施放。\n\n") : GameText.Get("先解锁魔炮，再领悟满蓄势魔炮（修习 5 起可选）；未解锁时只积累蓄势。\n\n")) +
                 GameText.Get("擦弹与退治积累蓄势；解锁后蓄势满时自动发动，无需额外按键。发动时清除敌弹并吸取场上拾取物。\n\n") +
-                (reimu ? GameText.Get("梦想封印：释放追踪灵光，寻找妖怪并造成范围爆发。") : GameText.Get("强化魔炮：蓄势后持续照射，走位平移火线。已学横扫或消弹分支同样生效；不自动追踪。")) +
+                (reimu ? GameText.Get("梦想封印：释放追踪灵光，寻找妖怪并造成范围爆发。") : GameText.Get("强化魔炮：蓄势后持续照射；领悟追敌后自动瞄准最近敌人，广域与消弹同样生效。")) +
                 GameText.Get("\n\n图中为当前局内使用的素材，不是原作符卡逐帧复刻。"));
         }
         foreach (var art in ArtCatalog.All)
@@ -57,7 +58,7 @@ internal static class JournalCatalog
                 for (var rank = 1; rank <= art.MaxRank; rank++) details += GameText.Format($"第 {rank} 重  {ArtCatalog.UpgradeText(art.Id, rank - 1)}\n");
                 details += GameText.Get("\n圆满  ") + GameText.Get(art.Mastery);
                 details += art.Id == ArtKind.Ofuda ? GameText.Get("\n\n初始能力：只有直射符。")
-                    : art.Id == ArtKind.Stars ? GameText.Get("\n\n初始能力：只有直射星光，慢移收束。") : GameText.Get("\n\n需先在修习中解锁此能力。");
+                    : art.Id == ArtKind.Stars ? GameText.Get("\n\n初始能力：引力星群持续撕扯，慢移收束环绕；质量分布在生成时随机。") : GameText.Get("\n\n需先在修习中解锁此能力。");
                 foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior))
                     details += GameText.Format($"\n\n{upgrade.Name} · {UpgradeCatalog.Requirement(upgrade)}\n{upgrade.Description}");
             }
@@ -94,7 +95,7 @@ internal static class JournalCatalog
     {
         ArtKind.Ofuda => "effects/reimu_talisman.png", ArtKind.YinYang => "actors/yin_yang_orb.png",
         ArtKind.Boundary => "effects/reimu_seal_ink.png", ArtKind.Stars => "combat/star.png",
-        ArtKind.Stardust => "effects/marisa_cast.png", ArtKind.MasterSpark => "effects/master_spark.png",
+        ArtKind.Herbs => "combat/marisa_mushroom.png", ArtKind.MasterSpark => "effects/master_spark.png",
         _ => "effects/ritual_array.png"
     };
 }

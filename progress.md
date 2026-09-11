@@ -1,8 +1,14 @@
 ## Marisa Gravity and Sustain Release — 2026-09-11
 
+- Correction checks pass: 56/56 core, 997/997 localization, equal-point route guardrails and both heroes' three-seed unassisted journeys. New font includes 1271 characters. Initial core failures identified two stale group-damage/integer-preview test assumptions; fixed tests to assert each star's real damage and displayed decimal precision. A long dictionary patch exceeded Windows argument length; switched to exact per-line apply_patch hunks. A malformed JS patch invocation and an incorrect read-only test-file guess made no edits.
+- User correction: remove the invented shared mass pool and damage redistribution; beam steering means original nearest-enemy auto-aim, not movement steering. Release is held while code, localized descriptions and regression tests are corrected. No production update has occurred.
+- Resume read errors: fs is callback-based (switched to readFileSync with explicit UTF-8); CMD/where compound invocation rejected by host (direct where.exe succeeded); rg missing-file guesses replaced with existing-directory searches. No file edits resulted from these read-only failures.
+
 - Audited run order, dense stores, local grid, projectile collisions, pickup healing and old Marisa tests. Implementation will preserve rendering batches and fixed-step timing while replacing the unreleased collision-based routes.
+- Remote fetch initially hung on direct GitHub networking. Stopped/reaped only the task fetch, then used the existing local proxy per command (no system proxy change); origin and pinned server both confirm the previous alpha-0.1.7 release. Previous release hashes are preserved in the task artifact directory.
 - Began release implementation from clean df35ff9. Inspected existing plans and published history; no code, version, artifact or server changes yet.
-- Created phased plan; next is bounded code/release audit. Missing rg on PATH is recorded, not silently retried.
+- Original TH17.5 Marisa mushroom now replaces the self-drawn runtime asset; original visible RGBA pixels match after Aseprite conversion. First Pillow validation used incompatible bundled/Anaconda native libraries; reran with the matching Anaconda interpreter without changing the image. Native UI smoke and 997/997 localization pass. An editor-only import exposed SDK discovery through the inherited environment; checked the official Godot SDK finder: Windows executable discovery requires PATHEXT, which was missing in the tool environment. Restored PATHEXT/ComSpec only for child jobs before revalidation; no SDK installation or global environment changes.
+- Added shared dense star bodies, deterministic mass distribution, proximity tearing, capped planet pull, independent herbs with reserve/brew, steering/widening/resonance and updated presentation/probes. No new per-star scene nodes or all-pairs forces. Focused tests are being rewritten against the new behavior.
 
 ---
 

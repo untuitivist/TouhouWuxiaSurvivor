@@ -62,7 +62,8 @@ public sealed partial class RunState
 
     internal void CollectPickup(Pickup pickup)
     {
-        if (pickup.Healing) Heal(pickup.Value);
+        if (pickup.Herbal) MarisaHerbSystem.Collect(this, pickup);
+        else if (pickup.Healing) Heal(pickup.Value);
         else AddExperience(pickup.Value);
     }
 
@@ -70,7 +71,7 @@ public sealed partial class RunState
     {
         if (Pickups.Count >= PickupLimit)
         {
-            var existing = Pickups.FindIndex(pickup => pickup.Healing == healing);
+            var existing = Pickups.FindIndex(pickup => pickup.Healing == healing && !pickup.Herbal);
             if (existing >= 0) { Pickups[existing].Value += value; return; }
             if (!healing) { AddExperience(value); return; }
             Heal(value);

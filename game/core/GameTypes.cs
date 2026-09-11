@@ -5,7 +5,7 @@ namespace Rebirth.Core;
 public enum HeroKind { Reimu, Marisa }
 public enum RunPhase { Playing, Choosing, Paused, Won, Lost }
 public enum EnemyKind { Kedama, Fairy, Charger, Elite, Boss }
-public enum ArtKind { Ofuda, YinYang, Boundary, Stars, Stardust, MasterSpark, Power, Haste, Vitality, Flow, Recovery }
+public enum ArtKind { Ofuda, YinYang, Boundary, Stars, Herbs, MasterSpark, Power, Haste, Vitality, Flow, Recovery }
 public enum EffectKind { Hit, Defeat, Graze, Hurt, Dash, Spell, Seal, Beam, Explosion, Level, Boss, Victory }
 
 public readonly record struct FrameInput(Vector2 Move, bool Focus = false, bool Dash = false);
@@ -17,6 +17,7 @@ public sealed class Enemy
     public EnemyKind Kind;
     public Vector2 Position;
     public Vector2 Velocity;
+    public Vector2 GravityVelocity;
     public Vector2 Aim;
     public float Health;
     public float MaxHealth;
@@ -46,8 +47,6 @@ public struct Projectile
     public int TargetId;
     public bool DreamOrb;
     public bool Blast;
-    public bool StarSplit;
-    public float RecallRemaining;
     public int ClearBudget;
     public int TintIndex;
     public HitHistory HitIds;
@@ -57,7 +56,7 @@ public sealed class BeamState
 {
     public Vector2 Direction;
     public Vector2 AimDirection;
-    public bool Sweep;
+    public bool Steering;
     public bool ClearsBullets;
     public float Duration;
     public float Warmup;
@@ -83,6 +82,8 @@ public struct Pickup
     public Vector2 Position;
     public int Value;
     public bool Healing;
+    public bool Herbal;
+    public float Life;
     public bool Attracted;
     public bool Collected;
 }

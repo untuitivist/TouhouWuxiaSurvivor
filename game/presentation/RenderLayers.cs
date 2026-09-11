@@ -47,6 +47,9 @@ public partial class GameCanvas
             worldLayer.AddChild(batch);
             batches.Add(name, batch);
         }
+        var herbs = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/marisa_mushroom.png"), 24) { ZIndex = 3 };
+        worldLayer.AddChild(herbs);
+        batches.Add("herb", herbs);
         CacheCombatStyles();
         worldLayer.Hide();
         hudLayer.Hide();

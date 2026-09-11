@@ -2,7 +2,7 @@
 
 **东方 × 武侠 × 幸存者**。灵梦以御札、阴阳玉与结界退治；魔理沙以星光与魔炮开路。武侠体现在进退与取舍，不覆盖人物身份。
 
-当前版本：`alpha-0.1.5`。灵梦从基础御札起步，修习解锁阵、阴阳玉与梦想封印，允许不冲突的追踪/爆破、选点/禁锢、消弹/蓄力分支兼修。标题和界面改用可编辑的 Aseprite 像素素材，原作角色与特效保留。同一 C# 项目交付 Windows/Web；中英文切换仍为独立未发布工作，本版不包含。
+当前候选版本：`alpha-0.1.8`。灵梦保留基础御札起步与兼修成长；魔理沙使用随机质量引力星群、药菇续航与可解锁的追敌魔炮/星光共鸣。中英文设置、原有键盘/触屏操作保留，同一 C# 项目交付 Windows/Web。没有特殊要求时优先使用原作素材；实际发布状态以 `docs/deployment.md` 和版本回执为准。
 
 ## 成品交付
 
@@ -10,14 +10,14 @@
 
 今后正式发布同时交付自带依赖 EXE 与对应版本的网页更新部署。服务器首次 clone 同一仓库，后续 `git pull --ff-only`；构建产物单独传输、校验并保留回滚版本。部署步骤见 `docs/deployment.md`。
 
-正式交付入口为 `release/TouhouWuxiaSurvivor_alpha-0.1.5.exe`，不是源码启动脚本。
+正式交付入口为 `release/TouhouWuxiaSurvivor_alpha-0.1.8.exe`，不是源码启动脚本。
 沿用旧版本的单文件口径，PCK 与 .NET 构建输出内嵌；全部旧版 EXE 保留。
-版本来源为 `project.godot`，采用 `stage-major.release.optimization`，Windows 文件版本为 `0.1.5.0`。
+版本来源为 `project.godot`，采用 `stage-major.release.optimization`，Windows 文件版本为 `0.1.8.0`。
 导出命令为 `build_release.cmd`，同版本成品已存在时拒绝覆盖。下方脚本启动方式仅用于源码开发。
 
 ## 启动
 
-本版 EXE 保留**像素 UI、完整设置和 F3 诊断**，增加批量战斗与渲染优化及新图标。日常改动提交 Git；明确发布时升级版本号、导出自带依赖 EXE 并更新网页，保留历史产物。详情见 `CHANGELOG.md` 的 alpha-0.1.5 部分。
+本版 EXE 保留**像素 UI、完整设置和 F3 诊断**，增加批量战斗与渲染优化及新图标。日常改动提交 Git；明确发布时升级版本号、导出自带依赖 EXE 并更新网页，保留历史产物。详情见 `CHANGELOG.md` 的 alpha-0.1.8 部分。
 
 Windows 下双击项目根目录 `run_game.cmd`，或在本目录运行：
 
@@ -77,7 +77,7 @@ tools/rebirth/      验证与截图脚本
 
 ## 设计与验证
 
-- `docs/rebirth_design.md`：新版唯一当前设计。
+- `docs/rebirth_design.md`：共用游戏设计；魔理沙当前成长见 `docs/marisa_growth.md`。
 - `docs/rebirth_validation.md`：测试范围、自动流程数据和仍需真人确认的边界。
 - `.NOTE.md`：用户确认的方向与项目定义；旧笔记不再是新版硬约束。
 
@@ -86,7 +86,7 @@ tools\rebirth\verify.cmd
 tools\rebirth\capture.cmd
 ```
 
-已有 38 项核心回归、真实引擎输入与界面流程、音量偏好与旧记录兼容测试。截图包含两人的御札、封魔阵、星弹、魔炮前摇/照射与构筑，并检查 960×540 窗口。批量渲染的实测与限制见 `docs/performance.md`。
+已有 56 项核心回归、真实引擎输入与界面流程、音量偏好与旧记录兼容测试。截图包含两人的御札、封魔阵、星弹、魔炮前摇/照射与构筑，并检查 960×540 窗口。批量渲染的实测与限制见 `docs/performance.md`。
 日志和截图在 `artifacts/`，不进入 Git。自动化证明运行与规则符合预期，不能证明游戏已经足够好玩。
 
 ## 素材边界

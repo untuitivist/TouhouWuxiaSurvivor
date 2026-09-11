@@ -1,0 +1,11 @@
+{
+  "sourceWork": "TH17.5 东方刚欲异闻",
+  "sourceCharacterDirectory": "data/sprite/marisa",
+  "source": "东方原作弹幕游戏素材包/东方Project游戏解包内容/TH17.5 东方刚欲异闻/data/sprite/marisa/mushroom000.gif",
+  "sourceSha256": "2a5ee65f89a13db69c86ae7ecf9260b9d11b2a4297bfda462d48c964d5e455db",
+  "output": "assets/internal_original/base/combat/marisa_mushroom.png",
+  "outputSha256": "92eea2f647e8b9ba3adbf702ae1786bb4e98bf3947f4eee979d54adcf88ef45e",
+  "processing": "Aseprite batch GIF-to-PNG conversion; original pixels retained, no redraw or recoloring",
+  "gameplay": "Healing mushroom is this game adaptation, not a claim about the original move effect",
+  "rights": "User-supplied original-game material; source attribution is not a redistribution license"
+}

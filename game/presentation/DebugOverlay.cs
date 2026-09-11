@@ -62,7 +62,7 @@ public partial class DebugOverlay : Control
             Run == null ? "Seed: --   Tick: --" : $"Seed: {Run.Seed}   Tick: {Run.Ticks}   Time: {Run.Time:0.00}s",
             Run == null ? GameText.Get("区域: --") : GameText.Format($"区域: 博丽夜境   边界 ±{RunState.ArenaHalfWidth:0} / ±{RunState.ArenaHalfHeight:0}"),
             GameText.Format($"妖怪 {regular} / Boss {bossCount}   实体上限 {RunState.EnemyLimit}"),
-            GameText.Format($"玩家弹 {Math.Max(0, (Run?.Projectiles.Count ?? 0) - hostile)} / 敌弹 {hostile}   掉落 {Run?.Pickups.Count ?? 0}"),
+            GameText.Format($"玩家弹 {Math.Max(0, (Run?.Projectiles.Count ?? 0) + (Run?.Stars.Count ?? 0) - hostile)} / 敌弹 {hostile}   掉落 {Run?.Pickups.Count ?? 0}"),
             Run == null ? GameText.Get("角色: --") : GameText.Format($"角色 {Run.Hero}  HP {Run.Health:0.0}/{Run.MaxHealth:0}   速度 {Run.PlayerVelocity.Length():0.0}"),
             Run == null ? GameText.Get("战况: --") : GameText.Format($"退治 {Run.Kills}   擦弹 {Run.Grazes}   古印 {Run.PurifiedSeals}/3   待选 {Run.PendingChoices}"),
             GameText.Format($"[{GameControls.Hint(GameControls.Debug)}] 隐藏诊断 · 只读，不暂停游戏")

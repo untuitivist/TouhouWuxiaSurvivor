@@ -2,13 +2,13 @@
 
 Implement the accepted randomized-mass star growth, sustained gravity damage, directional growing beam and limited mushroom/herb sustain in the existing shared C# game. Preserve Reimu, established controls/art, all release history and the compatible threadless Web renderer. Publish only after new validation: self-contained Windows EXE plus matching Web deployment. No deletions or speculative WebGPU work.
 
-1. [in_progress] Audit growth/runtime/render/test architecture and release gates; confirm the next version against local and remote history.
-2. [pending] Implement bounded random star mass, attraction/planet progression, sustained damage, beam and healing growth with decoupled systems and localization.
-3. [pending] Add focused deterministic tests, balance and entity-budget checks; validate actual native and Web gameplay/UI.
-4. [pending] Update preserved changelog/version/docs, build immutable Windows/Web artifacts from committed inputs, verify and publish/deploy.
+1. [complete] Audited runtime/release gates. Remote origin and pinned server confirm alpha-0.1.7; next version is alpha-0.1.8.
+2. [complete] Implemented bounded random stars/planets, sustained damage, steering/resonant beams and finite remedies; shared rendering/probes; user requested original-first assets, so the active mushroom is now the verified original TH17.5 sprite, with the self-drawn draft retained only in art/.
+3. [in_progress] Corrected independent per-star mass/damage and nearest-enemy beam tracking; new core 56/56, localization 997/997, native build/import/UI smoke and both heroes' three-seed journeys pass. Exact exported Windows/Web verification still required.
+4. [in_progress] Changelog/version/docs updated without changing published history. Commit corrected sources, then build immutable Windows/Web artifacts, verify and publish/deploy.
 5. [pending] Verify public deployment and final artifacts, record receipts and honest validation boundaries, commit final records.
 
-Errors: rg is not on the inherited PATH; locate the bundled executable or use argument-array file inspection.
+Errors: rg is not on the inherited PATH; using Git grep/argument-array inspection. Initial substring patch failed because apply_patch requires complete lines; corrected the wrapper to expand exact matches to full-line contexts before applying. No partial edit resulted from that failed patch. One read-only Git grep expression had an unescaped bracket; corrected to a simpler alternation. CMD multiline/compound commands did not execute reliably in this host, so long jobs use direct argument arrays with logs and hidden child windows. Two NuGet attempts exposed missing APPDATA/ProgramData/ProgramFiles variables; restored explicit local environment (not dependency changes). New tests needed qualified Check calls because the top-level test helper shadows static imports.
 
 ---
 

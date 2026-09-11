@@ -16,12 +16,13 @@ public sealed partial class RunState
     public ComponentStore<Enemy> Enemies => World.Enemies;
     public ComponentStore<Projectile> Projectiles => World.Projectiles;
     public ComponentStore<Pickup> Pickups => World.Pickups;
+    public ComponentStore<StarBody> Stars => World.Stars;
     public readonly List<CombatEvent> Events = [];
     public readonly List<UpgradeDefinition> Choices = [];
     public BuildState Build { get; }
     public int[] Ranks => Build.Ranks;
     public ReimuAbilityState Reimu { get; } = new();
-    public MarisaAbilityState Marisa { get; } = new();
+    public MarisaAbilityState Marisa { get; }
     public readonly Seal[] Seals =
     [
         new() { Name = "天之印", Position = new(-680, -430) },
@@ -76,6 +77,7 @@ public BoundaryField? Field { get; internal set; }
         Build = new(hero);
         Seed = seed;
         random = new Random(seed);
+        Marisa = new(seed);
         Health = MaxHealth;
 
     }
@@ -142,7 +144,10 @@ public BoundaryField? Field { get; internal set; }
         if (Health <= 0) Phase = RunPhase.Lost;
     }
 
-    private void Heal(float amount) => Health = Math.Min(MaxHealth, Health + amount);
+    internal void Heal(float amount)
+    {
+        if (Phase != RunPhase.Lost && amount > 0) Health = Math.Min(MaxHealth, Health + amount);
+    }
     internal void Emit(EffectKind kind, Vector2 position, float value = 0) => Events.Add(new(kind, position, position, value));
     private float RandomFloat() => (float)random.NextDouble();
     internal static Vector2 ClampToArena(Vector2 position) => new(Math.Clamp(position.X, -ArenaHalfWidth + 28, ArenaHalfWidth - 28), Math.Clamp(position.Y, -ArenaHalfHeight + 28, ArenaHalfHeight - 28));

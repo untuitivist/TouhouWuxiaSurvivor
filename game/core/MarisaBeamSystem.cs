@@ -10,15 +10,16 @@ internal static class MarisaBeamSystem
         if (rank <= 0 || signature && !run.Build.SignatureUnlocked) return;
         var stats = AbilityTuning.Get(ArtKind.MasterSpark, rank);
         var target = run.NearestEnemy(run.PlayerPosition, 1200);
-        var aim = target == null ? run.Facing : Geometry.Direction(target.Position - run.PlayerPosition);
-        var sweep = run.Build.Has(AbilityTraits.SparkSweep);
+        var offset = target == null ? Vector2.Zero : target.Position - run.PlayerPosition;
+        var aim = offset.LengthSquared() > 0.0001f ? Geometry.Direction(offset) : run.Facing;
+        var steering = run.Build.Has(AbilityTraits.SparkSteer);
         var duration = signature ? 2.4f : stats.Duration;
         run.Beam = new()
         {
-            AimDirection = aim, Direction = sweep ? Geometry.Rotate(aim, -MarisaTuning.SweepDegrees * MathF.PI / 180) : aim,
-            Sweep = sweep, ClearsBullets = run.Build.Has(AbilityTraits.SparkClear),
+            AimDirection = aim, Direction = aim,
+            Steering = steering, ClearsBullets = run.Build.Has(AbilityTraits.SparkClear),
             Warmup = AbilityTuning.BeamWarmup, Remaining = duration, Duration = duration,
-            HalfWidth = AbilityTuning.BeamHalfWidth(rank) + (signature ? 16 : 0),
+            HalfWidth = (AbilityTuning.BeamHalfWidth(rank) + (signature ? 16 : 0)) * (run.Build.Has(AbilityTraits.SparkWide) ? MarisaTuning.WideMultiplier : 1),
             Length = signature ? 1100 : stats.Range,
             Damage = stats.Damage * run.Power * (signature ? 1.7f : 1), Signature = signature
         };
@@ -39,6 +40,14 @@ internal static class MarisaBeamSystem
     {
         var beam = run.Beam;
         if (beam == null) return;
+        if (beam.Steering && run.NearestEnemy(run.PlayerPosition, 1200) is { } target)
+        {
+            var offset = target.Position - run.PlayerPosition;
+            beam.AimDirection = offset.LengthSquared() > 0.0001f ? Geometry.Direction(offset) : beam.Direction;
+            var heading = MathF.Atan2(beam.Direction.Y, beam.Direction.X);
+            var delta = Geometry.AngleDelta(heading, MathF.Atan2(beam.AimDirection.Y, beam.AimDirection.X));
+            beam.Direction = Geometry.Angle(heading + Math.Clamp(delta, -MarisaTuning.SteeringRadians * RunState.StepSeconds, MarisaTuning.SteeringRadians * RunState.StepSeconds));
+        }
         if (beam.Warmup > 0)
         {
             beam.Warmup -= RunState.StepSeconds;
@@ -47,11 +56,6 @@ internal static class MarisaBeamSystem
         }
         beam.Remaining -= RunState.StepSeconds;
         if (beam.Remaining <= 0) { run.Beam = null; return; }
-        if (beam.Sweep)
-        {
-            var progress = Math.Clamp(1 - beam.Remaining / beam.Duration, 0, 1);
-            beam.Direction = Geometry.Rotate(beam.AimDirection, (progress * 2 - 1) * MarisaTuning.SweepDegrees * MathF.PI / 180);
-        }
         beam.PulseTimer -= RunState.StepSeconds;
         if (beam.PulseTimer > 0) return;
         beam.PulseTimer += AbilityTuning.BeamPulse;

@@ -9,11 +9,11 @@ public static class ArtCatalog
         new(ArtKind.Ofuda, "御札", "灵梦 · 符", "向目标发射直线御札；追踪与爆炸需分别领悟，可兼修。", "每轮六张御札；行为效果由已选分支决定。", "ef9fb3", 5, HeroKind.Reimu, "红魔乡/永夜抄说明书：御札；本作成长转译", "札"),
         new(ArtKind.YinYang, "阴阳玉", "灵梦 · 护身", "阴阳玉绕身，击退近敌；走位决定接触范围。", "六枚阴阳玉，回旋半径扩大至 115。", "8cdcc8", 5, HeroKind.Reimu, "红魔乡说明书：阴阳玉；本作回旋转译", "玉"),
         new(ArtKind.Boundary, "封魔阵", "灵梦 · 留阵", "在脚下留下方形封魔阵，持续伤害阵内敌人；离开后阵地不跟随。", "更大的驻留阵地；进退之间引敌入阵。", "efb7bf", 5, HeroKind.Reimu, "红魔乡：梦符「封魔阵」；本作驻留转译", "阵"),
-        new(ArtKind.Stars, "星光射击", "魔理沙 · 散射", "星弹自动朝妖群散射；慢移时收束角度，不增加弹数或伤害。", "七星齐发；散射覆盖与慢移集中自由切换。", "e6c786", 5, HeroKind.Marisa, "永夜抄说明书/求闻史纪：星尘与光热魔法", "星"),
-        new(ArtKind.Stardust, "星尘幻想", "魔理沙 · 扩散", "星屑向四周扩散，贯穿少量敌人；近处覆盖更密集。", "二十三枚星屑扩散，贯穿两敌。", "bab0f0", 5, HeroKind.Marisa, "红魔乡：魔符「Stardust Reverie」；本作转译", "尘"),
-        new(ArtKind.MasterSpark, "Master Spark", "魔理沙 · 魔炮", "自动锁向，蓄势后发射持续光束；方向锁定，走位可平移火线。", "更宽、更持久的魔炮；发射时仍可移动。", "a9cadb", 5, HeroKind.Marisa, "红魔乡：恋符「Master Spark」；本作自动施放", "炮"),
+        new(ArtKind.Stars, "引力星群", "魔理沙 · 持续", "每颗星独立随机质量，被敌人吸引并持续撕扯近敌；慢移收束环绕，不改变单星质量或伤害。", "提升每颗星的持续伤害；数量、质量、长明与行星需分别领悟，可兼修。", "e6c786", 5, HeroKind.Marisa, "本作玩法改编：星光魔法与引力意象，不冒充原作符卡", "星"),
+        new(ArtKind.Herbs, "药菇调合", "魔理沙 · 调息", "定期在身边留下药菇，拾取回血；满血时保留，有存续时间与数量上限。", "每份恢复 14 点生命；留药与缓释需分别领悟。", "8cdcc8", 5, HeroKind.Marisa, "本作玩法改编：蘑菇与草药调合，不改写原作职业", "药"),
+        new(ArtKind.MasterSpark, "Master Spark", "魔理沙 · 魔炮", "蓄势后持续照射，默认锁向；追敌、广域与星光共鸣需分别领悟。", "更持久的魔炮；领悟追敌后自动转向最近敌人，让火线内星群共鸣。", "a9cadb", 5, HeroKind.Marisa, "红魔乡：恋符「Master Spark」；本作持续施放转译", "炮"),
         new(ArtKind.Power, "威力修习", "修习 · 威力", "威力系数增加基础值的 18%；符卡同样受益。", "", "e6c786", 3),
-        new(ArtKind.Haste, "施法精进", "修习 · 节奏", "施放频率系数 +0.14；魔炮只缩短休整，不加快光束伤害脉冲。", "", "8cdcc8", 3),
+        new(ArtKind.Haste, "施法精进", "修习 · 节奏", "施放频率系数 +0.14；不加快星群或魔炮伤害脉冲，也不加快药菇生成。", "", "8cdcc8", 3),
         new(ArtKind.Vitality, "体魄修习", "修习 · 生存", "生命上限 +25，立即恢复 35 点生命。", "", "ef9fb3", 3),
         new(ArtKind.Flow, "步法调息", "修习 · 游走", "移动增加基础值的 6%，拾取半径 +35，闪身冷却减少 0.35 秒。", "", "a9cadb", 3),
         new(ArtKind.Recovery, "调息", "调息 · 恢复", "立即恢复 40 点生命，获得 25 点符卡蓄势。", "", "8cdcc8", int.MaxValue)
@@ -36,8 +36,8 @@ public static class ArtCatalog
             ArtKind.Ofuda => $"每轮 {next.Count} 张御札，单札基础伤害 {next.Damage:0}。",
             ArtKind.YinYang => $"{next.Count} 枚阴阳玉，基础伤害 {next.Damage:0}，回旋半径 {next.Range:0}。",
             ArtKind.Boundary => $"半边长 {next.Range:0}，留阵 {next.Duration:0.0} 秒；每次基础伤害 {next.Damage:0}。",
-            ArtKind.Stars => $"每轮 {next.Count} 枚星弹，单弹基础伤害 {next.Damage:0}；Shift 收束。",
-            ArtKind.Stardust => $"每轮 {next.Count} 枚扩散星屑，基础伤害 {next.Damage:0}，贯穿两敌。",
+            ArtKind.Stars => $"单星基础撕扯每秒 {next.Damage:0.0}；各星独立结算，数量、质量与寿命分别成长。",
+            ArtKind.Herbs => $"每 {next.Interval:0} 秒生成一份药菇，拾取恢复 {next.Damage:0} 点生命。",
             _ => $"光束宽 {AbilityTuning.BeamHalfWidth(rank + 1) * 2:0}，持续 {next.Duration:0.00} 秒；每次基础伤害 {next.Damage:0}。"
         });
     }

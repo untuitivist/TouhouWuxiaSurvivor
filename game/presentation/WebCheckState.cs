@@ -44,6 +44,15 @@ internal sealed class WebCheckState
     public int Enemies { get; set; }
     public int Projectiles { get; set; }
     public int Pickups { get; set; }
+    public int Stars { get; set; }
+    public int Planets { get; set; }
+    public float StarMass { get; set; }
+    public int ResonatingStars { get; set; }
+    public int Herbs { get; set; }
+    public float PendingHealing { get; set; }
+    public bool BeamSteering { get; set; }
+    public float BeamX { get; set; }
+    public float BeamY { get; set; }
     public double[] SystemMilliseconds { get; set; } = [];
     public WebCheckControl[] Controls { get; set; } = [];
 }

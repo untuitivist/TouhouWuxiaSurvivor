@@ -45,7 +45,7 @@ public partial class GameRoot
             ["driver"] = RenderingServer.GetVideoAdapterName(), ["renderer"] = RenderingServer.GetCurrentRenderingMethod(),
             ["frames"] = renderFrameSamples.Count, ["frameMs"] = renderFrameSamples.Average(),
             ["drawCalls"] = renderCallSamples.Average(),
-            ["enemies"] = run!.Enemies.Count, ["projectiles"] = run.Projectiles.Count, ["pickups"] = run.Pickups.Count,
+            ["enemies"] = run!.Enemies.Count, ["projectiles"] = run.Projectiles.Count, ["stars"] = run.Stars.Count, ["pickups"] = run.Pickups.Count,
             ["window"] = DisplayServer.WindowGetSize().ToString(), ["renderTarget"] = GetViewport().GetTexture().GetSize().ToString(),
             ["scope"] = "Static deterministic render fixture; desktop capture is not mobile FPS."
         };

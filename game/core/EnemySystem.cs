@@ -36,6 +36,7 @@ internal static class EnemySystem
                 enemy.Velocity *= enemy.Kind == EnemyKind.Boss ? ReimuTuning.BossSlowMultiplier : 0;
                 enemy.BoundRemaining = Math.Max(0, enemy.BoundRemaining - RunState.StepSeconds);
             }
+            enemy.Velocity += enemy.GravityVelocity;
             enemy.Position = RunState.ClampToArena(Geometry.Advance(enemy.Position, enemy.Velocity, RunState.StepSeconds));
             var contactRadius = enemy.Radius + 6;
             if (Geometry.DistanceSquared(enemy.Position, run.PlayerPosition) < contactRadius * contactRadius) run.Hurt(enemy.ContactDamage);

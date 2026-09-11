@@ -11,7 +11,7 @@ public partial class GameRoot
         var heroes = new[]
         {
             (Kind: HeroKind.Reimu, Name: GameText.Get("博丽灵梦"), Subtitle: GameText.Get("乐园的巫女"), Motif: GameText.Get("御札 · 阴阳玉 · 封魔"), Stats: GameText.Get("110 点生命\n初始：基础直射御札\n需解锁：灵符「梦想封印」"), Summary: GameText.Get("修习解锁阵与玉，符可追踪、爆炸。\n从容穿行弹隙，守住进退之路。"), Accent: Palette.Red),
-            (Kind: HeroKind.Marisa, Name: GameText.Get("雾雨魔理沙"), Subtitle: GameText.Get("普通的魔法使"), Motif: GameText.Get("星屑 · 光热 · 魔炮"), Stats: GameText.Get("85 点生命，伤害 +16%\n初始：只有星光射击\n需解锁：星尘、魔炮与满蓄势符卡"), Summary: GameText.Get("星光可贯穿、分裂；星尘可回旋、双环。\n魔炮可横扫、消弹，兼修自成一路。"), Accent: Palette.Violet)
+            (Kind: HeroKind.Marisa, Name: GameText.Get("雾雨魔理沙"), Subtitle: GameText.Get("普通的魔法使"), Motif: GameText.Get("星群 · 药菇 · 魔炮"), Stats: GameText.Get("100 点生命，持续输出与续航\n初始：只有引力星群\n需解锁：药菇、魔炮与满蓄势符卡"), Summary: GameText.Get("随机星群持续撕扯，重星牵引妖群。\n药菇调息，追敌魔炮与星光共鸣。"), Accent: Palette.Violet)
         };
         Button? first = null;
         for (var index = 0; index < heroes.Length; index++)

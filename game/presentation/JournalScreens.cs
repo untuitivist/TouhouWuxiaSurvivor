@@ -82,7 +82,7 @@ public partial class GameRoot
         detail.AddThemeColorOverride("default_color", PixelSkin.Ink);
         panel.AddChild(detail);
         detail.Text = GameText.Get(entry.Summary) + "\n\n" + GameText.Get(entry.Details) + GameText.Get("\n\n设定与改编\n") + GameText.Get(entry.Source) +
-            GameText.Get("\n\n素材路径\n") + JournalCatalog.ArtRoot + entry.Asset +
+            GameText.Get("\n\n素材路径\n") + JournalCatalog.AssetPath(entry.Asset) +
             (entry.Category == JournalCategory.Training ? GameText.Get("\n\n修习类共用阵纹作分类图标，不表示新增战斗特效。") : "") +
             GameText.Get("\n\n素材仅用于内部原型验证；来源记录不等于公开发行授权。");
         ui.Button(panel, GameText.Get("向上阅读"), new(32, 466, 138, 66), () => detail.GetVScrollBar().Value -= detail.Size.Y * 0.7);
@@ -95,7 +95,7 @@ public partial class GameRoot
     {
         if (!journalTextures.TryGetValue(entry.Asset, out var texture))
         {
-            var source = GD.Load<Texture2D>(JournalCatalog.ArtRoot + entry.Asset);
+            var source = GD.Load<Texture2D>(JournalCatalog.AssetPath(entry.Asset));
             texture = entry.Strip ? new AtlasTexture { Atlas = source, Region = new(0, 0, source.GetHeight(), source.GetHeight()) } : source;
             journalTextures.Add(entry.Asset, texture);
         }

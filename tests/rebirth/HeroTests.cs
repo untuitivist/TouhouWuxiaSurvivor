@@ -42,11 +42,19 @@ internal static class HeroTests
             run.Ranks[(int)kind] = rank;
             Target(run, new(400, 0));
             run.Step(default);
-            var projectiles = run.Projectiles.Where(projectile => !projectile.Hostile && projectile.Art == kind).ToArray();
             var stats = AbilityTuning.Get(kind, rank);
-            Check(projectiles.Length == stats.Count, "Actual volley count matches shared tuning");
-            Check(projectiles.All(projectile => Math.Abs(projectile.Damage - stats.Damage * run.Power) < 0.001f), "Damage includes hero power exactly once");
-            Check(ArtCatalog.UpgradeText(kind, rank - 1).Contains(stats.Count.ToString()), "Preview exposes actual volley count");
+            if (kind == ArtKind.Ofuda)
+            {
+                var projectiles = run.Projectiles.Where(projectile => !projectile.Hostile && projectile.Art == kind).ToArray();
+                Check(projectiles.Length == stats.Count, "Actual ofuda count matches tuning");
+                Check(projectiles.All(projectile => Math.Abs(projectile.Damage - stats.Damage * run.Power) < 0.001f), "Ofuda power applied once");
+            }
+            else
+            {
+                Check(run.Stars.Count == stats.Count, "Actual star count matches tuning");
+                Check(run.Stars.All(star => Math.Abs(star.DamageRate - stats.Damage * run.Power) < 0.001f), "Star power applies once to each independent damage rate");
+            }
+            Check(ArtCatalog.UpgradeText(kind, rank - 1).Contains(stats.Damage.ToString(kind == ArtKind.Stars ? "0.0" : "0")), "Preview exposes damage from shared tuning");
         }
     }
 
@@ -101,12 +109,12 @@ internal static class HeroTests
         var wide = Empty(HeroKind.Marisa);
         var narrow = Empty(HeroKind.Marisa);
         wide.Ranks[(int)ArtKind.Stars] = narrow.Ranks[(int)ArtKind.Stars] = 3;
-        Target(wide, new(400, 0)); Target(narrow, new(400, 0));
+        Target(wide, new(200, 0)); Target(narrow, new(200, 0));
         wide.Step(default); narrow.Step(new(Vector2.Zero, true));
-        Check(wide.Projectiles.Count == narrow.Projectiles.Count, "Focus does not create extra stars");
-        Check(wide.Projectiles.Max(projectile => Math.Abs(projectile.Velocity.Y)) > narrow.Projectiles.Max(projectile => Math.Abs(projectile.Velocity.Y)) * 2, "Focus actually narrows spread");
-        Check(wide.Projectiles.Sum(projectile => projectile.Damage) == narrow.Projectiles.Sum(projectile => projectile.Damage), "Focus is not a hidden damage multiplier");
-        Check(wide.Projectiles.All(projectile => projectile.TurnRate == 0), "Stars are not renamed homing ofuda");
+        Check(wide.Stars.Count == narrow.Stars.Count && wide.Stars.Count > 0, "Focus does not create extra stars");
+        Check(wide.Stars[0].OrbitScale > narrow.Stars[0].OrbitScale * 2, "Focus tightens orbital spacing");
+        Check(wide.Stars.Sum(star => star.DamageRate) == narrow.Stars.Sum(star => star.DamageRate), "Focus has no hidden damage multiplier");
+        Check(wide.Stars.Select(star => star.Mass).SequenceEqual(narrow.Stars.Select(star => star.Mass)), "Focus never rerolls mass");
     }
 
     public static void BeamGeometry()

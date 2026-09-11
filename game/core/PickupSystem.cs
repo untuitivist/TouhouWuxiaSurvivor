@@ -11,6 +11,12 @@ internal static class PickupSystem
         for (var index = pickups.Count - 1; index >= 0; index--)
         {
             ref var pickup = ref pickups[index];
+            if (pickup.Herbal)
+            {
+                pickup.Life -= RunState.StepSeconds;
+                if (pickup.Life <= 0) { pickup.Collected = true; continue; }
+                if (run.Health >= run.MaxHealth) { pickup.Attracted = false; continue; }
+            }
             var distance = Geometry.DistanceSquared(pickup.Position, run.PlayerPosition);
             if (distance < attractionRadius) pickup.Attracted = true;
             if (!pickup.Attracted) continue;

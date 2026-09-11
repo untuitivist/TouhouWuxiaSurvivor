@@ -236,7 +236,7 @@ public partial class GameRoot
         PressButton("执此道 · 雾雨魔理沙");
         PressKey(Key.E);
         var buildText = string.Join(" ", Descendants(screen!).OfType<Label>().Select(label => label.Text));
-        Require(buildText.Contains("Master Spark") && buildText.Contains("星光射击") && !buildText.Contains("追踪御札"), "Marisa inspection displays only her abilities");
+        Require(buildText.Contains("Master Spark") && buildText.Contains("引力星群") && !buildText.Contains("追踪御札"), "Marisa inspection displays only her abilities");
         AssertUiBounds();
         PressKey(Key.Escape);
         run!.AddExperience(30);
