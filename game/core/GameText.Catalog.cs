@@ -56,7 +56,7 @@ public static partial class GameText
         ["星弹首次命中时分出 {0} 枚短程碎星，各造成 {1:0}% 单弹伤害；不回击原目标、不连锁分裂。"] = "On their first hit, stars emit {0} short-range fragments dealing {1:0}% of star damage each. Fragments cannot hit the original target or split again.",
         ["星屑飞行 {0:0.00} 秒后返身，额外贯穿一敌，伤害降低 {1:0}%；缩短外射距离，同一星屑不重复命中同一敌人。"] = "Stardust returns after {0:0.00}s and pierces one extra enemy, but deals {1:0}% less damage and has less outward reach. Each star can hit a given enemy only once.",
         ["原地相隔 {0:0.0} 秒放出两轮错位星环，每轮造成原伤害的 {1:0}%；可与回旋兼修。"] = "Cast two offset rings {0:0.0}s apart at the original position, each dealing {1:0}% of normal damage. Compatible with Return.",
-        ["基础星光起步，修习解锁星尘与魔炮。"] = "Start with stars. Unlock stardust and beams as you level up.",
+        ["引力星群起步，修习解锁药菇与魔炮。"] = "Start with gravity stars. Unlock remedies and beams as you level up.",
         ["魔炮从瞄准方向左侧扫向右侧，总角度 {0:0}°；扩大覆盖，但不增加每次伤害。"] = "The beam sweeps left to right across {0:0}° around its initial aim. Wider coverage, not more damage per pulse.",
         ["魔炮每次伤害脉冲最多消除火线内 {0} 发敌弹；蓄势期间不消弹，可与横扫兼修。"] = "Each beam damage pulse clears up to {0} enemy bullets in its path. No clearing during warmup. Compatible with Sweep.",
         ["已学魔炮后，解锁满蓄势自动发动的强化 Master Spark 与发动时全屏消弹。此前只积累蓄势。"] = "Requires Master Spark. At full charge, automatically cast an empowered beam and clear all enemy bullets on activation. Charge only accumulates while locked.",
