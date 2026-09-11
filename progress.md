@@ -1,3 +1,9 @@
+## Direct First-Download Maintenance — 2026-09-11
+
+- Confirmed slow no-proxy WAN transfer independently of a healthy origin and identified 26 statically linked archives unnecessarily shipped in the PCK.
+- Added guarded, reproducible Web payload compaction and export integration. The derived release retains byte-identical WASM and 289 runtime/game payloads, with core gzip transfer reduced by 33.6% (32.54 to 21.61 MB). Windows SHA-256 remains unchanged; no gameplay/asset/project changes.
+- Python platform tests 20/20 (13 payload + 7 deployment), JavaScript platform tests 21/21 and PS7 build-script syntax pass. Existing download/cache/failure scenarios and 20 raw reads pass; four-mode game regression and language/combat checks are in progress. No deployment or server configuration has changed yet.
+
 ## Many-Body Balance And Original Colors — 2026-09-11
 
 ## Alpha-0.1.8 Delivered — 2026-09-11

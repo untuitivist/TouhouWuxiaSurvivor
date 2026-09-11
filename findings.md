@@ -1,5 +1,10 @@
 # Direct Download Investigation — 2026-09-11
 
+- Fixed exporter source explains the leak: it excludes C/H/JS/WASM but packages native .a archives. The pinned template build statically links those archives; the Web assembly loader reads .dll files from PCK.
+- Implemented allowlisted PCK v3 compaction with MD5/SHA-512 validation, updated publish manifest, byte-identical retained payloads, fresh output directories, and export integration; no ICU/art/audio/gameplay exclusions. Candidate core gzip transfer is 21,610,672 bytes (32,543,448 before), down 10,932,776 bytes / 33.5944%; 289 runtime/game payloads unchanged.
+- HTTP/1.1 no-proxy range: 589,824 bytes in 35.002s (16,851 B/s), explicit proxy_used=0. Origin-local HTTP/2 serves all 20,683,976 bytes in 0.061916s. Browser range on no-proxy HTTP/2 path received 950,272 bytes in 25.005s; interrupted timing entry is unavailable, so do not claim ResourceTiming proved negotiation.
+- Forced QUIC probe failed with ERR_QUIC_PROTOCOL_ERROR. First normal protocol probe accidentally used a non-existent root icon path; corrected to a real release license file before the range test. Do not claim HTTP/3 works or alter global Caddy/kernel/DNS from this evidence.
+- Focused payload unit tests: 13/13 pass. Four compatibility flows, byte-count/cache/failure tests, language persistence and dual-hero combat are running against a derived copy of the existing alpha-0.1.8 release, not a recompiled gameplay build.
 - Released core transfer: 32,543,448 gzip bytes; previous uncached direct run received only about 4.02 MB in 180 seconds, while proxy-assisted verification was separate.
 - Server is idle (Caddy 0% CPU), origin is in Silicon Valley, TCP uses cubic; no network settings changed.
 - Read-only PCK v3 inspection: 316 entries, including 26 `.godot/mono/publish/wasm32/*.a` static libraries totalling 26,866,406 raw bytes. Verify fixed engine runtime usage before excluding them from new derived Web packages. Preserve all DLLs, ICU data, art, audio, source and old outputs.

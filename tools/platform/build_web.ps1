@@ -14,7 +14,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Bundled font is incomplete; run tools/platform
 $build = Join-Path $root ('artifacts/web-builds/' + [DateTime]::Now.ToString('yyyyMMdd-HHmmss-fff'))
 $stage = Join-Path $build 'stage'
 $site = Join-Path $build 'site/TouhouSurvivor'
-New-Item -ItemType Directory -Force -Path $stage, $site | Out-Null
+$rawSite = Join-Path $build 'unoptimized/TouhouSurvivor'
+New-Item -ItemType Directory -Force -Path $stage, $rawSite | Out-Null
 $paths = @('game', 'assets/ui/title', 'assets/ui/portraits', 'assets/aseprite', 'assets/fonts', 'assets/internal_original/base', 'platform/web', 'project.godot', 'export_presets.cfg', 'TouhouWuxiaSurvivor.csproj', 'TouhouWuxiaSurvivor.sln', 'CHANGELOG.md')
 $manifest = [Collections.Generic.List[object]]::new()
 foreach ($relative in $paths) {
@@ -102,26 +103,29 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Shared C# Web compilation failed.' }
     & $godot --headless --path $stage --editor --import
     if ($LASTEXITCODE -ne 0) { throw 'Web resource import failed.' }
-    & $godot --headless --path $stage --export-release Web "$site/index.html" 2>&1 | Tee-Object -FilePath "$build/export.log" -Encoding utf8NoBOM
+    & $godot --headless --path $stage --export-release Web "$rawSite/index.html" 2>&1 | Tee-Object -FilePath "$build/export.log" -Encoding utf8NoBOM
     if ($LASTEXITCODE -ne 0 -or (Select-String -Path "$build/export.log" -Pattern '^ERROR:|error [A-Z]+[0-9]+:' -Quiet)) { throw 'Web exporter reported errors.' }
     foreach ($file in $manifest) {
         $copied = Join-Path $stage $file.path
         if ((Get-FileHash -LiteralPath $copied).Hash -ne $file.sha256) { throw "Build modified shared source: $($file.path)" }
     }
-    if (-not (Test-Path "$site/index.html") -or -not (Select-String -Path "$build/export.log" -SimpleMatch 'TouhouWuxiaSurvivor.dll' -Quiet)) { throw 'Web output is incomplete.' }
-    Copy-Item -LiteralPath "$root/assets/fonts/OFL.txt" -Destination "$site/FONT_LICENSE.txt"
-    Copy-Item -LiteralPath "$root/platform/web/loader.js" -Destination "$site/index.loader.js"
+    if (-not (Test-Path "$rawSite/index.html") -or -not (Select-String -Path "$build/export.log" -SimpleMatch 'TouhouWuxiaSurvivor.dll' -Quiet)) { throw 'Web output is incomplete.' }
+    Copy-Item -LiteralPath "$root/assets/fonts/OFL.txt" -Destination "$rawSite/FONT_LICENSE.txt"
+    Copy-Item -LiteralPath "$root/platform/web/loader.js" -Destination "$rawSite/index.loader.js"
     if ($ExperimentalWebGpuTemplate) {
-        $entry = [IO.File]::ReadAllText("$site/index.html", $encoding)
+        $entry = [IO.File]::ReadAllText("$rawSite/index.html", $encoding)
         $configuration = [regex]::Match($entry, '(?m)^\s*const GODOT_CONFIG = \{[^\r\n]+;')
         if (!$configuration.Success -or !$entry.Contains('"args":[]')) { throw 'Experimental renderer bootstrap requires the known engine configuration.' }
         $bootstrap = "`n    GODOT_CONFIG.renderingDriver = 'webgpu';`n    GODOT_CONFIG.args = ['--rendering-method', 'mobile', '--rendering-driver', 'webgpu'].concat(GODOT_CONFIG.args);"
-        [IO.File]::WriteAllText("$site/index.html", $entry.Replace($configuration.Value, $configuration.Value + $bootstrap), $encoding)
+        [IO.File]::WriteAllText("$rawSite/index.html", $entry.Replace($configuration.Value, $configuration.Value + $bootstrap), $encoding)
     }
+    & 'C:\Users\untuitivist\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -B "$PSScriptRoot/optimize_web_payload.py" --source $rawSite --output $site --report "$build/payload-optimization.json"
+    if ($LASTEXITCODE -ne 0) { throw 'Web payload optimization or retained-content verification failed.' }
     if ((Get-FileHash -LiteralPath $projectPath).Hash -ne $projectHash) { throw 'Editor modified staged project configuration.' }
     if ((Get-FileHash -LiteralPath "$stage/export_presets.cfg").Hash -ne $presetHash) { throw 'Editor modified staged export configuration.' }
     $summary = @{ sourceCommit = (& git -C $root rev-parse HEAD).Trim(); sourceDirty = [bool](& git -C $root status --porcelain); sourceFiles = $manifest.ToArray(); sourceUnmodifiedInStage = $true; projectOverrides = @('SDK 4.7.1 -> 4.6.1', 'Resolve GodotWebBuild=true and TargetFramework=net9.0 for exporter parser'); generatedMetadataExcluded = @('*.import', '*.uid'); webToolchain = 'Godot C# experimental 4.6.1 / .NET 9.0.317'; files = @(Get-ChildItem $site -File | ForEach-Object { @{ name=$_.Name; bytes=$_.Length; sha256=(Get-FileHash $_.FullName).Hash } }) }
     $summary.threadSupport = !$Threadless
+    $summary.payloadOptimization = Get-Content -LiteralPath "$build/payload-optimization.json" -Raw -Encoding utf8 | ConvertFrom-Json
     $summary.exportPresetSha256 = $presetHash
     if ($Threadless) {
         $summary.projectOverrides += 'Web variant/thread_support=false'

@@ -1,8 +1,8 @@
 ## Direct First-Download Optimization — 2026-09-11
 
-1. [in_progress] Measure direct transport, server health and packed resource composition. Preserve alpha-0.1.8 EXE/gameplay and all histories.
-2. [pending] Implement measured, reversible, no-purchase delivery improvements with truthful byte accounting, existing-browser fallback and focused tests. Do not change global domain routing or buy CDN services without confirmation.
-3. [pending] Verify uncached direct loading against baseline, apply only validated delivery changes and record limitations/commit evidence.
+1. [complete] Measured direct range transfer (16.9 KB/s), fast origin-local transfer, and 26 erroneously packed static archives. Preserve alpha-0.1.8 EXE/gameplay and all histories.
+2. [complete] Implemented allowlisted pack compaction and automatic Web export integration. Candidate transfer is 32.54 -> 21.61 MB; 289 runtime/game payloads unchanged, 13 unit tests pass. No global network, domain or paid-service changes.
+3. [in_progress] Run existing browser, failure/cache, language and dual-hero combat checks; then verify uncached direct loading, apply only validated delivery changes and record limitations/commit evidence.
 
 ---
 
