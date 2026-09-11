@@ -5,11 +5,11 @@ namespace Rebirth.Core;
 public sealed partial class RunState
 {
 
-    internal Enemy? NearestEnemy(Vector2 origin, float range, HitHistory excluded = default)
+    internal Enemy? NearestEnemy(Vector2 origin, float range, in HitHistory excluded = default)
     {
         Enemy? nearest = null;
         var distance = range * range;
-        foreach (var enemy in Enemies)
+        foreach (var enemy in Enemies.Active)
         {
             if (enemy.Health <= 0) continue;
             var candidate = Geometry.DistanceSquared(enemy.Position, origin);

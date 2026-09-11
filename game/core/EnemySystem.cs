@@ -6,7 +6,7 @@ internal static class EnemySystem
 {
     internal static void Step(RunState run)
     {
-        foreach (var enemy in run.Enemies)
+        foreach (var enemy in run.Enemies.Active)
         {
             if (enemy.Health <= 0) continue;
             var offset = new Vector2(run.PlayerPosition.X - enemy.Position.X, run.PlayerPosition.Y - enemy.Position.Y);

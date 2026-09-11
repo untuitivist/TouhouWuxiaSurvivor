@@ -2,6 +2,8 @@ using System.Collections;
 
 namespace Rebirth.Core;
 
+public delegate bool ComponentPredicate<T>(in T component);
+
 public sealed class ComponentStore<T>(int capacity) : IReadOnlyList<T>
 {
     private T[] components = new T[Math.Max(4, capacity)];
@@ -43,6 +45,19 @@ public sealed class ComponentStore<T>(int capacity) : IReadOnlyList<T>
         if (destination == Count) return 0;
         for (var source = destination + 1; source < Count; source++)
             if (!predicate(components[source])) components[destination++] = components[source];
+        var removed = Count - destination;
+        Array.Clear(components, destination, removed);
+        Count = destination;
+        return removed;
+    }
+
+    public int RemoveWhere(ComponentPredicate<T> predicate)
+    {
+        var destination = 0;
+        while (destination < Count && !predicate(in components[destination])) destination++;
+        if (destination == Count) return 0;
+        for (var source = destination + 1; source < Count; source++)
+            if (!predicate(in components[source])) components[destination++] = components[source];
         var removed = Count - destination;
         Array.Clear(components, destination, removed);
         Count = destination;

@@ -27,6 +27,34 @@ public static class EcsTests
         Check(store.RemoveAll(static projectile => true) == 0, "Empty storage is safe to compact");
     }
 
+    public static void ReferenceCompaction()
+    {
+        var random = new Random(901);
+        for (var iteration = 0; iteration < 100; iteration++)
+        {
+            var copied = new ComponentStore<Projectile>(4);
+            var referenced = new ComponentStore<Projectile>(4);
+            for (var index = 0; index < iteration; index++)
+            {
+                var projectile = new Projectile { TargetId = index, Life = random.Next(-2, 3), Damage = index * 1.5f };
+                for (var identity = 0; identity < index % 7; identity++) projectile.HitIds.Add(identity);
+                copied.Add(projectile);
+                referenced.Add(projectile);
+            }
+            var removed = copied.RemoveAll(static projectile => projectile.Life <= 0);
+            var visits = 0;
+            var actual = referenced.RemoveWhere((in Projectile projectile) => { visits++; return projectile.Life <= 0; });
+            Check(removed == actual && visits == iteration && copied.Count == referenced.Count, "Reference compaction visits each component once and retains the same population");
+            for (var index = 0; index < copied.Count; index++)
+            {
+                Check(copied[index].Equals(referenced[index]), "Order, lifetime, damage and inline/overflow hit state match value compaction");
+            }
+            referenced.Clear();
+            referenced.Add(default);
+            Check(!referenced[0].HitIds.Contains(0), "Reference cleanup does not retain old hit histories");
+        }
+    }
+
     public static void History()
     {
         var history = new HitHistory();

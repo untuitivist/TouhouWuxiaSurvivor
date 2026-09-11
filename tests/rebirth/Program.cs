@@ -11,6 +11,7 @@ if (args.Contains("--marisa-balance")) return MarisaBalance.Run();
 var tests = new (string Name, Action Body)[]
 {
     ("dense component lifecycle preserves order and state", EcsTests.Storage),
+    ("reference compaction matches value semantics without component copies", EcsTests.ReferenceCompaction),
     ("inline hit history retains overflow and duplicate safety", EcsTests.History),
     ("spatial identity lookup and allocation-free queries", EcsTests.Queries),
     ("scalar hot geometry matches vector reference", EcsTests.GeometryEquivalence),

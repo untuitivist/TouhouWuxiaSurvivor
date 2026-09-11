@@ -7,15 +7,15 @@ internal static class ProjectileSystem
     internal static void Step(RunState run)
     {
         var world = run.World;
-        for (var index = 0; index < world.Projectiles.Count; index++)
+        var projectiles = world.Projectiles.Active;
+        foreach (ref var shield in projectiles)
         {
-            ref var shield = ref world.Projectiles[index];
             if (shield.Life > 0 && !shield.Hostile && shield.ClearBudget > 0)
                 ReimuAbilitySystem.ClearProjectiles(run, shield.Position, Geometry.Advance(shield.Position, shield.Velocity, RunState.StepSeconds), ref shield.ClearBudget);
         }
-        for (var index = world.Projectiles.Count - 1; index >= 0; index--)
+        for (var index = projectiles.Length - 1; index >= 0; index--)
         {
-            ref var projectile = ref world.Projectiles[index];
+            ref var projectile = ref projectiles[index];
             if (projectile.Life <= 0) continue;
             if (projectile.TurnRate > 0 && !projectile.Hostile)
             {
@@ -77,6 +77,6 @@ internal static class ProjectileSystem
                 }
             }
         }
-        world.Projectiles.RemoveAll(static projectile => projectile.Life <= 0);
+        world.Projectiles.RemoveWhere(static (in Projectile projectile) => projectile.Life <= 0);
     }
 }

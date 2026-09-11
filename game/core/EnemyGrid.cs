@@ -19,7 +19,7 @@ public sealed class EnemyGrid
         identities.Clear();
         foreach (var bucket in occupied) bucket.Clear();
         occupied.Clear();
-        foreach (var enemy in enemies)
+        foreach (var enemy in enemies.Active)
         {
             if (enemy.Health <= 0) continue;
             identities.TryAdd(enemy.Id, enemy);

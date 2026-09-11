@@ -24,7 +24,7 @@ internal static class StarGravitySystem
     {
         if (run.Marisa.GravityTick++ % MarisaTuning.GravityIntervalTicks != 0) return;
         var interactions = 0;
-        foreach (var enemy in run.Enemies) enemy.GravityAcceleration = Vector2.Zero;
+        foreach (var enemy in run.Enemies.Active) enemy.GravityAcceleration = Vector2.Zero;
         var stars = run.Stars.Active;
         foreach (ref var star in stars) star.Acceleration = Vector2.Zero;
         for (var first = 0; first < stars.Length; first++)

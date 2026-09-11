@@ -1328,3 +1328,10 @@
 - Existing diagnostic stress setup always grants Reimu upgrades; low/medium Marisa can stall at choices. Repair hero-specific fixture setup and auto-choice only in diagnostics, preserving load counts.
 - Source boundary: web searches returned no usable results. Preserve the existing ArtCatalog original-work references; proposed return/echo/sweep are game adaptations, not newly verified canonical spellcards.
 - Tool errors: guessed ReimuAbilityState.cs does not exist (state is in ReimuTuning.cs); a JS regex lost escaped parentheses, fixed with plain identifier alternatives. No files deleted.
+
+
+## Release Gate Continuation — 2026-09-11
+
+- The committed b0d1633 build remains unpublished. Correct-mass Marisa stress starts at 60 FPS, then sustained rendering collapses while simulation stays near 58 Hz. Latest means: core 10.27 ms, events 0.287 ms, batch 3.19 ms; high-load FPS 38.25/minimum 7 fails unchanged gates. Projectile/enemy work, total frame budget and fixed-step catch-up require investigation rather than further reducing gravity fidelity.
+- No orphan headless/Playwright Edge processes were found. Existing user browsers and Godot editor remain untouched.
+- Same-build Reimu control passes high load (59.88 mean FPS, minimum 58; core P95 8.3 ms). Added reference-predicate compaction for large projectile/star structs and span-based hot iteration; 60/60 core tests including value/reference lifecycle equivalence pass. DPS results remain unchanged. Web measurement follows without changing stress population or gameplay.

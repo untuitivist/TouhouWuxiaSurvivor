@@ -52,7 +52,7 @@ internal static class MarisaProjectileSystem
             run.Emit(EffectKind.Hit, enemy.Position, enemy.StarHitDisplayDamage);
             enemy.StarHitDisplayDamage = 0;
         }
-        run.Stars.RemoveAll(static star => star.Life <= 0);
+        run.Stars.RemoveWhere(static (in StarBody star) => star.Life <= 0);
         if (measured) run.Marisa.StarUpdateMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
     }
 
