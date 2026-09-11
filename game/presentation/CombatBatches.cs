@@ -55,14 +55,14 @@ public partial class GameCanvas
         {
             var position = Palette.Vector(star.Position);
             if (!InView(position, 120)) continue;
-            var size = 14 + MathF.Sqrt(star.Mass) * 8;
+            var size = MarisaTuning.VisualSize(star.Mass);
             var opacity = Math.Clamp(star.Life / 0.4f, 0, 1);
             if (star.Planet || star.Resonating)
             {
                 var aura = MarisaTuning.DamageRadius(star.Mass) * 2;
                 batches["stardust"].Add(position, new(aura, aura), new Color(1, 1, 1, opacity * (star.Resonating ? 0.35f : 0.16f)), -Clock * 0.5f);
             }
-            batches["star"].Add(position, new(size, size), new Color(1, 1, 1, opacity), star.OrbitAngle + Clock);
+            batches["star_variants"].Add(position, new(size, size), new Color(1, 1, 1, opacity), star.Rotation + Clock, 1 + star.VisualSeed % StarColorVariants, StarColorFrames);
         }
         foreach (ref readonly var projectile in Run.Projectiles.Active)
         {

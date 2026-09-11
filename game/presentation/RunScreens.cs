@@ -39,7 +39,7 @@ public partial class GameRoot
         var panel = Modal("pause", GameText.Get("A MOMENT OF STILLNESS  /  暂歇"), GameText.Get("风止，夜未尽。"), 920, 520);
         ui.Label(panel, GameText.Format($"行走 {GameCanvas.FormatTime(run.Time)}   ·   修习 {run.Level}   ·   退治 {run.Kills}"), new(36, 132, 840, 32), 19, Palette.Gold);
         var build = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && run.Ranks[(int)art.Id] > 0).Select(art => GameText.Format($"{art.Name}  {run.Ranks[(int)art.Id]} 重"));
-        ui.Label(panel, string.Join("     ", build) + "\n" + string.Join(" · ", UpgradeCatalog.All.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior && run.Build.Rank(upgrade) > 0).Select(upgrade => GameText.Get(upgrade.Name))), new(36, 188, 844, 116), 18, Palette.Paper);
+        ui.Label(panel, string.Join("     ", build) + "\n" + string.Join(" · ", UpgradeCatalog.All.Where(upgrade => (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training) && run.Build.Rank(upgrade) > 0).Select(upgrade => UpgradeCatalog.LearnedName(upgrade, run.Build))), new(36, 188, 844, 116), 18, Palette.Paper);
         ui.Button(panel, GameText.Format($"属性与构筑 [{GameControls.Hint(GameControls.Inspect)}]"), new(36, 311, 270, 66), OpenBuild);
         ui.Button(panel, GameText.Get("更新记录"), new(324, 311, 270, 66), ShowChangelog);
         ui.Button(panel, GameText.Get("夜境图鉴"), new(612, 311, 270, 66), OpenJournal);
@@ -72,7 +72,7 @@ public partial class GameRoot
             ui.Label(card, statistics[index].Item2, new(17, 46, 178, 49), 31, Palette.Gold);
         }
         var build = string.Join("  ·  ", ArtCatalog.Abilities(run.Hero).Where(art => run.Ranks[(int)art.Id] > 0).Select(art => GameText.Format($"{art.Name} {run.Ranks[(int)art.Id]}重")));
-        var behaviors = string.Join(" · ", UpgradeCatalog.All.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior && run.Build.Rank(upgrade) > 0).Select(upgrade => GameText.Get(upgrade.Name)));
+        var behaviors = string.Join(" · ", UpgradeCatalog.All.Where(upgrade => (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training) && run.Build.Rank(upgrade) > 0).Select(upgrade => UpgradeCatalog.LearnedName(upgrade, run.Build)));
         ui.Label(panel, build + "\n" + behaviors, new(36, 335, 888, 52), 16, Palette.Paper);
         ui.Label(panel, GameText.Format($"修习 {run.Level}  ·  符卡施放 {run.SpellsCast} 次  ·  本局种子 {run.Seed}"), new(36, 391, 888, 31), 15, Palette.Muted);
         if (profile.Warning.Length > 0) ui.Label(panel, profile.Warning, new(36, 424, 888, 25), 13, Palette.Red);

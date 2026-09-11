@@ -60,7 +60,7 @@ public partial class GameCanvas
         if (Run.Time < 10)
         {
             surface.DrawRect(new(383, 551, 514, 65), Palette.Alpha(Palette.Deep, 0.8f));
-            CenterText(Run.Hero == HeroKind.Reimu ? GameText.Get("基础御札起步，修习解锁阵与玉。") : GameText.Get("引力星群起步，修习解锁药菇与魔炮。"), new(640, 578), 20, Palette.Paper, TitleFont);
+            CenterText(Run.Hero == HeroKind.Reimu ? GameText.Get("基础御札起步，修习解锁阵与玉。") : GameText.Get("引力星流起步，修习解锁药菇与魔炮。"), new(640, 578), 20, Palette.Paper, TitleFont);
             FittedText(GameText.Format($"{GameControls.Hint(GameControls.Up)} / {GameControls.Hint(GameControls.Left)} / {GameControls.Hint(GameControls.Down)} / {GameControls.Hint(GameControls.Right)} 移动 · {GameControls.Hint(GameControls.Inspect)} 构筑 · Esc 暂停"), new(397, 603), 486, 15, Palette.Muted);
         }
         if (Run.SpellFlash > 0) CenterText(ArtCatalog.SignatureName(Run.Hero), new(640, 213), 30, Palette.Alpha(Palette.Gold, Run.SpellFlash / 0.65f), TitleFont);

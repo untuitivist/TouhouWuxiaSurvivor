@@ -9,14 +9,13 @@ internal static class MarisaAbilitySystem
         if (run.Beam == null) state.BeamCooldown -= RunState.StepSeconds * run.CastSpeed;
         var stars = run.Ranks[(int)ArtKind.Stars];
         var spark = run.Ranks[(int)ArtKind.MasterSpark];
-        var ready = stars > 0 && state.ShotCooldown <= 0 || spark > 0 && run.Beam == null && state.BeamCooldown <= 0;
-        var target = ready ? MarisaProjectileSystem.FindAttractor(run, run.PlayerPosition, MarisaTuning.TargetRange) : null;
-        if (target != null)
+        if (stars > 0 && state.ShotCooldown <= 0)
         {
-            if (stars > 0 && state.ShotCooldown <= 0 && MarisaProjectileSystem.Cast(run, target, stars))
-                state.ShotCooldown = MarisaTuning.StarInterval;
-            if (spark > 0 && run.Beam == null && state.BeamCooldown <= 0) MarisaBeamSystem.Start(run, false);
+            MarisaProjectileSystem.Cast(run, stars);
+            state.ShotCooldown = Math.Max(0, state.ShotCooldown + MarisaTuning.StarInterval);
         }
+        if (spark > 0 && run.Beam == null && state.BeamCooldown <= 0 && run.NearestEnemy(run.PlayerPosition, 1200) != null)
+            MarisaBeamSystem.Start(run, false);
         MarisaBeamSystem.Step(run);
         MarisaProjectileSystem.Step(run);
         MarisaHerbSystem.Step(run);

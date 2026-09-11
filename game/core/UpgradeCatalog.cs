@@ -17,7 +17,6 @@ public static class UpgradeCatalog
     public const string StarMass = "marisa.stars.mass";
     public const string StarSpread = "marisa.stars.spread";
     public const string StarLifetime = "marisa.stars.lifetime";
-    public const string StarPlanet = "marisa.stars.planet";
     public const string HerbBrew = "marisa.herbs.brew";
     public const string HerbReserve = "marisa.herbs.reserve";
     public const string SparkSteer = "marisa.masterspark.steer";
@@ -54,10 +53,9 @@ public static class UpgradeCatalog
         yield return Behavior(Launch, ArtKind.YinYang, "玉 · 蓄力发射", $"自动蓄力 {ReimuTuning.OrbChargeDuration:0.0} 秒后射出一枚玉，贯穿三敌；飞行时少一枚护身玉，可与消弹兼修。", AbilityTraits.Launch);
         yield return new(DreamSeal, ArtKind.Ofuda, UpgradeKind.Behavior, "解锁 · 梦想封印",
             "解锁满蓄势自动发动的梦想封印。此前蓄势可以积累，但不会自动清弹或攻击。", HeroKind.Reimu, 1, AbilityTraits.DreamSeal, 1, 5);
-        yield return Behavior(StarMass, ArtKind.Stars, "星 · 增质", "每颗星的随机质量提高约 67%，扩大撕扯范围与牵引强度；各星独立，不设总质量池。", AbilityTraits.StarMass);
-        yield return Behavior(StarSpread, ArtKind.Stars, "星 · 星群", "每轮星体由四颗增加到六颗；新增星体独立随机质量并造成伤害，不摊薄其他星体。", AbilityTraits.StarSpread);
-        yield return Behavior(StarLifetime, ArtKind.Stars, "星 · 长明", "星体持续时间增加 1.4 秒；最多同时存在四组星群，不无限堆积。", AbilityTraits.StarLifetime);
-        yield return new(StarPlanet, ArtKind.Stars, UpgradeKind.Behavior, "星 · 行星", "每组一颗星成为独立质量的行星，抵达落点后牵引附近敌人；不扣除其他星体质量。首领强烈抵抗牵引。", HeroKind.Marisa, 1, AbilityTraits.StarPlanet, 1, 5);
+        yield return Training(StarMass, "星 · 增质", "质量分布的中位数提高 32%；可反复修习。每颗星独立抽样，不保底重星。", AbilityTraits.StarMass);
+        yield return Training(StarSpread, "星 · 变谱", "扩大质量分布的离散程度，让轻星与稀有重星都更有机会出现；可反复修习，不指定行星名额。", AbilityTraits.StarSpread);
+        yield return Training(StarLifetime, "星 · 长明", "新生星体存活时间增加 0.6 秒；可反复修习，不刷新已有星体寿命。", AbilityTraits.StarLifetime);
         yield return Behavior(HerbBrew, ArtKind.Herbs, "药 · 缓释", "拾取药菇后额外缓慢恢复其一半药量，每秒最多 2 点，待恢复量最多 18；不靠伤害或击杀无限吸血。", AbilityTraits.HerbBrew);
         yield return Behavior(HerbReserve, ArtKind.Herbs, "药 · 留药", "药菇保存时间增加 16 秒，在场上限由三份变为五份；满血时不消耗药菇。", AbilityTraits.HerbReserve);
         yield return Behavior(SparkSteer, ArtKind.MasterSpark, "炮 · 追敌", "魔炮持续瞄准最近的存活敌人并平滑转向；停步也会追踪，无目标时保持方向。", AbilityTraits.SparkSteer);
@@ -67,6 +65,9 @@ public static class UpgradeCatalog
         yield return new(FinalSpark, ArtKind.MasterSpark, UpgradeKind.Behavior, "解锁 · 满蓄势魔炮",
             "已学魔炮后，解锁满蓄势自动发动的强化 Master Spark 与发动时全屏消弹。此前只积累蓄势。", HeroKind.Marisa, 1, AbilityTraits.FinalSpark, 1, 5);
     }
+
+    private static UpgradeDefinition Training(string id, string name, string description, AbilityTraits trait)
+        => new(id, ArtKind.Stars, UpgradeKind.Training, name, description, HeroKind.Marisa, int.MaxValue, trait, 1, 3);
 
     private static UpgradeDefinition Behavior(string id, ArtKind ability, string name, string description, AbilityTraits trait)
         => new(id, ability, UpgradeKind.Behavior, name, description, ArtCatalog.Get(ability).Owner, 1, trait, 1, 3);
@@ -82,11 +83,15 @@ public static class UpgradeCatalog
             ? ArtCatalog.UpgradeText(upgrade.Ability, build.Ranks[(int)upgrade.Ability]) : upgrade.Description;
 
     public static string Progress(UpgradeDefinition upgrade, BuildState build)
-        => upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior ? "一次领悟 · " + Requirement(upgrade)
+        => upgrade.Kind == UpgradeKind.Training ? GameText.Format($"可反复修习 · 当前 {build.Rank(upgrade)} 重 · {Requirement(upgrade)}")
+            : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior ? "一次领悟 · " + Requirement(upgrade)
             : upgrade.Kind == UpgradeKind.Recovery ? "即时生效" : $"{build.Rank(upgrade) + 1} / {upgrade.MaxRank} · " + Requirement(upgrade);
 
+    public static string LearnedName(UpgradeDefinition upgrade, BuildState build)
+        => upgrade.Kind == UpgradeKind.Training ? GameText.Format($"{upgrade.Name} {build.Rank(upgrade)}重") : GameText.Get(upgrade.Name);
+
     public static IEnumerable<UpgradeDefinition> Behaviors(BuildState build, ArtKind ability)
-        => All.Where(upgrade => upgrade.Ability == ability && upgrade.Kind == UpgradeKind.Behavior && build.Rank(upgrade) > 0);
+        => All.Where(upgrade => upgrade.Ability == ability && upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training && build.Rank(upgrade) > 0);
 }
 
 public static class UpgradeOffers
@@ -96,7 +101,7 @@ public static class UpgradeOffers
         var candidates = UpgradeCatalog.All.Where(upgrade => upgrade.Kind != UpgradeKind.Recovery && build.CanChoose(upgrade, level)).ToList();
         var result = new List<UpgradeDefinition>(3);
         Take(candidates.Where(upgrade => upgrade.Kind == UpgradeKind.Unlock).ToArray());
-        Take(candidates.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior).ToArray());
+        Take(candidates.Where(upgrade => upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training).ToArray());
         while (result.Count < 3 && candidates.Count > 0) Take(candidates.ToArray());
         if (result.Count < 3) result.Add(UpgradeCatalog.Get(UpgradeCatalog.Recovery));
         return result;

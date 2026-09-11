@@ -13,6 +13,7 @@ public partial class GameRoot
         {
             StartRun(OS.GetCmdlineUserArgs().Contains("--rebirth-batch-marisa") ? HeroKind.Marisa : HeroKind.Reimu, 42);
             await TestBatchColorState();
+            await TestMarisaColors();
             var texture = GD.Load<Texture2D>("res://assets/internal_original/base/actors/wild_fairy.png");
             var frames = texture.GetWidth() / texture.GetHeight();
             var actual = new SubViewport { Size = new(512, 512), TransparentBg = true, Disable3D = true, RenderTargetUpdateMode = SubViewport.UpdateMode.Always, World2D = new() };

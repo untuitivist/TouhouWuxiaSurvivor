@@ -12,7 +12,8 @@ public static class PerformanceBenchmarks
     public static int Run(string[] arguments)
     {
         Measure(180, 600, 120);
-        var results = new[] { Measure(180, 600, 1200), Measure(320, 1600, 1200), Measure(320, 1600, 1200, true) };
+        var results = new[] { Measure(180, 600, 1200), Measure(320, 1600, 1200), Measure(320, 1600, 1200, true),
+            Measure(320, 1600, 1200, true, HeroKind.Marisa), Measure(320, 1600, 1200, true, HeroKind.Marisa, true) };
         var json = JsonSerializer.Serialize(new { runtime = Environment.Version.ToString(), results }, new JsonSerializerOptions { WriteIndented = true });
         Console.WriteLine(json);
         var destination = arguments.FirstOrDefault(argument => argument.StartsWith("--output="));
@@ -20,15 +21,22 @@ public static class PerformanceBenchmarks
         return 0;
     }
 
-    private static object Measure(int enemyCount, int projectileCount, int ticks, bool growth = false)
+    private static object Measure(int enemyCount, int projectileCount, int ticks, bool growth = false, HeroKind hero = HeroKind.Reimu, bool fullStarCapacity = false)
     {
-        var run = new RunState(HeroKind.Reimu, 260906);
+        var run = new RunState(hero, 260906);
         if (!growth) Array.Clear(run.Ranks);
         var random = new Random(17);
         for (var index = 0; index < enemyCount; index++)
             run.Enemies.Add(new() { Id = index + 10000, Kind = EnemyKind.Kedama, Position = new(index % 20 * 65 - 620, index / 20 * 65 - 480), Radius = 14, Health = 1000000, MaxHealth = 1000000 });
         var scenario = growth ? new CombatStressScenario(run, enemyCount) : null;
+        if (fullStarCapacity)
+        {
+            for (var index = 0; index < 24; index++) run.Build.TryApply(UpgradeCatalog.Get(UpgradeCatalog.StarLifetime), 100);
+            while (run.Stars.Count < MarisaTuning.StarLimit) MarisaProjectileSystem.Cast(run, 1);
+        }
         var samples = new double[ticks];
+        var maximumStars = 0;
+        var maximumGravityInteractions = 0;
         var allocated = GC.GetAllocatedBytesForCurrentThread();
         for (var tick = 0; tick < ticks; tick++)
         {
@@ -44,11 +52,15 @@ public static class PerformanceBenchmarks
             while (run.Phase == RunPhase.Choosing) run.Choose(0);
             run.Step(new(Vector2.Zero));
             samples[tick] = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+            maximumStars = Math.Max(maximumStars, run.Stars.Count);
+            maximumGravityInteractions = Math.Max(maximumGravityInteractions, run.Marisa.GravityInteractions);
         }
         allocated = GC.GetAllocatedBytesForCurrentThread() - allocated;
         if (run.Ticks != ticks || run.Phase != RunPhase.Playing) throw new InvalidOperationException("Performance scenario must simulate every requested tick");
+        if (fullStarCapacity && (maximumStars != MarisaTuning.StarLimit || maximumGravityInteractions <= 0))
+            throw new InvalidOperationException("Full-capacity benchmark must exercise reciprocal gravity");
         Array.Sort(samples);
-        return new { enemyCount, projectileCount, ticks, growth, meanMs = samples.Average(), p95Ms = samples[(int)(ticks * 0.95)], allocatedPerTick = allocated / ticks,
+        return new { hero = hero.ToString(), enemyCount, projectileCount, ticks, growth, fullStarCapacity, maximumStars, maximumGravityInteractions, meanMs = samples.Average(), p95Ms = samples[(int)(ticks * 0.95)], allocatedPerTick = allocated / ticks,
             finalTicks = run.Ticks, health = run.Health, projectiles = run.Projectiles.Count, grazes = run.Grazes, spells = run.SpellsCast };
     }
 }

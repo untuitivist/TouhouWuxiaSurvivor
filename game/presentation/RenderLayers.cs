@@ -28,13 +28,16 @@ public partial class GameCanvas
         animatedLayers.Add(AddPass(worldLayer, 2, DrawWorldDynamic));
         animatedLayers.Add(AddPass(worldLayer, 4, DrawReimuField));
         var beamLayer = AddPass(worldLayer, 4, DrawMarisaBeam);
-        beamLayer.Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add };
+        beamLayer.Material = sparkMaterial = CreateSparkMaterial();
         animatedLayers.Add(beamLayer);
+        var beamAccents = AddPass(worldLayer, 4, DrawMarisaBeamAccents);
+        beamAccents.Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add };
+        animatedLayers.Add(beamAccents);
         animatedLayers.Add(AddPass(worldLayer, 6, DrawEnemies));
         animatedLayers.Add(AddPass(worldLayer, 8, DrawPlayer));
         animatedLayers.Add(AddPass(worldLayer, 10, DrawEffects));
         hudLayer = AddPass(this, 11, DrawHud);
-        foreach (var name in new[] { "red_pellet", "violet_pellet", "ofuda", "star", "stardust", "dream", "experience", "healing" })
+        foreach (var name in new[] { "red_pellet", "violet_pellet", "ofuda", "star", "star_variants", "stardust", "dream", "experience", "healing" })
         {
             var fixedSize = name.EndsWith("pellet") ? 15 : name == "experience" ? 12 : name == "healing" ? 17 : 0;
             var batch = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/{name}.png"), fixedSize) { ZIndex = name.EndsWith("pellet") ? 9 : name is "experience" or "healing" ? 3 : 7 };
@@ -87,6 +90,7 @@ public partial class GameCanvas
         renderDirty = false;
         renderedPhase = Run.Phase;
         FrameBuildCount++;
+        if (Run.Beam is { } beam) ConfigureSparkMaterial(sparkMaterial, Clock, beam.Length, Math.Min(beam.Length * 0.2f, beam.HalfWidth * 2), ReducedMotion);
         var started = System.Diagnostics.Stopwatch.GetTimestamp();
         UpdateCombatBatches();
         BatchBuildMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;

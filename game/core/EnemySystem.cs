@@ -36,7 +36,12 @@ internal static class EnemySystem
                 enemy.Velocity *= enemy.Kind == EnemyKind.Boss ? ReimuTuning.BossSlowMultiplier : 0;
                 enemy.BoundRemaining = Math.Max(0, enemy.BoundRemaining - RunState.StepSeconds);
             }
-            enemy.Velocity += enemy.GravityVelocity;
+            if (enemy.GravityAcceleration != Vector2.Zero || enemy.GravityVelocity != Vector2.Zero)
+            {
+                var gravity = MarisaTuning.LimitVector(enemy.GravityAcceleration, MarisaTuning.GravityAccelerationLimit);
+                enemy.GravityVelocity = MarisaTuning.LimitVector((enemy.GravityVelocity + gravity * RunState.StepSeconds) / (1 + MarisaTuning.EnemyGravityDrag * RunState.StepSeconds), MarisaTuning.EnemyGravityVelocityLimit);
+                enemy.Velocity += enemy.GravityVelocity;
+            }
             enemy.Position = RunState.ClampToArena(Geometry.Advance(enemy.Position, enemy.Velocity, RunState.StepSeconds));
             var contactRadius = enemy.Radius + 6;
             if (Geometry.DistanceSquared(enemy.Position, run.PlayerPosition) < contactRadius * contactRadius) run.Hurt(enemy.ContactDamage);

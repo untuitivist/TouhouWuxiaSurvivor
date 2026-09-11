@@ -1,0 +1,36 @@
+{
+  "source": "U:/Project/MainCode/2.Learn/godot/touhou-wuxia-survivor/东方原作弹幕游戏素材包/东方Project游戏解包内容/TH10 东方风神录/ANM/ANM/bullet/etama.png",
+  "sourceSha256": "2eee95a7b590c5311b647e748b0d2a63e276d3605697f330f87d640443809889",
+  "crop": [
+    0,
+    160,
+    256,
+    176
+  ],
+  "frameSize": [
+    16,
+    16
+  ],
+  "frameCount": 16,
+  "transformation": "Original RGBA crop using Aseprite; no recoloring, redrawing or generated gameplay pixels.",
+  "asepriteSource": "art/aseprite/marisa/original_star_colors_16.aseprite",
+  "runtime": "assets/internal_original/base/combat/star_variants.png",
+  "runtimeSha256": "133b9c7bae6b81bfb72537a3bb5fb2d12f16bea136ecaced50917e1d91692ac4",
+  "usage": "User-supplied original game pack. Provenance does not grant redistribution permission.",
+  "selectedFrames": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ]
+}

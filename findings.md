@@ -1,4 +1,17 @@
-## Marisa Gravity and Sustain Release — 2026-09-11
+## Multi-Color Source Audit — 2026-09-11
+
+- Native comparison found 260/12123 boundary pixels differ between a 14-column atlas and independent Sprite2D sampling at 2.5x scaling. Preserve the failed images; retain the original 16-cell row (power-of-two UV spacing), selecting only the 14 chromatic cells. Do not loosen the pixel threshold.
+
+- Actual active star body rendering uses batches["star"] with combat/star.png: yellow crop [208,160,224,176]. Original TH10 bullet/etama.png visually contains 14 chromatic 16px variants in [16,160,240,176], plus neutral end cells.
+- SpriteBatch already supports horizontal atlas frames through INSTANCE_CUSTOM; use one atlas/batch, not a scene node or batch per color. Keep legacy yellow texture untouched. Cosmetic seed must not consume mass/encounter RNG.
+- Read-only inspection named two nonexistent asset classes; corrected to actual OriginalEffectDrawing/RenderLayers. No source modifications resulted from that failed search.
+
+## Marisa Many-Body Correction — 2026-09-11
+
+- Latest user direction supersedes group casts and guaranteed cores. Each emitted star must be independent, radial, mass-sampled and part of reciprocal star-star/star-enemy interactions; enemy masses replace boss-specific resistance. Frequent small damage should match Reimu at comparable investment.
+- Previous Web gates completed raw loading, batch checks and compatibility cases but failed high-load sampled FPS (41 < 45), so publication was never reached. Reports stay with the previous exact build and cannot validate new physics.
+
+## Superseded Marisa Gravity Candidate — 2026-09-11
 
 - Latest user correction overrides earlier proposals: no shared mass pool or normalization; each star independently samples mass and carries its own DPS. Extra stars do not dilute previous stars. Beam tracking means the original nearest-living-enemy selection, including while stationary; enemy-mass weighting remains exclusive to gravity stars.
 - Corrected core 56/56, localization 997/997 and equal-point route checks pass. Three unassisted Marisa journeys finish in 315.3–320.2 seconds; Reimu remains 278.8–285.9 seconds. These are deterministic desktop simulations, not human balance approval or physical mobile performance.

@@ -94,8 +94,8 @@ internal static class MarisaBeamTests
             if (index == 1) Learn(run, UpgradeCatalog.MasterSparkUnlock, UpgradeCatalog.SparkResonance);
             var target = Target(run, new(200, 0));
             run.World.Grid.Rebuild(run.Enemies);
-            MarisaProjectileSystem.Cast(run, target, 1);
-            foreach (ref var star in run.Stars.Active) { star.Position = target.Position; star.OrbitScale = 0; }
+            MarisaProjectileSystem.Cast(run, 1);
+            foreach (ref var star in run.Stars.Active) { star.Position = target.Position; star.Velocity = Vector2.Zero; }
             run.Beam = new() { Direction = System.Numerics.Vector2.UnitX, HalfWidth = 50, Length = 600, Remaining = 5 };
             for (var tick = 0; tick < 60; tick++) MarisaProjectileSystem.Step(run);
             damages[index] = target.MaxHealth - target.Health;

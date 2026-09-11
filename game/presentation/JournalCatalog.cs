@@ -58,8 +58,8 @@ internal static class JournalCatalog
                 for (var rank = 1; rank <= art.MaxRank; rank++) details += GameText.Format($"第 {rank} 重  {ArtCatalog.UpgradeText(art.Id, rank - 1)}\n");
                 details += GameText.Get("\n圆满  ") + GameText.Get(art.Mastery);
                 details += art.Id == ArtKind.Ofuda ? GameText.Get("\n\n初始能力：只有直射符。")
-                    : art.Id == ArtKind.Stars ? GameText.Get("\n\n初始能力：引力星群持续撕扯，慢移收束环绕；质量分布在生成时随机。") : GameText.Get("\n\n需先在修习中解锁此能力。");
-                foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior))
+                    : art.Id == ArtKind.Stars ? GameText.Get("\n\n初始能力：星体逐颗四射，独立抽样质量；多体相互吸引并持续撕扯。") : GameText.Get("\n\n需先在修习中解锁此能力。");
+                foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training)))
                     details += GameText.Format($"\n\n{upgrade.Name} · {UpgradeCatalog.Requirement(upgrade)}\n{upgrade.Description}");
             }
             else details += art.Id == ArtKind.Recovery ? GameText.Get("即时恢复，不累计重数；候选不足时提供调息。") : GameText.Format($"最多修习 {art.MaxRank} 重；只影响本局。");

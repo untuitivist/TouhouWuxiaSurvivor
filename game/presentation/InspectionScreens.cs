@@ -22,8 +22,10 @@ public partial class GameRoot
             var card = ui.Panel(panel, new(344, 132 + index * 115, 723, 110), new Color("172a31"));
             ui.Label(card, art.Name, new(16, 8, 570, 31), 23, color, true);
             ui.Label(card, rank == 0 ? GameText.Get("未习得") : GameText.Format($"{rank} / {art.MaxRank} 重"), new(617, 14, 92, 25), 14, color);
-            var branches = UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && upgrade.Kind == UpgradeKind.Behavior);
-            var branchText = string.Join(" · ", branches.Select(upgrade => GameText.Format($"{(run.Build.Rank(upgrade) > 0 ? GameText.Get("已悟") : GameText.Get("待悟"))} {upgrade.Name}")));
+            var branches = UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training));
+            var branchText = string.Join(" · ", branches.Select(upgrade => upgrade.Kind == UpgradeKind.Training
+                ? UpgradeCatalog.LearnedName(upgrade, run.Build)
+                : GameText.Format($"{(run.Build.Rank(upgrade) > 0 ? GameText.Get("已悟") : GameText.Get("待悟"))} {upgrade.Name}")));
             ui.Label(card, branchText, new(17, 42, 689, 23), 12, Palette.Muted);
             ui.Label(card, rank >= art.MaxRank ? GameText.Get("圆满：") + GameText.Get(art.Mastery) : ArtCatalog.UpgradeText(art.Id, rank), new(17, 68, 689, 36), 15, Palette.Paper);
         }

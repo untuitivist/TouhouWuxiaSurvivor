@@ -9,7 +9,7 @@ public partial class GameRoot
         StartRun(hero, 260906);
         var nodes = hero == HeroKind.Reimu
             ? new[] { UpgradeCatalog.YinYangUnlock, UpgradeCatalog.BoundaryUnlock, UpgradeCatalog.Launch, UpgradeCatalog.Clear, UpgradeCatalog.Cluster, UpgradeCatalog.Bind, UpgradeCatalog.Homing, UpgradeCatalog.Blast }
-            : new[] { UpgradeCatalog.HerbsUnlock, UpgradeCatalog.MasterSparkUnlock, UpgradeCatalog.StarMass, UpgradeCatalog.StarPlanet, UpgradeCatalog.HerbBrew, UpgradeCatalog.SparkSteer, UpgradeCatalog.SparkWide, UpgradeCatalog.SparkResonance };
+            : new[] { UpgradeCatalog.HerbsUnlock, UpgradeCatalog.MasterSparkUnlock, UpgradeCatalog.StarMass, UpgradeCatalog.StarSpread, UpgradeCatalog.HerbBrew, UpgradeCatalog.SparkSteer, UpgradeCatalog.SparkWide, UpgradeCatalog.SparkResonance };
         foreach (var id in nodes)
             run!.Build.TryApply(UpgradeCatalog.Get(id), 100);
         foreach (var position in new[] { new System.Numerics.Vector2(400, -90), new System.Numerics.Vector2(420, -70), new System.Numerics.Vector2(-300, 90) })

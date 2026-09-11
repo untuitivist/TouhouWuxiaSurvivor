@@ -45,6 +45,10 @@ internal sealed class WebCheckState
     public int Projectiles { get; set; }
     public int Pickups { get; set; }
     public int Stars { get; set; }
+    public float MassMedian { get; set; }
+    public float MassSigma { get; set; }
+    public float StarLifetime { get; set; }
+    public int GravityInteractions { get; set; }
     public int Planets { get; set; }
     public float StarMass { get; set; }
     public int ResonatingStars { get; set; }

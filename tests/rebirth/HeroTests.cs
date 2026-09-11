@@ -52,9 +52,9 @@ internal static class HeroTests
             else
             {
                 Check(run.Stars.Count == stats.Count, "Actual star count matches tuning");
-                Check(run.Stars.All(star => Math.Abs(star.DamageRate - stats.Damage * run.Power) < 0.001f), "Star power applies once to each independent damage rate");
+                Check(run.Stars.All(star => Math.Abs(star.DamageRate - stats.Damage * star.Mass * run.Power) < 0.001f), "Star power applies once to each independent damage rate");
             }
-            Check(ArtCatalog.UpgradeText(kind, rank - 1).Contains(stats.Damage.ToString(kind == ArtKind.Stars ? "0.0" : "0")), "Preview exposes damage from shared tuning");
+            Check(ArtCatalog.UpgradeText(kind, rank - 1).Contains(stats.Damage.ToString(kind == ArtKind.Stars ? "0.00" : "0")), "Preview exposes damage from shared tuning");
         }
     }
 
@@ -112,7 +112,7 @@ internal static class HeroTests
         Target(wide, new(200, 0)); Target(narrow, new(200, 0));
         wide.Step(default); narrow.Step(new(Vector2.Zero, true));
         Check(wide.Stars.Count == narrow.Stars.Count && wide.Stars.Count > 0, "Focus does not create extra stars");
-        Check(wide.Stars[0].OrbitScale > narrow.Stars[0].OrbitScale * 2, "Focus tightens orbital spacing");
+        Check(wide.Stars[0].Velocity == narrow.Stars[0].Velocity, "Focus preserves omnidirectional emission instead of aiming or grouping stars");
         Check(wide.Stars.Sum(star => star.DamageRate) == narrow.Stars.Sum(star => star.DamageRate), "Focus has no hidden damage multiplier");
         Check(wide.Stars.Select(star => star.Mass).SequenceEqual(narrow.Stars.Select(star => star.Mass)), "Focus never rerolls mass");
     }

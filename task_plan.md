@@ -1,4 +1,21 @@
-## Marisa Gravity and Sustain Release — 2026-09-11
+## Original Color Effects — 2026-09-11
+
+1. [complete] Inspect supplied TH10 star atlas and TH08 beam texture; retain original pixels and separate cosmetic RNG.
+2. [complete] Implement multi-color stars and spatially flowing rainbow beam with pause/reduced-motion behavior. Native rendering and core regressions pass.
+3. [in_progress] Prepare current fonts, verify fresh compatible Web rendering, record results and commit. No release claim until complete candidate gates pass.
+
+---
+
+## Marisa Many-Body Correction — 2026-09-11
+
+1. [complete] Replace group casts/guaranteed planets with frequent single-star radial emission and independently sampled mass distribution. Add explicit enemy masses and reciprocal star-star/star-enemy gravity.
+2. [complete] Make distribution and lifetime training repeatable; retain nearest-enemy beam tracking, finite remedies, original-first art and shared C# runtime.
+3. [in_progress] Test many-body reciprocity, heavy-star rarity, attainable boss attraction, bounded runtime work and matched-investment DPS against Reimu; rerun native/Web acceptance.
+4. [pending] Publish only after corrected-build gates pass. Previous candidate failed a high-load rendered-FPS gate (minimum 41 < 45); do not reuse it or weaken the threshold. No deployment occurred.
+
+---
+
+## Superseded Marisa Gravity Candidate — 2026-09-11
 
 Implement the accepted randomized-mass star growth, sustained gravity damage, directional growing beam and limited mushroom/herb sustain in the existing shared C# game. Preserve Reimu, established controls/art, all release history and the compatible threadless Web renderer. Publish only after new validation: self-contained Windows EXE plus matching Web deployment. No deletions or speculative WebGPU work.
 

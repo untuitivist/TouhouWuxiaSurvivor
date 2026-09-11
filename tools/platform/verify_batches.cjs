@@ -45,6 +45,8 @@ async function main({ colorStateStress = false } = {}) {
                 assert.equal(check.events.filter(text => text.startsWith('BATTLE_BATCH_CHECK')).length, 12);
                 assert.equal(check.events.filter(text => text.startsWith('BATCH_COLOR_CHECK')).length, 24);
                 assert.ok(check.events.includes('BATCH_COLOR_VISUAL_PASS checks=24'));
+                assert.ok(check.events.includes('MARISA_STAR_COLORS_PASS frames=14 mismatches=0'));
+                assert.ok(check.events.some(text => text.startsWith('MARISA_FLOWING_SPARK_PASS ') && text.includes('pause=frozen reduced=static-rainbow')));
                 if (stress) {
                     assert.ok(check.colorState?.draws > 24, 'Fault injection must exercise actual instanced draws');
                     assert.equal(check.colorState.missingColor, 0, 'Instanced draws must supply their vertex colors');

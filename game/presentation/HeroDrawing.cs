@@ -29,12 +29,28 @@ public partial class GameCanvas
         if (Run?.Beam is not { } beam) return;
         var origin = Palette.Vector(Run.PlayerPosition);
         var direction = Palette.Vector(beam.Direction);
-        var target = origin + direction * beam.Length;
-        var side = direction.Orthogonal() * beam.HalfWidth;
+        var capLength = Math.Min(beam.Length * 0.2f, beam.HalfWidth * 2);
         if (beam.Warmup > 0)
         {
             var charge = 1 - beam.Warmup / AbilityTuning.BeamWarmup;
-            OriginalBeam(origin, direction, beam.Length, beam.HalfWidth, Palette.Alpha(SparkColor(), 0.06f + charge * 0.08f));
+            OriginalBeam(origin, direction, beam.Length, beam.HalfWidth, capLength, Palette.Alpha(Colors.White, 0.06f + charge * 0.08f));
+            return;
+        }
+        var opacity = Math.Min(1, beam.Remaining / 0.2f);
+        OriginalBeam(origin, direction, beam.Length, beam.HalfWidth * 1.12f, capLength, Palette.Alpha(Colors.White, 0.3f * opacity));
+        OriginalBeam(origin, direction, beam.Length, beam.HalfWidth, capLength, Palette.Alpha(Colors.White, 0.9f * opacity));
+    }
+
+    private void DrawMarisaBeamAccents()
+    {
+        if (Run?.Beam is not { } beam) return;
+        var origin = Palette.Vector(Run.PlayerPosition);
+        var direction = Palette.Vector(beam.Direction);
+        if (beam.Warmup > 0)
+        {
+            var target = origin + direction * beam.Length;
+            var side = direction.Orthogonal() * beam.HalfWidth;
+            var charge = 1 - beam.Warmup / AbilityTuning.BeamWarmup;
             surface.DrawLine(origin + side, target + side, Palette.Alpha(Palette.Gold, 0.24f), 1);
             surface.DrawLine(origin - side, target - side, Palette.Alpha(Palette.Gold, 0.24f), 1);
             for (var distance = 22f; distance < beam.Length; distance += 38)
@@ -43,9 +59,6 @@ public partial class GameCanvas
             return;
         }
         var opacity = Math.Min(1, beam.Remaining / 0.2f);
-        OriginalBeam(origin, direction, beam.Length, beam.HalfWidth * 1.12f, Palette.Alpha(SparkColor(), 0.4f * opacity));
-        OriginalBeam(origin, direction, beam.Length, beam.HalfWidth, Palette.Alpha(SparkColor(1.5f) * new Color(1.2f, 1.2f, 1.2f), 0.85f * opacity));
-        OriginalBeam(origin, direction, beam.Length, beam.HalfWidth * 0.65f, Palette.Alpha(Colors.White, 0.4f * opacity));
         OriginalEffect("marisa_cast", origin, Vector2.One * Math.Max(48, beam.HalfWidth * 3), Palette.Alpha(Colors.White, 0.8f * opacity), ReducedMotion ? 0 : -Clock * 0.6f);
     }
 

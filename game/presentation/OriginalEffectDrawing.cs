@@ -5,7 +5,19 @@ namespace Rebirth.Presentation;
 public partial class GameCanvas
 {
     private readonly Dictionary<string, Texture2D> effectTextures = [];
-    private static readonly Color[] SparkColors = [new("97dfff"), new("c7b4ff"), new("ffb3df"), new("ffe1a2"), new("b8f2d0")];
+    internal const int StarColorFrames = 16;
+    internal const int StarColorVariants = 14;
+    private ShaderMaterial sparkMaterial = null!;
+
+    internal static ShaderMaterial CreateSparkMaterial()
+        => new() { Shader = GD.Load<Shader>("res://game/presentation/marisa_beam.gdshader") };
+
+    internal static void ConfigureSparkMaterial(ShaderMaterial material, float clock, float length, float capLength, bool reducedMotion)
+    {
+        material.SetShaderParameter("flow_time", reducedMotion ? 0 : clock);
+        material.SetShaderParameter("beam_length", length);
+        material.SetShaderParameter("cap_length", capLength);
+    }
 
     private void LoadOriginalEffects()
     {
@@ -22,17 +34,9 @@ public partial class GameCanvas
         surface.DrawSetTransform(Vector2.Zero);
     }
 
-    private Color SparkColor(float offset = 0)
-    {
-        var phase = ReducedMotion ? 0 : Clock * 1.5f + offset;
-        var index = (int)phase % SparkColors.Length;
-        return SparkColors[index].Lerp(SparkColors[(index + 1) % SparkColors.Length], phase - MathF.Floor(phase));
-    }
-
-    private void OriginalBeam(Vector2 origin, Vector2 direction, float length, float halfWidth, Color tint)
+    private void OriginalBeam(Vector2 origin, Vector2 direction, float length, float halfWidth, float capLength, Color tint)
     {
         var texture = effectTextures["master_spark"];
-        var capLength = Math.Min(length * 0.2f, halfWidth * 2);
         surface.DrawSetTransform(origin, direction.Angle());
         surface.DrawTextureRectRegion(texture, new(0, -halfWidth, capLength, halfWidth * 2), new(0, 0, 128, 128), tint);
         surface.DrawTextureRectRegion(texture, new(capLength, -halfWidth, length - capLength, halfWidth * 2), new(128, 0, 128, 128), tint);

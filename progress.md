@@ -1,4 +1,17 @@
-## Marisa Gravity and Sustain Release — 2026-09-11
+## Many-Body Balance And Original Colors — 2026-09-11
+
+- Latest core: 58/58. Stationary equal-investment single-target DPS at 0/4/8/12 points: Reimu 68.33/246.00/535.32/606.39; Marisa 69.06/246.64/516.79/591.54. Extra near/far/moving and AoE-route measurements retained; early AoE is not equal in every layout. Both heroes pass three automated journeys.
+- Localization 998/998 before cosmetic-only additions. Native build passes. Native core stress includes 96 stars/320 enemies/1600 projectiles, mean 0.246ms and P95 0.462ms per step; this is not rendered/Web/mobile FPS.
+- Original color stars extracted by Aseprite. First 14-column atlas failed strict sampling comparison (260 pixels); full 16-cell original row with only 14 chromatic cells selected fixes root cause (0 pixels), no threshold relaxation. Failed atlas and images retained.
+- Native actual-renderer regression passes all 81 batch checks plus 24 color-state checks, original-color atlas checks and flowing-beam checks. Beam has 6 simultaneous color families, 75847 changing pixels, unchanged alpha, frozen pause and static-rainbow reduced motion.
+- Native UI smoke exposed a stale literal expecting the old star-group display name; update it to the actual star-stream title without weakening ownership checks.
+- Fresh Web build and dual-platform release gates remain pending; no push or deployment of the superseded candidate.
+
+## Marisa Many-Body Correction — 2026-09-11
+
+- Held publication on new user clarification. The preceding Web gate process has exited; it failed a sampled-FPS threshold. No push or deployment occurred. Rebuilding the star simulation rather than layering many-body behavior onto target-locked group casts.
+
+## Superseded Marisa Gravity Candidate — 2026-09-11
 
 - Web export failed before publication: the inherited environment omitted OS, so the WASM SDK constructed a colon-separated PATH on Windows and could not locate emcc. Confirmed OS=empty / separator=: versus OS=Windows_NT / separator=; with the same project. The export script now normalizes only its child environment. Also changed native receipts to record the actual completed checks rather than a stale hardcoded list.
 - Actual standalone candidate passed 31 automated gates, but visual review caught the old stardust unlock hint still displayed in combat. Corrected the bilingual HUD hint; candidate EXE and validation evidence are retained separately, not released or overwritten. Rebuild both platforms from the next clean source commit.

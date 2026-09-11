@@ -43,7 +43,7 @@ public sealed partial class RunState
 
     internal Enemy SpawnEnemy(EnemyKind kind, Vector2 position)
     {
-        var enemy = new Enemy { Id = ++nextEnemyId, Kind = kind, Position = position, Timer = 1.2f + RandomFloat() * 1.8f };
+        var enemy = new Enemy { Id = ++nextEnemyId, Kind = kind, Mass = EnemyMassCatalog.Get(kind), Position = position, Timer = 1.2f + RandomFloat() * 1.8f };
         (enemy.MaxHealth, enemy.Speed, enemy.Radius, enemy.ContactDamage) = kind switch
         {
             EnemyKind.Kedama => (18 + Time * 0.095f, 70 + Math.Min(Time, 240) * 0.14f, 14, 13),

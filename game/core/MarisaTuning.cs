@@ -4,25 +4,26 @@ namespace Rebirth.Core;
 
 public static class MarisaTuning
 {
-    public const int StarLimit = 32;
-    public const int GroupLimit = 4;
-    public const int BaseStarCount = 4;
-    public const float MinimumStarMass = 1.2f;
-    public const float MaximumStarMass = 4.8f;
-    public const float MinimumPlanetMass = 6;
-    public const float MaximumPlanetMass = 10;
-    public const float HeavyMassMultiplier = 5f / 3;
-    public const float StarInterval = 1.7f;
-    public const float StarLifetime = 3.8f;
-    public const float ExtendedLifetime = 1.4f;
-    public const float StarPulse = 0.15f;
-    public const float StarSpeed = 350;
-    public const float PlanetSpeed = 230;
-    public const float TargetInterval = 0.25f;
-    public const float TargetRange = 650;
-    public const int StarTargetLimit = 12;
-    public const float PullSpeed = 125;
-    public const float BossPullMultiplier = 0.12f;
+    public const int StarLimit = 96;
+    public const int BaseStarCount = 1;
+    public const float StarInterval = 0.18f;
+    public const float StarLifetime = 8;
+    public const float ExtendedLifetime = 0.6f;
+    public const float StarPulse = 0.12f;
+    public const float StarSpeed = 180;
+    public const float EmissionAngleStep = 2.39996323f;
+    public const float BaseMassMedian = 2.5f;
+    public const float BaseMassSigma = 0.6f;
+    public const float MassGrowth = 1.32f;
+    public const float TargetRange = 800;
+    public const float GravityStrength = 250000;
+    public const float GravitySoftening = 70;
+    public const int GravityIntervalTicks = 3;
+    public const float GravityAccelerationLimit = 900;
+    public const float StarVelocityLimit = 360;
+    public const float EnemyGravityVelocityLimit = 180;
+    public const float StarDrag = 1.7f;
+    public const float EnemyGravityDrag = 2;
     public const float ResonanceMultiplier = 1.25f;
     public const float SteeringRadians = MathF.PI;
     public const float WideMultiplier = 1.6f;
@@ -33,18 +34,25 @@ public static class MarisaTuning
     public const float BrewRate = 2;
     public const float BrewLimit = 18;
 
-    public static int StarCount(BuildState build) => BaseStarCount + (build.Has(AbilityTraits.StarSpread) ? 2 : 0);
-    public static float Lifetime(BuildState build) => StarLifetime + (build.Has(AbilityTraits.StarLifetime) ? ExtendedLifetime : 0);
-    public static float DamageRadius(float mass) => 34 + MathF.Sqrt(mass) * 9;
-    public static float PullRadius(float mass) => 95 + MathF.Sqrt(mass) * 16;
+    public static float MassMedian(BuildState build)
+        => MathF.Exp(Math.Min(60, MathF.Log(BaseMassMedian) + build.TrainingRank(UpgradeCatalog.StarMass) * MathF.Log(MassGrowth)));
+    public static float MassSigma(BuildState build)
+        => BaseMassSigma + 0.12f * MathF.Sqrt(build.TrainingRank(UpgradeCatalog.StarSpread));
+    public static float Lifetime(BuildState build) => StarLifetime + build.TrainingRank(UpgradeCatalog.StarLifetime) * ExtendedLifetime;
+    public static float DamageRadius(float mass) => Math.Min(90, 10 + MathF.Sqrt(mass) * 4);
+    public static float VisualSize(float mass) => Math.Min(96, 14 + MathF.Sqrt(mass) * 8);
     public static Vector2 LimitVector(Vector2 velocity, float limit)
-        => velocity.LengthSquared() > limit * limit ? Geometry.Direction(velocity) * limit : velocity;
-
-    public static float RollMass(Random random, bool increasedMass, bool planet)
     {
-        var minimum = planet ? MinimumPlanetMass : MinimumStarMass;
-        var maximum = planet ? MaximumPlanetMass : MaximumStarMass;
-        var mass = minimum + (float)random.NextDouble() * (maximum - minimum);
-        return mass * (increasedMass ? HeavyMassMultiplier : 1);
+        var maximum = Math.Max(Math.Abs(velocity.X), Math.Abs(velocity.Y));
+        if (maximum == 0 || maximum <= limit && velocity.LengthSquared() <= limit * limit) return velocity;
+        var scaled = velocity / maximum;
+        return scaled * (limit / MathF.Sqrt(scaled.LengthSquared()));
+    }
+
+    public static float RollMass(Random random, BuildState build)
+    {
+        var normal = (float)(Math.Sqrt(-2 * Math.Log(1 - random.NextDouble())) * Math.Cos(Math.Tau * random.NextDouble()));
+        var logMass = MathF.Log(MassMedian(build)) + MassSigma(build) * normal;
+        return MathF.Exp(Math.Clamp(logMass, -12, 60));
     }
 }

@@ -72,8 +72,9 @@ async function main() {
                 await page.reload();
                 await ready('build');
                 const combined = await state();
-                assert.equal(combined.Traits, 232064, 'All six gravity, remedy and beam behaviors are present');
-                assert.ok(combined.Stars > 0 && combined.Stars <= 32 && combined.Planets > 0, 'Actual bounded planet bodies are present');
+                assert.equal(combined.Traits, 199552, 'Distribution training, remedies and beam behaviors are present');
+                assert.ok(combined.Stars > 0 && combined.Stars <= 96, 'Actual bounded independent star bodies are present');
+                assert.ok(combined.MassMedian > 2.5 && combined.MassSigma > 0.6 && combined.GravityInteractions > 0, 'Distribution growth and many-body interactions are active without a guaranteed planet');
                 assert.ok(Number.isFinite(combined.StarMass) && combined.StarMass > 0 && combined.Herbs > 0, 'Independent star masses and real remedies are present');
                 assert.equal(combined.SignatureUnlocked, false);
                 assert.deepEqual(combined.AbilityRanks.slice(0, 6), [0, 0, 0, 1, 1, 1]);
