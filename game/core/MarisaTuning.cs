@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Rebirth.Core;
 
@@ -41,6 +42,7 @@ public static class MarisaTuning
     public static float Lifetime(BuildState build) => StarLifetime + build.TrainingRank(UpgradeCatalog.StarLifetime) * ExtendedLifetime;
     public static float DamageRadius(float mass) => Math.Min(90, 10 + MathF.Sqrt(mass) * 4);
     public static float VisualSize(float mass) => Math.Min(96, 14 + MathF.Sqrt(mass) * 8);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 LimitVector(Vector2 velocity, float limit)
     {
         var maximum = Math.Max(Math.Abs(velocity.X), Math.Abs(velocity.Y));
@@ -51,6 +53,7 @@ public static class MarisaTuning
         return new(scaledX * multiplier, scaledY * multiplier);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 IntegrateGravity(Vector2 velocity, Vector2 acceleration, float drag, float velocityLimit)
     {
         var limited = LimitVector(acceleration, GravityAccelerationLimit);

@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Rebirth.Core;
 
@@ -101,6 +102,7 @@ public sealed class Seal
 
 public static class Geometry
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float AngleDelta(float from, float to)
     {
         var delta = to - from;
@@ -109,15 +111,19 @@ public static class Geometry
         return delta;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Length(Vector2 vector) => MathF.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float DistanceSquared(Vector2 first, Vector2 second)
     {
         var horizontal = first.X - second.X;
         var vertical = first.Y - second.Y;
         return horizontal * horizontal + vertical * vertical;
     }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Advance(Vector2 position, Vector2 velocity, float seconds)
         => new(position.X + velocity.X * seconds, position.Y + velocity.Y * seconds);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Direction(Vector2 vector)
     {
         var lengthSquared = vector.X * vector.X + vector.Y * vector.Y;
@@ -125,8 +131,10 @@ public static class Geometry
         var inverseLength = 1 / MathF.Sqrt(lengthSquared);
         return new(vector.X * inverseLength, vector.Y * inverseLength);
     }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 Angle(float radians) => new(MathF.Cos(radians), MathF.Sin(radians));
     public static Vector2 Rotate(Vector2 vector, float radians) => new(vector.X * MathF.Cos(radians) - vector.Y * MathF.Sin(radians), vector.X * MathF.Sin(radians) + vector.Y * MathF.Cos(radians));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float SegmentDistanceSquared(Vector2 point, Vector2 start, Vector2 end)
     {
         var segmentX = end.X - start.X;

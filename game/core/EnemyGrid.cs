@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Rebirth.Core;
 
@@ -40,6 +41,7 @@ public sealed class EnemyGrid
 
     public Enemy? FindById(int identity) => identities.GetValueOrDefault(identity);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private List<Enemy>? GetBucket(int column, int row)
     {
         var localColumn = column - OriginX;

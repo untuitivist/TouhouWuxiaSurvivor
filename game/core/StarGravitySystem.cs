@@ -1,9 +1,11 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Rebirth.Core;
 
 internal static class StarGravitySystem
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static float AccelerationFactor(float offsetX, float offsetY)
     {
         var distanceSquared = offsetX * offsetX + offsetY * offsetY;

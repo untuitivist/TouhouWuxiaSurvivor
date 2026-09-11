@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Rebirth.Core;
 
 public struct HitHistory
@@ -9,6 +11,7 @@ public struct HitHistory
     private int fourth;
     private HashSet<int>? overflow;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly bool Contains(int identity)
         => (count > 0 && first == identity) || (count > 1 && second == identity)
         || (count > 2 && third == identity) || (count > 3 && fourth == identity)
