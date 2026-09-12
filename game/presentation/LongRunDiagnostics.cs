@@ -28,6 +28,7 @@ public partial class GameRoot
         var boss = run!.SpawnEnemy(EnemyKind.Boss, new(320, -30));
         boss.Health = boss.MaxHealth * 0.3f;
         boss.Abilities!.FieldCooldown = 0;
+        boss.Abilities.ShotCooldown = 0;
         boss.Abilities.SpecialCooldown = 0;
         boss.Abilities.RecoveryCooldown = 1000;
         for (var tick = 0; tick < 90; tick++) run.Step(new(new(0, 0.35f)));
