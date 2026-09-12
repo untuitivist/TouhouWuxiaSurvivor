@@ -1,3 +1,13 @@
+## Single-Mainline Growth Design — 2026-09-12
+
+Scope: design documents only. Do not implement, rebalance, edit game assets/changelog/version, build, push, or deploy. Preserve historical design records and distinguish confirmed intent from proposed tuning.
+
+1. [complete] Inspect actual run timing, upgrade availability and repeatable growth, plus the existing character/design documents.
+2. [complete] Write an internally consistent design covering longer pacing, one mainline, finite branch decisions, compatible support, sustained growth and concrete character examples.
+3. [complete] Reviewed reachability, exclusions, scaling and proposal scope; six Markdown files pass UTF-8-without-BOM, link and docs-only checks. Deliver as a local documentation-only commit; no push, gameplay implementation, build, export or deployment.
+
+---
+
 ## Direct First-Download Optimization — 2026-09-11
 
 1. [complete] Measured direct range transfer (16.9 KB/s), fast origin-local transfer, and 26 erroneously packed static archives. Preserve alpha-0.1.8 EXE/gameplay and all histories.

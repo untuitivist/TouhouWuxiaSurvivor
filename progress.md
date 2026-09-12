@@ -1,3 +1,9 @@
+## Single-Mainline Design Pass — 2026-09-12
+
+- Recorded the user's design-only boundary and the move away from multiple full mainlines. Completed read-only checks of current progression, encounter timing, character constraints, repeatable-growth limits and historical designs; drafting one-mainline growth with explicit proposal status. Game/runtime/version/deployment remain untouched.
+- Wrote docs/run_growth_design.md and added historical-design/intent entry links without rewriting earlier records. The draft covers two hero examples, sticky branch offers, total-choice pacing, compatible support, meaningful repeatable growth, optional continuation, UI/core boundaries and future acceptance criteria. Reviewing document consistency and scope before a local documentation-only commit; no gameplay, build or release tests are claimed.
+- Completed design consistency and document checks: six Markdown files only, valid UTF-8 without BOM, ten design links plus two entry links, and clean whitespace checks. Historical records remain intact; timing, route names/effects and continuation remain proposals. Delivery is limited to the local design commit; no code, version, artifacts, remote repository or server changes.
+
 ## Direct First-Download Maintenance — 2026-09-11
 
 - Completed delivery alpha-0.1.8-7aca71e-delivery-20260911T151234Z. Server source is fast-forwarded; original EXE, assets and previous deployment remain unchanged.
