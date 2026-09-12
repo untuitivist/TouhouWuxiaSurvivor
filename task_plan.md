@@ -1,3 +1,16 @@
+## Growth And Character Boss Release — 2026-09-13
+
+1. [in_progress] Audit current core/UI/tests and release/deployment paths; verify the actual published baseline and retain controls, shared C# runtime, gravity invariants and delivery optimizations.
+2. [pending] Implement canonical dual-role characters, self-excluding Boss encounters, independent combat state, readable character attacks and journal/UI integration.
+3. [pending] Implement finite mainline stances, compatible upgrades, effective repeatable growth, longer staged pacing and optional post-victory continuation with safe records.
+4. [pending] Add focused regressions, balance and long-run/performance checks, fix only task-related failures, and complete localization/visual/native/Web validation.
+5. [pending] Update version/changelog/docs, commit the tested source, build immutable self-contained Windows EXE and matching compatible Web artifacts, and verify exact exports.
+6. [pending] Push and deploy using the established rollback-safe pipeline, verify public direct loading/gameplay/version, record artifact hashes and deployment receipts, then commit final records.
+
+Setup notes: the persistent Node session had reset, so tool paths were reinitialized; ripgrep exit 1 for no AGENTS.md matches is handled explicitly rather than treated as a command failure. No workspace edits were lost.
+
+---
+
 ## Legacy Playable Character / Boss Return — 2026-09-12
 
 1. [complete] Verify the user-confirmed pre-rebuild design against the legacy document, character catalog/profiles, Boss director/resolver and test assertions; preserve the design-only boundary.

@@ -1,3 +1,9 @@
+# Growth And Character Boss Release — 2026-09-13
+
+- User now authorizes implementation and publication, superseding the previous design-only boundary for this task. Workspace starts clean at 7479ef1, main is two documentation commits ahead of origin/main. Actual Asia/Shanghai local date is 2026-09-13.
+- No nested AGENTS.md exists under current game/docs/tools/tests/platform scopes. Use explicit UTF-8, the installed apply_patch helper and PS7 only when needed; do not invoke Windows PowerShell 5.1.
+- Scope includes the growth design and recovered two-character Boss identity contracts, not an unrelated engine/art/whole-legacy migration. Existing release gates and direct-download improvements remain requirements, not thresholds to relax.
+
 # Legacy Playable Character / Boss Design — 2026-09-12
 
 - User explicitly identifies dual-role characters as a pre-rebuild design that may return. Verified docs/plugin_first_design.md:354–362 and :438, CharacterDefinition, CharacterBossCatalog and RunContentContext: one canonical identity, two profiles, enabled-content snapshot and strict per-run exclusion of the selected hero without deleting global Boss identity.

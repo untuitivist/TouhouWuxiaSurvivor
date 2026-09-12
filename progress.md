@@ -1,3 +1,7 @@
+## Growth And Character Boss Release — 2026-09-13
+
+- Initialized implementation/release plan after explicit user approval. Confirmed a clean workspace, the two local design commits, local date and instruction scopes. No runtime edits or deployment yet; inspecting core and delivery tooling next.
+
 ## Legacy Playable Character / Boss Return — 2026-09-12
 
 - After the user clarified this is a legacy feature, checked the old design, canonical character catalog, dual profiles, Boss candidate filtering, encounter lifecycle, spell ownership, compendium and test assertions. Updated the current draft to explicitly restore self-exclusion and related contracts, not merely propose generic dual-role characters. No legacy test execution or runtime return is claimed.
