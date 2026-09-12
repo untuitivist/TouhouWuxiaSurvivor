@@ -27,10 +27,24 @@ public static class UpgradeCatalog
     public static readonly IReadOnlyList<UpgradeDefinition> All = Array.AsReadOnly(Create().ToArray());
     private static readonly IReadOnlyDictionary<string, UpgradeDefinition> ById = All.ToDictionary(upgrade => upgrade.Id, StringComparer.Ordinal);
     public static UpgradeDefinition Get(string id) => ById[id];
+    public static bool IsKnown(UpgradeDefinition upgrade) => ById.TryGetValue(upgrade.Id, out var known) && ReferenceEquals(known, upgrade);
     public static UpgradeDefinition Legacy(ArtKind art) => All.Single(upgrade => upgrade.Ability == art && upgrade.Kind is UpgradeKind.Legacy or UpgradeKind.Recovery);
 
     private static IEnumerable<UpgradeDefinition> Create()
     {
+        yield return new(MainlineGrowth.RapidOfuda, ArtKind.Ofuda, UpgradeKind.Stance, "定式 · 疾札",
+            "均匀连发，单札较轻，持续补伤。本局放弃叠札；追踪、爆炸和辅助仍可兼修。", HeroKind.Reimu, 1, RequiredRank: 1, Stance: MainlineStance.RapidOfuda);
+        yield return new(MainlineGrowth.ChargedOfuda, ArtKind.Ofuda, UpgradeKind.Stance, "定式 · 叠札",
+            "自动积蓄后集中出手，每札穿过一个额外目标，保留输出空档。本局放弃疾札；积蓄可移动，追踪和爆炸仍可兼修。", HeroKind.Reimu, 1, RequiredRank: 1, Stance: MainlineStance.ChargedOfuda);
+        yield return new(MainlineGrowth.YoungStars, ArtKind.Stars, UpgradeKind.Stance, "定式 · 星潮",
+            "新生星早段撕扯增强，随后回到基础。本局放弃星域；质量、变谱和寿命仍可成长，新星生效。", HeroKind.Marisa, 1, RequiredRank: 1, Stance: MainlineStance.YoungStars);
+        yield return new(MainlineGrowth.MatureStars, ArtKind.Stars, UpgradeKind.Stance, "定式 · 星域",
+            "星体逐渐进入较强的成熟阶段，建立星场需要时间。本局放弃星潮；不赠送重星，新星生效。", HeroKind.Marisa, 1, RequiredRank: 1, Stance: MainlineStance.MatureStars);
+        yield return new(MainlineGrowth.OfudaPower, ArtKind.Ofuda, UpgradeKind.Training, "符 · 养威",
+            "反复强化御札威力，不增加实体，不解锁另一侧定式。", HeroKind.Reimu, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
+        yield return new(MainlineGrowth.OfudaTempo, ArtKind.Ofuda, UpgradeKind.Training, "符 · 行札",
+            "有限强化出手效率，不把两种定式压成同一节律。", HeroKind.Reimu, MainlineGrowth.TempoLimit, RequiredRank: 1, MinimumLevel: 3);
+        yield return Training(MainlineGrowth.StarPower, "星 · 撕扯精进", "反复强化单位质量撕扯，不增加星体数量。", AbilityTraits.None);
         foreach (var art in ArtCatalog.All)
         {
             if (art.Owner is { } owner)
@@ -53,7 +67,7 @@ public static class UpgradeCatalog
         yield return Behavior(Launch, ArtKind.YinYang, "玉 · 蓄力发射", $"自动蓄力 {ReimuTuning.OrbChargeDuration:0.0} 秒后射出一枚玉，贯穿三敌；飞行时少一枚护身玉，可与消弹兼修。", AbilityTraits.Launch);
         yield return new(DreamSeal, ArtKind.Ofuda, UpgradeKind.Behavior, "解锁 · 梦想封印",
             "解锁满蓄势自动发动的梦想封印。此前蓄势可以积累，但不会自动清弹或攻击。", HeroKind.Reimu, 1, AbilityTraits.DreamSeal, 1, 5);
-        yield return Training(StarMass, "星 · 增质", "质量分布的中位数提高 32%；可反复修习。每颗星独立抽样，不保底重星。", AbilityTraits.StarMass);
+        yield return Training(StarMass, "星 · 增质", "提高新星质量分布中位数，前六重较快，之后相对收益渐缓；每颗独立抽样，无保底重星。", AbilityTraits.StarMass);
         yield return Training(StarSpread, "星 · 变谱", "扩大质量分布的离散程度，让轻星与稀有重星都更有机会出现；可反复修习，不指定行星名额。", AbilityTraits.StarSpread);
         yield return Training(StarLifetime, "星 · 长明", "新生星体存活时间增加 0.6 秒；可反复修习，不刷新已有星体寿命。", AbilityTraits.StarLifetime);
         yield return Behavior(HerbBrew, ArtKind.Herbs, "药 · 缓释", "拾取药菇后额外缓慢恢复其一半药量，每秒最多 2 点，待恢复量最多 18；不靠伤害或击杀无限吸血。", AbilityTraits.HerbBrew);
@@ -74,24 +88,28 @@ public static class UpgradeCatalog
 
     public static string Requirement(UpgradeDefinition upgrade)
     {
+        if (upgrade.Kind == UpgradeKind.Stance) return "第四次成长起二选一 · 本局不可兼得";
         var ability = upgrade.RequiredRank > 0 ? $"已获得 {upgrade.Art.Name}" : "无需其他能力";
         return upgrade.MinimumLevel > 1 ? $"{ability} · 修习 {upgrade.MinimumLevel}" : ability;
     }
 
     public static string Description(UpgradeDefinition upgrade, BuildState build)
-        => upgrade.Kind is UpgradeKind.Refine or UpgradeKind.Legacy && upgrade.Art.Owner.HasValue
+        => upgrade.Kind == UpgradeKind.Training ? MainlineGrowth.TrainingDescription(upgrade, build)
+            : upgrade.Kind is UpgradeKind.Refine or UpgradeKind.Legacy && upgrade.Art.Owner.HasValue
             ? ArtCatalog.UpgradeText(upgrade.Ability, build.Ranks[(int)upgrade.Ability]) : upgrade.Description;
 
     public static string Progress(UpgradeDefinition upgrade, BuildState build)
-        => upgrade.Kind == UpgradeKind.Training ? GameText.Format($"可反复修习 · 当前 {build.Rank(upgrade)} 重 · {Requirement(upgrade)}")
-            : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior ? "一次领悟 · " + Requirement(upgrade)
+        => upgrade.Kind == UpgradeKind.Training ? upgrade.MaxRank == int.MaxValue
+            ? GameText.Format($"可反复修习 · 当前 {build.Rank(upgrade)} 重 · {Requirement(upgrade)}")
+            : GameText.Format($"当前 {build.Rank(upgrade)} / {upgrade.MaxRank} 重 · {Requirement(upgrade)}")
+            : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior or UpgradeKind.Stance ? "一次领悟 · " + Requirement(upgrade)
             : upgrade.Kind == UpgradeKind.Recovery ? "即时生效" : $"{build.Rank(upgrade) + 1} / {upgrade.MaxRank} · " + Requirement(upgrade);
 
     public static string LearnedName(UpgradeDefinition upgrade, BuildState build)
         => upgrade.Kind == UpgradeKind.Training ? GameText.Format($"{upgrade.Name} {build.Rank(upgrade)}重") : GameText.Get(upgrade.Name);
 
     public static IEnumerable<UpgradeDefinition> Behaviors(BuildState build, ArtKind ability)
-        => All.Where(upgrade => upgrade.Ability == ability && upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training && build.Rank(upgrade) > 0);
+        => All.Where(upgrade => upgrade.Ability == ability && upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training or UpgradeKind.Stance && build.Rank(upgrade) > 0);
 }
 
 public static class UpgradeOffers
@@ -100,8 +118,18 @@ public static class UpgradeOffers
     {
         var candidates = UpgradeCatalog.All.Where(upgrade => upgrade.Kind != UpgradeKind.Recovery && build.CanChoose(upgrade, level)).ToList();
         var result = new List<UpgradeDefinition>(3);
-        Take(candidates.Where(upgrade => upgrade.Kind == UpgradeKind.Unlock).ToArray());
-        Take(candidates.Where(upgrade => upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training).ToArray());
+        var stances = candidates.Where(upgrade => upgrade.Kind == UpgradeKind.Stance).ToArray();
+        if (stances.Length > 0)
+        {
+            foreach (var stance in stances) { result.Add(stance); candidates.Remove(stance); }
+            Take(candidates.Where(upgrade => upgrade.Ability == MainlineGrowth.Primary(build.Hero)).ToArray());
+        }
+        else
+        {
+            Take(candidates.Where(upgrade => upgrade.Ability == MainlineGrowth.Primary(build.Hero)).ToArray());
+            Take(candidates.Where(upgrade => build.Stance == MainlineStance.None ? upgrade.Kind == UpgradeKind.Unlock
+                : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior or UpgradeKind.Legacy).ToArray());
+        }
         while (result.Count < 3 && candidates.Count > 0) Take(candidates.ToArray());
         if (result.Count < 3) result.Add(UpgradeCatalog.Get(UpgradeCatalog.Recovery));
         return result;

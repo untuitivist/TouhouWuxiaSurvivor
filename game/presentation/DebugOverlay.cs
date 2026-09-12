@@ -49,7 +49,7 @@ public partial class DebugOverlay : Control
         RefreshCount++;
         var version = ProjectSettings.GetSetting("application/config/version").AsString();
         var location = Run == null ? GameText.Get("XY: -- (尚未开始)") : GameText.Format($"XY: {Run.PlayerPosition.X:0.00} / {Run.PlayerPosition.Y:0.00}   (2D 世界单位)");
-        var hostile = Run?.Projectiles.Count(projectile => projectile.Hostile) ?? 0;
+        var hostile = (Run?.Projectiles.Count(projectile => projectile.Hostile) ?? 0) + (Run?.Stars.Count(star => star.Hostile) ?? 0);
         var regular = Run?.Enemies.Count(enemy => enemy.Kind != EnemyKind.Boss) ?? 0;
         var bossCount = Run?.Enemies.Count(enemy => enemy.Kind == EnemyKind.Boss) ?? 0;
         var monitor = DisplayServer.GetName() == "headless" ? -1 : DisplayServer.WindowGetCurrentScreen();
@@ -78,7 +78,9 @@ public partial class DebugOverlay : Control
             GameText.Format($"Godot 静态内存: {(OS.IsDebugBuild() ? $"{Performance.GetMonitor(Performance.Monitor.MemoryStatic) / 1048576:0.0} MiB" : GameText.Get("N/A（发行引擎不提供）"))}"),
             GameText.Format($".NET 托管堆: {GC.GetTotalMemory(false) / 1048576.0:0.0} MiB"),
             $"Batch: {Canvas?.VisibleBatchInstances ?? 0}   Upload CPU: {Canvas?.BatchBuildMilliseconds ?? 0:0.00} ms   Target: {GetViewport().GetTexture().GetSize()}",
-            GameText.Get("内存值不是进程总占用；主循环耗时不是 GPU 耗时。")
+            GameText.Get("内存值不是进程总占用；主循环耗时不是 GPU 耗时。"),
+            Run == null ? "" : GameText.Format($"阶段 {Run.StageName} · 定式 {MainlineGrowth.Name(Run.Build.Stance)} · 续战 {Run.EndlessRounds}"),
+            Run?.Boss?.Character is { } character ? GameText.Format($"首领 {CharacterCatalog.Get(character).Name} · 阶段 {(Run.Boss.Abilities?.Phase ?? 0) + 1} · 生命倍率 {Run.Boss.ThreatScale:0.0}") : ""
         ];
     }
 

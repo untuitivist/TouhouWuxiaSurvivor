@@ -36,11 +36,12 @@ public partial class GameRoot
         webPerformance = fixture == "performance";
         if (fixture == "growth-choices") { PrepareGrowthPreview(); return; }
         if (PrepareMarisaGrowthFixture(fixture)) return;
+        if (fixture != "boss" && PrepareLongRunFixture(fixture)) { webArtPreview = true; return; }
         webArtPreview = fixture is "reimu-field" or "reimu-spell" or "marisa-stars" or "marisa-warmup" or "marisa-beam";
         if (webPilot || fixture.Length > 0)
         {
             StartRun(arguments.Contains("--web-marisa") ? HeroKind.Marisa : HeroKind.Reimu, 42);
-            if (fixture == "choices") { run!.AddExperience(30); run.Step(default); RefreshRunScreen(); }
+            if (fixture == "choices") { run!.AddExperience(RunPacing.ExperienceFor(1) + RunPacing.ExperienceFor(2)); run.Step(default); RefreshRunScreen(); }
             if (fixture == "boss") { run!.SpawnEnemy(EnemyKind.Boss, new(350, 0)); RefreshRunScreen(); }
             if (webPerformance) PreparePerformancePreview();
             if (fixture == "combat-performance")
@@ -89,6 +90,11 @@ public partial class GameRoot
             BeamX = run?.Beam?.Direction.X ?? 0, BeamY = run?.Beam?.Direction.Y ?? 0,
             SystemMilliseconds = run?.Timings?.Milliseconds ?? [],
             Screen = currentScreen, Hero = run?.Hero.ToString() ?? "", Phase = run?.Phase.ToString() ?? "",
+            Stance = run?.Build.Stance.ToString() ?? "", PendingStance = pendingStance,
+            AllocatedPoints = run?.Build.AllocatedPoints ?? 0, PendingChoices = run?.PendingChoices ?? 0,
+            StandardVictory = run?.HasStandardVictory ?? false, CanContinue = run?.CanContinue ?? false,
+            EndlessRounds = run?.EndlessRounds ?? 0, BossCharacter = run?.Boss?.Character.ToString() ?? "",
+            BossPhase = run?.Boss?.Abilities?.Phase ?? 0, HostileStars = run?.Stars.Count(star => star.Hostile) ?? 0,
             Language = GameText.Language,
             AbilityRanks = run?.Ranks ?? [], Traits = (int)(run?.Build.Traits ?? AbilityTraits.None),
             SignatureUnlocked = run?.Build.SignatureUnlocked ?? false,

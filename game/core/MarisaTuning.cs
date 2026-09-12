@@ -36,10 +36,10 @@ public static class MarisaTuning
     public const float BrewLimit = 18;
 
     public static float MassMedian(BuildState build)
-        => MathF.Exp(Math.Min(60, MathF.Log(BaseMassMedian) + build.TrainingRank(UpgradeCatalog.StarMass) * MathF.Log(MassGrowth)));
+        => MainlineGrowth.MassMedian(build.TrainingRank(UpgradeCatalog.StarMass));
     public static float MassSigma(BuildState build)
-        => BaseMassSigma + 0.12f * MathF.Sqrt(build.TrainingRank(UpgradeCatalog.StarSpread));
-    public static float Lifetime(BuildState build) => StarLifetime + build.TrainingRank(UpgradeCatalog.StarLifetime) * ExtendedLifetime;
+        => MainlineGrowth.Spread(build.TrainingRank(UpgradeCatalog.StarSpread));
+    public static float Lifetime(BuildState build) => MainlineGrowth.Lifetime(build.TrainingRank(UpgradeCatalog.StarLifetime));
     public static float DamageRadius(float mass) => Math.Min(90, 10 + MathF.Sqrt(mass) * 4);
     public static float VisualSize(float mass) => Math.Min(96, 14 + MathF.Sqrt(mass) * 8);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

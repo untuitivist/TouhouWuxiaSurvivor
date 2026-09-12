@@ -61,6 +61,7 @@ internal static class MarisaGrowthTests
         target.Health = target.MaxHealth = 10000;
         target.Speed = target.ContactDamage = 0;
         target.Timer = 10000;
+        target.Abilities = null;
         return target;
     }
 
@@ -76,7 +77,7 @@ internal static class MarisaGrowthTests
             var offers = UpgradeOffers.Create(run.Build, 3, new(seed));
             Check(offers.Count == 3 && offers.DistinctBy(upgrade => upgrade.Id).Count() == 3, "Three unique choices");
             Check(offers.All(upgrade => run.Build.CanChoose(upgrade, 3)), "Prerequisites and ownership respected");
-            Check(offers.Any(upgrade => upgrade.Kind == UpgradeKind.Unlock) && offers.Any(upgrade => upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training), "Unlock and growth remain visible");
+            Check(offers.Any(upgrade => upgrade.Kind == UpgradeKind.Unlock) && offers.Any(upgrade => upgrade.Ability == ArtKind.Stars), "Unlock and primary growth remain visible before the stance choice");
         }
         var reverse = new RunState(HeroKind.Marisa, 42);
         foreach (var candidate in new[] { run, reverse }) Learn(candidate, UpgradeCatalog.HerbsUnlock, UpgradeCatalog.MasterSparkUnlock);
@@ -124,7 +125,7 @@ internal static class MarisaGrowthTests
     {
         var baseline = new BuildState(HeroKind.Marisa);
         var grown = new BuildState(HeroKind.Marisa);
-        for (var index = 0; index < 12; index++) grown.TryApply(UpgradeCatalog.Get(UpgradeCatalog.StarMass), 100);
+        for (var index = 0; index < 36; index++) grown.TryApply(UpgradeCatalog.Get(UpgradeCatalog.StarMass), 100);
         for (var index = 0; index < 4; index++) grown.TryApply(UpgradeCatalog.Get(UpgradeCatalog.StarSpread), 100);
         var first = new Random(42); var replay = new Random(42); var trained = new Random(42);
         var original = new List<float>(); var upgraded = new List<float>();
@@ -137,7 +138,8 @@ internal static class MarisaGrowthTests
         }
         Check(original.Take(64).All(mass => mass < EnemyMassCatalog.Elite), "No slot or quota forces a large star");
         Check(original.Chunk(4).Select(group => group.Sum()).Distinct().Count() > 2400, "No total mass pool or normalization");
-        Check(upgraded.Average() > original.Average() * 20 && upgraded.Any(mass => mass > EnemyMassCatalog.Boss), "Distribution training can eventually produce boss-scale stars");
+        var expectedMean = MarisaTuning.MassMedian(grown) * MathF.Exp(MarisaTuning.MassSigma(grown) * MarisaTuning.MassSigma(grown) / 2);
+        Check(Math.Abs(upgraded.Average() / expectedMean - 1) < 0.08f && upgraded.Any(mass => mass > EnemyMassCatalog.Boss), "Extended training follows its actual distribution and can produce boss-scale stars");
         Check(upgraded.Count(mass => mass > EnemyMassCatalog.Boss) is > 0 and < 2000, "Boss-scale stars remain a rare sample, not a guarantee");
         var run = new RunState(HeroKind.Marisa, 42);
         MarisaProjectileSystem.Cast(run, 1);

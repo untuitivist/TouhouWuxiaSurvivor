@@ -83,7 +83,8 @@ public partial class GameRoot
                 OpenBuild();
                 AssertEnglishScreen();
             }
-            GD.Print("LANGUAGE_SMOKE_PASS: bilingual settings, persistence, legacy saves, desktop/touch UI, journal, upgrades and paused-run safety");
+            TestLongRunInterface();
+            GD.Print("LANGUAGE_SMOKE_PASS: bilingual settings, persistence, legacy saves, desktop/touch UI, journal, stances, continuation, upgrades and paused-run safety");
             if (!GamePlatform.IsWeb) GetTree().Quit();
         }
         catch (Exception error)

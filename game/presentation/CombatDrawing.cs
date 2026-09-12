@@ -12,6 +12,12 @@ public partial class GameCanvas
         {
             var position = Palette.Vector(enemy.Position);
             if (position.DistanceSquaredTo(camera) > 850 * 850) continue;
+            if (enemy.Character is { } character)
+            {
+                surface.DrawTextureRect(PixelSkin.Artwork("shadow"), new(position + new Vector2(-24, 0), new(48, 22)), false);
+                Sprite(character == HeroKind.Reimu ? "players/reimu" : "players/marisa", position, 1.8f, 0,
+                    enemy.Flash > 0 ? new Color(1.6f, 1.6f, 1.6f) : Colors.White);
+            }
             if (enemy.Telegraph > 0 && enemy.Kind == EnemyKind.Charger)
             {
                 var target = position + Palette.Vector(enemy.Aim) * 265;

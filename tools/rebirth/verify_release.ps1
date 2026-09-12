@@ -67,7 +67,7 @@ $screens = @('heroes', 'build', 'settings', 'settings-video', 'settings-controls
 foreach ($screen in $screens) {
     Invoke-ReleaseCheck "standalone-$screen" @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', "--rebirth-screen=$screen", "--rebirth-capture=$(Join-Path $logs "$screen.png")") 'REBIRTH_CAPTURE_PASS'
 }
-foreach ($screen in @('marisa-growth-choices', 'marisa-growth-combat', 'marisa-growth-build')) {
+foreach ($screen in @('marisa-growth-choices', 'marisa-growth-combat', 'marisa-growth-build', 'stance-reimu', 'stance-marisa', 'boss-reimu', 'boss-marisa', 'challenge-result')) {
     Invoke-ReleaseCheck "standalone-$screen" @('--resolution', '960x540', '--audio-driver', 'Dummy', '--', "--rebirth-screen=$screen", "--rebirth-capture=$(Join-Path $logs "$screen.png")") 'REBIRTH_CAPTURE_PASS'
 }
 Invoke-ReleaseCheck 'standalone-controls-small' @('--resolution', '640x360', '--audio-driver', 'Dummy', '--', '--rebirth-screen=settings-controls', "--rebirth-capture=$(Join-Path $logs 'controls-small.png')") 'REBIRTH_CAPTURE_PASS'

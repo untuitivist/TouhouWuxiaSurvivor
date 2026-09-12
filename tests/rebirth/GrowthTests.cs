@@ -127,13 +127,14 @@ internal static class GrowthTests
         Check(run.Field != null && run.Field.Position.X >= 400 && boss.BoundRemaining > 0, "Dense remote group receives binding field");
         boss.Speed = 100;
         boss.Timer = 0;
+        boss.Abilities!.ShotCooldown = 0;
         var before = boss.Position;
         var bound = run.Enemies.First(enemy => enemy.Kind == EnemyKind.Elite && enemy.Position.X >= 400);
         bound.Speed = 100;
         var boundBefore = bound.Position;
         run.Step(default);
-        Check(Math.Abs(Vector2.Distance(before, boss.Position) - 100 * RunState.StepSeconds * ReimuTuning.BossSlowMultiplier) < 0.01f, "Boss slowed rather than rooted");
-        Check(run.Projectiles.Any(projectile => projectile.Hostile) && boss.Timer > 0, "Boss still attacks");
+        Check(Vector2.Distance(before, boss.Position) > 0 && Vector2.Distance(before, boss.Position) <= 110 * RunState.StepSeconds * ReimuTuning.BossSlowMultiplier, "Boss retains its own motion while slowed rather than rooted");
+        Check(run.Stars.Any(star => star.Hostile) && boss.Abilities is { Elapsed: > 0 }, "The opposing Marisa Boss keeps emitting stars while bound");
         Check(bound.Position == boundBefore, "Normal enemy rooted");
     }
 

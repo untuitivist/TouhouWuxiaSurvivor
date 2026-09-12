@@ -102,6 +102,7 @@ public partial class GameRoot : Node
 
     private void StartRun(HeroKind hero, int? seed = null)
     {
+        pendingStance = "";
         lastHero = hero;
         run = new(hero, seed ?? unchecked((int)Time.GetTicksUsec() + ++seedCounter * 7919));
         canvas.Run = run;
@@ -154,6 +155,17 @@ public partial class GameRoot : Node
 
     private void SelectArt(int index)
     {
+        if (run == null || run.Phase != RunPhase.Choosing || index < 0 || index >= run.Choices.Count) return;
+        var upgrade = run.Choices[index];
+        if (upgrade.Kind == UpgradeKind.Stance && pendingStance != upgrade.Id)
+        {
+            pendingStance = upgrade.Id;
+            ShowChoices();
+            return;
+        }
+        pendingStance = "";
         if (run?.Choose(index) == true) RefreshRunScreen();
     }
+
+    private string pendingStance = "";
 }

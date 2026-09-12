@@ -26,8 +26,9 @@ public partial class GameCanvas
         Text($"{MathF.Ceiling(Run.Health)} / {Run.MaxHealth}", new(28, 76), 14, Palette.Muted);
         Text(GameText.Format($"退治  {Run.Kills}"), new(165, 76), 14, Palette.Muted);
         CenterText(FormatTime(Run.Time), new(640, 37), 29, Palette.Paper);
-        CenterText(Run.BossSpawned ? GameText.Get("终章 · 雾中来客") : Run.Time < 60 ? GameText.Get("一之卷 · 夜行") : Run.Time < 150 ? GameText.Get("二之卷 · 妖潮") : GameText.Get("三之卷 · 破阵"), new(640, 64), 15, Palette.Gold);
-        Bar(new(430, 76, 420, 3), Math.Min(1, Run.Time / RunState.BossArrival), Palette.Gold);
+        CenterText(GameText.Get(Run.StageName) + " · " + GameText.Get(MainlineGrowth.Name(Run.Build.Stance)), new(640, 64), 15, Palette.Gold);
+        var interval = Run.IsEndless ? RunPacing.ContinuationInterval : RunState.BossArrival;
+        Bar(new(430, 76, 420, 3), Math.Clamp(1 - (Run.NextBossTime - Run.Time) / interval, 0, 1), Palette.Gold);
         Text(GameText.Get("符卡蓄势"), new(989, 31), 17, Palette.Jade);
         Text($"{(int)Run.SpellCharge} / 100", new(1162, 31), 15, Palette.Paper);
         Bar(new(989, 45, 263, 8), Run.SpellCharge / 100, Palette.Jade);
@@ -54,7 +55,8 @@ public partial class GameCanvas
         if (boss != null)
         {
             surface.DrawRect(new(395, 108, 490, 54), Palette.Alpha(Palette.Deep, 0.85f));
-            CenterText(GameText.Get("结界残影  /  异变的回声"), new(640, 129), 15, Palette.Violet);
+            CenterText(GameText.Get(boss.Character is { } identity ? CharacterCatalog.Get(identity).Name : "角色 Boss")
+                + "  /  " + GameText.Format($"第 {(boss.Abilities?.Phase ?? 0) + 1} 阶段"), new(640, 129), 15, Palette.Violet);
             Bar(new(413, 142, 454, 5), boss.Health / boss.MaxHealth, Palette.Violet);
         }
         if (Run.Time < 10)
@@ -76,7 +78,7 @@ public partial class GameCanvas
         if (Run == null) return;
         surface.DrawStyleBox(PixelSkin.Frame("dark"), new(24, 108, 233, 78));
         Text(GameText.Format($"净化古印  {Run.PurifiedSeals} / 3"), new(39, 136), 18, Palette.Gold);
-        FittedText(Run.BossSpawned ? GameText.Get("击破雾中来客，平息异变") : GameText.Format($"距终章  {FormatTime(RunState.BossArrival - Run.Time)}"), new(39, 164), 203, 14, Palette.Muted);
+        FittedText(Run.BossSpawned ? GameText.Get("击破雾中来客，平息异变") : GameText.Format($"距终章  {FormatTime(Run.NextBossTime - Run.Time)}"), new(39, 164), 203, 14, Palette.Muted);
         var nearest = Run.Seals.Where(seal => !seal.Complete).OrderBy(seal => System.Numerics.Vector2.DistanceSquared(seal.Position, Run.PlayerPosition)).FirstOrDefault();
         if (nearest == null) return;
         var direction = Palette.Vector(nearest.Position - Run.PlayerPosition);

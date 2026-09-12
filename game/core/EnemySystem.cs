@@ -30,7 +30,7 @@ internal static class EnemySystem
                 run.ShootRing(enemy.Position, 12, run.Time * 0.3f, 135, false);
                 enemy.Timer = 3.2f;
             }
-            if (enemy.Kind == EnemyKind.Boss) UpdateBoss(run, enemy, direction, distance);
+            if (enemy.Kind == EnemyKind.Boss) BossAbilitySystem.Step(run, enemy, direction, distance);
             if (enemy.BoundRemaining > 0)
             {
                 enemy.Velocity *= enemy.Kind == EnemyKind.Boss ? ReimuTuning.BossSlowMultiplier : 0;
@@ -66,19 +66,6 @@ internal static class EnemySystem
             enemy.Telegraph = 0.85f;
             enemy.Aim = direction;
         }
-    }
-
-    private static void UpdateBoss(RunState run, Enemy enemy, Vector2 direction, float distance)
-    {
-        enemy.Velocity *= distance > 290 ? 1 : distance < 200 ? -0.7f : 0;
-        enemy.Telegraph = enemy.Timer < 0.7f ? 0.7f - enemy.Timer : 0;
-        if (enemy.Timer > 0) return;
-        var phase = enemy.Health > enemy.MaxHealth * 0.66f ? 0 : enemy.Health > enemy.MaxHealth * 0.33f ? 1 : 2;
-        var sequence = (int)((run.Time - RunState.BossArrival) / 2.2f);
-        run.ShootRing(enemy.Position, 16 + phase * 4, sequence * 0.29f, 125 + phase * 15, phase > 0);
-        if (phase > 0) run.ShootFan(enemy.Position, direction, 5, 0.17f, 205, 16);
-        if (phase == 2) run.ShootRing(enemy.Position, 16, -sequence * 0.41f, 92, true);
-        enemy.Timer = 2.35f - phase * 0.18f;
     }
 
 }

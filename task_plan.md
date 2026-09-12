@@ -1,13 +1,15 @@
 ## Growth And Character Boss Release — 2026-09-13
 
-1. [in_progress] Audit current core/UI/tests and release/deployment paths; verify the actual published baseline and retain controls, shared C# runtime, gravity invariants and delivery optimizations.
-2. [pending] Implement canonical dual-role characters, self-excluding Boss encounters, independent combat state, readable character attacks and journal/UI integration.
-3. [pending] Implement finite mainline stances, compatible upgrades, effective repeatable growth, longer staged pacing and optional post-victory continuation with safe records.
-4. [pending] Add focused regressions, balance and long-run/performance checks, fix only task-related failures, and complete localization/visual/native/Web validation.
-5. [pending] Update version/changelog/docs, commit the tested source, build immutable self-contained Windows EXE and matching compatible Web artifacts, and verify exact exports.
+1. [complete] Audit current core/UI/tests and release/deployment paths; verified alpha-0.1.8 online via pinned Git SSH, retain controls, shared C# runtime, gravity invariants and delivery optimizations.
+2. [complete] Canonical dual-role characters, self-excluding Boss encounters, independent state, readable attacks, bilingual journal and UI implemented and tested.
+3. [complete] Finite stances, compatible/repeatable growth, staged pacing, finite recovery windows and optional continuation with safe records implemented.
+4. [in_progress] Core 68/68, localization 1108/1108, dual 60-minute assisted soaks, four unassisted routes and native UI/batch tests pass. Visual review caught light build text and offscreen diagnostic Boss framing; fixed before export. Exact Web validation remains.
+5. [in_progress] alpha-0.1.9 version/changelog/docs prepared with all previous history retained; commit source and build immutable same-source Windows/Web artifacts next.
 6. [pending] Push and deploy using the established rollback-safe pipeline, verify public direct loading/gameplay/version, record artifact hashes and deployment receipts, then commit final records.
 
 Setup notes: the persistent Node session had reset, so tool paths were reinitialized; ripgrep exit 1 for no AGENTS.md matches is handled explicitly rather than treated as a command failure. No workspace edits were lost.
+
+Current validation: core compiles, 52/60 pass. Eight failures include stale timeline/offer/target assumptions, missing new translations and the mass-distribution balance assertion; none waived. Presentation has not yet been compiled. Windows native OpenSSH exits 255; Git SSH is verified. Run logged PS7 scripts through an explicit CMD exec session, not Node-built cmd start quoting. No release/export/push/deploy yet.
 
 ---
 

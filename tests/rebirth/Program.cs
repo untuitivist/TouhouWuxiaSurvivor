@@ -5,11 +5,20 @@ using Rebirth.Diagnostics;
 using Rebirth.Tests;
 
 if (args.Contains("--performance")) return PerformanceBenchmarks.Run(args);
+if (args.Contains("--long-balance")) return LongRunBalance.Run();
 if (args.Contains("--growth-balance")) return GrowthBalance.Run();
 if (args.Contains("--marisa-balance")) return MarisaBalance.Run();
 
 var tests = new (string Name, Action Body)[]
 {
+    ("canonical dual-role characters exclude the playable identity", LongRunTests.Identities),
+    ("finite stances allow deferral and reject incompatible or forged upgrades", LongRunTests.Stances),
+    ("stance rhythms are distinct and existing stars retain their snapshot", LongRunTests.Cadence),
+    ("hostile stars respect factions, escape and independent capacity", LongRunTests.Factions),
+    ("character Boss attacks preserve telegraphs and finite defensive budgets", LongRunTests.BossTelegraphs),
+    ("optional continuation preserves victory and prevents duplicate transitions", LongRunTests.Continuation),
+    ("sixty-minute assisted soak retains growth and bounded storage", LongRunTests.LongSoak),
+    ("recovery windows provide finite collectible resources", LongRunTests.RecoveryWindows),
     ("dense component lifecycle preserves order and state", EcsTests.Storage),
     ("reference compaction matches value semantics without component copies", EcsTests.ReferenceCompaction),
     ("inline hit history retains overflow and duplicate safety", EcsTests.History),
@@ -164,11 +173,11 @@ static void Pause()
 static void Choices()
 {
     var run = NewRun();
-    run.AddExperience(60);
+    run.AddExperience(RunPacing.ExperienceFor(1) + RunPacing.ExperienceFor(2));
     run.Step(default);
     var pending = run.PendingChoices;
     var tick = run.Ticks;
-    Check(pending >= 2 && run.Phase == RunPhase.Choosing, "Queued levels");
+    Check(pending == 2 && run.Phase == RunPhase.Choosing, "Exactly two earned levels are queued");
     Check(run.Choices.Distinct().Count() == run.Choices.Count, "Unique options");
     run.Step(new(Vector2.One));
     Check(run.Ticks == tick && !run.Choose(-1) && !run.Choose(9), "Freeze and bounds");
@@ -183,9 +192,9 @@ static void UpgradeCaps()
     var run = NewRun();
     foreach (var art in ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery)) run.Ranks[(int)art.Id] = art.MaxRank;
     foreach (var upgrade in UpgradeCatalog.All.Where(upgrade => upgrade.Kind == UpgradeKind.Behavior)) run.Build.TryApply(upgrade, 100);
-    run.AddExperience(50);
+    run.AddExperience(RunPacing.ExperienceFor(1) + RunPacing.ExperienceFor(2));
     run.Step(default);
-    Check(run.Choices.SequenceEqual(new[] { UpgradeCatalog.Get(UpgradeCatalog.Recovery) }), "Fallback only");
+    Check(run.Choices.Any(upgrade => upgrade.Kind == UpgradeKind.Training) && run.Choices.All(upgrade => run.Build.CanChoose(upgrade, run.Level)), "Capped abilities retain legal effective mainline growth");
     Resolve(run);
     foreach (var art in ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery)) Check(run.Ranks[(int)art.Id] == art.MaxRank, "Rank limit");
 }
@@ -305,7 +314,7 @@ static void FullTimeline()
     var run = NewRun();
     var maximumEnemies = 0;
     var maximumProjectiles = 0;
-    for (var index = 0; index < 19000 && run.Phase is not (RunPhase.Won or RunPhase.Lost); index++)
+    for (var index = 0; index < (RunState.BossArrival + 240) / RunState.StepSeconds && run.Phase is not (RunPhase.Won or RunPhase.Lost); index++)
     {
         Resolve(run);
         if (index % 30 == 0) run.Pickups.Add(new() { Position = run.PlayerPosition, Healing = true, Value = 100 });
@@ -330,7 +339,7 @@ static void BalanceReport()
     foreach (var seed in new[] { 42, 260906, 781 })
     {
         var run = new RunState(hero, seed);
-        for (var tick = 0; tick < 25200 && run.Phase is not (RunPhase.Won or RunPhase.Lost); tick++)
+        for (var tick = 0; tick < (RunState.BossArrival + 300) / RunState.StepSeconds && run.Phase is not (RunPhase.Won or RunPhase.Lost); tick++)
         {
             Resolve(run);
             run.Step(BotInput(run, tick));

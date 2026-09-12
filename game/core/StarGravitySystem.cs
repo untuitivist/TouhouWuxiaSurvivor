@@ -26,6 +26,7 @@ internal static class StarGravitySystem
     {
         if (run.Marisa.GravityTick++ % MarisaTuning.GravityIntervalTicks != 0) return;
         var interactions = 0;
+        run.PlayerGravityAcceleration = Vector2.Zero;
         foreach (var enemy in run.Enemies.Active) enemy.GravityAcceleration = Vector2.Zero;
         var stars = run.Stars.Active;
         foreach (ref var star in stars) star.Acceleration = Vector2.Zero;
@@ -56,7 +57,7 @@ internal static class StarGravitySystem
             }
             foreach (var enemy in run.Enemies.Active)
             {
-                if (enemy.Health <= 0) continue;
+                if (enemy.Health <= 0 || enemy.Id == star.OwnerId) continue;
                 var offsetX = enemy.Position.X - positionX;
                 var offsetY = enemy.Position.Y - positionY;
                 var factor = AccelerationFactor(offsetX, offsetY);
@@ -68,6 +69,20 @@ internal static class StarGravitySystem
                 accumulatedY += accelerationY * enemy.Mass;
                 enemy.GravityAcceleration.X -= accelerationX * mass;
                 enemy.GravityAcceleration.Y -= accelerationY * mass;
+            }
+            if (star.Hostile)
+            {
+                var offsetX = run.PlayerPosition.X - positionX;
+                var offsetY = run.PlayerPosition.Y - positionY;
+                var factor = AccelerationFactor(offsetX, offsetY);
+                if (factor != 0 && (offsetX != 0 || offsetY != 0))
+                {
+                    interactions++;
+                    var acceleration = new Vector2(offsetX * factor, offsetY * factor);
+                    accumulatedX += acceleration.X * run.PlayerMass;
+                    accumulatedY += acceleration.Y * run.PlayerMass;
+                    run.PlayerGravityAcceleration -= acceleration * mass;
+                }
             }
             star.Acceleration = new(accumulatedX, accumulatedY);
         }

@@ -8,6 +8,7 @@ public sealed partial class RunState
     {
         if (Hero == HeroKind.Reimu) ReimuAbilitySystem.Step(this);
         else MarisaAbilitySystem.Step(this);
+        MarisaProjectileSystem.Step(this);
     }
 
     public bool BeamContains(Vector2 position, float radius = 0)

@@ -26,7 +26,7 @@ public partial class GameRoot
         if (arguments.Contains("--rebirth-batch-smoke")) { diagnosticFinished = true; _ = TestSpriteBatchRendering(); return; }
         var mode = arguments.FirstOrDefault(argument => argument.StartsWith("--rebirth-screen=", StringComparison.Ordinal))?.Split('=', 2)[1] ?? "title";
         if (mode == "debug-title") { ShowTitle(); ToggleDebug(); return; }
-        if (mode == "debug-combat") { PrepareBattlePreview("boss"); ToggleDebug(); return; }
+        if (mode == "debug-combat") { PrepareLongRunFixture("boss"); ToggleDebug(); return; }
         if (mode == "title") return;
         if (mode == "performance") { PreparePerformancePreview(); return; }
         if (mode == "heroes") { ShowHeroes(); return; }
@@ -50,6 +50,7 @@ public partial class GameRoot
         if (mode == "growth-choices") { PrepareGrowthPreview(); return; }
         if (mode == "growth-orbit") { PrepareGrowthCombatPreview(); return; }
         if (PrepareMarisaGrowthFixture(mode)) return;
+        if (PrepareLongRunFixture(mode)) return;
         PrepareBattlePreview(mode);
     }
 
@@ -161,6 +162,7 @@ public partial class GameRoot
         TestRenderInvalidation();
         TestJournal();
         TestHeroSelectionPortraits();
+        TestLongRunInterface();
         ShowTitle();
         AssertUiBounds();
         PressButton("踏入夜境     →");
@@ -199,7 +201,7 @@ public partial class GameRoot
         Require(run.PendingChoices == pending && run.Choices.SequenceEqual(originalChoices), "Hidden choices cannot be selected through inspection");
         PressKey(Key.Escape);
         Require(currentScreen == "choices" && run.Choices.SequenceEqual(originalChoices), "Inspection returns to unchanged offers");
-        while (run.Phase == RunPhase.Choosing) { PressButton("[1]  领悟"); }
+        while (run.Phase == RunPhase.Choosing) { PressKey(Key.Key1); }
         Require(currentScreen == "playing", "Queued choices resume run");
         var boss = run.SpawnEnemy(EnemyKind.Boss, run.PlayerPosition + new NumericsVector(40, 0));
         boss.Health = 1;
@@ -209,6 +211,13 @@ public partial class GameRoot
         Require(currentScreen == "result" && run.Phase == RunPhase.Won, "Boss defeat opens victory");
         AssertUiBounds();
         TestProfilePersistence(run);
+        PressButton("继续挑战");
+        Require(run.IsEndless && run.HasStandardVictory && currentScreen == "playing", "Victory continuation preserves the same run");
+        run.HurtContinuous(run.MaxHealth * 2);
+        for (var tick = 0; tick < 122; tick++) run.Step(default);
+        run.HurtContinuous(run.MaxHealth * 2);
+        RefreshRunScreen();
+        Require(run.Phase == RunPhase.Lost && run.HasStandardVictory, "A lost extended challenge keeps standard victory");
         PressButton("再行一局");
         Require(run!.Kills == 0 && run.Time == 0 && run.Health == run.MaxHealth, "Replay creates clean state");
         ShowTitle();

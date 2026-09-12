@@ -16,6 +16,8 @@ public sealed class Enemy
 {
     public int Id;
     public EnemyKind Kind;
+    public HeroKind? Character;
+    public BossAbilityState? Abilities;
     public Vector2 Position;
     public Vector2 Velocity;
     public Vector2 GravityVelocity;
@@ -24,6 +26,7 @@ public sealed class Enemy
     public Vector2 Aim;
     public float Health;
     public float MaxHealth;
+    public float ThreatScale = 1;
     public float Radius;
     public float Speed;
     public float Timer;
@@ -45,6 +48,7 @@ public struct Projectile
     public int Pierce;
     public ArtKind Art;
     public bool Hostile;
+    public int OwnerId;
     public bool Grazed;
     public bool Alternate;
     public float TurnRate;
@@ -75,6 +79,7 @@ public sealed class BeamState
 public sealed class BoundaryField
 {
     public Vector2 Position;
+    public float Warmup;
     public float Remaining;
     public float PulseTimer;
     public float HalfSize;

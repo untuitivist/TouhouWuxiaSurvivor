@@ -31,7 +31,7 @@ public partial class GameRoot
         StartRun(hero, 260906);
         run!.Build.TryApply(UpgradeCatalog.Get(hero == HeroKind.Reimu ? UpgradeCatalog.YinYangUnlock : UpgradeCatalog.HerbsUnlock), 1);
         run.Build.TryApply(UpgradeCatalog.Get(hero == HeroKind.Reimu ? UpgradeCatalog.BoundaryUnlock : UpgradeCatalog.MasterSparkUnlock), 1);
-        run.AddExperience(50);
+        run.AddExperience(RunPacing.ExperienceFor(1) + RunPacing.ExperienceFor(2));
         run.Step(default);
         run.Choices.Clear();
         var choices = hero == HeroKind.Reimu ? new[] { UpgradeCatalog.Blast, UpgradeCatalog.Bind, UpgradeCatalog.Launch }

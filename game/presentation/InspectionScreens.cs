@@ -22,15 +22,19 @@ public partial class GameRoot
             var card = ui.Panel(panel, new(344, 132 + index * 115, 723, 110), new Color("172a31"));
             ui.Label(card, art.Name, new(16, 8, 570, 31), 23, color, true);
             ui.Label(card, rank == 0 ? GameText.Get("未习得") : GameText.Format($"{rank} / {art.MaxRank} 重"), new(617, 14, 92, 25), 14, color);
-            var branches = UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training));
+            var branches = UpgradeCatalog.All.Where(upgrade => upgrade.Ability == art.Id && (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training or UpgradeKind.Stance));
             var branchText = string.Join(" · ", branches.Select(upgrade => upgrade.Kind == UpgradeKind.Training
                 ? UpgradeCatalog.LearnedName(upgrade, run.Build)
-                : GameText.Format($"{(run.Build.Rank(upgrade) > 0 ? GameText.Get("已悟") : GameText.Get("待悟"))} {upgrade.Name}")));
-            ui.Label(card, branchText, new(17, 42, 689, 23), 12, Palette.Muted);
-            ui.Label(card, rank >= art.MaxRank ? GameText.Get("圆满：") + GameText.Get(art.Mastery) : ArtCatalog.UpgradeText(art.Id, rank), new(17, 68, 689, 36), 15, Palette.Paper);
+                : GameText.Format($"{(run.Build.Rank(upgrade) > 0 ? GameText.Get("已悟") : upgrade.Kind == UpgradeKind.Stance && run.Build.Stance != MainlineStance.None ? GameText.Get("本局放弃") : GameText.Get("待悟"))} {upgrade.Name}")));
+            var branchDetails = new RichTextLabel { Position = new(17, 40), Size = new(689, 63), BbcodeEnabled = false, ScrollActive = true, Text = branchText };
+            branchDetails.AddThemeFontSizeOverride("normal_font_size", 13);
+            branchDetails.AddThemeColorOverride("default_color", PixelSkin.Ink);
+            card.AddChild(branchDetails);
         }
+        ui.Label(panel, run.Hero == HeroKind.Marisa ? GameText.Format($"在场星体 {run.PlayerStarCount}/{MarisaTuning.StarLimit} · 满载阻塞 {run.Marisa.BlockedEmissions} 次")
+            : GameText.Format($"主线威力 ×{MainlineGrowth.Power(run.Build):0.00}"), new(344, 476, 723, 22), 13, Palette.Muted);
         var training = ArtCatalog.Training.Select(art => GameText.Format($"{art.Name} {run.Ranks[(int)art.Id]}/{art.MaxRank}"));
-        ui.Label(panel, GameText.Get("通用修习    ") + string.Join("    ·    ", training), new(36, 496, 1048, 34), 16, Palette.Jade);
+        ui.Label(panel, GameText.Get("通用修习    ") + string.Join("    ·    ", training), new(36, 508, 1048, 34), 16, Palette.Jade);
         ui.Button(panel, GameText.Format($"返回 [{GameControls.Hint(GameControls.Inspect)} / Esc]"), new(36, 554, 276, 42), CloseBuild, true).GrabFocus();
         var destination = run.Phase == RunPhase.Choosing ? GameText.Get("返回后继续三选一，不改变候选项。") : resumeAfterInspection ? GameText.Get("返回后继续战斗。") : GameText.Get("返回暂停菜单，战斗仍暂停。");
         ui.Label(panel, GameText.Get("时间已停。") + destination, new(343, 561, 741, 30), 16, Palette.Muted);

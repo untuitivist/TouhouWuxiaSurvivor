@@ -14,6 +14,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="HeroTests.cs" />
     <Compile Include="GrowthTests.cs" />
+    <Compile Include="LongRunTests.cs" />
+    <Compile Include="LongRunBalance.cs" />
     <Compile Include="GrowthBalance.cs" />
     <Compile Include="MarisaGrowthTests.cs" />
     <Compile Include="MarisaBeamTests.cs" />

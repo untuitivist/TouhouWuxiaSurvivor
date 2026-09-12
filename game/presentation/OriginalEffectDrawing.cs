@@ -24,6 +24,7 @@ public partial class GameCanvas
         foreach (var name in new[] { "master_spark", "marisa_cast", "reimu_seal_ink", "reimu_talisman", "reimu_aura", "ritual_array" })
             effectTextures[name] = GD.Load<Texture2D>($"{BaseArt}effects/{name}.png");
         effectTextures["star"] = GD.Load<Texture2D>($"{BaseArt}combat/star.png");
+        effectTextures["marisa_mushroom"] = GD.Load<Texture2D>($"{BaseArt}combat/marisa_mushroom.png");
     }
 
     private void OriginalEffect(string name, Vector2 position, Vector2 size, Color tint, float rotation = 0)

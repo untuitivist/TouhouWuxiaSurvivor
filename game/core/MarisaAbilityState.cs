@@ -5,6 +5,7 @@ namespace Rebirth.Core;
 public sealed class MarisaAbilityState(int seed)
 {
     public float ShotCooldown;
+    public int BlockedEmissions;
     public float HerbCooldown;
     public float BeamCooldown;
     public float PendingHealing;
@@ -19,6 +20,9 @@ public sealed class MarisaAbilityState(int seed)
 
 public struct StarBody
 {
+    public int OwnerId;
+    public bool Hostile;
+    public MainlineStance Stance;
     public Vector2 Position;
     public Vector2 Velocity;
     public Vector2 Acceleration;

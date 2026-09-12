@@ -5,7 +5,7 @@ namespace Rebirth.Core;
 public sealed partial class RunState
 {
     public const float StepSeconds = 1f / 60;
-    public const float BossArrival = 240;
+    public const float BossArrival = RunPacing.StandardBossTime;
     public const float ArenaHalfWidth = 1500;
     public const float ArenaHalfHeight = 1100;
     public const int EnemyLimit = 320;
@@ -32,7 +32,12 @@ public sealed partial class RunState
     public HeroKind Hero { get; }
     public bool Focused { get; private set; }
     public BeamState? Beam { get; internal set; }
-public BoundaryField? Field { get; internal set; }
+    public BoundaryField? Field { get; internal set; }
+    public Vector2 PlayerGravityAcceleration { get; internal set; }
+    public Vector2 PlayerGravityVelocity { get; internal set; }
+    public float PlayerBoundRemaining { get; internal set; }
+    public float PlayerMass => CharacterCatalog.PlayerMass(Hero);
+    private float continuousHitFeedback;
     public int Seed { get; }
     public RunPhase Phase { get; private set; } = RunPhase.Playing;
     public Vector2 PlayerPosition { get; private set; }
@@ -57,7 +62,7 @@ public BoundaryField? Field { get; internal set; }
     public int SpellsCast { get; private set; }
     public int Level { get; private set; } = 1;
     public int Experience { get; private set; }
-    public int NextLevelExperience => 7 + Level * 4;
+    public int NextLevelExperience => RunPacing.ExperienceFor(Level);
     public int PendingChoices { get; private set; }
     public int PurifiedSeals => Seals.Count(seal => seal.Complete);
     public Enemy? Boss => Enemies.Find(enemy => enemy.Kind == EnemyKind.Boss && enemy.Health > 0);
@@ -65,10 +70,12 @@ public BoundaryField? Field { get; internal set; }
     public float OrbitAngle => Time * 2.9f;
     public float OrbitRadius => Ranks[(int)ArtKind.YinYang] >= 5 ? 115 : 85;
     private readonly Random random;
+    private readonly Random upgradeRandom;
     private EnemyGrid grid => World.Grid;
     private int nextEnemyId;
     private float spawnTimer = 0.4f;
-    private float nextElite = 55;
+    private float nextElite = 140;
+    private float nextRecovery = RunPacing.RecoveryWindowStart;
     private Vector2 dashDirection;
 
     public RunState(HeroKind hero, int seed)
@@ -77,6 +84,8 @@ public BoundaryField? Field { get; internal set; }
         Build = new(hero);
         Seed = seed;
         random = new Random(seed);
+        upgradeRandom = new Random(unchecked(seed ^ 0x47524f57));
+        if (CharacterCatalog.BossCandidates(hero).Count == 0) throw new InvalidOperationException("No legal character Boss is available.");
         Marisa = new(seed);
         Health = MaxHealth;
 
@@ -92,6 +101,8 @@ public BoundaryField? Field { get; internal set; }
         DashDuration = Math.Max(0, DashDuration - StepSeconds);
         DashCooldown = Math.Max(0, DashCooldown - StepSeconds);
         SpellFlash = Math.Max(0, SpellFlash - StepSeconds);
+        PlayerBoundRemaining = Math.Max(0, PlayerBoundRemaining - StepSeconds);
+        continuousHitFeedback = Math.Max(0, continuousHitFeedback - StepSeconds);
         MovePlayer(input);
         Timings?.Begin();
         UpdateEncounters();
@@ -104,7 +115,11 @@ public BoundaryField? Field { get; internal set; }
         Timings?.Stamp(3);
         ProjectileSystem.Step(this);
         Timings?.Stamp(4);
-        if (Phase == RunPhase.Won) Projectiles.RemoveAll(projectile => projectile.Hostile);
+        if (Phase == RunPhase.Won)
+        {
+            Projectiles.RemoveAll(projectile => projectile.Hostile);
+            Stars.RemoveWhere(static (in StarBody star) => star.Life <= 0 || star.Hostile);
+        }
         if (Phase == RunPhase.Playing) UpdatePickupsAndSeals();
         Enemies.RemoveAll(enemy => enemy.Health <= 0);
         if (Build.SignatureUnlocked && SpellCharge >= 100 && Phase == RunPhase.Playing) CastSignatureSpell();
@@ -126,6 +141,13 @@ public BoundaryField? Field { get; internal set; }
             Emit(EffectKind.Dash, PlayerPosition);
         }
         PlayerVelocity = DashDuration > 0 ? dashDirection * 860 : movement * MoveSpeed * (input.Focus ? 0.48f : 1);
+        if (DashDuration > 0) PlayerGravityVelocity = Vector2.Zero;
+        else
+        {
+            if (PlayerBoundRemaining > 0) PlayerVelocity *= 0.7f;
+            PlayerGravityVelocity = MarisaTuning.IntegrateGravity(PlayerGravityVelocity, PlayerGravityAcceleration, 3, 70);
+            PlayerVelocity += PlayerGravityVelocity;
+        }
         PlayerPosition = ClampToArena(PlayerPosition + PlayerVelocity * StepSeconds);
     }
 
@@ -147,6 +169,13 @@ public BoundaryField? Field { get; internal set; }
     internal void Heal(float amount)
     {
         if (Phase != RunPhase.Lost && amount > 0) Health = Math.Min(MaxHealth, Health + amount);
+    }
+    internal void HurtContinuous(float damage)
+    {
+        if (Invulnerability > 0 || Phase != RunPhase.Playing || damage <= 0) return;
+        Health = Math.Max(0, Health - damage);
+        if (continuousHitFeedback <= 0) { Emit(EffectKind.Hurt, PlayerPosition, damage); continuousHitFeedback = 0.4f; }
+        if (Health <= 0) Phase = RunPhase.Lost;
     }
     internal void Emit(EffectKind kind, Vector2 position, float value = 0) => Events.Add(new(kind, position, position, value));
     private float RandomFloat() => (float)random.NextDouble();

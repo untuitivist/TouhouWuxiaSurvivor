@@ -17,6 +17,9 @@ internal static class ProjectileSystem
         {
             ref var projectile = ref projectiles[index];
             if (projectile.Life <= 0) continue;
+            if (projectile.Hostile && projectile.TurnRate > 0)
+                projectile.Velocity = CharacterAttackRules.TurnToward(Geometry.Direction(projectile.Velocity),
+                    run.PlayerPosition - projectile.Position, projectile.TurnRate) * Geometry.Length(projectile.Velocity);
             if (projectile.TurnRate > 0 && !projectile.Hostile)
             {
                 var target = world.Grid.FindById(projectile.TargetId);

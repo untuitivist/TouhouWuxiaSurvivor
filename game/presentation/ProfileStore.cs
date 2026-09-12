@@ -13,6 +13,11 @@ public sealed class PlayerProfile
     public int CompletedRuns { get; set; }
     public int Victories { get; set; }
     public float FastestVictory { get; set; }
+    public int LongRunVictories { get; set; }
+    public float FastestLongVictory { get; set; }
+    public int BestEndlessRounds { get; set; }
+    public float BestEndlessTime { get; set; }
+    public string LastStance { get; set; } = "";
     public bool MusicEnabled { get; set; } = true;
     public bool SoundEnabled { get; set; } = true;
     public bool ReducedMotion { get; set; }
@@ -50,6 +55,10 @@ public sealed class ProfileStore
             loaded.Bindings = GameControls.NormalizeBindings(loaded.Bindings);
             loaded.TouchMode = Math.Clamp(loaded.TouchMode, 0, 2);
             loaded.Language = GameText.NormalizeLanguage(loaded.Language);
+            loaded.LongRunVictories = Math.Max(0, loaded.LongRunVictories);
+            loaded.BestEndlessRounds = Math.Max(0, loaded.BestEndlessRounds);
+            loaded.FastestLongVictory = float.IsFinite(loaded.FastestLongVictory) ? Math.Max(0, loaded.FastestLongVictory) : 0;
+            loaded.BestEndlessTime = float.IsFinite(loaded.BestEndlessTime) ? Math.Max(0, loaded.BestEndlessTime) : 0;
             Data = loaded;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or JsonException or InvalidDataException)
@@ -67,11 +76,29 @@ public sealed class ProfileStore
         Data.CompletedRuns++;
         Data.BestKills = Math.Max(Data.BestKills, run.Kills);
         Data.BestGrazes = Math.Max(Data.BestGrazes, run.Grazes);
-        if (run.Phase == RunPhase.Won)
+        if (run.HasStandardVictory || run.Phase == RunPhase.Won)
         {
             Data.Victories++;
-            if (Data.FastestVictory <= 0 || run.Time < Data.FastestVictory) Data.FastestVictory = run.Time;
+            var time = run.HasStandardVictory ? run.StandardVictoryTime : run.Time;
+            if (Data.FastestVictory <= 0 || time < Data.FastestVictory) Data.FastestVictory = time;
+            if (run.HasStandardVictory)
+            {
+                Data.LongRunVictories++;
+                if (Data.FastestLongVictory <= 0 || time < Data.FastestLongVictory) Data.FastestLongVictory = time;
+            }
         }
+        Data.LastStance = run.Build.Stance.ToString();
+        Save();
+    }
+
+    public void RecordContinuation(RunState run)
+    {
+        if (!run.HasStandardVictory || !run.IsEndless) return;
+        Data.BestEndlessRounds = Math.Max(Data.BestEndlessRounds, run.EndlessRounds);
+        Data.BestEndlessTime = Math.Max(Data.BestEndlessTime, run.EndlessTime);
+        Data.BestKills = Math.Max(Data.BestKills, run.Kills);
+        Data.BestGrazes = Math.Max(Data.BestGrazes, run.Grazes);
+        Data.LastStance = run.Build.Stance.ToString();
         Save();
     }
 

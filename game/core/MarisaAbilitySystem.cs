@@ -17,7 +17,6 @@ internal static class MarisaAbilitySystem
         if (spark > 0 && run.Beam == null && state.BeamCooldown <= 0 && run.NearestEnemy(run.PlayerPosition, 1200) != null)
             MarisaBeamSystem.Start(run, false);
         MarisaBeamSystem.Step(run);
-        MarisaProjectileSystem.Step(run);
         MarisaHerbSystem.Step(run);
     }
 }

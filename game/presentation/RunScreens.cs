@@ -25,8 +25,13 @@ public partial class GameRoot
             var footer = art.Source.Length > 0 ? art.Source : GameText.Get("通用修习 · 不改变角色的能力归属");
             if (!TouchLayout) ui.Label(card, footer, new(20, 267, 294, 36), 13, color);
             var action = new[] { GameControls.ChoiceOne, GameControls.ChoiceTwo, GameControls.ChoiceThree }[index];
-            var button = ui.Button(card, TouchLayout ? GameText.Get("领悟此式") : GameText.Format($"[{GameControls.Hint(action)}]  领悟"), new(19, TouchLayout ? 266 : 310, 296, TouchLayout ? 78 : 30), () => SelectArt(selectedIndex), true);
-            first ??= button;
+            var label = pendingStance == upgrade.Id ? GameText.Get("再次确认定式")
+                : index == 2 && run.Choices.Any(choice => choice.Kind == UpgradeKind.Stance) ? GameText.Get("暂不定式 · 获得此项")
+                : TouchLayout ? GameText.Get("领悟此式") : GameText.Format($"[{GameControls.Hint(action)}]  领悟");
+            var button = ui.Button(card, label, new(19, TouchLayout ? 266 : 310, 296, TouchLayout ? 78 : 30), () => SelectArt(selectedIndex), true);
+            button.Name = $"growth_choice_{index + 1}";
+            if (pendingStance == upgrade.Id) first = button;
+            else first ??= button;
         }
         ui.Button(panel, GameText.Format($"查看构筑 [{GameControls.Hint(GameControls.Inspect)}]"), new(36, 560, 232, 36), OpenBuild);
         ui.Label(panel, GameText.Get("查看不会消耗选择，也不会刷新候选能力。"), new(296, 564, 766, 28), 14, Palette.Muted);
@@ -39,7 +44,7 @@ public partial class GameRoot
         var panel = Modal("pause", GameText.Get("A MOMENT OF STILLNESS  /  暂歇"), GameText.Get("风止，夜未尽。"), 920, 520);
         ui.Label(panel, GameText.Format($"行走 {GameCanvas.FormatTime(run.Time)}   ·   修习 {run.Level}   ·   退治 {run.Kills}"), new(36, 132, 840, 32), 19, Palette.Gold);
         var build = ArtCatalog.All.Where(art => art.Id != ArtKind.Recovery && run.Ranks[(int)art.Id] > 0).Select(art => GameText.Format($"{art.Name}  {run.Ranks[(int)art.Id]} 重"));
-        ui.Label(panel, string.Join("     ", build) + "\n" + string.Join(" · ", UpgradeCatalog.All.Where(upgrade => (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training) && run.Build.Rank(upgrade) > 0).Select(upgrade => UpgradeCatalog.LearnedName(upgrade, run.Build))), new(36, 188, 844, 116), 18, Palette.Paper);
+        ui.Label(panel, string.Join("     ", build) + "\n" + string.Join(" · ", UpgradeCatalog.All.Where(upgrade => (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training or UpgradeKind.Stance) && run.Build.Rank(upgrade) > 0).Select(upgrade => UpgradeCatalog.LearnedName(upgrade, run.Build))), new(36, 188, 844, 116), 18, Palette.Paper);
         ui.Button(panel, GameText.Format($"属性与构筑 [{GameControls.Hint(GameControls.Inspect)}]"), new(36, 311, 270, 66), OpenBuild);
         ui.Button(panel, GameText.Get("更新记录"), new(324, 311, 270, 66), ShowChangelog);
         ui.Button(panel, GameText.Get("夜境图鉴"), new(612, 311, 270, 66), OpenJournal);
@@ -52,17 +57,23 @@ public partial class GameRoot
     private void ShowAbandonConfirmation()
     {
         var panel = Modal("abandon", GameText.Get("RETURN  /  归途"), GameText.Get("结束这次行走？"), 680, 330);
-        ui.Label(panel, GameText.Get("本局构筑不会保留，也不会记入通关记录。"), new(36, 137, 608, 45), 19, Palette.Muted);
+        ui.Label(panel, GameText.Get(run?.HasStandardVictory == true ? "标准通关已保留；结束时记录本次续战，不保留进行中的构筑。" : "本局构筑不会保留，也不会记入通关记录。"), new(36, 137, 608, 45), 19, Palette.Muted);
         ui.Button(panel, GameText.Get("继续行走"), new(36, 237, 292, 49), ShowPause, true).GrabFocus();
-        ui.Button(panel, GameText.Get("回到标题"), new(348, 237, 294, 49), ShowTitle);
+        ui.Button(panel, GameText.Get("回到标题"), new(348, 237, 294, 49), () =>
+        {
+            if (run?.FinishChallenge() == true && !diagnosticMode) profile.RecordContinuation(run);
+            ShowTitle();
+        });
     }
 
     private void ShowResult()
     {
         if (run == null) return;
         if (!recorded) { if (!diagnosticMode) profile.Record(run); recorded = true; }
-        var won = run.Phase == RunPhase.Won;
-        var panel = Modal("result", won ? GameText.Get("INCIDENT RESOLVED  /  异变平息") : GameText.Get("THE STORY CONTINUES  /  此行未竟"), won ? GameText.Get("妖雾散，夜色归。") : GameText.Get("整装，再来。"), 960, 558);
+        else if (!diagnosticMode) profile.RecordContinuation(run);
+        var won = run.HasStandardVictory || run.Phase == RunPhase.Won;
+        var panel = Modal("result", run.IsEndless ? GameText.Get("EXTENDED CHALLENGE  /  续战修行") : won ? GameText.Get("INCIDENT RESOLVED  /  异变平息") : GameText.Get("THE STORY CONTINUES  /  此行未竟"),
+            run.IsEndless ? GameText.Get(run.Phase == RunPhase.Won ? "本轮切磋完成。" : "续战止步，通关保留。") : won ? GameText.Get("妖雾散，夜色归。") : GameText.Get("整装，再来。"), 960, 558);
         ui.Label(panel, won ? GameText.Get("雾中的来客笑着收起了弹幕。幻想乡，又迎来一个平静的清晨。") : GameText.Get("并非每次出发都要抵达终点。记住这一局的弹隙，下次会更从容。"), new(36, 130, 888, 51), 18, Palette.Muted);
         var statistics = new[] { (GameText.Get("行走时间"), GameCanvas.FormatTime(run.Time)), (GameText.Get("退治妖怪"), run.Kills.ToString()), (GameText.Get("擦弹次数"), run.Grazes.ToString()), (GameText.Get("净化古印"), $"{run.PurifiedSeals} / 3") };
         for (var index = 0; index < statistics.Length; index++)
@@ -72,11 +83,16 @@ public partial class GameRoot
             ui.Label(card, statistics[index].Item2, new(17, 46, 178, 49), 31, Palette.Gold);
         }
         var build = string.Join("  ·  ", ArtCatalog.Abilities(run.Hero).Where(art => run.Ranks[(int)art.Id] > 0).Select(art => GameText.Format($"{art.Name} {run.Ranks[(int)art.Id]}重")));
-        var behaviors = string.Join(" · ", UpgradeCatalog.All.Where(upgrade => (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training) && run.Build.Rank(upgrade) > 0).Select(upgrade => UpgradeCatalog.LearnedName(upgrade, run.Build)));
+        var behaviors = string.Join(" · ", UpgradeCatalog.All.Where(upgrade => (upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training or UpgradeKind.Stance) && run.Build.Rank(upgrade) > 0).Select(upgrade => UpgradeCatalog.LearnedName(upgrade, run.Build)));
         ui.Label(panel, build + "\n" + behaviors, new(36, 335, 888, 52), 16, Palette.Paper);
-        ui.Label(panel, GameText.Format($"修习 {run.Level}  ·  符卡施放 {run.SpellsCast} 次  ·  本局种子 {run.Seed}"), new(36, 391, 888, 31), 15, Palette.Muted);
+        ui.Label(panel, run.IsEndless ? GameText.Format($"标准通关已保留 · 续战 {GameCanvas.FormatTime(run.EndlessTime)} · 完成 {run.EndlessRounds} 轮")
+            : GameText.Format($"修习 {run.Level}  ·  符卡施放 {run.SpellsCast} 次  ·  本局种子 {run.Seed}"), new(36, 391, 888, 31), 15, Palette.Muted);
         if (profile.Warning.Length > 0) ui.Label(panel, profile.Warning, new(36, 424, 888, 25), 13, Palette.Red);
-        ui.Button(panel, GameText.Get("再行一局"), new(36, 474, 278, 49), () => StartRun(lastHero), true).GrabFocus();
+        ui.Button(panel, GameText.Get(run.CanContinue ? "继续挑战" : "再行一局"), new(36, 474, 278, 49), () =>
+        {
+            if (run.CanContinue) { if (run.ContinueChallenge()) RefreshRunScreen(); }
+            else StartRun(lastHero);
+        }, true).GrabFocus();
         ui.Button(panel, GameText.Get("换一位行者"), new(336, 474, 278, 49), () => { run = null; canvas.Run = null; ShowHeroes(); });
         ui.Button(panel, GameText.Get("回到标题"), new(636, 474, 288, 49), ShowTitle);
     }

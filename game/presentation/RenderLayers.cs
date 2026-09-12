@@ -27,6 +27,11 @@ public partial class GameCanvas
         sceneryLayer = AddPass(worldLayer, 1, DrawScenery);
         animatedLayers.Add(AddPass(worldLayer, 2, DrawWorldDynamic));
         animatedLayers.Add(AddPass(worldLayer, 4, DrawReimuField));
+        animatedLayers.Add(AddPass(worldLayer, 4, DrawBossGround));
+        var bossBeamLayer = AddPass(worldLayer, 8, DrawBossBeam);
+        bossBeamLayer.Material = bossSparkMaterial = CreateSparkMaterial();
+        animatedLayers.Add(bossBeamLayer);
+        animatedLayers.Add(AddPass(worldLayer, 9, DrawBossDanger));
         var beamLayer = AddPass(worldLayer, 4, DrawMarisaBeam);
         beamLayer.Material = sparkMaterial = CreateSparkMaterial();
         animatedLayers.Add(beamLayer);
@@ -49,6 +54,12 @@ public partial class GameCanvas
             var batch = new SpriteBatch(textures[name]) { ZIndex = 5 };
             worldLayer.AddChild(batch);
             batches.Add(name, batch);
+        }
+        foreach (var name in new[] { "ofuda", "star_variants" })
+        {
+            var batch = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/{name}.png")) { ZIndex = 9 };
+            worldLayer.AddChild(batch);
+            batches.Add("hostile_" + name, batch);
         }
         var herbs = new SpriteBatch(GD.Load<Texture2D>($"{BaseArt}combat/marisa_mushroom.png"), 24) { ZIndex = 3 };
         worldLayer.AddChild(herbs);
@@ -91,6 +102,7 @@ public partial class GameCanvas
         renderedPhase = Run.Phase;
         FrameBuildCount++;
         if (Run.Beam is { } beam) ConfigureSparkMaterial(sparkMaterial, Clock, beam.Length, Math.Min(beam.Length * 0.2f, beam.HalfWidth * 2), ReducedMotion);
+        if (Run.Boss?.Abilities?.Beam is { } bossBeam) ConfigureSparkMaterial(bossSparkMaterial, Clock, bossBeam.Length, Math.Min(bossBeam.Length * 0.2f, bossBeam.HalfWidth * 2), ReducedMotion);
         var started = System.Diagnostics.Stopwatch.GetTimestamp();
         UpdateCombatBatches();
         BatchBuildMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;

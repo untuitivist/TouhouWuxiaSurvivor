@@ -12,16 +12,13 @@ public static class ReimuAbilitySystem
         var rank = run.Ranks[(int)ArtKind.Ofuda];
         if (rank > 0 && target != null && state.ShotCooldown <= 0)
         {
-            var stats = AbilityTuning.Get(ArtKind.Ofuda, rank);
+            var stats = MainlineGrowth.OfudaStats(run.Build);
             var heading = Geometry.Direction(target.Position - run.PlayerPosition);
             var homing = run.Build.Has(AbilityTraits.Homing);
-            var side = state.VolleyCount++ % 2 == 0 ? 1 : -1;
-            for (var index = 0; index < stats.Count; index++)
-                run.AddProjectile(new() { Art = ArtKind.Ofuda, Position = run.PlayerPosition,
-                    Velocity = Geometry.Rotate(heading, index == 0 ? 0 : ((index + 1) / 2) * (index % 2 == 1 ? side : -side) * 0.12f) * 510,
-                    Damage = stats.Damage * run.Power * (homing ? ReimuTuning.HomingDamageMultiplier : 1), Life = stats.Range / 510 + 0.6f, Radius = 8,
-                    TurnRate = homing ? 5.5f : 0, TargetId = target.Id,
-                    Blast = run.Build.Has(AbilityTraits.Blast) });
+            CharacterAttackRules.FireOfuda(run, run.PlayerPosition, heading, stats.Count, 510,
+                stats.Damage * run.Power * (homing ? ReimuTuning.HomingDamageMultiplier : 1), stats.Range / 510 + 0.6f,
+                homing ? 5.5f : 0, run.Build.Has(AbilityTraits.Blast), target.Id, state.VolleyCount++,
+                pierce: run.Build.Stance == MainlineStance.ChargedOfuda ? 1 : 0);
             state.ShotCooldown = stats.Interval;
         }
         UpdateOrbit(run, target);

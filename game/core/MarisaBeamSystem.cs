@@ -30,11 +30,7 @@ internal static class MarisaBeamSystem
     {
         var beam = run.Beam;
         if (beam == null || beam.Warmup > 0) return false;
-        var relativeX = position.X - run.PlayerPosition.X;
-        var relativeY = position.Y - run.PlayerPosition.Y;
-        var along = relativeX * beam.Direction.X + relativeY * beam.Direction.Y;
-        var across = Math.Abs(relativeX * beam.Direction.Y - relativeY * beam.Direction.X);
-        return along >= -radius && along <= beam.Length + radius && across <= beam.HalfWidth + radius;
+        return CharacterAttackRules.BeamContains(beam, run.PlayerPosition, position, radius);
     }
 
     internal static void Step(RunState run)
@@ -45,9 +41,7 @@ internal static class MarisaBeamSystem
         {
             var offset = new Vector2(target.Position.X - run.PlayerPosition.X, target.Position.Y - run.PlayerPosition.Y);
             beam.AimDirection = offset.X * offset.X + offset.Y * offset.Y > 0.0001f ? Geometry.Direction(offset) : beam.Direction;
-            var heading = MathF.Atan2(beam.Direction.Y, beam.Direction.X);
-            var delta = Geometry.AngleDelta(heading, MathF.Atan2(beam.AimDirection.Y, beam.AimDirection.X));
-            beam.Direction = Geometry.Angle(heading + Math.Clamp(delta, -MarisaTuning.SteeringRadians * RunState.StepSeconds, MarisaTuning.SteeringRadians * RunState.StepSeconds));
+            beam.Direction = CharacterAttackRules.TurnToward(beam.Direction, offset, MarisaTuning.SteeringRadians);
         }
         if (beam.Warmup > 0)
         {

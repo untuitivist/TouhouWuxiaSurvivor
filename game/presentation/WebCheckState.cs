@@ -6,6 +6,16 @@ internal sealed class WebCheckState
     public string Language { get; set; } = "zh";
     public string Hero { get; set; } = "";
     public string Phase { get; set; } = "";
+    public string Stance { get; set; } = "";
+    public string PendingStance { get; set; } = "";
+    public int AllocatedPoints { get; set; }
+    public int PendingChoices { get; set; }
+    public bool StandardVictory { get; set; }
+    public bool CanContinue { get; set; }
+    public int EndlessRounds { get; set; }
+    public string BossCharacter { get; set; } = "";
+    public int BossPhase { get; set; }
+    public int HostileStars { get; set; }
     public int[] AbilityRanks { get; set; } = [];
     public int Traits { get; set; }
     public bool SignatureUnlocked { get; set; }

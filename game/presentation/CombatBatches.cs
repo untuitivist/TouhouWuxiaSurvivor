@@ -44,6 +44,7 @@ public partial class GameCanvas
         }
         foreach (var enemy in Run.Enemies)
         {
+            if (enemy.Character.HasValue) continue;
             var position = Palette.Vector(enemy.Position);
             if (!InView(position, 100)) continue;
             var style = enemyStyles[(int)enemy.Kind];
@@ -62,7 +63,7 @@ public partial class GameCanvas
                 var aura = MarisaTuning.DamageRadius(star.Mass) * 2;
                 batches["stardust"].Add(position, new(aura, aura), new Color(1, 1, 1, opacity * (star.Resonating ? 0.35f : 0.16f)), -Clock * 0.5f);
             }
-            batches["star_variants"].Add(position, new(size, size), new Color(1, 1, 1, opacity), star.Rotation + Clock, 1 + star.VisualSeed % StarColorVariants, StarColorFrames);
+            batches[star.Hostile ? "hostile_star_variants" : "star_variants"].Add(position, new(size, size), new Color(1, 1, 1, opacity), star.Rotation + Clock, 1 + star.VisualSeed % StarColorVariants, StarColorFrames);
         }
         foreach (ref readonly var projectile in Run.Projectiles.Active)
         {
@@ -70,6 +71,11 @@ public partial class GameCanvas
             if (!InView(position)) continue;
             if (projectile.Hostile)
             {
+                if (projectile.OwnerId > 0 && projectile.Art == ArtKind.Ofuda)
+                {
+                    batches["hostile_ofuda"].AddDirected(position, new(26, 26), new Color(1, 0.7f, 0.7f), Palette.Vector(projectile.Velocity));
+                    continue;
+                }
                 (projectile.Alternate ? violetPellets : redPellets).AddPosition(position.X, position.Y);
                 continue;
             }

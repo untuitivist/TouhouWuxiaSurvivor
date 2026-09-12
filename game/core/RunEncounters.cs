@@ -6,27 +6,35 @@ public sealed partial class RunState
 {
     private void UpdateEncounters()
     {
+        if (Time >= nextRecovery)
+        {
+            nextRecovery += RunPacing.WaveSeconds;
+            if (!BossSpawned && Boss == null && Pickups.Count < PickupLimit)
+                DropPickup(ClampToArena(PlayerPosition + Geometry.Rotate(Facing, MathF.PI / 2) * 130), RunPacing.RecoveryAmount, true);
+        }
         spawnTimer -= StepSeconds;
         if (spawnTimer <= 0)
         {
-            spawnTimer += 1 / (2.0f + Math.Min(Time, BossArrival) / 45);
+            spawnTimer += 1 / RunPacing.SpawnRate(Time, BossSpawned, EndlessRounds);
             if (Enemies.Count < EnemyLimit)
             {
                 var roll = RandomFloat();
-                var kind = Time > 22 && roll < 0.23f ? EnemyKind.Fairy : Time > 65 && roll < 0.39f ? EnemyKind.Charger : EnemyKind.Kedama;
+                var stage = RunPacing.At(Time);
+                var kind = Time > 45 && roll < stage.FairyChance ? EnemyKind.Fairy
+                    : Time > 100 && roll < stage.FairyChance + stage.ChargerChance ? EnemyKind.Charger : EnemyKind.Kedama;
                 SpawnEnemy(kind, SpawnPoint());
             }
         }
         if (Time >= nextElite && !BossSpawned)
         {
             SpawnEnemy(EnemyKind.Elite, SpawnPoint());
-            nextElite += 55;
+            nextElite += 150;
         }
-        if (Time >= BossArrival && !BossSpawned)
+        if (Time >= NextBossTime && !BossSpawned && Boss == null)
         {
             BossSpawned = true;
             Projectiles.RemoveAll(projectile => projectile.Hostile);
-            SpawnEnemy(EnemyKind.Boss, ClampToArena(PlayerPosition + new Vector2(0, -290)));
+            SpawnEnemy(EnemyKind.Boss, ClampToArena(PlayerPosition + new Vector2(0, -360)));
             Emit(EffectKind.Boss, PlayerPosition);
         }
     }
@@ -46,14 +54,30 @@ public sealed partial class RunState
         var enemy = new Enemy { Id = ++nextEnemyId, Kind = kind, Mass = EnemyMassCatalog.Get(kind), Position = position, Timer = 1.2f + RandomFloat() * 1.8f };
         (enemy.MaxHealth, enemy.Speed, enemy.Radius, enemy.ContactDamage) = kind switch
         {
-            EnemyKind.Kedama => (18 + Time * 0.095f, 70 + Math.Min(Time, 240) * 0.14f, 14, 13),
-            EnemyKind.Fairy => (32 + Time * 0.13f, 68, 16, 15),
-            EnemyKind.Charger => (48 + Time * 0.16f, 92, 19, 20),
-            EnemyKind.Elite => (300 + Time * 2.0f, 63, 27, 22),
+            EnemyKind.Kedama => (18, 80, 14, 13),
+            EnemyKind.Fairy => (32, 68, 16, 15),
+            EnemyKind.Charger => (48, 92, 19, 20),
+            EnemyKind.Elite => (300, 63, 27, 22),
             _ => (26000, 70, 32, 26)
         };
+        enemy.ThreatScale = RunPacing.At(Time).HealthScale * (1 + EndlessRounds * 0.3f);
+        enemy.MaxHealth *= enemy.ThreatScale;
         enemy.Health = enemy.MaxHealth;
-        if (kind == EnemyKind.Boss) enemy.Timer = 3;
+        if (kind == EnemyKind.Boss)
+        {
+            var character = CharacterCatalog.BossCandidates(Hero).Single();
+            var profile = character.Boss;
+            enemy.Character = character.Id;
+            enemy.Abilities = new(character.Id, unchecked(Seed ^ enemy.Id * 7919));
+            enemy.MaxHealth = profile.Health * (1 + EndlessRounds * 0.6f);
+            enemy.Health = enemy.MaxHealth;
+            enemy.ThreatScale = 1 + EndlessRounds * 0.6f;
+            enemy.Speed = profile.Speed;
+            enemy.Mass = profile.Mass;
+            enemy.Radius = profile.Radius;
+            enemy.ContactDamage = profile.ContactDamage;
+            enemy.Timer = 3;
+        }
         Enemies.Add(enemy);
         return enemy;
     }

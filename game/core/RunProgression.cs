@@ -7,19 +7,19 @@ public sealed partial class RunState
     public void AddExperience(int amount)
     {
         if (amount <= 0 || Phase is RunPhase.Won or RunPhase.Lost) return;
-        Experience += amount;
+        Experience = (int)Math.Min(int.MaxValue, (long)Experience + amount);
         while (Experience >= NextLevelExperience)
         {
             Experience -= NextLevelExperience;
-            Level++;
-            PendingChoices++;
+            Level = Math.Min(int.MaxValue - 1, Level) + 1;
+            PendingChoices = Math.Min(int.MaxValue - 1, PendingChoices) + 1;
         }
     }
 
     private void OfferChoices()
     {
         Choices.Clear();
-        Choices.AddRange(UpgradeOffers.Create(Build, Level, random));
+        Choices.AddRange(UpgradeOffers.Create(Build, Level, upgradeRandom));
         Phase = RunPhase.Choosing;
         Emit(EffectKind.Level, PlayerPosition);
     }
@@ -29,6 +29,7 @@ public sealed partial class RunState
         if (Phase != RunPhase.Choosing || index < 0 || index >= Choices.Count) return false;
         var upgrade = Choices[index];
         if (!Build.TryApply(upgrade, Level)) return false;
+        if (upgrade.Stance == MainlineStance.ChargedOfuda) Reimu.ShotCooldown = Math.Max(Reimu.ShotCooldown, MainlineGrowth.OfudaStats(Build).Interval);
         var art = upgrade.Ability;
         if (art == ArtKind.Vitality) Heal(35);
         if (art == ArtKind.Recovery)
@@ -96,8 +97,12 @@ public sealed partial class RunState
         Emit(EffectKind.Defeat, enemy.Position);
         if (enemy.Kind == EnemyKind.Boss && Phase != RunPhase.Lost)
         {
-            Phase = RunPhase.Won;
-            Emit(EffectKind.Victory, enemy.Position);
+            var ownerId = enemy.Id;
+            foreach (ref var star in Stars.Active) if (star.OwnerId == ownerId) star.Life = 0;
+            foreach (ref var projectile in Projectiles.Active) if (projectile.OwnerId == ownerId) projectile.Life = 0;
+            enemy.Abilities = null;
+            PlayerGravityAcceleration = Vector2.Zero;
+            CompleteBossEncounter(enemy);
         }
     }
 
