@@ -3,13 +3,13 @@
 1. [complete] Audit current core/UI/tests and release/deployment paths; verified alpha-0.1.8 online via pinned Git SSH, retain controls, shared C# runtime, gravity invariants and delivery optimizations.
 2. [complete] Canonical dual-role characters, self-excluding Boss encounters, independent state, readable attacks, bilingual journal and UI implemented and tested.
 3. [complete] Finite stances, compatible/repeatable growth, staged pacing, finite recovery windows and optional continuation with safe records implemented.
-4. [in_progress] Core 68/68, localization 1108/1108, dual 60-minute assisted soaks, four unassisted routes and native UI/batch tests pass. Visual review caught light build text and offscreen diagnostic Boss framing; fixed before export. Exact Web validation remains.
-5. [in_progress] alpha-0.1.9 version/changelog/docs prepared with all previous history retained; commit source and build immutable same-source Windows/Web artifacts next.
-6. [pending] Push and deploy using the established rollback-safe pipeline, verify public direct loading/gameplay/version, record artifact hashes and deployment receipts, then commit final records.
+4. [complete] Core 68/68, localization 1108/1108, dual 60-minute assisted soaks, native UI/batch tests, Windows 36 standalone checks and exact Web validations pass. All four routes have unassisted wins, but three-seed win rates differ (2/3, 2/3, 1/3, 2/3). Web includes 12 new growth checks, four compatibility modes, colors, languages, loading, journal, portraits, title, minimap and all 12 enforced combat scenarios.
+5. [complete] Frozen alpha-0.1.9 source e65d63d produced immutable Windows/Web artifacts; all 99 shared C# files are byte-identical in root and both stages. Old changelog sections, release files and failed candidates are retained.
+6. [complete] Pushed release source; server git pull and rollback-safe activation succeeded as alpha-0.1.9-e65d63d-20260912T214101Z. Three explicitly direct public browser entrances, persistent settings, multi-touch, portrait pause and entry/source identity checks pass. Artifact hashes and receipts are recorded separately from the frozen runtime inputs.
 
 Setup notes: the persistent Node session had reset, so tool paths were reinitialized; ripgrep exit 1 for no AGENTS.md matches is handled explicitly rather than treated as a command failure. No workspace edits were lost.
 
-Current validation: core compiles, 52/60 pass. Eight failures include stale timeline/offer/target assumptions, missing new translations and the mass-distribution balance assertion; none waived. Presentation has not yet been compiled. Windows native OpenSSH exits 255; Git SSH is verified. Run logged PS7 scripts through an explicit CMD exec session, not Node-built cmd start quoting. No release/export/push/deploy yet.
+Historical initial checkpoint: core compiled with 52/60 passing; stale timeline/offer/target assumptions, missing translations and mass-distribution balance failures were subsequently resolved, not waived. Final status is recorded above. Native Windows OpenSSH exits 255; pinned Git SSH works. The host rejected CMD launch syntax, so final long tasks used explicit installed PowerShell 7 and independent UTF-8 logs; no Windows PowerShell 5.1 or WSL was used.
 
 ---
 

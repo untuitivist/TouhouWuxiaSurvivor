@@ -1,5 +1,11 @@
 ## Growth And Character Boss Release — 2026-09-13
 
+- Completed alpha-0.1.9 from frozen e65d63d: 195,251,800-byte self-contained EXE, Web build 20260913-051919-061 and 99 shared C# files verified byte-for-byte. Source pushed and pulled by the server; active release alpha-0.1.9-e65d63d-20260912T214101Z. Release IDs use UTC, this section uses Asia/Shanghai.
+- Final gates: core 68/68, translations 1108/1108, JavaScript 22/22, font 1294 characters, Windows 36 standalone checks, Web 12 new growth checks, 20 raw loads, four compatibility modes with five journeys each, dual-role/dual-language 40/180/320 load gates, ordinary/injected colors and all UI regressions. Final journal covers 23 unique entries including both character Bosses on four viewport/touch profiles.
+- Three direct public entrances pass with proxies explicitly disabled: desktop 9.473s, touch emulation 11.038s, unisolated touch 9.293s. Core gzip bodies total 21,637,091 bytes; entry SHA and pinned-SSH active metadata match the frozen release. No physical mobile FPS measurement or universal startup-speed promise.
+- Preserved failed evidence: the first candidate's Boss preview stopped at the first-star timing boundary; e65d63d primes only the diagnostic fixture before rebuilding both targets. The final Web journal test exposed its obsolete 22-entry expectation; updated category/identity assertions passed without changing runtime inputs. The initial failed journal report remains. Metadata is intentionally only in server active/backup records, not an HTTP endpoint; two exploratory 404s did not indicate an activation failure.
+- Delivery records and the journal test update are committed after activation so they do not masquerade as a new game build. Old release assets/changelog sections and candidate archives remain; no GitHub Release EXE upload was performed.
+- Initial checkpoint, retained for history:
 - Initialized implementation/release plan after explicit user approval. Confirmed a clean workspace, the two local design commits, local date and instruction scopes. No runtime edits or deployment yet; inspecting core and delivery tooling next.
 
 ## Legacy Playable Character / Boss Return — 2026-09-12

@@ -10,6 +10,11 @@ async function main() {
     const output = path.join(build.build, 'journal-verification', new Date().toISOString().replace(/[:.]/g, '-'));
     await fs.mkdir(output, { recursive: true });
     const report = { build: build.build, physicalDeviceTested: false, checks: [] };
+    const categories = [['行者', 2], ['术式', 6], ['修习', 5], ['符卡', 2], ['妖怪', 6], ['夜境', 2]];
+    const expectedEntries = categories.reduce((total, category) => total + category[1], 0);
+    const pageSize = 6;
+    const pageCount = Math.ceil(expectedEntries / pageSize);
+    const characterBossCards = ['journal_card_boss-character_base_00', 'journal_card_boss-character_th02_soew_02'];
     const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
     const host = await startProbeServer(build.site, 0, { isolation: false, entryArguments: ['--', '--web-validation'] });
     try {
@@ -49,14 +54,17 @@ async function main() {
                 await click('夜境图鉴');
                 await waitScreen('journal');
                 await page.screenshot({ path: path.join(output, scene.name + '-cards.png') });
-                for (let currentPage = 0; currentPage < 4; currentPage++) {
+                for (let currentPage = 0; currentPage < pageCount; currentPage++) {
                     await page.screenshot({ path: path.join(output, scene.name + "-page-" + currentPage + ".png") });
                     const cards = (await state()).Controls.filter(control => control.Name.startsWith('journal_card_')).map(control => control.Name);
-                    assert.equal(cards.length, currentPage === 3 ? 4 : 6);
+                    assert.equal(cards.length, Math.min(pageSize, expectedEntries - currentPage * pageSize));
                     for (const name of cards) {
                         await click(name, true);
                         await waitScreen('journal_detail');
                         check.entries.push(name);
+                        if (characterBossCards.includes(name)) {
+                            await page.screenshot({ path: path.join(output, scene.name + '-' + name + '-detail.png') });
+                        }
                         if (name === 'journal_card_art-MasterSpark') {
                             await page.screenshot({ path: path.join(output, scene.name + '-detail.png') });
                             const clip = await rectangle(410, 172, 778, 390);
@@ -72,13 +80,19 @@ async function main() {
                         await waitScreen('journal');
                         assert.deepEqual((await state()).Controls.filter(control => control.Name.startsWith('journal_card_')).map(control => control.Name), cards);
                     }
-                    if (currentPage < 3) await click('下一页');
+                    if (currentPage < pageCount - 1) await click('下一页');
                 }
-                assert.equal(new Set(check.entries).size, 22);
-                for (const [filter, count] of [['行者', 2], ['术式', 6], ['修习', 5], ['符卡', 2], ['妖怪', 5], ['夜境', 2]]) {
+                assert.equal(check.entries.length, expectedEntries);
+                assert.equal(new Set(check.entries).size, expectedEntries);
+                for (const name of characterBossCards) assert.ok(check.entries.includes(name), 'Missing character Boss profile: ' + name);
+                for (const [filter, count] of categories) {
                     await click(filter);
                     const cards = (await state()).Controls.filter(control => control.Name.startsWith('journal_card_'));
                     assert.equal(cards.length, count);
+                    if (filter === '妖怪') {
+                        const expectedEnemies = ['Kedama', 'Fairy', 'Charger', 'Elite'].map(kind => 'journal_card_enemy-' + kind);
+                        assert.deepEqual(cards.map(control => control.Name).sort(), [...expectedEnemies, ...characterBossCards].sort());
+                    }
                 }
                 await click('返回');
                 await waitScreen('title');
