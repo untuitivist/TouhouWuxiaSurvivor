@@ -1,3 +1,8 @@
+## Legacy Playable Character / Boss Return — 2026-09-12
+
+- After the user clarified this is a legacy feature, checked the old design, canonical character catalog, dual profiles, Boss candidate filtering, encounter lifecycle, spell ownership, compendium and test assertions. Updated the current draft to explicitly restore self-exclusion and related contracts, not merely propose generic dual-role characters. No legacy test execution or runtime return is claimed.
+- Completed document checks: five Markdown files only, valid UTF-8 without BOM, all 18 design links resolve and whitespace checks pass. Legacy files remain read-only; deliver as a local documentation commit, with no gameplay, assets, version, build, remote or server changes.
+
 ## Single-Mainline Design Pass — 2026-09-12
 
 - Recorded the user's design-only boundary and the move away from multiple full mainlines. Completed read-only checks of current progression, encounter timing, character constraints, repeatable-growth limits and historical designs; drafting one-mainline growth with explicit proposal status. Game/runtime/version/deployment remain untouched.

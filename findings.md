@@ -1,3 +1,10 @@
+# Legacy Playable Character / Boss Design — 2026-09-12
+
+- User explicitly identifies dual-role characters as a pre-rebuild design that may return. Verified docs/plugin_first_design.md:354–362 and :438, CharacterDefinition, CharacterBossCatalog and RunContentContext: one canonical identity, two profiles, enabled-content snapshot and strict per-run exclusion of the selected hero without deleting global Boss identity.
+- Legacy CharacterCatalogTest:122–166 asserts dual profiles, stable Marisa identity, base-only Reimu-to-Marisa candidates and content filtering. Tests were read, not executed. CharacterBossCatalog genuinely returns no candidates when none are legal; BossEncounterDirector will not spawn the selected hero as fallback.
+- BossEncounterDirector separates Boss selection from normal spawning, prevents overlapping active encounters and schedules recovery after resolution. SpellCardBossAttackResolver groups by owner character and selects per phase; the old compendium exposes both profiles and the self-exclusion rule. These are retained legacy sources, not proof that current game code already implements the return.
+- Revised the draft to restore those rules instead of treating all matchups as unspecified. Boss stage scripts are not forced into the player's single-mainline progression restrictions; new fork transitions/gravity tuning remain proposals. Only the two currently supported heroes are in scope, not all old content, slot systems or platform-specific architecture.
+
 # Single-Mainline Design Findings — 2026-09-12
 
 - Worktree starts clean at f616d3a. This turn is explicitly design-only; no runtime implementation or release is authorized.

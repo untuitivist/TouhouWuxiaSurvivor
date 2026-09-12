@@ -1,3 +1,11 @@
+## Legacy Playable Character / Boss Return — 2026-09-12
+
+1. [complete] Verify the user-confirmed pre-rebuild design against the legacy document, character catalog/profiles, Boss director/resolver and test assertions; preserve the design-only boundary.
+2. [complete] Restore explicit dual-role identity, per-run self-exclusion, enabled-content filtering, empty-pool safety and encounter contracts to the design. Separate recovered rules from new branch, pacing and gravity proposals.
+3. [complete] Validated five Markdown files only, UTF-8 without BOM, all design links and whitespace. Deliver via a local documentation-only commit; no runtime tests, gameplay changes, push or release.
+
+---
+
 ## Single-Mainline Growth Design — 2026-09-12
 
 Scope: design documents only. Do not implement, rebalance, edit game assets/changelog/version, build, push, or deploy. Preserve historical design records and distinguish confirmed intent from proposed tuning.
