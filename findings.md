@@ -1,5 +1,10 @@
 # Free Build Correction Release — 2026-09-13
 
+- Input-only star-field scoring passes its new regression and unchanged native gates: Reimu policy wins 3/3, 2/3, 1/3; Marisa 3/3 each. Web diagnostic candidate 20260913-170925-877 now passes the original raw/isolated five scenarios including both seed-42 victories. No test threshold, seed, HP or recovery was changed. Rebuild both targets from a clean replacement source rather than relabel the dirty proof build.
+
+- Frozen 5580e04 Web candidate fails the unchanged seed-42 Reimu victory journey (Lost at 1166.47s), while Marisa passes. No deployment occurred; complete failed report/EXE/Web stage retained. Disabling native hardware intrinsics does not reproduce the failure, so no unproven runtime/SIMD root cause is claimed.
+- Diagnostic steering has a testable flaw: additive avoidance from overlapping hostile stars can cancel, and a later beam override ignores remaining star damage fields. Adding input-only short-lookahead direction scoring across live enemy stars, Boss contact, fields and beams; friendly/dead stars excluded. New regression requires leaving two opposite damage radii without mutating health/entities/time. Gameplay damage, HP, seed, recovery, choices and the victory assertion remain unchanged.
+
 - Final mixed-store fix compiles and passes core 71/71. With unchanged balance acceptance gates, Reimu Balanced/PrimaryFocused/AuxiliaryFocused each win 2/3; Marisa each wins 3/3. First-Boss choices 25–26, no healing assistance; not equal-strength or human win-rate proof. Native UI, languages, profiles, render and batches pass in native-20260913-165054.
 - Visual inspection confirms free single-click choices and per-ability investments without stance panels. Removed one unused exclusive translation and corrected the language smoke success label before freezing release sources. A Node helper read was mistakenly awaited as a Promise; it is synchronous, corrected with no edits lost.
 

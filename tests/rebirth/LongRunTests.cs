@@ -137,6 +137,23 @@ internal static class LongRunTests
         Check(marisa.Build.CanChoose(UpgradeCatalog.Get(UpgradeCatalog.StarMass), 100), "Training medicine and beam never excludes star distribution growth");
     }
 
+    public static void PilotStarAvoidance()
+    {
+        var run = new RunState(HeroKind.Reimu, 42);
+        run.Stars.Add(new() { Position = new(65, 0), Mass = 100, Life = 8, Hostile = true });
+        run.Stars.Add(new() { Position = new(-65, 0), Mass = 100, Life = 8, Hostile = true });
+        var health = run.Health;
+        var result = RunPilot.AvoidStarFields(run, Vector2.UnitX);
+        Check(Math.Abs(result.Y) > 0.7f, "Opposing star repulsions must not cancel into a path through either damage field");
+        var destination = result * run.MoveSpeed * 0.35f;
+        Check(run.Stars.All(star => Geometry.DistanceSquared(destination, star.Position) > MathF.Pow(MarisaTuning.DamageRadius(star.Mass), 2)), "Lookahead exits both real star damage radii");
+        Check(run.Health == health && run.Stars.Count == 2 && run.Ticks == 0, "Pilot only supplies input, never heals, clears or advances simulation");
+        foreach (ref var star in run.Stars.Active) star.Hostile = false;
+        Check(RunPilot.AvoidStarFields(run, Vector2.UnitX) == Vector2.UnitX, "Friendly stars do not divert the driver");
+        foreach (ref var star in run.Stars.Active) { star.Hostile = true; star.Life = 0; }
+        Check(RunPilot.AvoidStarFields(run, Vector2.UnitX) == Vector2.UnitX, "Dead stars do not divert the driver");
+    }
+
     public static void MixedBulletClearing()
     {
         var run = new RunState(HeroKind.Reimu, 42);

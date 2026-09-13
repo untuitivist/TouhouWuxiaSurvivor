@@ -1,5 +1,9 @@
 ## Free Build Correction Release — 2026-09-13
 
+- Web reproduction 20260913-170925-877 passes the original five compatibility scenarios and both exact seed-42 victory assertions after input-only hazard scoring. Preparing a clean replacement freeze; the proof build is explicitly dirty and is not deployable.
+
+- The first frozen Web candidate failed Reimu seed-42 victory while normal flows/Marisa passed; no deployment. Kept the failing report and binary. Short-lookahead diagnostic steering now avoids overlapping hostile stars without changing gameplay, test seeds, HP or victory assertions; core 72/72 and native three-policy gates pass. Web reproduction is running before a replacement freeze.
+
 - Implemented free per-ability growth and removed all stance gameplay/UI state. Native validation native-20260913-165054 passes, including core 71/71, localization, UI/legacy profiles, dual language, batches, matched DPS and unassisted three-policy/three-seed balance. Mixed bullet-store clears fixed without increasing budgets; failed predecessor runs remain. Candidate is not yet exported or deployed.
 - Inspected native selection/build screenshots: readable distinct choices, no exclusivity/confirmation panel, independent investment readout. Updated alpha-0.1.10 notes and Windows version; preparing the source freeze and both release targets.
 - Initial authorization checkpoint: clean source inspected and alpha-0.1.9 artifacts preserved; no gameplay edit or deployment at that point.

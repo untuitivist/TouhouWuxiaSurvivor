@@ -7,6 +7,7 @@ public enum PilotPreference { Balanced, PrimaryFocused, AuxiliaryFocused }
 
 public static class RunPilot
 {
+    private static readonly Vector2[] EscapeDirections = Enumerable.Range(0, 8).Select(index => Geometry.Angle(index * MathF.Tau / 8)).ToArray();
     public static void ResolveChoices(RunState run, PilotPreference preference = PilotPreference.Balanced)
     {
         while (run.Phase == RunPhase.Choosing)
@@ -44,6 +45,57 @@ public static class RunPilot
         if (upgrade.Id == UpgradeCatalog.StarMass && run.Build.TrainingRank(upgrade.Id) < 4) return 60;
         if (upgrade.Ability == ArtKind.Herbs && upgrade.Kind == UpgradeKind.Refine) return run.Health < run.MaxHealth * 0.65f ? 85 : 55;
         return upgrade.Owner == run.Hero ? 40 : 20;
+    }
+
+    internal static Vector2 AvoidStarFields(RunState run, Vector2 movement)
+    {
+        var nearby = false;
+        foreach (ref readonly var star in run.Stars.Active)
+        {
+            if (!star.Hostile || star.Life <= 0) continue;
+            var reach = MarisaTuning.DamageRadius(star.Mass) + 180;
+            if (Geometry.DistanceSquared(star.Position, run.PlayerPosition) < reach * reach) { nearby = true; break; }
+        }
+        if (!nearby) return movement;
+        var intended = Geometry.Direction(movement);
+        var best = intended;
+        var bestCost = HazardCost(run, intended);
+        foreach (var candidate in EscapeDirections)
+        {
+            var cost = HazardCost(run, candidate) + (1 - Vector2.Dot(candidate, intended)) * 0.35f;
+            if (cost >= bestCost) continue;
+            bestCost = cost;
+            best = candidate;
+        }
+        return best;
+    }
+
+    private static float HazardCost(RunState run, Vector2 direction)
+    {
+        const float horizon = 0.35f;
+        var destination = RunState.ClampToArena(run.PlayerPosition + (direction * run.MoveSpeed + run.PlayerGravityVelocity) * horizon);
+        var cost = 0f;
+        foreach (ref readonly var star in run.Stars.Active)
+        {
+            if (!star.Hostile || star.Life <= 0) continue;
+            var future = star.Position + star.Velocity * horizon;
+            var radius = MarisaTuning.DamageRadius(star.Mass) + 25;
+            cost += Math.Max(0, 1 - Geometry.DistanceSquared(future, destination) / (radius * radius)) * 12;
+            var swept = Geometry.SegmentDistanceSquared(star.Position, run.PlayerPosition, destination - star.Velocity * horizon);
+            if (swept < (radius - 25) * (radius - 25)) cost += 4;
+        }
+        if (run.Boss is not { } boss) return cost;
+        if (Geometry.DistanceSquared(destination, boss.Position) < (boss.Radius + 20) * (boss.Radius + 20)) cost += 20;
+        if (boss.Abilities?.Field is { } field
+            && Math.Max(Math.Abs(destination.X - field.Position.X), Math.Abs(destination.Y - field.Position.Y)) < field.HalfSize + 15) cost += 16;
+        if (boss.Abilities?.Beam is { } beam)
+        {
+            var offset = destination - boss.Position;
+            var along = Vector2.Dot(offset, beam.Direction);
+            var across = Math.Abs(offset.X * beam.Direction.Y - offset.Y * beam.Direction.X);
+            if (along > 0 && along < beam.Length && across < beam.HalfWidth + 25) cost += 16;
+        }
+        return cost;
     }
 
     public static FrameInput Input(RunState run, int tick)
@@ -125,6 +177,7 @@ public static class RunPilot
                 danger |= beam.Warmup < 0.35f;
             }
         }
+        movement = AvoidStarFields(run, movement);
         return new(movement, false, danger || run.Health < run.MaxHealth * 0.5f && tick % 180 == 0);
     }
 }

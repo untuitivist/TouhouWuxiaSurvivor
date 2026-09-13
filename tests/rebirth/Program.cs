@@ -17,6 +17,7 @@ var tests = new (string Name, Action Body)[]
     ("balanced and focused builds spend equal budgets without route locks", LongRunTests.InvestmentBudget),
     ("auxiliary training changes real fields, medicine and beams", LongRunTests.AuxiliaryTraining),
     ("mixed projectile and star clearing preserves budgets, factions and traversal safety", LongRunTests.MixedBulletClearing),
+    ("diagnostic pilot avoids overlapping hostile star fields using input alone", LongRunTests.PilotStarAvoidance),
     ("hostile stars respect factions, escape and independent capacity", LongRunTests.Factions),
     ("character Boss attacks preserve telegraphs and finite defensive budgets", LongRunTests.BossTelegraphs),
     ("optional continuation preserves victory and prevents duplicate transitions", LongRunTests.Continuation),

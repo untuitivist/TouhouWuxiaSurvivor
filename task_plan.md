@@ -1,7 +1,7 @@
 ## Free Build Correction Release — 2026-09-13
 
 1. [complete] Removed the complete invented stance framework, its gameplay effects, candidate exclusions and confirmation UI. Controls, character Bosses, long runs, original assets and shared C# remain.
-2. [complete] All six abilities have independent sustained investment, distinct legal direction offers and no replacement quotas. Core 71/71, order/combination/live-effect checks and six unassisted diagnostic policies pass. Mixed projectile/star clearing now respects original budgets and safe traversal.
+2. [complete] All six abilities have independent sustained investment, distinct legal direction offers and no replacement quotas. Core 72/72, order/combination/live-effect and input-only hazard avoidance checks pass, as do six unassisted diagnostic policies. Mixed projectile/star clearing respects original budgets and safe traversal.
 3. [in_progress] Bilingual UI, compendium, diagnostics and design history updated. Native UI, persistence, localization, batches, matched DPS and long-run checks pass; prepare frozen Windows/Web artifacts and full browser gates. Preserve all failures and history.
 4. [pending] Release alpha-0.1.10 from one exact committed gameplay source: self-contained EXE plus rollback-safe Web deployment, explicit direct public verification, then delivery records. Do not report publication until both targets pass.
 
