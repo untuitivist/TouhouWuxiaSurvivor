@@ -1,3 +1,9 @@
+# Free Build Correction Release — 2026-09-13
+
+- Clean starting source 2dc1c7b contains the user clarification; alpha-0.1.9 runtime still has a single MainlineStance enum, BuildState sibling exclusion, forced fourth-choice offers and confirmation UI, birth-snapshotted star stances and stance-specific projectile cadence/piercing. All must be removed rather than relabeled.
+- Existing ordinary traits already combine; power/tempo and independent star mass/spread/lifetime training provide repeatable investment, but auxiliary abilities have only their five base ranks. Extend meaningful auxiliary training instead of inventing replacement exclusive routes or new quota gates.
+- Large combined shell reads were truncated; use bounded per-file views. Persistent Node helpers required reinitialization in this turn; no files lost.
+
 # Growth And Character Boss Release — 2026-09-13
 
 - Final delivery: source e65d63d, Windows SHA-256 12DFE3D520DEC5EA88185FB73D63914ABB69E466872ADCDAE3D2237928E1A867, Web activation alpha-0.1.9-e65d63d-20260912T214101Z. Root/Windows/Web stages share 99 byte-identical C# files. All release gates and three direct public entrances pass; deployment receipt and raw evidence are retained.

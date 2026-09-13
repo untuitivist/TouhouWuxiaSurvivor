@@ -1,3 +1,7 @@
+## Free Build Correction Release — 2026-09-13
+
+- User explicitly authorizes correction and release. Clean source inspected; preserving alpha-0.1.9 artifacts and records. Preparing complete removal of invented stances and free per-ability growth; no gameplay edit or deployment yet.
+
 ## Growth And Character Boss Release — 2026-09-13
 
 - Completed alpha-0.1.9 from frozen e65d63d: 195,251,800-byte self-contained EXE, Web build 20260913-051919-061 and 99 shared C# files verified byte-for-byte. Source pushed and pulled by the server; active release alpha-0.1.9-e65d63d-20260912T214101Z. Release IDs use UTC, this section uses Asia/Shanghai.

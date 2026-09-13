@@ -1,3 +1,14 @@
+## Free Build Correction Release — 2026-09-13
+
+1. [in_progress] Audit every stance-dependent runtime/UI/test path and remove the invented mutually exclusive stance framework, not merely its visual lock. Retain controls, character Bosses, long runs, original assets and the shared C# platform.
+2. [pending] Make sustained training available across all six character abilities and offer independent directions without a forced fourth-choice fork or primary-route mandate. No new route quotas or arbitrary replacement gates; validate opportunity cost, order independence and useful mixed/focused builds.
+3. [pending] Update bilingual UI, compendium, diagnostics and design history; run core, balance, persistence, native UI and frozen Windows/Web validation. Preserve prior failures, artifacts and all changelog history.
+4. [pending] Release alpha-0.1.10 from one exact committed gameplay source: self-contained EXE plus rollback-safe Web deployment, explicit direct public verification, then delivery records. Do not report publication until both targets pass.
+
+Scope: user explicitly says 修改发布 after rejecting hard-exclusive stances. This authorizes correction and both outputs, not new predetermined routes, a new art direction, WebGPU or a whole legacy migration.
+
+---
+
 ## Growth And Character Boss Release — 2026-09-13
 
 1. [complete] Audit current core/UI/tests and release/deployment paths; verified alpha-0.1.8 online via pinned Git SSH, retain controls, shared C# runtime, gravity invariants and delivery optimizations.
