@@ -1,5 +1,10 @@
 # Free Build Correction Release — 2026-09-13
 
+- Delivered b17b5c5 as alpha-0.1.10-b17b5c5-20260913T093042Z, with matching Windows/Web/server metadata and direct public entry SHA 328dd502f7766662c85ea05a6ac3ba32e2b0c0133eb102ae1d69b2197bc6088d. Core 72, localization 1104, Windows 36, all browser suites and all 12 combat gates pass.
+- Highest desktop load (320 enemies / about 1591 projectiles) has average/minimum 60 FPS for both heroes/languages; core P95 Reimu 2.0/2.2ms, Marisa 5.8/5.7ms on Edge/RTX 4070 Ti. No physical mobile claim. Public startup 14.790/11.563/10.365 seconds is explicitly direct and route-specific.
+- Source push needed the user's already-listening localhost:10090 proxy after direct resets/timeouts; no global proxy/TLS settings changed. Temporary deploy path guard initially compared mixed slashes literally, then canonicalized full paths before activation. The original diagnostic warning/failed builds and all logs remain.
+- Final public screenshot exposes an unchanged old five-minute title caption; actual standard Boss timing is 18 minutes. Recorded as a known follow-up rather than changing unrelated frozen assets/source or claiming every historical issue solved.
+
 - Input-only star-field scoring passes its new regression and unchanged native gates: Reimu policy wins 3/3, 2/3, 1/3; Marisa 3/3 each. Web diagnostic candidate 20260913-170925-877 now passes the original raw/isolated five scenarios including both seed-42 victories. No test threshold, seed, HP or recovery was changed. Rebuild both targets from a clean replacement source rather than relabel the dirty proof build.
 
 - Frozen 5580e04 Web candidate fails the unchanged seed-42 Reimu victory journey (Lost at 1166.47s), while Marisa passes. No deployment occurred; complete failed report/EXE/Web stage retained. Disabling native hardware intrinsics does not reproduce the failure, so no unproven runtime/SIMD root cause is claimed.

@@ -1,5 +1,11 @@
 ## Free Build Correction Release — 2026-09-13
 
+- COMPLETE: frozen b17b5c5 produces Windows 195,261,576-byte self-contained EXE (EAC4C154A759BFD8D88CC2253F22706A6176CF43431789AD587F61917DF4D958) and Web build 20260913-171454-752 with 99 byte-identical C# files. Full Web final-web-20260913-171553 and Windows 36 standalone checks pass.
+- Server git pull and activation succeed as alpha-0.1.10-b17b5c5-20260913T093042Z. Three explicitly direct public entrances pass at 14.790/11.563/10.365 seconds; source, clean server Git, Windows hash and entry SHA agree. Core downloads total 21,646,930 bytes; not a universal speed or mobile-FPS promise.
+- Delivery logs and receipts saved under release and artifacts/release-receipts, with complete historical notes preserved. Git transport used the existing local proxy only for successful push after direct reset/timeout; public testing remains direct. Temporary deployment wrapper initially rejected equivalent mixed-separator paths, fixed by canonicalization before any activation.
+- Reviewed final bilingual touch growth/build views, public alpha-0.1.10 title and unisolated touch combat. Pre-existing five-minute title caption is explicitly recorded as remaining; actual standard Boss is at 18 minutes. No unrelated source/art rewrite after freezing.
+- Earlier checkpoints retained below:
+
 - Web reproduction 20260913-170925-877 passes the original five compatibility scenarios and both exact seed-42 victory assertions after input-only hazard scoring. Preparing a clean replacement freeze; the proof build is explicitly dirty and is not deployable.
 
 - The first frozen Web candidate failed Reimu seed-42 victory while normal flows/Marisa passed; no deployment. Kept the failing report and binary. Short-lookahead diagnostic steering now avoids overlapping hostile stars without changing gameplay, test seeds, HP or victory assertions; core 72/72 and native three-policy gates pass. Web reproduction is running before a replacement freeze.

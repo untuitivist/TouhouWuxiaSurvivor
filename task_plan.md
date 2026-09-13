@@ -2,8 +2,8 @@
 
 1. [complete] Removed the complete invented stance framework, its gameplay effects, candidate exclusions and confirmation UI. Controls, character Bosses, long runs, original assets and shared C# remain.
 2. [complete] All six abilities have independent sustained investment, distinct legal direction offers and no replacement quotas. Core 72/72, order/combination/live-effect and input-only hazard avoidance checks pass, as do six unassisted diagnostic policies. Mixed projectile/star clearing respects original budgets and safe traversal.
-3. [in_progress] Bilingual UI, compendium, diagnostics and design history updated. Native UI, persistence, localization, batches, matched DPS and long-run checks pass; prepare frozen Windows/Web artifacts and full browser gates. Preserve all failures and history.
-4. [pending] Release alpha-0.1.10 from one exact committed gameplay source: self-contained EXE plus rollback-safe Web deployment, explicit direct public verification, then delivery records. Do not report publication until both targets pass.
+3. [complete] Native/core 72, localization 1104, independent Windows 36 checks and all Web growth, four compatibility modes, loading, color, language, compendium, UI and twelve enforced combat scenarios pass. Failed 5580e04 candidate retained; input-only hazard prediction resolves the original Web seed-42 gate without changing its seed or victory assertion.
+4. [complete] Released alpha-0.1.10 from b17b5c5; 99 shared C# files verified byte-for-byte. Self-contained EXE delivered and rollback-safe Web activation alpha-0.1.10-b17b5c5-20260913T093042Z verified through all three explicitly direct public entrances. Receipts, hashes, old history, failure evidence and limitations archived; final documentation commit is separate from frozen runtime inputs.
 
 Scope: user explicitly says 修改发布 after rejecting hard-exclusive stances. This authorizes correction and both outputs, not new predetermined routes, a new art direction, WebGPU or a whole legacy migration.
 
