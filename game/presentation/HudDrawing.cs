@@ -26,7 +26,7 @@ public partial class GameCanvas
         Text($"{MathF.Ceiling(Run.Health)} / {Run.MaxHealth}", new(28, 76), 14, Palette.Muted);
         Text(GameText.Format($"退治  {Run.Kills}"), new(165, 76), 14, Palette.Muted);
         CenterText(FormatTime(Run.Time), new(640, 37), 29, Palette.Paper);
-        CenterText(GameText.Get(Run.StageName) + " · " + GameText.Get(MainlineGrowth.Name(Run.Build.Stance)), new(640, 64), 15, Palette.Gold);
+        CenterText(GameText.Get(Run.StageName) + " · " + GameText.Get("自由修习"), new(640, 64), 15, Palette.Gold);
         var interval = Run.IsEndless ? RunPacing.ContinuationInterval : RunState.BossArrival;
         Bar(new(430, 76, 420, 3), Math.Clamp(1 - (Run.NextBossTime - Run.Time) / interval, 0, 1), Palette.Gold);
         Text(GameText.Get("符卡蓄势"), new(989, 31), 17, Palette.Jade);

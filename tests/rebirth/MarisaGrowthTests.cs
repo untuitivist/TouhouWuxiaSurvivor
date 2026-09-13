@@ -77,7 +77,7 @@ internal static class MarisaGrowthTests
             var offers = UpgradeOffers.Create(run.Build, 3, new(seed));
             Check(offers.Count == 3 && offers.DistinctBy(upgrade => upgrade.Id).Count() == 3, "Three unique choices");
             Check(offers.All(upgrade => run.Build.CanChoose(upgrade, 3)), "Prerequisites and ownership respected");
-            Check(offers.Any(upgrade => upgrade.Kind == UpgradeKind.Unlock) && offers.Any(upgrade => upgrade.Ability == ArtKind.Stars), "Unlock and primary growth remain visible before the stance choice");
+            Check(offers.Take(2).All(upgrade => upgrade.Owner == HeroKind.Marisa) && offers.Take(2).Select(upgrade => upgrade.Ability).Distinct().Count() == 2, "Independent character directions are visible without requiring stars on every hand");
         }
         var reverse = new RunState(HeroKind.Marisa, 42);
         foreach (var candidate in new[] { run, reverse }) Learn(candidate, UpgradeCatalog.HerbsUnlock, UpgradeCatalog.MasterSparkUnlock);
@@ -87,7 +87,7 @@ internal static class MarisaGrowthTests
         foreach (var id in nodes)
         {
             var node = UpgradeCatalog.Get(id);
-            Check(run.Build.TryApply(node, 100) == (node.Kind == UpgradeKind.Training), "Only distribution and lifetime training repeat");
+            Check(run.Build.TryApply(node, 100) == (node.Kind == UpgradeKind.Training), "Independent training repeats while one-time techniques reject duplicates");
         }
         Check(run.Build.TrainingRank(UpgradeCatalog.StarMass) == 2 && run.Ranks[(int)ArtKind.Stars] == 1, "Distribution training is independent of damage rank");
     }

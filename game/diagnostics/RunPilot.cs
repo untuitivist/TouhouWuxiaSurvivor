@@ -3,23 +3,37 @@ using Rebirth.Core;
 
 namespace Rebirth.Diagnostics;
 
+public enum PilotPreference { Balanced, PrimaryFocused, AuxiliaryFocused }
+
 public static class RunPilot
 {
-    public static void ResolveChoices(RunState run, MainlineStance preferredStance = MainlineStance.None)
+    public static void ResolveChoices(RunState run, PilotPreference preference = PilotPreference.Balanced)
     {
         while (run.Phase == RunPhase.Choosing)
         {
-            var preferred = Enumerable.Range(0, run.Choices.Count).MaxBy(index => run.Choices[index].Kind == UpgradeKind.Stance && run.Choices[index].Stance == preferredStance
-                ? 120 : ChoicePriority(run, run.Choices[index]));
+            var preferred = Enumerable.Range(0, run.Choices.Count).MaxBy(index => ChoicePriority(run, run.Choices[index]) + PreferenceBonus(run, run.Choices[index], preference));
             run.Choose(preferred);
         }
     }
 
+    private static int PreferenceBonus(RunState run, UpgradeDefinition upgrade, PilotPreference preference)
+    {
+        if (upgrade.Owner != run.Hero) return 0;
+        var primary = upgrade.Ability == MainlineGrowth.Primary(run.Hero);
+        return preference switch
+        {
+            PilotPreference.PrimaryFocused => primary ? 25 : 0,
+            PilotPreference.AuxiliaryFocused => primary ? 0 : 25,
+            _ => Math.Max(0, 8 - run.Build.Investment(upgrade.Ability)) * 4
+        };
+    }
+
     private static int ChoicePriority(RunState run, UpgradeDefinition upgrade)
     {
-        if (upgrade.Kind == UpgradeKind.Stance) return 95;
         if (upgrade.Id == UpgradeCatalog.HerbsUnlock) return 100;
-        if (upgrade.Kind == UpgradeKind.Refine && upgrade.Ability == MainlineGrowth.Primary(run.Hero)) return 90;
+        if (upgrade.Ability == ArtKind.Vitality && run.Health < run.MaxHealth * 0.8f) return 120;
+        if (upgrade.Kind == UpgradeKind.Refine && upgrade.Ability != ArtKind.Herbs) return 90;
+        if (upgrade.Ability == ArtKind.Power) return 70;
         if (upgrade.Ability == ArtKind.Flow && run.Ranks[(int)ArtKind.Flow] < 2) return 85;
         if (upgrade.Id is UpgradeCatalog.Homing or UpgradeCatalog.HerbBrew or UpgradeCatalog.SparkSteer) return 80;
         if (upgrade.Id is UpgradeCatalog.Bind or UpgradeCatalog.Clear or UpgradeCatalog.SparkClear) return 78;
@@ -58,7 +72,12 @@ public static class RunPilot
             var offset = run.PlayerPosition - opponent.Position;
             var radius = offset.Length();
             var outward = Geometry.Direction(offset);
-            movement = new Vector2(-outward.Y, outward.X) * 0.85f + outward * Math.Clamp((320 - radius) / 100, -1, 1);
+            var orbitRank = run.Ranks[(int)ArtKind.YinYang];
+            var closeOrbit = run.Hero == HeroKind.Reimu && orbitRank > 0
+                && run.Build.Investment(ArtKind.YinYang) >= run.Build.Investment(ArtKind.Ofuda) - 2
+                && run.Health > run.MaxHealth * 0.7f && opponent.Abilities is { Phase: < 2, Beam: null };
+            var preferredRadius = closeOrbit ? AbilityTuning.Get(ArtKind.YinYang, orbitRank).Range + opponent.Radius * 0.5f : 320;
+            movement = new Vector2(-outward.Y, outward.X) * 0.85f + outward * Math.Clamp((preferredRadius - radius) / 100, -1, 1);
         }
         var danger = false;
         foreach (var enemy in run.Enemies)

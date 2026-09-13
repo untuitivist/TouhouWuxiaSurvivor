@@ -17,6 +17,36 @@ public static class CharacterAttackRules
         }
     }
 
+    internal static void ClearSegment(RunState run, Vector2 start, Vector2 end, float reach, ref int budget, bool hostile)
+    {
+        if (budget <= 0) return;
+        var minimumX = MathF.Min(start.X, end.X);
+        var maximumX = MathF.Max(start.X, end.X);
+        var minimumY = MathF.Min(start.Y, end.Y);
+        var maximumY = MathF.Max(start.Y, end.Y);
+        foreach (ref var projectile in run.Projectiles.Active)
+        {
+            if (projectile.Hostile != hostile || projectile.Life <= 0) continue;
+            var radius = reach + projectile.Radius;
+            if (projectile.Position.X < minimumX - radius || projectile.Position.X > maximumX + radius
+                || projectile.Position.Y < minimumY - radius || projectile.Position.Y > maximumY + radius) continue;
+            if (Geometry.SegmentDistanceSquared(projectile.Position, start, end) > radius * radius) continue;
+            projectile.Life = 0;
+            if (--budget == 0) return;
+        }
+        foreach (ref var star in run.Stars.Active)
+        {
+            if (star.Hostile != hostile || star.Life <= 0) continue;
+            var radius = reach + MarisaTuning.VisualSize(star.Mass) * 0.5f;
+            if (star.Position.X < minimumX - radius || star.Position.X > maximumX + radius
+                || star.Position.Y < minimumY - radius || star.Position.Y > maximumY + radius) continue;
+            if (Geometry.SegmentDistanceSquared(star.Position, start, end) > radius * radius) continue;
+            star.Life = 0;
+            run.Marisa.GravityTick = 0;
+            if (--budget == 0) return;
+        }
+    }
+
     public static Vector2 TurnToward(Vector2 direction, Vector2 targetOffset, float radiansPerSecond)
     {
         if (targetOffset.LengthSquared() <= 0.0001f) return direction;

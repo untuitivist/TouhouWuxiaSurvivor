@@ -28,7 +28,7 @@ internal static class MarisaProjectileSystem
         var mass = MarisaTuning.RollMass(state.MassRandom, build);
         run.Stars.Add(new()
         {
-            OwnerId = ownerId, Hostile = ownerId != 0, Stance = build.Stance,
+            OwnerId = ownerId, Hostile = ownerId != 0,
             Position = RunState.ClampToArena(origin + direction * 12),
             Velocity = direction * MarisaTuning.StarSpeed,
             Mass = mass,
@@ -76,7 +76,6 @@ internal static class MarisaProjectileSystem
 
     private static void Tear(RunState run, StarBody star)
     {
-        star.DamageRate *= MainlineGrowth.StarAgeMultiplier(star.Stance, star.Duration, star.Life);
         var radius = MarisaTuning.DamageRadius(star.Mass);
         if (star.Hostile)
         {

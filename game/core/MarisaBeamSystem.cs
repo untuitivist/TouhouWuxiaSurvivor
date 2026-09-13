@@ -8,7 +8,7 @@ internal static class MarisaBeamSystem
     {
         var rank = run.Ranks[(int)ArtKind.MasterSpark];
         if (rank <= 0 || signature && !run.Build.SignatureUnlocked) return;
-        var stats = AbilityTuning.Get(ArtKind.MasterSpark, rank);
+        var stats = MainlineGrowth.Stats(run.Build, ArtKind.MasterSpark);
         var target = run.NearestEnemy(run.PlayerPosition, 1200);
         var offset = target == null ? Vector2.Zero : target.Position - run.PlayerPosition;
         var aim = offset.LengthSquared() > 0.0001f ? Geometry.Direction(offset) : run.Facing;
@@ -66,7 +66,14 @@ internal static class MarisaBeamSystem
         {
             if (!projectile.Hostile || projectile.Life <= 0 || !Contains(run, projectile.Position, projectile.Radius)) continue;
             projectile.Life = 0;
-            if (--budget == 0) break;
+            if (--budget == 0) return;
+        }
+        foreach (ref var star in run.Stars.Active)
+        {
+            if (!star.Hostile || star.Life <= 0 || !Contains(run, star.Position, MarisaTuning.VisualSize(star.Mass) * 0.5f)) continue;
+            star.Life = 0;
+            run.Marisa.GravityTick = 0;
+            if (--budget == 0) return;
         }
     }
 }

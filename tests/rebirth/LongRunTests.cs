@@ -28,62 +28,146 @@ internal static class LongRunTests
         }
     }
 
-    public static void Stances()
+    public static void FreeChoices()
     {
         foreach (var hero in Enum.GetValues<HeroKind>())
-        foreach (var chosenIndex in new[] { 0, 1 })
         {
             var build = new BuildState(hero);
-            var stances = UpgradeCatalog.All.Where(upgrade => upgrade.Owner == hero && upgrade.Kind == UpgradeKind.Stance).ToArray();
-            Check(stances.Length == 2 && stances.All(upgrade => !build.CanChoose(upgrade, 100)), "A fresh run cannot bypass the fourth-growth gate");
-            var refine = hero == HeroKind.Reimu ? "reimu.ofuda.refine" : "marisa.stars.refine";
-            for (var index = 0; index < 3; index++) Check(build.TryApply(UpgradeCatalog.Get(refine), 100), "Prepare three invested choices");
-            var offers = UpgradeOffers.Create(build, 5, new(42));
-            Check(offers.Count == 3 && offers.Take(2).SequenceEqual(stances) && offers[2].Kind != UpgradeKind.Stance, "Both stances and one real growth deferral are visible");
-            Check(build.TryApply(offers[2], 100) && build.Stance == MainlineStance.None, "Deferral grants ordinary growth without choosing a stance");
-            Check(UpgradeOffers.Create(build, 6, new(9)).Take(2).SequenceEqual(stances), "Deferred stances remain reachable");
-            var selected = stances[chosenIndex];
-            Check(!build.TryApply(selected with { Name = "forged" }, 100), "Forged upgrade objects cannot bypass catalog authority");
-            Check(build.TryApply(selected, 100) && !build.TryApply(stances[1 - chosenIndex], 100) && !build.TryApply(selected, 100), "The opposite stance and duplicate choice are rejected");
-            for (var seed = 0; seed < 30; seed++)
-                Check(UpgradeOffers.Create(build, 100, new(seed)).All(upgrade => upgrade.Kind != UpgradeKind.Stance), "Excluded routes never return in offers");
-            var repeat = UpgradeCatalog.Get(hero == HeroKind.Reimu ? MainlineGrowth.OfudaPower : MainlineGrowth.StarPower);
-            for (var rank = 0; rank < 1000; rank++) Check(build.TryApply(repeat, 100), "Mainline growth stays effective beyond finite abilities");
-            Check(build.Stance == selected.Stance && float.IsFinite(MainlineGrowth.Power(build)), "Extended growth preserves the chosen identity");
+            var abilities = ArtCatalog.Abilities(hero).ToArray();
+            foreach (var unlock in UpgradeCatalog.All.Where(upgrade => upgrade.Owner == hero && upgrade.Kind == UpgradeKind.Unlock))
+                Check(build.TryApply(unlock, 100), "Every auxiliary ability can be learned");
+            var original = UpgradeCatalog.All.Where(upgrade => upgrade.Owner == hero && build.CanChoose(upgrade, 100)).ToArray();
+            var repeat = UpgradeCatalog.Get(MainlineGrowth.PowerId(MainlineGrowth.Primary(hero)));
+            Check(!build.TryApply(repeat with { Name = "forged" }, 100), "Only canonical catalog upgrades can be applied");
+            for (var rank = 0; rank < 1000; rank++) Check(build.TryApply(repeat, 100), "Focused growth remains effective without committing to a route");
+            foreach (var other in original.Where(upgrade => upgrade.Ability != repeat.Ability))
+                Check(build.CanChoose(other, 100), "Deep investment does not exclude other abilities or techniques");
+            foreach (var art in abilities.Where(art => art.Id != repeat.Ability))
+                for (var rank = 0; rank < 1000; rank++) Check(build.TryApply(UpgradeCatalog.Get(MainlineGrowth.PowerId(art.Id)), 100), "Auxiliary abilities can also keep growing");
+            Check(abilities.All(art => float.IsFinite(MainlineGrowth.Stats(build, art.Id).Damage)), "Every trained ability remains finite");
+            var legal = UpgradeCatalog.All.Where(upgrade => upgrade.Kind != UpgradeKind.Recovery && build.CanChoose(upgrade, 100)).ToArray();
+            var seen = new HashSet<string>();
+            for (var seed = 0; seed < 512; seed++)
+            {
+                var offers = UpgradeOffers.Create(build, 100, new(seed));
+                Check(offers.Count == 3 && offers.Distinct().Count() == 3 && offers.All(upgrade => build.CanChoose(upgrade, 100)), "Three distinct legal offers");
+                Check(offers.Take(2).Select(upgrade => upgrade.Ability).Distinct().Count() == 2, "Different character directions remain visible without forcing the primary ability");
+                foreach (var offer in offers) seen.Add(offer.Id);
+            }
+            Check(legal.All(upgrade => seen.Contains(upgrade.Id)), "Every still-legal direction can return in offers");
+            Check(UpgradeCatalog.All.All(upgrade => !upgrade.Id.Contains(".stance.", StringComparison.Ordinal)), "No renamed or hidden exclusive stance remains");
         }
         var tempo = new BuildState(HeroKind.Reimu);
         var rhythm = UpgradeCatalog.Get(MainlineGrowth.OfudaTempo);
-        for (var rank = 0; rank < MainlineGrowth.TempoLimit; rank++) Check(tempo.TryApply(rhythm, 100), "Finite tempo rank");
-        Check(!tempo.TryApply(rhythm, 100), "Tempo cannot erase the charged rhythm through infinite fire rate");
+        for (var rank = 0; rank < MainlineGrowth.TempoLimit; rank++) Check(tempo.TryApply(rhythm, 100), "Finite casting efficiency rank");
+        Check(!tempo.TryApply(rhythm, 100) && tempo.CanChoose(UpgradeCatalog.Get(MainlineGrowth.OfudaPower), 100), "A physical rate limit never closes other growth");
     }
 
-    public static void Cadence()
+    public static void CombinedGrowth()
     {
-        var stats = new List<AbilityStats>();
-        foreach (var stance in new[] { MainlineGrowth.RapidOfuda, MainlineGrowth.ChargedOfuda })
-        {
-            var build = new BuildState(HeroKind.Reimu);
-            for (var index = 0; index < 3; index++) build.TryApply(UpgradeCatalog.Get("reimu.ofuda.refine"), 100);
-            build.TryApply(UpgradeCatalog.Get(stance), 100);
-            stats.Add(MainlineGrowth.OfudaStats(build));
-        }
-        Check(stats[1].Interval / stats[0].Interval > 3 && stats[1].Damage / stats[0].Damage > 3, "Ofuda stances have distinctly different windows");
-        var ratio = stats[1].Damage / stats[1].Interval / (stats[0].Damage / stats[0].Interval);
-        Check(ratio is > 0.95f and < 1.05f, "Cadence choice does not gift a superior nominal DPS route");
-        var charged = new RunState(HeroKind.Reimu, 42);
-        Learn(charged, "reimu.ofuda.refine", "reimu.ofuda.refine", "reimu.ofuda.refine", MainlineGrowth.ChargedOfuda);
-        Target(charged, new(300, 0));
-        charged.Step(default);
-        Check(charged.Projectiles.Count > 0 && charged.Projectiles.All(projectile => projectile.Pierce == 1), "Charged ofuda penetrates one extra target instead of inflating single-target DPS or adding entities");
-        Check(MainlineGrowth.StarAgeMultiplier(MainlineStance.YoungStars, 8, 7) > MainlineGrowth.StarAgeMultiplier(MainlineStance.MatureStars, 8, 7), "Young stars win early");
-        Check(MainlineGrowth.StarAgeMultiplier(MainlineStance.YoungStars, 8, 2) < MainlineGrowth.StarAgeMultiplier(MainlineStance.MatureStars, 8, 2), "Mature stars win late");
+        var orders = new[] {
+            new[] { MainlineGrowth.OfudaPower, MainlineGrowth.OfudaTempo, UpgradeCatalog.Homing, UpgradeCatalog.Blast },
+            new[] { UpgradeCatalog.Blast, UpgradeCatalog.Homing, MainlineGrowth.OfudaTempo, MainlineGrowth.OfudaPower }
+        };
+        var first = new RunState(HeroKind.Reimu, 42);
+        var second = new RunState(HeroKind.Reimu, 42);
+        Learn(first, orders[0]);
+        Learn(second, orders[1]);
+        Check(first.Build.Traits == second.Build.Traits && MainlineGrowth.OfudaStats(first.Build) == MainlineGrowth.OfudaStats(second.Build), "Order does not overwrite power, tempo, homing or blast");
+        var baseline = AbilityTuning.Get(ArtKind.Ofuda, 1);
+        var combined = MainlineGrowth.OfudaStats(first.Build);
+        Check(combined.Damage > baseline.Damage && combined.Interval < baseline.Interval, "Damage and tempo are simultaneously effective");
+        Target(first, new(300, 0));
+        first.Step(default);
+        Check(first.Projectiles.Count > 0 && first.Projectiles.All(projectile => projectile.Pierce == 0), "Ordinary ofuda is not silently converted into the removed charged stance");
         var run = new RunState(HeroKind.Marisa, 42);
         MarisaProjectileSystem.Cast(run, 1);
         var original = run.Stars[0];
-        Learn(run, UpgradeCatalog.StarMass, UpgradeCatalog.StarLifetime, MainlineGrowth.StarPower, MainlineGrowth.MatureStars);
+        Learn(run, UpgradeCatalog.StarMass, UpgradeCatalog.StarSpread, UpgradeCatalog.StarLifetime, MainlineGrowth.StarPower);
         MarisaProjectileSystem.Cast(run, 1);
-        Check(run.Stars[0].Mass == original.Mass && run.Stars[0].Life == original.Life && run.Stars[0].Stance == MainlineStance.None, "Old stars are never resampled, renewed or retroactively restanced");
-        Check(run.Stars[1].Stance == MainlineStance.MatureStars && run.Stars[1].Duration > original.Duration, "Only new stars use the new growth snapshot");
+        Check(run.Stars[0].Mass == original.Mass && run.Stars[0].Life == original.Life && run.Stars[0].DamageRate == original.DamageRate, "Training does not resample, renew or overwrite an existing star");
+        Check(run.Stars[1].Duration > original.Duration && run.Stars[1].DamageRate / run.Stars[1].Mass > original.DamageRate / original.Mass, "New stars combine lifetime, independent distribution and damage growth");
+    }
+
+    public static void InvestmentBudget()
+    {
+        foreach (var hero in Enum.GetValues<HeroKind>())
+        {
+            var focused = new BuildState(hero);
+            var balanced = new BuildState(hero);
+            var primary = MainlineGrowth.Primary(hero);
+            var primaryTraining = UpgradeCatalog.Get(MainlineGrowth.PowerId(primary));
+            for (var point = 0; point < 24; point++) Check(focused.TryApply(primaryTraining, 100), "Allocate focused budget");
+            foreach (var unlock in UpgradeCatalog.All.Where(upgrade => upgrade.Owner == hero && upgrade.Kind == UpgradeKind.Unlock))
+                Check(balanced.TryApply(unlock, 100), "Allocate breadth from the same budget");
+            var abilities = ArtCatalog.Abilities(hero).ToArray();
+            for (var point = 0; point < 22; point++)
+                Check(balanced.TryApply(UpgradeCatalog.Get(MainlineGrowth.PowerId(abilities[point % abilities.Length].Id)), 100), "Allocate balanced budget");
+            Check(focused.AllocatedPoints == balanced.AllocatedPoints && balanced.AllocatedPoints == 24, "Budgets are equal, not constrained by route quotas");
+            Check(MainlineGrowth.Power(focused) > MainlineGrowth.Power(balanced), "Breadth trades primary depth instead of closing a route");
+            Check(abilities.All(art => balanced.Investment(art.Id) > 0 && MainlineGrowth.Stats(balanced, art.Id).Damage > AbilityTuning.Get(art.Id, balanced.Ranks[(int)art.Id]).Damage), "Every balanced investment has an actual effect");
+            foreach (var unlock in UpgradeCatalog.All.Where(upgrade => upgrade.Owner == hero && upgrade.Kind == UpgradeKind.Unlock))
+                Check(focused.TryApply(unlock, 100), "Focused players can freely add another ability later");
+            Check(focused.TrainingRank(primaryTraining.Id) == 24, "Changing direction never resets prior investment");
+            var finiteCost = UpgradeCatalog.All.Where(upgrade => (upgrade.Owner == null || upgrade.Owner == hero) && upgrade.MaxRank != int.MaxValue).Sum(upgrade => upgrade.MaxRank);
+            Check(finiteCost > 26, "The reference standard-run budget cannot finish every finite upgrade; sustained training adds further depth");
+        }
+    }
+
+    public static void AuxiliaryTraining()
+    {
+        var reimu = new RunState(HeroKind.Reimu, 42);
+        Learn(reimu, UpgradeCatalog.BoundaryUnlock, UpgradeCatalog.YinYangUnlock, MainlineGrowth.BoundaryPower, MainlineGrowth.YinYangPower, UpgradeCatalog.Cluster, UpgradeCatalog.Bind, UpgradeCatalog.Clear, UpgradeCatalog.Launch);
+        Target(reimu, new(150, 0));
+        reimu.Step(default);
+        Check(reimu.Field != null && reimu.Field.Damage > AbilityTuning.Get(ArtKind.Boundary, 1).Damage * reimu.Power, "Boundary training reaches the actual field damage");
+        Check(MainlineGrowth.Stats(reimu.Build, ArtKind.YinYang).Damage > AbilityTuning.Get(ArtKind.YinYang, 1).Damage, "Orbit and launched orbs share their own potency");
+        var marisa = new RunState(HeroKind.Marisa, 42);
+        Learn(marisa, UpgradeCatalog.HerbsUnlock, UpgradeCatalog.MasterSparkUnlock, MainlineGrowth.HerbPotency, MainlineGrowth.SparkPower, UpgradeCatalog.HerbBrew, UpgradeCatalog.HerbReserve, UpgradeCatalog.SparkSteer, UpgradeCatalog.SparkWide, UpgradeCatalog.SparkResonance, UpgradeCatalog.SparkClear, UpgradeCatalog.FinalSpark);
+        MarisaHerbSystem.Step(marisa);
+        var medicine = marisa.Pickups.Single(pickup => pickup.Herbal);
+        Check(medicine.Value == AbilityTuning.Get(ArtKind.Herbs, 1).Damage + 1, "Medicine training provides one real healing point");
+        Learn(marisa, MainlineGrowth.HerbPotency);
+        Check(marisa.Pickups.Single(pickup => pickup.Herbal).Value == medicine.Value, "Existing medicine is not retroactively refreshed");
+        MarisaBeamSystem.Start(marisa, false);
+        Check(marisa.Beam!.Damage > AbilityTuning.Get(ArtKind.MasterSpark, 1).Damage * marisa.Power && marisa.Beam.Steering && marisa.Beam.ClearsBullets, "Beam potency combines with steering, width, resonance and clearing");
+        var before = marisa.Beam.Damage;
+        MarisaBeamSystem.Start(marisa, true);
+        Check(marisa.Beam!.Damage > before, "Signature beam retains its own trained potency");
+        Check(marisa.Build.CanChoose(UpgradeCatalog.Get(UpgradeCatalog.StarMass), 100), "Training medicine and beam never excludes star distribution growth");
+    }
+
+    public static void MixedBulletClearing()
+    {
+        var run = new RunState(HeroKind.Reimu, 42);
+        run.Projectiles.Add(new() { Position = Vector2.Zero, Hostile = true, Radius = 5, Life = 8 });
+        run.Projectiles.Add(new() { Position = Vector2.Zero, Radius = 5, Life = 8 });
+        for (var index = 0; index < 3; index++) run.Stars.Add(new() { Position = Vector2.Zero, Hostile = true, OwnerId = 77, Mass = 2, Life = 8, Duration = 8 });
+        run.Stars.Add(new() { Position = Vector2.Zero, Mass = 3, Life = 8, Duration = 8 });
+        var budget = 3;
+        ReimuAbilitySystem.ClearProjectiles(run, Vector2.Zero, Vector2.Zero, ref budget);
+        Check(budget == 0 && run.Projectiles.Count(projectile => projectile.Hostile && projectile.Life <= 0) + run.Stars.Count(star => star.Hostile && star.Life <= 0) == 3, "Projectiles and hostile stars share one unchanged budget");
+        Check(run.Stars.Count == 4 && run.Stars.Single(star => !star.Hostile).Life == 8 && run.Projectiles.Single(projectile => !projectile.Hostile).Life == 8, "Clearing marks safely and preserves friendly entities");
+        budget = 3;
+        CharacterAttackRules.ClearSegment(run, Vector2.Zero, Vector2.Zero, 24, ref budget, false);
+        Check(budget == 1 && run.Stars.Single(star => !star.Hostile).Life == 0 && run.Stars.Count(star => star.Hostile && star.Life > 0) == 1, "Boss orb clearing targets player bullets and stars without friendly fire");
+        var signature = new RunState(HeroKind.Reimu, 42);
+        Learn(signature, UpgradeCatalog.DreamSeal);
+        signature.Stars.Add(new() { Position = new(600, 0), Hostile = true, OwnerId = 77, Mass = 2, Life = 8, Duration = 8 });
+        signature.Stars.Add(new() { Position = new(-600, 0), Mass = 2, Life = 8, Duration = 8 });
+        for (var index = 0; index < 20; index++)
+            signature.Projectiles.Add(new() { Position = Geometry.Angle(index * MathF.Tau / 20) * 25, Hostile = true, Radius = 5, Life = 2 });
+        signature.Step(default);
+        Check(signature.SpellsCast == 1 && signature.Stars.All(star => !star.Hostile || star.Life <= 0) && signature.Stars.Any(star => !star.Hostile && star.Life > 0), "Signature clears hostile stars globally, never the player's own field");
+        var beam = new RunState(HeroKind.Marisa, 42);
+        Learn(beam, UpgradeCatalog.MasterSparkUnlock, UpgradeCatalog.SparkClear);
+        MarisaBeamSystem.Start(beam, false);
+        beam.Beam!.Warmup = 0;
+        for (var index = 0; index < MarisaTuning.BeamClearLimit + 2; index++)
+            beam.Stars.Add(new() { Position = beam.Beam.Direction * 150, Hostile = true, OwnerId = 77, Mass = 2, Life = 8, Duration = 8 });
+        beam.Stars.Add(new() { Position = beam.Beam.Direction * 150, Mass = 2, Life = 8, Duration = 8 });
+        MarisaBeamSystem.Step(beam);
+        Check(beam.Stars.Count(star => star.Hostile && star.Life <= 0) == MarisaTuning.BeamClearLimit && beam.Stars.Single(star => !star.Hostile).Life == 8, "Beam clearing includes enemy stars under the existing per-pulse budget");
     }
 
     public static void Factions()

@@ -79,7 +79,7 @@ public partial class DebugOverlay : Control
             GameText.Format($".NET 托管堆: {GC.GetTotalMemory(false) / 1048576.0:0.0} MiB"),
             $"Batch: {Canvas?.VisibleBatchInstances ?? 0}   Upload CPU: {Canvas?.BatchBuildMilliseconds ?? 0:0.00} ms   Target: {GetViewport().GetTexture().GetSize()}",
             GameText.Get("内存值不是进程总占用；主循环耗时不是 GPU 耗时。"),
-            Run == null ? "" : GameText.Format($"阶段 {Run.StageName} · 定式 {MainlineGrowth.Name(Run.Build.Stance)} · 续战 {Run.EndlessRounds}"),
+            Run == null ? "" : GameText.Format($"阶段 {Run.StageName} · 投入 {Run.Build.AllocatedPoints} · 续战 {Run.EndlessRounds}"),
             Run?.Boss?.Character is { } character ? GameText.Format($"首领 {CharacterCatalog.Get(character).Name} · 阶段 {(Run.Boss.Abilities?.Phase ?? 0) + 1} · 生命倍率 {Run.Boss.ThreatScale:0.0}") : ""
         ];
     }

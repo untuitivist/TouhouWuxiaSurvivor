@@ -87,7 +87,7 @@ public sealed class ProfileStore
                 if (Data.FastestLongVictory <= 0 || time < Data.FastestLongVictory) Data.FastestLongVictory = time;
             }
         }
-        Data.LastStance = run.Build.Stance.ToString();
+        Data.LastStance = "";
         Save();
     }
 
@@ -98,7 +98,7 @@ public sealed class ProfileStore
         Data.BestEndlessTime = Math.Max(Data.BestEndlessTime, run.EndlessTime);
         Data.BestKills = Math.Max(Data.BestKills, run.Kills);
         Data.BestGrazes = Math.Max(Data.BestGrazes, run.Grazes);
-        Data.LastStance = run.Build.Stance.ToString();
+        Data.LastStance = "";
         Save();
     }
 

@@ -12,8 +12,11 @@ if (args.Contains("--marisa-balance")) return MarisaBalance.Run();
 var tests = new (string Name, Action Body)[]
 {
     ("canonical dual-role characters exclude the playable identity", LongRunTests.Identities),
-    ("finite stances allow deferral and reject incompatible or forged upgrades", LongRunTests.Stances),
-    ("stance rhythms are distinct and existing stars retain their snapshot", LongRunTests.Cadence),
+    ("free choices keep all directions reachable and reject forged upgrades", LongRunTests.FreeChoices),
+    ("independent growth combines without order dependence or star resampling", LongRunTests.CombinedGrowth),
+    ("balanced and focused builds spend equal budgets without route locks", LongRunTests.InvestmentBudget),
+    ("auxiliary training changes real fields, medicine and beams", LongRunTests.AuxiliaryTraining),
+    ("mixed projectile and star clearing preserves budgets, factions and traversal safety", LongRunTests.MixedBulletClearing),
     ("hostile stars respect factions, escape and independent capacity", LongRunTests.Factions),
     ("character Boss attacks preserve telegraphs and finite defensive budgets", LongRunTests.BossTelegraphs),
     ("optional continuation preserves victory and prevents duplicate transitions", LongRunTests.Continuation),

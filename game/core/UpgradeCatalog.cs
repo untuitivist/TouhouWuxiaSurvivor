@@ -32,19 +32,19 @@ public static class UpgradeCatalog
 
     private static IEnumerable<UpgradeDefinition> Create()
     {
-        yield return new(MainlineGrowth.RapidOfuda, ArtKind.Ofuda, UpgradeKind.Stance, "定式 · 疾札",
-            "均匀连发，单札较轻，持续补伤。本局放弃叠札；追踪、爆炸和辅助仍可兼修。", HeroKind.Reimu, 1, RequiredRank: 1, Stance: MainlineStance.RapidOfuda);
-        yield return new(MainlineGrowth.ChargedOfuda, ArtKind.Ofuda, UpgradeKind.Stance, "定式 · 叠札",
-            "自动积蓄后集中出手，每札穿过一个额外目标，保留输出空档。本局放弃疾札；积蓄可移动，追踪和爆炸仍可兼修。", HeroKind.Reimu, 1, RequiredRank: 1, Stance: MainlineStance.ChargedOfuda);
-        yield return new(MainlineGrowth.YoungStars, ArtKind.Stars, UpgradeKind.Stance, "定式 · 星潮",
-            "新生星早段撕扯增强，随后回到基础。本局放弃星域；质量、变谱和寿命仍可成长，新星生效。", HeroKind.Marisa, 1, RequiredRank: 1, Stance: MainlineStance.YoungStars);
-        yield return new(MainlineGrowth.MatureStars, ArtKind.Stars, UpgradeKind.Stance, "定式 · 星域",
-            "星体逐渐进入较强的成熟阶段，建立星场需要时间。本局放弃星潮；不赠送重星，新星生效。", HeroKind.Marisa, 1, RequiredRank: 1, Stance: MainlineStance.MatureStars);
         yield return new(MainlineGrowth.OfudaPower, ArtKind.Ofuda, UpgradeKind.Training, "符 · 养威",
-            "反复强化御札威力，不增加实体，不解锁另一侧定式。", HeroKind.Reimu, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
+            "反复强化御札威力，不增加实体；可与行札、追踪、爆炸及其他术式共同成长。", HeroKind.Reimu, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
         yield return new(MainlineGrowth.OfudaTempo, ArtKind.Ofuda, UpgradeKind.Training, "符 · 行札",
-            "有限强化出手效率，不把两种定式压成同一节律。", HeroKind.Reimu, MainlineGrowth.TempoLimit, RequiredRank: 1, MinimumLevel: 3);
+            "提高御札出手效率，不替换已有威力和行为效果。", HeroKind.Reimu, MainlineGrowth.TempoLimit, RequiredRank: 1, MinimumLevel: 3);
         yield return Training(MainlineGrowth.StarPower, "星 · 撕扯精进", "反复强化单位质量撕扯，不增加星体数量。", AbilityTraits.None);
+        yield return new(MainlineGrowth.BoundaryPower, ArtKind.Boundary, UpgradeKind.Training, "阵 · 养威",
+            "反复强化封魔阵伤害，保留选点与禁锢；不占用其他术式的成长。", HeroKind.Reimu, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
+        yield return new(MainlineGrowth.YinYangPower, ArtKind.YinYang, UpgradeKind.Training, "玉 · 养威",
+            "反复强化环绕与发射阴阳玉的伤害，不增加实体或消弹预算。", HeroKind.Reimu, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
+        yield return new(MainlineGrowth.SparkPower, ArtKind.MasterSpark, UpgradeKind.Training, "炮 · 养威",
+            "反复强化普通与满蓄势魔炮伤害，可与追敌、广域、共鸣和消弹共同生效。", HeroKind.Marisa, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
+        yield return new(MainlineGrowth.HerbPotency, ArtKind.Herbs, UpgradeKind.Training, "药 · 药量精进",
+            "每次修习使每份新药多恢复 1 点生命；保留缓释与留药，不加快生成或增加存放上限。", HeroKind.Marisa, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
         foreach (var art in ArtCatalog.All)
         {
             if (art.Owner is { } owner)
@@ -88,7 +88,6 @@ public static class UpgradeCatalog
 
     public static string Requirement(UpgradeDefinition upgrade)
     {
-        if (upgrade.Kind == UpgradeKind.Stance) return "第四次成长起二选一 · 本局不可兼得";
         var ability = upgrade.RequiredRank > 0 ? $"已获得 {upgrade.Art.Name}" : "无需其他能力";
         return upgrade.MinimumLevel > 1 ? $"{ability} · 修习 {upgrade.MinimumLevel}" : ability;
     }
@@ -102,14 +101,14 @@ public static class UpgradeCatalog
         => upgrade.Kind == UpgradeKind.Training ? upgrade.MaxRank == int.MaxValue
             ? GameText.Format($"可反复修习 · 当前 {build.Rank(upgrade)} 重 · {Requirement(upgrade)}")
             : GameText.Format($"当前 {build.Rank(upgrade)} / {upgrade.MaxRank} 重 · {Requirement(upgrade)}")
-            : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior or UpgradeKind.Stance ? "一次领悟 · " + Requirement(upgrade)
+            : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior ? "一次领悟 · " + Requirement(upgrade)
             : upgrade.Kind == UpgradeKind.Recovery ? "即时生效" : $"{build.Rank(upgrade) + 1} / {upgrade.MaxRank} · " + Requirement(upgrade);
 
     public static string LearnedName(UpgradeDefinition upgrade, BuildState build)
         => upgrade.Kind == UpgradeKind.Training ? GameText.Format($"{upgrade.Name} {build.Rank(upgrade)}重") : GameText.Get(upgrade.Name);
 
     public static IEnumerable<UpgradeDefinition> Behaviors(BuildState build, ArtKind ability)
-        => All.Where(upgrade => upgrade.Ability == ability && upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training or UpgradeKind.Stance && build.Rank(upgrade) > 0);
+        => All.Where(upgrade => upgrade.Ability == ability && upgrade.Kind is UpgradeKind.Behavior or UpgradeKind.Training && build.Rank(upgrade) > 0);
 }
 
 public static class UpgradeOffers
@@ -118,21 +117,18 @@ public static class UpgradeOffers
     {
         var candidates = UpgradeCatalog.All.Where(upgrade => upgrade.Kind != UpgradeKind.Recovery && build.CanChoose(upgrade, level)).ToList();
         var result = new List<UpgradeDefinition>(3);
-        var stances = candidates.Where(upgrade => upgrade.Kind == UpgradeKind.Stance).ToArray();
-        if (stances.Length > 0)
-        {
-            foreach (var stance in stances) { result.Add(stance); candidates.Remove(stance); }
-            Take(candidates.Where(upgrade => upgrade.Ability == MainlineGrowth.Primary(build.Hero)).ToArray());
-        }
-        else
-        {
-            Take(candidates.Where(upgrade => upgrade.Ability == MainlineGrowth.Primary(build.Hero)).ToArray());
-            Take(candidates.Where(upgrade => build.Stance == MainlineStance.None ? upgrade.Kind == UpgradeKind.Unlock
-                : upgrade.Kind is UpgradeKind.Unlock or UpgradeKind.Behavior or UpgradeKind.Legacy).ToArray());
-        }
+        TakeDirection();
+        TakeDirection();
         while (result.Count < 3 && candidates.Count > 0) Take(candidates.ToArray());
         if (result.Count < 3) result.Add(UpgradeCatalog.Get(UpgradeCatalog.Recovery));
         return result;
+
+        void TakeDirection()
+        {
+            var directions = candidates.Where(upgrade => upgrade.Owner == build.Hero && result.All(chosen => chosen.Ability != upgrade.Ability))
+                .GroupBy(upgrade => upgrade.Ability).Select(group => group.ToArray()).ToArray();
+            if (directions.Length > 0) Take(directions[random.Next(directions.Length)]);
+        }
 
         void Take(UpgradeDefinition[] pool)
         {

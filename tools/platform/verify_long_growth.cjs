@@ -56,27 +56,32 @@ async function main() {
     try {
         for (const language of ['zh', 'en']) for (const mobile of [false, true]) for (const hero of ['reimu', 'marisa']) {
             const name = hero + '-' + language + (mobile ? '-touch' : '-desktop');
-            await scenario(name, language, mobile, 'stance-' + hero, async ({ page, state, click, ready, entry }) => {
+            await scenario(name, language, mobile, 'free-growth-' + hero, async ({ page, state, click, entry }) => {
                 const before = await state();
                 assert.equal(before.Phase, 'Choosing');
                 assert.equal(before.ChoiceIds.length, 3);
-                await page.screenshot({ path: path.join(output, name + '-stances.png') });
-                await click('growth_choice_1');
-                await page.waitForFunction(() => window.__touhouProbe.PendingStance.length > 0);
-                assert.equal((await state()).AllocatedPoints, before.AllocatedPoints);
+                assert.ok(before.ChoiceIds.every(id => !id.includes('.stance.')));
+                assert.notEqual(before.ChoiceAbilities[0], before.ChoiceAbilities[1]);
+                assert.equal(Object.hasOwn(before, 'Stance'), false);
+                assert.equal(Object.hasOwn(before, 'PendingStance'), false);
+                await page.screenshot({ path: path.join(output, name + '-choices.png') });
+                await click('growth_inspect');
+                await page.waitForFunction(() => window.__touhouProbe.Screen === 'build');
+                await page.screenshot({ path: path.join(output, name + '-build.png') });
+                assert.deepEqual((await state()).ChoiceIds, before.ChoiceIds);
                 assert.equal((await state()).PendingChoices, before.PendingChoices);
-                assert.equal((await state()).Stance, 'None');
+                await click('build_return');
+                await page.waitForFunction(() => window.__touhouProbe.Screen === 'choices');
                 await click('growth_choice_1');
                 await page.waitForFunction(() => window.__touhouProbe.Phase === 'Playing');
-                assert.equal((await state()).AllocatedPoints, before.AllocatedPoints + 1);
-                assert.equal((await state()).Stance, hero === 'reimu' ? 'RapidOfuda' : 'YoungStars');
-                await page.reload();
-                await ready();
-                await click('growth_choice_3');
-                await page.waitForFunction(() => window.__touhouProbe.Phase === 'Playing');
-                assert.equal((await state()).Stance, 'None');
-                assert.equal((await state()).AllocatedPoints, 4);
-                entry.confirmedAndDeferred = true;
+                const after = await state();
+                assert.equal(after.AllocatedPoints, before.AllocatedPoints + 1);
+                assert.equal(after.PendingChoices, before.PendingChoices - 1);
+                for (let index = 1; index < before.ChoiceIds.length; index++) {
+                    if (before.ChoiceAbilities[index] !== before.ChoiceAbilities[0])
+                        assert.ok(after.AvailableUpgradeIds.includes(before.ChoiceIds[index]), 'Other directions stay legal after investment');
+                }
+                entry.singleInputAndOtherDirectionsAvailable = true;
             });
         }
         for (const hero of ['reimu', 'marisa']) {

@@ -17,8 +17,7 @@ public static class ReimuAbilitySystem
             var homing = run.Build.Has(AbilityTraits.Homing);
             CharacterAttackRules.FireOfuda(run, run.PlayerPosition, heading, stats.Count, 510,
                 stats.Damage * run.Power * (homing ? ReimuTuning.HomingDamageMultiplier : 1), stats.Range / 510 + 0.6f,
-                homing ? 5.5f : 0, run.Build.Has(AbilityTraits.Blast), target.Id, state.VolleyCount++,
-                pierce: run.Build.Stance == MainlineStance.ChargedOfuda ? 1 : 0);
+                homing ? 5.5f : 0, run.Build.Has(AbilityTraits.Blast), target.Id, state.VolleyCount++);
             state.ShotCooldown = stats.Interval;
         }
         UpdateOrbit(run, target);
@@ -28,7 +27,7 @@ public static class ReimuAbilitySystem
     public static int OrbitCount(RunState run)
     {
         var rank = run.Ranks[(int)ArtKind.YinYang];
-        return rank <= 0 ? 0 : AbilityTuning.Get(ArtKind.YinYang, rank).Count - (run.Reimu.OrbAbsentRemaining > 0 ? 1 : 0);
+        return rank <= 0 ? 0 : MainlineGrowth.Stats(run.Build, ArtKind.YinYang).Count - (run.Reimu.OrbAbsentRemaining > 0 ? 1 : 0);
     }
 
     public static Vector2 OrbitPosition(RunState run, int index)
@@ -43,7 +42,7 @@ public static class ReimuAbilitySystem
         state.OrbAbsentRemaining = Math.Max(0, state.OrbAbsentRemaining - RunState.StepSeconds);
         var rank = run.Ranks[(int)ArtKind.YinYang];
         if (rank <= 0) return;
-        var stats = AbilityTuning.Get(ArtKind.YinYang, rank);
+        var stats = MainlineGrowth.Stats(run.Build, ArtKind.YinYang);
         if (run.Build.Has(AbilityTraits.Launch))
         {
             state.LaunchCooldown -= RunState.StepSeconds * run.CastSpeed;
@@ -84,23 +83,7 @@ public static class ReimuAbilitySystem
     }
 
     internal static void ClearProjectiles(RunState run, Vector2 start, Vector2 end, ref int budget)
-    {
-        if (budget <= 0) return;
-        var minimumX = MathF.Min(start.X, end.X);
-        var maximumX = MathF.Max(start.X, end.X);
-        var minimumY = MathF.Min(start.Y, end.Y);
-        var maximumY = MathF.Max(start.Y, end.Y);
-        foreach (ref var projectile in run.Projectiles.Active)
-        {
-            if (!projectile.Hostile || projectile.Life <= 0) continue;
-            var radius = ReimuTuning.ClearRadius + projectile.Radius;
-            if (projectile.Position.X < minimumX - radius || projectile.Position.X > maximumX + radius
-                || projectile.Position.Y < minimumY - radius || projectile.Position.Y > maximumY + radius) continue;
-            if (Geometry.SegmentDistanceSquared(projectile.Position, start, end) > radius * radius) continue;
-            projectile.Life = 0;
-            if (--budget <= 0) break;
-        }
-    }
+        => CharacterAttackRules.ClearSegment(run, start, end, ReimuTuning.ClearRadius, ref budget, true);
 
     private static void UpdateBoundary(RunState run, Enemy? target)
     {
@@ -112,7 +95,7 @@ public static class ReimuAbilitySystem
         if (run.Field == null && rank > 0 && state.FieldCooldown <= 0 && target != null
             && Vector2.DistanceSquared(target.Position, run.PlayerPosition) < range * range)
         {
-            var stats = AbilityTuning.Get(ArtKind.Boundary, rank);
+            var stats = MainlineGrowth.Stats(run.Build, ArtKind.Boundary);
             run.Field = new() { Position = clustered ? ClusterPosition(run, stats.Range) : run.PlayerPosition,
                 HalfSize = stats.Range, Remaining = stats.Duration, Damage = stats.Damage * run.Power };
             state.FieldCooldown = stats.Interval;

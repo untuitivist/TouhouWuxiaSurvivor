@@ -65,13 +65,7 @@ public static class BossAbilitySystem
         {
             var position = state.OrbitPosition(enemy.Position, index);
             if (Geometry.DistanceSquared(position, run.PlayerPosition) < 30 * 30) run.Hurt(12);
-            foreach (ref var projectile in run.Projectiles.Active)
-            {
-                if (clearBudget <= 0) break;
-                if (projectile.Hostile || projectile.Life <= 0 || Geometry.DistanceSquared(projectile.Position, position) > 24 * 24) continue;
-                projectile.Life = 0;
-                clearBudget--;
-            }
+            CharacterAttackRules.ClearSegment(run, position, position, 24, ref clearBudget, false);
         }
     }
 

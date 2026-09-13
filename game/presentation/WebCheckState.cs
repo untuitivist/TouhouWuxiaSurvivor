@@ -6,8 +6,9 @@ internal sealed class WebCheckState
     public string Language { get; set; } = "zh";
     public string Hero { get; set; } = "";
     public string Phase { get; set; } = "";
-    public string Stance { get; set; } = "";
-    public string PendingStance { get; set; } = "";
+    public string[] AvailableUpgradeIds { get; set; } = [];
+    public string[] ChoiceAbilities { get; set; } = [];
+    public int[] AbilityInvestments { get; set; } = [];
     public int AllocatedPoints { get; set; }
     public int PendingChoices { get; set; }
     public bool StandardVictory { get; set; }

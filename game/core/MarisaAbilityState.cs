@@ -22,7 +22,6 @@ public struct StarBody
 {
     public int OwnerId;
     public bool Hostile;
-    public MainlineStance Stance;
     public Vector2 Position;
     public Vector2 Velocity;
     public Vector2 Acceleration;

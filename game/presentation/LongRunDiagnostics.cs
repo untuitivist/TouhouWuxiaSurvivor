@@ -5,11 +5,15 @@ namespace Rebirth.Presentation;
 
 public partial class GameRoot
 {
-    private void PrepareStancePreview(HeroKind hero)
+    private void PrepareFreeGrowthPreview(HeroKind hero)
     {
         StartRun(hero, 42);
-        var refine = hero == HeroKind.Reimu ? "reimu.ofuda.refine" : "marisa.stars.refine";
-        for (var index = 0; index < 3; index++) run!.Build.TryApply(UpgradeCatalog.Get(refine), 100);
+        foreach (var art in ArtCatalog.Abilities(hero))
+        {
+            var upgrade = UpgradeCatalog.All.First(candidate => candidate.Ability == art.Id
+                && candidate.Kind == (run!.Ranks[(int)art.Id] == 0 ? UpgradeKind.Unlock : UpgradeKind.Refine));
+            Require(run!.Build.TryApply(upgrade, 100), "Prepare three independent investments");
+        }
         run!.AddExperience(run.NextLevelExperience);
         run.Step(default);
         canvas.ResetView();
@@ -18,9 +22,9 @@ public partial class GameRoot
 
     private bool PrepareLongRunFixture(string mode)
     {
-        if (mode is "stance-reimu" or "stance-marisa")
+        if (mode is "free-growth-reimu" or "free-growth-marisa")
         {
-            PrepareStancePreview(mode == "stance-reimu" ? HeroKind.Reimu : HeroKind.Marisa);
+            PrepareFreeGrowthPreview(mode == "free-growth-reimu" ? HeroKind.Reimu : HeroKind.Marisa);
             return true;
         }
         if (mode is not ("boss" or "boss-reimu" or "boss-marisa" or "challenge-result")) return false;
@@ -53,22 +57,25 @@ public partial class GameRoot
         foreach (var mode in new[] { 0, 1 })
         {
             profile.Data.TouchMode = mode;
-            PrepareStancePreview(hero);
+            PrepareFreeGrowthPreview(hero);
             var pending = run!.PendingChoices;
             var original = run.Choices.ToArray();
-            PressKey(Key.Key1);
-            Require(run.Build.Stance == MainlineStance.None && run.PendingChoices == pending && pendingStance == original[0].Id, "First input previews a stance without consuming growth");
+            Require(original.Take(2).Select(upgrade => upgrade.Ability).Distinct().Count() == 2, "Choices expose independent abilities without forcing a primary route");
             AssertUiBounds();
             if (GameText.IsEnglish) AssertEnglishScreen();
             OpenBuild();
             Require(Descendants(screen!).OfType<RichTextLabel>().All(label => label.GetThemeColor("default_color") == PixelSkin.Ink && label.Text.Length > 0), "Build details use readable dark ink on the light cards");
             CloseBuild();
-            Require(run.Choices.SequenceEqual(original) && pendingStance == original[0].Id, "Inspection preserves the pending stance and original cards");
+            Require(run.Choices.SequenceEqual(original) && run.PendingChoices == pending, "Inspection preserves the original choices without consuming growth");
+            var investment = run.Build.Investment(original[0].Ability);
             PressKey(Key.Key1);
-            Require(run.Build.Stance == original[0].Stance && run.PendingChoices == pending - 1, "Second input confirms exactly once");
-            PrepareStancePreview(hero);
+            Require(run.Build.AllocatedPoints == 4 && run.PendingChoices == pending - 1, "One input applies exactly one ordinary upgrade");
+            Require(run.Build.Investment(original[0].Ability) == investment + 1, "The chosen ability records its own investment");
+            foreach (var other in original.Where(upgrade => upgrade.Ability != original[0].Ability))
+                Require(run.Build.CanChoose(other, run.Level), "Investing in one direction keeps other directions legal");
+            PrepareFreeGrowthPreview(hero);
             PressKey(Key.Key3);
-            Require(run.Build.Stance == MainlineStance.None && run.Build.AllocatedPoints == 4, "The third card grants ordinary growth while deferring the stance");
+            Require(run.Build.AllocatedPoints == 4 && run.PendingChoices == 0, "The third card is a normal single-input choice, not a deferral");
         }
         profile.Data.TouchMode = touch;
         PrepareLongRunFixture("challenge-result");
@@ -77,7 +84,7 @@ public partial class GameRoot
         if (GameText.IsEnglish) AssertEnglishScreen();
         TestContinuationRecords();
         ShowTitle();
-        GD.Print("LONG_RUN_UI_PASS: stance confirmation, deferral, inspection, touch, continuation records and legacy profiles");
+        GD.Print("LONG_RUN_UI_PASS: free independent choices, one-input selection, inspection, touch, continuation records and legacy profiles");
     }
 
     private void TestContinuationRecords()

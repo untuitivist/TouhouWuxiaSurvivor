@@ -29,7 +29,6 @@ public sealed partial class RunState
         if (Phase != RunPhase.Choosing || index < 0 || index >= Choices.Count) return false;
         var upgrade = Choices[index];
         if (!Build.TryApply(upgrade, Level)) return false;
-        if (upgrade.Stance == MainlineStance.ChargedOfuda) Reimu.ShotCooldown = Math.Max(Reimu.ShotCooldown, MainlineGrowth.OfudaStats(Build).Interval);
         var art = upgrade.Ability;
         if (art == ArtKind.Vitality) Heal(35);
         if (art == ArtKind.Recovery)
@@ -113,6 +112,9 @@ public sealed partial class RunState
         SpellFlash = 0.65f;
         Invulnerability = Math.Max(Invulnerability, 0.6f);
         Projectiles.RemoveAll(projectile => projectile.Hostile);
+        foreach (ref var star in Stars.Active) if (star.Hostile) star.Life = 0;
+        Marisa.GravityTick = 0;
+        PlayerGravityAcceleration = Vector2.Zero;
         if (Hero == HeroKind.Reimu) CastDreamSeal();
         else MarisaBeamSystem.Start(this, true);
         foreach (ref var pickup in Pickups.Active) pickup.Attracted = true;
