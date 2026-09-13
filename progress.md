@@ -1,3 +1,7 @@
+## Alpha-0.1.11 Release — 2026-09-14 (Asia/Shanghai)
+
+- In progress: verified clean main, read existing release/deployment safeguards and recorded the new explicit dual-release authorization. No release artifact or live site has been changed yet.
+
 ## Short Runs / Distinct Boss Performances — 2026-09-14 (Asia/Shanghai)
 
 - COMPLETE implementation and local validation: core 74/74, localization 1128/1128, 18 unassisted standard wins in 255.7–323.6 seconds, native bilingual/touch/captures, full Web four-mode compatibility and 12 unchanged combat gates. Final native native-20260914-011245 and Web build 20260914-011337-572; source audit confirms 101 matching C# files.

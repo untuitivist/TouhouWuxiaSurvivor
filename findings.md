@@ -1,3 +1,9 @@
+# Alpha-0.1.11 Release — 2026-09-14 (Asia/Shanghai)
+
+- Initial main is clean at c94e17f, one commit ahead of origin/main. Runtime remains alpha-0.1.10; next optimization release follows established alpha-0.1.11 / Windows 0.1.11.0 naming.
+- Existing release gates require an exact clean committed source, matching Windows verification, four Web transport/isolation combinations, release-optimized Mono, visual/color checks and unchanged combat gates. Old dirty-source local candidates cannot be reused as release artifacts.
+- Discussion-only bouncing duel should use fixed role-specific kits and independent mode rules; no branch creation or gameplay implementation is authorized yet.
+
 # Short Runs / Distinct Boss Performances — 2026-09-14 (Asia/Shanghai)
 
 - Final XP budget is 10+7*level, not a blind restoration of 7+4*level: the latter gave roughly 27 upgrades and trivial Boss timing with larger per-rank gains. The chosen budget yields 17–21 pre-Boss choices in the 18 unassisted diagnostic cases; no hard route cap.

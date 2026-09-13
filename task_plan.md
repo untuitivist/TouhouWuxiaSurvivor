@@ -1,3 +1,14 @@
+## Alpha-0.1.11 Dual Release — 2026-09-14 (Asia/Shanghai)
+
+1. [complete] Confirmed alpha-0.1.11 / 0.1.11.0 metadata and retained all old changelog sections; hashed 41 historical release files. Freeze unchanged five-minute gameplay with the release-source commit.
+2. [in_progress] Rebuild and validate standalone Windows EXE and all Web compatibility/gameplay/performance gates from that exact committed revision.
+3. [pending] Push, synchronize server with pinned SSH, activate rollback-safe Web deployment and verify direct public entrances.
+4. [pending] Archive source/hash/delivery receipts, commit delivery records, and discuss the fixed-kit bouncing-duel idea without creating a branch or implementing another mode.
+
+Scope: user explicitly requests publishing the completed five-minute game. A possible second branch is a discussion, not authorization to create it. Preserve existing art, free builds, C# single project, controls, old files and Web compatibility.
+
+Setup: no applicable AGENTS.md files were found; initial ripgrep expression failed on an unescaped parenthesis, corrected with a simpler expression. No source was changed by those reads.
+
 ## Five-Minute Runs And Boss Danmaku — 2026-09-14 (Asia/Shanghai)
 
 1. [complete] Restored 240-second Boss arrival, four one-minute pressure stages and short-run XP budget (10+7*level); no route locks. Unassisted samples finish in 255.7–323.6 seconds with 17–21 pre-Boss upgrades.
