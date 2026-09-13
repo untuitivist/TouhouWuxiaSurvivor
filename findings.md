@@ -1,5 +1,10 @@
 # Alpha-0.1.11 Release — 2026-09-14 (Asia/Shanghai)
 
+- Delivered e4306bf Windows EXE (195276448 bytes, 36 checks) and Web alpha-0.1.11-e4306bf-20260913T190912Z. 101 shared C# files and 203 Windows inputs verified, 41 old release files and all historical changelog sections unchanged.
+- Core 74, translations 1128, JS 22, Python 20, all final Web/12 combat gates and three direct public entrances pass. Highest-load desktop FPS samples average/minimum 60; physical mobile remains untested. Direct starts: 10.120 / 10.113 / 9.861 seconds, measured core transfer 21652535 bytes.
+- Pinned SSH active.json, server Git and independent direct HTTPS entry hash agree; prior site routes and rollback backup remain. Frozen artifact identity is separate from the final documentation-only commit.
+- The bouncing-duel advice is a proposal, not scope approval. Existing RunState.PlayerPosition and player-oriented Marisa beam targeting show that proper combatant-owned/faction-aware ability contexts are needed, not a raw second-player copy. No branch or new mode was created.
+
 - Initial main is clean at c94e17f, one commit ahead of origin/main. Runtime remains alpha-0.1.10; next optimization release follows established alpha-0.1.11 / Windows 0.1.11.0 naming.
 - Existing release gates require an exact clean committed source, matching Windows verification, four Web transport/isolation combinations, release-optimized Mono, visual/color checks and unchanged combat gates. Old dirty-source local candidates cannot be reused as release artifacts.
 - Discussion-only bouncing duel should use fixed role-specific kits and independent mode rules; no branch creation or gameplay implementation is authorized yet.

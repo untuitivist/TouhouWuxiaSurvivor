@@ -1,6 +1,8 @@
 ## Alpha-0.1.11 Release — 2026-09-14 (Asia/Shanghai)
 
-- In progress: verified clean main, read existing release/deployment safeguards and recorded the new explicit dual-release authorization. No release artifact or live site has been changed yet.
+- COMPLETE dual delivery from e4306bf: Windows self-contained alpha-0.1.11 EXE and clean same-source Web activated as alpha-0.1.11-e4306bf-20260913T190912Z. All required local and direct public gates pass; exact hashes and rollback/source identity are recorded in the new receipts.
+- Retained all 41 historical files, old changelog sections, previous candidates and failed wrapper logs; no deletions. Corrected only the temporary runner environment after missing NODE_PATH, then reran every source gate before export.
+- Reviewed both standalone and public title/encounter/touch captures. Synchronized README, deployment and local-validation supplement; final documentation commit does not change runtime inputs. The fixed-kit bouncing-duel idea is assessed only, with no branch or implementation created.
 
 ## Short Runs / Distinct Boss Performances — 2026-09-14 (Asia/Shanghai)
 

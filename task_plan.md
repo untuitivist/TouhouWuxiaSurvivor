@@ -1,13 +1,13 @@
 ## Alpha-0.1.11 Dual Release — 2026-09-14 (Asia/Shanghai)
 
 1. [complete] Confirmed alpha-0.1.11 / 0.1.11.0 metadata and retained all old changelog sections; hashed 41 historical release files. Freeze unchanged five-minute gameplay with the release-source commit.
-2. [in_progress] Rebuild and validate standalone Windows EXE and all Web compatibility/gameplay/performance gates from that exact committed revision.
-3. [pending] Push, synchronize server with pinned SSH, activate rollback-safe Web deployment and verify direct public entrances.
-4. [pending] Archive source/hash/delivery receipts, commit delivery records, and discuss the fixed-kit bouncing-duel idea without creating a branch or implementing another mode.
+2. [complete] Rebuilt from clean e4306bf: Windows standalone 36 checks, core 74, localization 1128, JS 22, Python 20 and full Web compatibility/growth/visual/performance suite pass. All 101 shared C# files match.
+3. [complete] Source pushed; pinned SSH and server git pull confirm e4306bf. Activated alpha-0.1.11-e4306bf-20260913T190912Z; three direct public entrances, preserved routes, HTTPS entry/source/EXE identity and rollback backup verified.
+4. [complete] Source/hash/delivery receipts and full changelog snapshot archived; delivery documentation prepared for its separate commit. Fixed-kit bouncing-duel proposal assessed without creating a branch, copying the project or implementing a mode.
 
 Scope: user explicitly requests publishing the completed five-minute game. A possible second branch is a discussion, not authorization to create it. Preserve existing art, free builds, C# single project, controls, old files and Web compatibility.
 
-Setup: no applicable AGENTS.md files were found; initial ripgrep expression failed on an unescaped parenthesis, corrected with a simpler expression. No source was changed by those reads.
+Setup/errors: no applicable AGENTS.md files were found. Initial ripgrep expression had an unescaped parenthesis; two optional exploratory filenames were absent; no source changes resulted. First temporary release wrapper omitted NODE_PATH, so Playwright could not resolve; corrected environment and reran all gates with timestamped logs. A partial-line patch was rejected unchanged and reapplied as a full line. Failure evidence is retained in artifacts/short-run-release-20260914/.
 
 ## Five-Minute Runs And Boss Danmaku — 2026-09-14 (Asia/Shanghai)
 
