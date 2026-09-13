@@ -9,7 +9,7 @@ public static class MarisaTuning
     public const int BaseStarCount = 1;
     public const float StarInterval = 0.18f;
     public const float StarLifetime = 8;
-    public const float ExtendedLifetime = 0.6f;
+    public const float ExtendedLifetime = 2f;
     public const float StarPulse = 0.12f;
     public const float StarSpeed = 180;
     public const float EmissionAngleStep = 2.39996323f;

@@ -127,15 +127,22 @@ internal static class GrowthTests
         Check(run.Field != null && run.Field.Position.X >= 400 && boss.BoundRemaining > 0, "Dense remote group receives binding field");
         boss.Speed = 100;
         boss.Timer = 0;
-        boss.Abilities!.ShotCooldown = 0;
+        boss.Abilities!.ShotCooldown = 1;
         var before = boss.Position;
         var bound = run.Enemies.First(enemy => enemy.Kind == EnemyKind.Elite && enemy.Position.X >= 400);
         bound.Speed = 100;
         var boundBefore = bound.Position;
         run.Step(default);
         Check(Vector2.Distance(before, boss.Position) > 0 && Vector2.Distance(before, boss.Position) <= 110 * RunState.StepSeconds * ReimuTuning.BossSlowMultiplier, "Boss retains its own motion while slowed rather than rooted");
-        Check(run.Stars.Any(star => star.Hostile) && boss.Abilities is { Elapsed: > 0 }, "The opposing Marisa Boss keeps emitting stars while bound");
         Check(bound.Position == boundBefore, "Normal enemy rooted");
+        boss.Abilities.ShotCooldown = 0;
+        for (var tick = 0; tick < 75; tick++)
+        {
+            boss.BoundRemaining = ReimuTuning.BindDuration;
+            EnemySystem.Step(run);
+        }
+        Check(run.Projectiles.Any(projectile => projectile.Hostile && projectile.OwnerId == boss.Id && projectile.Art == ArtKind.Stars)
+            && run.Stars.All(star => !star.Hostile), "Binding slows repositioning but never stops the independently telegraphed straight-star choreography");
     }
 
     public static void Orbit()

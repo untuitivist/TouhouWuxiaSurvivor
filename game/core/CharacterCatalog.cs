@@ -13,9 +13,9 @@ public static class CharacterCatalog
     public static IReadOnlyList<CharacterDefinition> All { get; } = Array.AsReadOnly(new[]
     {
         new CharacterDefinition("character_base_00", new(HeroKind.Reimu, "博丽灵梦", 110, 1, 205,
-            Array.AsReadOnly(new[] { ArtKind.Ofuda })), new(36000, 88, EnemyMassCatalog.Boss, 32, 20)),
+            Array.AsReadOnly(new[] { ArtKind.Ofuda })), new(24000, 88, EnemyMassCatalog.Boss, 32, 20)),
         new CharacterDefinition("character_th02_soew_02", new(HeroKind.Marisa, "雾雨魔理沙", 100, 1, 220,
-            Array.AsReadOnly(new[] { ArtKind.Stars })), new(34000, 96, EnemyMassCatalog.Boss, 32, 20))
+            Array.AsReadOnly(new[] { ArtKind.Stars })), new(24000, 96, EnemyMassCatalog.Boss, 32, 20))
     });
 
     public static CharacterDefinition Get(HeroKind hero)

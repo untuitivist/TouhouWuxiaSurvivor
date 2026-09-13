@@ -86,15 +86,7 @@ public static class RunPilot
         }
         if (run.Boss is not { } boss) return cost;
         if (Geometry.DistanceSquared(destination, boss.Position) < (boss.Radius + 20) * (boss.Radius + 20)) cost += 20;
-        if (boss.Abilities?.Field is { } field
-            && Math.Max(Math.Abs(destination.X - field.Position.X), Math.Abs(destination.Y - field.Position.Y)) < field.HalfSize + 15) cost += 16;
-        if (boss.Abilities?.Beam is { } beam)
-        {
-            var offset = destination - boss.Position;
-            var along = Vector2.Dot(offset, beam.Direction);
-            var across = Math.Abs(offset.X * beam.Direction.Y - offset.Y * beam.Direction.X);
-            if (along > 0 && along < beam.Length && across < beam.HalfWidth + 25) cost += 16;
-        }
+        if (boss.Abilities?.Beam is { } beam && beam.InLane(destination, 25)) cost += 16;
         return cost;
     }
 
@@ -156,25 +148,19 @@ public static class RunPilot
             if (distance < radius && distance > 0) movement += away / distance * 2;
             if (distance < radius - 20) danger = true;
         }
-        if (run.Boss?.Abilities?.Field is { } field)
+        if (run.Boss?.Abilities?.Beam is { } beam)
         {
-            var away = run.PlayerPosition - field.Position;
-            if (Math.Max(Math.Abs(away.X), Math.Abs(away.Y)) < field.HalfSize + 25)
+            var offset = run.PlayerPosition - beam.Origin;
+            for (var index = 0; index < beam.Count; index++)
             {
-                movement = away.LengthSquared() < 1 ? Vector2.UnitX : Geometry.Direction(away);
-                danger |= field.Warmup < 0.35f;
-            }
-        }
-        if (run.Boss is { Abilities.Beam: { } beam } boss)
-        {
-            var offset = run.PlayerPosition - boss.Position;
-            var along = Vector2.Dot(offset, beam.Direction);
-            var normal = new Vector2(-beam.Direction.Y, beam.Direction.X);
-            var across = Vector2.Dot(offset, normal);
-            if (along > 0 && along < beam.Length && Math.Abs(across) < beam.HalfWidth + 70)
-            {
+                var bearing = beam.Bearing(index);
+                var along = Vector2.Dot(offset, bearing);
+                var normal = new Vector2(-bearing.Y, bearing.X);
+                var across = Vector2.Dot(offset, normal);
+                if (along <= 0 || along >= beam.Length || Math.Abs(across) >= beam.HalfWidth + 35) continue;
                 movement = normal * (across < 0 ? -1 : 1);
                 danger |= beam.Warmup < 0.35f;
+                break;
             }
         }
         movement = AvoidStarFields(run, movement);

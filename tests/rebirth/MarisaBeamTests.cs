@@ -121,6 +121,8 @@ internal static class MarisaBeamTests
                 if (tick % 30 == 0) run.AddExperience(run.NextLevelExperience);
                 stress.Refill(run);
                 run.Step(default);
+                stress.CompleteStep(run);
+                MarisaGrowthTests.Check(run.Phase == RunPhase.Playing && run.Ticks == tick + 1, "Every published stress snapshot resolves choices after exactly one real tick");
             }
             stress.Refill(run);
             MarisaGrowthTests.Check(run.Ticks == 120 && run.Phase == RunPhase.Playing, "Stress simulation keeps advancing through choices");

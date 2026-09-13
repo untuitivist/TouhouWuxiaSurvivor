@@ -84,16 +84,31 @@ async function main() {
                 entry.singleInputAndOtherDirectionsAvailable = true;
             });
         }
-        for (const hero of ['reimu', 'marisa']) {
-            await scenario('boss-' + hero, 'zh', false, 'boss-' + hero, async ({ page, state, entry }) => {
-                const current = await state();
-                assert.equal(current.BossCharacter.toLowerCase(), hero);
-                assert.notEqual(current.BossCharacter, current.Hero);
-                assert.equal(current.BossPhase, 2);
-                if (hero === 'marisa') assert.ok(current.HostileStars > 0 && current.HostileStars <= 24);
-                await page.screenshot({ path: path.join(output, 'boss-' + hero + '.png') });
-                entry.state = current;
-            });
+        for (const language of ['zh', 'en']) {
+            for (const fixture of ['boss-reimu', 'boss-reimu-warning', 'boss-marisa', 'boss-marisa-active', 'boss-marisa-ring']) {
+                const hero = fixture.includes('reimu') ? 'reimu' : 'marisa';
+                const mobile = fixture.endsWith('warning') || fixture.endsWith('active');
+                await scenario(fixture + '-' + language, language, mobile, fixture, async ({ page, state, entry }) => {
+                    const current = await state();
+                    assert.equal(current.BossCharacter.toLowerCase(), hero);
+                    assert.notEqual(current.BossCharacter, current.Hero);
+                    assert.equal(current.BossPhase, 2);
+                    assert.equal(current.HostileStars, 0);
+                    assert.equal(current.BossHomingBullets, 0);
+                    assert.ok(current.BossBullets <= 320);
+                    if (fixture === 'boss-reimu' || fixture.endsWith('ring')) assert.ok(current.BossBullets > 0);
+                    if (fixture.endsWith('warning')) {
+                        assert.equal(current.BossVolleyWarning, true);
+                        assert.equal(current.BossBullets, 0);
+                    }
+                    if (fixture === 'boss-marisa' || fixture.endsWith('active')) {
+                        assert.equal(current.BossBeamCount, 3);
+                        assert.equal(current.BossBeamActive, fixture.endsWith('active'));
+                    }
+                    await page.screenshot({ path: path.join(output, fixture + '-' + language + '.png') });
+                    entry.state = current;
+                });
+            }
         }
         for (const language of ['zh', 'en']) {
             await scenario('continuation-' + language, language, true, 'challenge-result', async ({ page, state, click, entry }) => {
@@ -110,7 +125,7 @@ async function main() {
                 entry.continuedWithoutDuplicateVictory = true;
             });
         }
-        report.passed = report.checks.length === 12 && report.checks.every(check => check.passed);
+        report.passed = report.checks.length === 20 && report.checks.every(check => check.passed);
         assert.equal(report.passed, true);
         console.log('LONG_GROWTH_WEB_PASS', output);
     } finally {

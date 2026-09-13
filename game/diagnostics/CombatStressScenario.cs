@@ -28,6 +28,8 @@ public sealed class CombatStressScenario
         Refill(run);
     }
 
+    public void CompleteStep(RunState run) => RunPilot.ResolveChoices(run);
+
     public void Refill(RunState run)
     {
         RunPilot.ResolveChoices(run);

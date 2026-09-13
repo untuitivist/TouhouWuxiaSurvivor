@@ -21,9 +21,9 @@ internal static class LongRunTests
             var run = new RunState(hero, 42);
             var boss = run.SpawnEnemy(EnemyKind.Boss, new(300, 0));
             Check(boss.Character == candidates[0].Id && boss.Abilities?.Hero == boss.Character, "Boss runtime uses the canonical opposing profile");
-            Check(!ReferenceEquals(run.Build, boss.Abilities!.Build) && !ReferenceEquals(run.Marisa, boss.Abilities.Marisa), "Player and Boss state are independent");
+            Check(typeof(BossAbilityState).GetProperties().All(property => property.PropertyType != typeof(BuildState) && property.PropertyType != typeof(MarisaAbilityState)), "Boss state has no playable build or gravity emitter");
             var other = new RunState(hero, 42).SpawnEnemy(EnemyKind.Boss, new(300, 0));
-            boss.Abilities.ShotCooldown = 0;
+            boss.Abilities!.ShotCooldown = 0;
             Check(other.Abilities!.ShotCooldown == 1.5f && boss.MaxHealth == candidates[0].Boss.Health, "No encounter state leaks");
         }
     }
@@ -126,7 +126,7 @@ internal static class LongRunTests
         Learn(marisa, UpgradeCatalog.HerbsUnlock, UpgradeCatalog.MasterSparkUnlock, MainlineGrowth.HerbPotency, MainlineGrowth.SparkPower, UpgradeCatalog.HerbBrew, UpgradeCatalog.HerbReserve, UpgradeCatalog.SparkSteer, UpgradeCatalog.SparkWide, UpgradeCatalog.SparkResonance, UpgradeCatalog.SparkClear, UpgradeCatalog.FinalSpark);
         MarisaHerbSystem.Step(marisa);
         var medicine = marisa.Pickups.Single(pickup => pickup.Herbal);
-        Check(medicine.Value == AbilityTuning.Get(ArtKind.Herbs, 1).Damage + 1, "Medicine training provides one real healing point");
+        Check(medicine.Value == AbilityTuning.Get(ArtKind.Herbs, 1).Damage + 4, "Medicine training provides four real healing points");
         Learn(marisa, MainlineGrowth.HerbPotency);
         Check(marisa.Pickups.Single(pickup => pickup.Herbal).Value == medicine.Value, "Existing medicine is not retroactively refreshed");
         MarisaBeamSystem.Start(marisa, false);
@@ -208,53 +208,14 @@ internal static class LongRunTests
         run.HurtContinuous(10);
         Check(run.Health == remainingHealth, "Dash invulnerability also protects against tearing");
         run.Stars.Clear();
-        for (var index = 0; index < 100; index++) MarisaProjectileSystem.CastFrom(run, boss.Position, state.Build, state.Marisa, 2, 1, boss.Id);
-        Check(run.Stars.Count == BossAbilitySystem.StarLimit && state.Marisa.BlockedEmissions == 100 - BossAbilitySystem.StarLimit, "Boss star capacity is separately enforced without queued burst emissions");
+        run.Stars.Add(new() { Position = boss.Position, Hostile = true, OwnerId = boss.Id, Mass = 2, Life = 8, Duration = 8 });
         run.World.Grid.Rebuild(run.Enemies);
         run.Stars.Add(new() { Position = boss.Position, Mass = 2, Life = 8, Duration = 8, DamageRate = 1e9f });
         MarisaProjectileSystem.Step(run);
         Check(run.Phase == RunPhase.Won && boss.Abilities == null && run.Stars.All(star => !star.Hostile), "A star can kill its owner enemy during a span traversal with safe deferred cleanup");
     }
 
-    public static void BossTelegraphs()
-    {
-        var run = new RunState(HeroKind.Reimu, 42);
-        var boss = run.SpawnEnemy(EnemyKind.Boss, new(300, 0));
-        boss.Health = boss.MaxHealth * 0.6f;
-        var state = boss.Abilities!;
-        state.SpecialCooldown = 0;
-        run.Step(default);
-        Check(state.Phase == 1 && state.Beam is { Warmup: > 1 }, "Boss Spark gives a visible windup");
-        Check(!CharacterAttackRules.BeamContains(state.Beam!, boss.Position, run.PlayerPosition, 5), "Telegraph is not a damaging beam");
-        var oldDirection = state.Beam!.Direction;
-        run.TogglePause();
-        var elapsed = state.Elapsed;
-        run.Step(new(Vector2.One));
-        Check(state.Elapsed == elapsed && state.Beam.Direction == oldDirection, "Pause freezes all Boss timers and effects");
-        run.TogglePause();
-        for (var tick = 0; tick < 120; tick++)
-        {
-            oldDirection = state.Beam?.Direction ?? Vector2.Zero;
-            run.Step(new(Vector2.UnitY));
-            if (state.Beam is { } beam && oldDirection != Vector2.Zero)
-                Check(Math.Abs(Geometry.AngleDelta(MathF.Atan2(oldDirection.Y, oldDirection.X), MathF.Atan2(beam.Direction.Y, beam.Direction.X))) <= BossAbilitySystem.BeamTurnRate * RunState.StepSeconds + 0.0001f, "Beam turn rate remains escapable");
-        }
-        state.Beam = null;
-        state.SpecialCooldown = 10000;
-        state.ShotCooldown = 10000;
-        boss.Health = boss.MaxHealth * 0.5f;
-        state.RecoveryCooldown = 0;
-        for (var tick = 0; tick < 2700; tick++) BossAbilitySystem.Step(run, boss, -Vector2.UnitX, 300);
-        Check(state.RemediesUsed == 2 && state.RecoveryRemaining <= 0, "Boss cannot heal infinitely");
-        var reimuRun = new RunState(HeroKind.Marisa, 42);
-        var reimu = reimuRun.SpawnEnemy(EnemyKind.Boss, new(300, 0));
-        reimu.Health = reimu.MaxHealth * 0.2f;
-        reimu.Abilities!.FieldCooldown = 0;
-        var orb = reimu.Abilities.OrbitPosition(reimu.Position, 0);
-        for (var index = 0; index < 20; index++) reimuRun.Projectiles.Add(new() { Position = orb, Life = 8 });
-        BossAbilitySystem.Step(reimuRun, reimu, -Vector2.UnitX, 300);
-        Check(reimu.Abilities.Field is { Warmup: > 1 } && reimuRun.Projectiles.Count(projectile => projectile.Life <= 0) == 3, "Boundary is telegraphed and Yin-Yang clear has a shared finite budget");
-    }
+    public static void BossTelegraphs() => ShortRunTests.BossPatterns();
 
     public static void Continuation()
     {
@@ -296,7 +257,7 @@ internal static class LongRunTests
                 if (tick % 30 == 0) run.Heal(run.MaxHealth);
                 run.Step(RunPilot.Input(run, tick));
                 Check(run.Phase != RunPhase.Lost, "Healing-assisted stability soak remains active");
-                Check(run.Enemies.Count <= RunState.EnemyLimit + 4 && run.Projectiles.Count <= RunState.ProjectileLimit && run.Stars.Count <= MarisaTuning.StarLimit + BossAbilitySystem.StarLimit, "Sixty-minute storage stays bounded");
+                Check(run.Enemies.Count <= RunState.EnemyLimit + 4 && run.Projectiles.Count <= RunState.ProjectileLimit && run.Stars.Count <= MarisaTuning.StarLimit, "Sixty-minute storage stays bounded");
                 Check(float.IsFinite(run.Health) && float.IsFinite(run.PlayerPosition.X) && run.Stars.All(star => float.IsFinite(star.Mass) && float.IsFinite(star.Position.X)), "Sixty-minute values stay finite");
             }
             Check(run.HasStandardVictory && run.IsEndless && run.EndlessRounds >= 3 && run.Build.AllocatedPoints > 26, "Soak includes standard victory, several continuation cycles and later growth");
@@ -307,6 +268,7 @@ internal static class LongRunTests
     public static void RecoveryWindows()
     {
         var run = new RunState(HeroKind.Reimu, 42);
+        Array.Clear(run.Ranks);
         run.Hurt(10);
         var health = run.Health;
         for (var tick = 0; tick < RunPacing.RecoveryWindowStart / RunState.StepSeconds + 1; tick++)
@@ -315,7 +277,7 @@ internal static class LongRunTests
             run.Step(default);
         }
         Check(run.Pickups.Count == 1 && run.Pickups[0].Healing && run.Pickups[0].Value == RunPacing.RecoveryAmount && run.Health == health, "Recovery window creates one nearby collectible, not free healing");
-        Check(RunPacing.SpawnRate(77, false, 0) < RunPacing.SpawnRate(75, false, 0), "Recovery window reduces pressure");
+        Check(RunPacing.SpawnRate(RunPacing.RecoveryWindowStart + 1, false, 0) < RunPacing.SpawnRate(RunPacing.RecoveryWindowStart - 1, false, 0), "Recovery window reduces pressure");
         var count = run.Pickups.Count;
         run.TogglePause();
         for (var tick = 0; tick < 600; tick++) run.Step(default);

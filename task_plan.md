@@ -1,3 +1,10 @@
+## Five-Minute Runs And Boss Danmaku — 2026-09-14 (Asia/Shanghai)
+
+1. [complete] Restored 240-second Boss arrival, four one-minute pressure stages and short-run XP budget (10+7*level); no route locks. Unassisted samples finish in 255.7–323.6 seconds with 17–21 pre-Boss upgrades.
+2. [complete] Visible count/field/width changes, meaningful potency steps and before/after bilingual readouts. Equal-investment DPS guardrails pass; independent star sampling, mass interactions and compatible choices remain intact.
+3. [complete] Boss-only volley/beam states replace playable build/emitter reuse. Snapshot warnings, authored corridors with collision clearance, non-homing shots, phase breathing windows and existing original textures pass regressions.
+4. [complete] Core 74, localization 1128, native bilingual/touch/captures, 18 unassisted runs, full local Web compatibility/presentation and 12 unchanged combat gates pass. Failed candidates and history retained; documentation and local-commit audit prepared. Published version/EXE unchanged; no push or deployment.
+
 ## Free Build Correction Release — 2026-09-13
 
 1. [complete] Removed the complete invented stance framework, its gameplay effects, candidate exclusions and confirmation UI. Controls, character Bosses, long runs, original assets and shared C# remain.

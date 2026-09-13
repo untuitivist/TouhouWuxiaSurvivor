@@ -71,6 +71,19 @@ public partial class GameCanvas
             if (!InView(position)) continue;
             if (projectile.Hostile)
             {
+                if (projectile.OwnerId > 0 && projectile.Art == ArtKind.Stars)
+                {
+                    batches["hostile_star_variants"].Add(position, new(22, 22), Colors.White, Clock * 1.4f,
+                        1 + projectile.TintIndex % StarColorVariants, StarColorFrames);
+                    continue;
+                }
+                if (projectile.OwnerId > 0 && projectile.Art == ArtKind.YinYang)
+                {
+                    var orbFrames = spriteFrames["actors/yin_yang_orb"].Frames;
+                    batches["actors/yin_yang_orb"].Add(position, new(28, 28), Colors.White, Clock,
+                        (int)(Clock * 10) % orbFrames, orbFrames);
+                    continue;
+                }
                 if (projectile.OwnerId > 0 && projectile.Art == ArtKind.Ofuda)
                 {
                     batches["hostile_ofuda"].AddDirected(position, new(26, 26), new Color(1, 0.7f, 0.7f), Palette.Vector(projectile.Velocity));

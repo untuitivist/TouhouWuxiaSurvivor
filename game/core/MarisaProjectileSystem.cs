@@ -4,8 +4,6 @@ namespace Rebirth.Core;
 
 internal static class MarisaProjectileSystem
 {
-    internal static bool Cast(RunState run, int rank)
-        => CastFrom(run, run.PlayerPosition, run.Build, run.Marisa, rank, run.Power);
 
     internal static int CountOwned(RunState run, int ownerId)
     {
@@ -14,9 +12,12 @@ internal static class MarisaProjectileSystem
         return count;
     }
 
-    internal static bool CastFrom(RunState run, Vector2 origin, BuildState build, MarisaAbilityState state, int rank, float power, int ownerId = 0)
+    internal static bool Cast(RunState run, int rank)
     {
-        if (CountOwned(run, ownerId) >= (ownerId == 0 ? MarisaTuning.StarLimit : BossAbilitySystem.StarLimit))
+        var origin = run.PlayerPosition;
+        var build = run.Build;
+        var state = run.Marisa;
+        if (CountOwned(run, 0) >= MarisaTuning.StarLimit)
         {
             state.BlockedEmissions = Math.Min(int.MaxValue - 1, state.BlockedEmissions) + 1;
             return false;
@@ -28,11 +29,10 @@ internal static class MarisaProjectileSystem
         var mass = MarisaTuning.RollMass(state.MassRandom, build);
         run.Stars.Add(new()
         {
-            OwnerId = ownerId, Hostile = ownerId != 0,
             Position = RunState.ClampToArena(origin + direction * 12),
             Velocity = direction * MarisaTuning.StarSpeed,
             Mass = mass,
-            DamageRate = AbilityTuning.Get(ArtKind.Stars, rank).Damage * mass * power * MainlineGrowth.Power(build),
+            DamageRate = AbilityTuning.Get(ArtKind.Stars, rank).Damage * mass * run.Power * MainlineGrowth.Power(build),
             Life = lifetime, Duration = lifetime, PulseTimer = MarisaTuning.StarPulse, Rotation = angle,
             VisualSeed = state.VisualRandom.Next()
         });
@@ -49,16 +49,13 @@ internal static class MarisaProjectileSystem
             run.Marisa.GravityMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
             started = System.Diagnostics.Stopwatch.GetTimestamp();
         }
-        var boss = run.Boss;
         foreach (ref var star in run.Stars.Active)
         {
             star.Life = Math.Max(0, star.Life - RunState.StepSeconds);
             if (star.Life <= 0) continue;
             star.Velocity = MarisaTuning.IntegrateGravity(star.Velocity, star.Acceleration, MarisaTuning.StarDrag, MarisaTuning.StarVelocityLimit);
             star.Position = RunState.ClampToArena(Geometry.Advance(star.Position, star.Velocity, RunState.StepSeconds));
-            star.Resonating = star.Hostile
-                ? boss?.Id == star.OwnerId && boss.Abilities is { Phase: 2, Beam: { } beam } && CharacterAttackRules.BeamContains(beam, boss.Position, star.Position, 0)
-                : run.Build.Has(AbilityTraits.SparkResonance) && run.BeamContains(star.Position);
+            star.Resonating = !star.Hostile && run.Build.Has(AbilityTraits.SparkResonance) && run.BeamContains(star.Position);
             star.PulseTimer -= RunState.StepSeconds;
             if (star.PulseTimer > 0) continue;
             star.PulseTimer += MarisaTuning.StarPulse;

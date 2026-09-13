@@ -2,7 +2,7 @@
 
 **东方 × 武侠 × 幸存者**。灵梦以御札、阴阳玉与结界退治；魔理沙以星光与魔炮开路。武侠体现在进退与取舍，不覆盖人物身份。
 
-当前候选版本：`alpha-0.1.8`。灵梦保留基础御札起步与兼修成长；魔理沙使用逐颗四射的多体引力星流、药菇续航与可解锁的追敌魔炮/星光共鸣。中英文设置、原有键盘/触屏操作保留，同一 C# 项目交付 Windows/Web。没有特殊要求时优先使用原作素材；实际发布状态以 `docs/deployment.md` 和版本回执为准。
+最近一次已记录的正式发布为 `alpha-0.1.10`。当前工作区已实现并验证尚未发布的五分钟节奏、明显升级与独立 Boss 弹幕；日常代码改动不会自动更新已有 EXE 或服务器。自由兼修、中英文、键鼠／触屏、同一 C# Windows/Web 核心与原作素材优先保持。当前规则见 `docs/run_growth_design.md` 顶部；发布状态以 `docs/deployment.md` 和回执为准。
 
 ## 成品交付
 
@@ -10,14 +10,14 @@
 
 今后正式发布同时交付自带依赖 EXE 与对应版本的网页更新部署。服务器首次 clone 同一仓库，后续 `git pull --ff-only`；构建产物单独传输、校验并保留回滚版本。部署步骤见 `docs/deployment.md`。
 
-待验收交付入口为 `release/TouhouWuxiaSurvivor_alpha-0.1.8.exe`，不是源码启动脚本；没有通过新构建双端门禁前，不代表该候选已上线。
+最近一次正式交付入口为 `release/TouhouWuxiaSurvivor_alpha-0.1.10.exe`，不是源码启动脚本；本轮未发布的修改不包含在这个历史成品中。
 沿用旧版本的单文件口径，PCK 与 .NET 构建输出内嵌；全部旧版 EXE 保留。
-版本来源为 `project.godot`，采用 `stage-major.release.optimization`，Windows 文件版本为 `0.1.8.0`。
+版本来源为 `project.godot`，采用 `stage-major.release.optimization`，已交付 Windows 文件版本为 `0.1.10.0`。
 导出命令为 `build_release.cmd`，同版本成品已存在时拒绝覆盖。下方脚本启动方式仅用于源码开发。
 
 ## 启动
 
-本版 EXE 保留**像素 UI、完整设置和 F3 诊断**，增加批量战斗与渲染优化及新图标。日常改动提交 Git；明确发布时升级版本号、导出自带依赖 EXE 并更新网页，保留历史产物。详情见 `CHANGELOG.md` 的 alpha-0.1.8 部分。
+EXE 保留**像素 UI、完整设置和 F3 诊断**。日常改动提交 Git；明确发布时才升级版本号、导出自带依赖 EXE 并更新网页，保留历史产物。本轮内容见 `CHANGELOG.md` 的“未发布”部分，历史成品见 alpha-0.1.10 部分。
 
 Windows 下双击项目根目录 `run_game.cmd`，或在本目录运行：
 

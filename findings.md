@@ -1,3 +1,15 @@
+# Short Runs / Distinct Boss Performances — 2026-09-14 (Asia/Shanghai)
+
+- Final XP budget is 10+7*level, not a blind restoration of 7+4*level: the latter gave roughly 27 upgrades and trivial Boss timing with larger per-rank gains. The chosen budget yields 17–21 pre-Boss choices in the 18 unassisted diagnostic cases; no hard route cap.
+- Increasing orbit radius at every rank reduced close-range coverage despite looking like an upgrade, so original orbit distances remain; extra orb count supplies the visible change. Medicine rank five is 24 HP to preserve an appreciable final step.
+- Boss phases retain identity but own only authored volley/beam state; gravity stars are now player-generated only. Warning geometry and colliders share snapshot state, and safe-corridor boundary tests include player and projectile radii. Original sheets provide all new Boss bullet presentation.
+- Final local Web source matches 101 C# files. Four compatibility configurations, 20 growth/Boss/continuation checks and all 12 combat gates pass. At load 320: Reimu simulation P95 1.9–2.1 ms; Marisa 5.5–5.7 ms, sampled minimum 59 FPS on desktop Edge/RTX 4070 Ti. No physical mobile claim.
+- The earlier Web 180-load Marisa failure sampled one Choosing frame at Tick 855 despite real-time performance. CompleteStep fixes only the benchmark publication boundary, with a per-step regression and a fresh full suite; failed sample retained. Version, EXE and historical release sections are unchanged.
+
+- Clean c932c1e inspected. The former alpha-0.1.8 baseline has BossArrival=240 and XP=7+4*level, versus current 1080 seconds and quadratic XP. Restore short cadence deliberately, not only shorten the timer while retaining eighteen-minute leveling.
+- BossAbilityState owns player BuildState/MarisaAbilityState and BossAbilitySystem calls FireOfuda/CastFrom with player-like homing, gravity stars, orbit damage and player-style fields. These couplings must be removed in favor of Boss-specific pattern/timing state while leaving canonical identity intact.
+- Runtime text, original assets and diagnostics need synchronized changes. No nested AGENTS.md under game/tests/tools/docs. The Node session reset; helpers were reinitialized after one harmless undefined-binding error. Ripgrep exit 1 here only means no scoped AGENTS files.
+
 # Free Build Correction Release — 2026-09-13
 
 - Delivered b17b5c5 as alpha-0.1.10-b17b5c5-20260913T093042Z, with matching Windows/Web/server metadata and direct public entry SHA 328dd502f7766662c85ea05a6ac3ba32e2b0c0133eb102ae1d69b2197bc6088d. Core 72, localization 1104, Windows 36, all browser suites and all 12 combat gates pass.

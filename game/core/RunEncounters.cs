@@ -28,7 +28,7 @@ public sealed partial class RunState
         if (Time >= nextElite && !BossSpawned)
         {
             SpawnEnemy(EnemyKind.Elite, SpawnPoint());
-            nextElite += 150;
+            nextElite += 80;
         }
         if (Time >= NextBossTime && !BossSpawned && Boss == null)
         {
@@ -68,7 +68,7 @@ public sealed partial class RunState
             var character = CharacterCatalog.BossCandidates(Hero).Single();
             var profile = character.Boss;
             enemy.Character = character.Id;
-            enemy.Abilities = new(character.Id, unchecked(Seed ^ enemy.Id * 7919));
+            enemy.Abilities = new(character.Id);
             enemy.MaxHealth = profile.Health * (1 + EndlessRounds * 0.6f);
             enemy.Health = enemy.MaxHealth;
             enemy.ThreatScale = 1 + EndlessRounds * 0.6f;

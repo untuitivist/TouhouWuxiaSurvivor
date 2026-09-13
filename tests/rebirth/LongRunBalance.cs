@@ -16,14 +16,15 @@ internal static class LongRunBalance
             {
                 var run = new RunState(hero, seed);
                 var bossChoices = -1;
-                for (var tick = 0; tick < 24 * 60 / RunState.StepSeconds && run.Phase is not (RunPhase.Won or RunPhase.Lost); tick++)
+                for (var tick = 0; tick < 6 * 60 / RunState.StepSeconds && run.Phase is not (RunPhase.Won or RunPhase.Lost); tick++)
                 {
                     RunPilot.ResolveChoices(run, preference);
                     run.Step(RunPilot.Input(run, tick));
                     if (run.BossSpawned && bossChoices < 0) bossChoices = run.Build.AllocatedPoints;
                 }
                 if (run.Phase == RunPhase.Won) wins++;
-                if (bossChoices >= 0 && bossChoices is not (>= 20 and <= 26)) failures++;
+                if (run.Phase == RunPhase.Won && run.Time > 330) failures++;
+                if (bossChoices >= 0 && bossChoices is not (>= 16 and <= 22)) failures++;
                 Console.WriteLine($"LONG_BALANCE hero={hero} preference={preference} seed={seed} result={run.Phase} time={run.Time:0.0} choices={run.Build.AllocatedPoints} bossChoices={bossChoices} health={run.Health:0.0} kills={run.Kills} investments={string.Join(',', ArtCatalog.Abilities(hero).Select(art => run.Build.Investment(art.Id)))} ranks={string.Join(',', run.Ranks)} traits={run.Build.Traits}");
             }
             if (wins == 0) failures++;

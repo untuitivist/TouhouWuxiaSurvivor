@@ -17,6 +17,11 @@ internal sealed class WebCheckState
     public string BossCharacter { get; set; } = "";
     public int BossPhase { get; set; }
     public int HostileStars { get; set; }
+    public int BossBullets { get; set; }
+    public int BossHomingBullets { get; set; }
+    public int BossBeamCount { get; set; }
+    public bool BossBeamActive { get; set; }
+    public bool BossVolleyWarning { get; set; }
     public int[] AbilityRanks { get; set; } = [];
     public int Traits { get; set; }
     public bool SignatureUnlocked { get; set; }

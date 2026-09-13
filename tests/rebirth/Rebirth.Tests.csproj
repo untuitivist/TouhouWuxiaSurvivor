@@ -15,6 +15,7 @@
     <Compile Include="HeroTests.cs" />
     <Compile Include="GrowthTests.cs" />
     <Compile Include="LongRunTests.cs" />
+    <Compile Include="ShortRunTests.cs" />
     <Compile Include="LongRunBalance.cs" />
     <Compile Include="GrowthBalance.cs" />
     <Compile Include="MarisaGrowthTests.cs" />

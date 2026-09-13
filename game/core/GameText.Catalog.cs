@@ -4,6 +4,22 @@ public static partial class GameText
 {
     private static readonly Dictionary<string, string> English = new(StringComparer.Ordinal)
     {
+        ["每份恢复 24 点生命；留药与缓释需分别领悟。"] = "Each restores 24 HP. Learn Reserve and Slow Release separately.",
+        ["威力系数增加基础值的 30%；符卡同样受益。"] = "Add 30% of base power. Also improves spell cards.",
+        ["施放频率系数 +0.22；不加快星群或魔炮伤害脉冲，也不加快药菇生成。"] = "Casting speed +0.22. Does not accelerate star or beam damage ticks or mushroom generation.",
+        ["每次修习使每份新药多恢复 4 点生命；保留缓释与留药，不加快生成或增加存放上限。"] = "Each rank adds 4 HP to new medicine. Keeps brewing and storage effects without faster generation or a higher cap.",
+        ["本术威力 {0:0.00} → {1:0.00} 倍；每重增加基础威力的 50%，其他术式不变。"] = "Ability potency {0:0.00} → {1:0.00}x. Each rank adds 50% of base potency; other abilities unchanged.",
+        ["御札出手效率 {0:0.00} → {1:0.00} 倍；上限 {2} 重，可与威力和行为升级共同生效。"] = "Ofuda casting speed {0:0.00} → {1:0.00}x. Up to {2} ranks; combines with potency and learned effects.",
+        ["新生星体存活时间增加 2 秒；可反复修习，不刷新已有星体寿命。"] = "New stars live 2 seconds longer. Repeatable; existing stars never have their lifetime renewed.",
+        ["每轮御札 {0} → {1} 张；单札基础伤害 {2:0} → {3:0}。"] = "Ofuda per volley {0} → {1}; base damage per shot {2:0} → {3:0}.",
+        ["阴阳玉 {0} → {1} 枚；基础伤害 {2:0} → {3:0}；回旋半径 {4:0} → {5:0}。"] = "Orbs {0} → {1}; base damage {2:0} → {3:0}; orbit radius {4:0} → {5:0}.",
+        ["阵地半边长 {0:0} → {1:0}；留阵 {2:0.0} → {3:0.0} 秒；每次基础伤害 {4:0} → {5:0}。"] = "Field half-size {0:0} → {1:0}; duration {2:0.0} → {3:0.0}s; base damage per pulse {4:0} → {5:0}.",
+        ["每单位质量基础撕扯 {0:0.00} → {1:0.00}/秒；继续逐颗向四面散星。"] = "Base tearing per mass {0:0.00} → {1:0.00}/s. Stars still emit individually in every direction.",
+        ["每份药菇恢复 {0:0} → {1:0} 点生命；每 {2:0} 秒生成一份。"] = "Healing per mushroom {0:0} → {1:0} HP; one generated every {2:0}s.",
+        ["光束宽 {0:0} → {1:0}；持续 {2:0.00} → {3:0.00} 秒；每次基础伤害 {4:0} → {5:0}。"] = "Beam width {0:0} → {1:0}; duration {2:0.00} → {3:0.00}s; base damage per pulse {4:0} → {5:0}.",
+        ["人设与原作意象保留；首领使用独立编排的弹幕，不复用玩家技能。"] = "Character identity and original motifs remain; Bosses use independent danmaku choreography, not playable skills.",
+        ["\n\n御札环幕 → 五瓣札阵 → 阴阳交织。每组弹幕先预警 1 秒，两条青色边界标出每侧通道；所有波次共用通道，发射后不追踪。血量低于 66% 与 33% 时清除旧弹、切换阶段。"] = "\n\nOfuda rings → five-petal seals → interwoven Yin-Yang. Each set has a 1s warning; jade boundaries mark two corridors shared by every wave. No homing after launch. At 66% and 33% health, old shots clear for a phase change.",
+        ["\n\n彩星环幕 → 定向魔炮 → 三线魔炮。星弹没有引力；环幕预留双向通道。魔炮预警 1.5 秒，预警开始即固定位置与射向，持续 1.6 秒；三线之间可穿行。无追踪、回血或玩家技能复用。"] = "\n\nRainbow star rings → fixed Spark → triple-lane Spark. Stars have no gravity; rings leave two corridors. Beam origin and directions lock at the start of the 1.5s warning, then fire for 1.6s with walkable gaps. No homing, healing or playable skill reuse.",
         ["反复强化御札威力，不增加实体；可与行札、追踪、爆炸及其他术式共同成长。"] = "Repeatable ofuda potency without extra entities. Combines with rhythm, homing, blast and other abilities.",
         ["提高御札出手效率，不替换已有威力和行为效果。"] = "Improve ofuda casting speed without replacing potency or learned effects.",
         ["阵 · 养威"] = "Boundary · Potency",

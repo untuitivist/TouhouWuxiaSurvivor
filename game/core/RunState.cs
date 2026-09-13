@@ -47,8 +47,8 @@ public sealed partial class RunState
     public float Time => Ticks * StepSeconds;
     public float Health { get; private set; }
     public float MaxHealth => HeroCatalog.Get(Hero).Health + Ranks[(int)ArtKind.Vitality] * 25;
-    public float Power => HeroCatalog.Get(Hero).Power * (1 + Ranks[(int)ArtKind.Power] * 0.18f);
-    public float CastSpeed => 1 + Ranks[(int)ArtKind.Haste] * 0.14f;
+    public float Power => HeroCatalog.Get(Hero).Power * (1 + Ranks[(int)ArtKind.Power] * 0.30f);
+    public float CastSpeed => 1 + Ranks[(int)ArtKind.Haste] * 0.22f;
     public float MoveSpeed => HeroCatalog.Get(Hero).Speed * (1 + Ranks[(int)ArtKind.Flow] * 0.06f);
     public float PickupRadius => 78 + Ranks[(int)ArtKind.Flow] * 35;
     public float DashDuration { get; private set; }
@@ -68,13 +68,13 @@ public sealed partial class RunState
     public Enemy? Boss => Enemies.Find(enemy => enemy.Kind == EnemyKind.Boss && enemy.Health > 0);
     public bool BossSpawned { get; private set; }
     public float OrbitAngle => Time * 2.9f;
-    public float OrbitRadius => Ranks[(int)ArtKind.YinYang] >= 5 ? 115 : 85;
+    public float OrbitRadius => AbilityTuning.Get(ArtKind.YinYang, Math.Max(1, Ranks[(int)ArtKind.YinYang])).Range;
     private readonly Random random;
     private readonly Random upgradeRandom;
     private EnemyGrid grid => World.Grid;
     private int nextEnemyId;
     private float spawnTimer = 0.4f;
-    private float nextElite = 140;
+    private float nextElite = 70;
     private float nextRecovery = RunPacing.RecoveryWindowStart;
     private Vector2 dashDirection;
 

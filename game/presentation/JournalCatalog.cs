@@ -94,11 +94,11 @@ internal static class JournalCatalog
             var profile = character.Boss;
             var reimu = character.Id == HeroKind.Reimu;
             yield return new("boss-" + character.CharacterId, JournalCategory.Enemy, character.Name, GameText.Get("角色首领 · 三阶段切磋"),
-                GameText.Get("人物能力沿用角色身份；首领前摇、弹速与伤害为本作改编。"),
+                GameText.Get("人设与原作意象保留；首领使用独立编排的弹幕，不复用玩家技能。"),
                 reimu ? "players/reimu.png" : "players/marisa.png", true,
                 GameText.Format($"首轮生命  {profile.Health:0}\n移动速度  {profile.Speed:0}\n质量  {profile.Mass:0}\n接触伤害  {profile.ContactDamage:0}\n登场时间  {RunState.BossArrival / 60:0} 分钟\n\n本局自机不会成为对手；同一角色的首领状态与玩家构筑独立。") +
-                GameText.Get(reimu ? "\n\n御札 → 预警封魔阵 → 阴阳玉。血量低于 66% 与 33% 时切换阶段；封魔阵可闪身脱离，阴阳玉每 0.55 秒至多消除三发玩家弹。"
-                    : "\n\n四方散星 → 追敌魔炮 → 广域魔炮。血量低于 66% 与 33% 时切换阶段；魔炮前摇 1.15 秒，转向每秒 36 度。药菇调合每场至多两次，每次回复 4% 生命。") +
+                GameText.Get(reimu ? "\n\n御札环幕 → 五瓣札阵 → 阴阳交织。每组弹幕先预警 1 秒，两条青色边界标出每侧通道；所有波次共用通道，发射后不追踪。血量低于 66% 与 33% 时清除旧弹、切换阶段。"
+                    : "\n\n彩星环幕 → 定向魔炮 → 三线魔炮。星弹没有引力；环幕预留双向通道。魔炮预警 1.5 秒，预警开始即固定位置与射向，持续 1.6 秒；三线之间可穿行。无追踪、回血或玩家技能复用。") +
                 GameText.Get("\n\n击破保留标准通关记录。自愿续战每五分钟再次切磋，首领生命每轮增加基准的 60%；星体引力按质量作用，不设首领免疫。"));
         }
         yield return new("world-shrine", JournalCategory.World, GameText.Get("博丽夜境"), GameText.Get("有限夜境 · 古印与终局"), GameText.Get("当前战场为本作场景；背景使用已接入的神社原作素材。"), "scenery/title_shrine.png", false,

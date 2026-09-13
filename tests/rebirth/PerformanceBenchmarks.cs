@@ -51,6 +51,7 @@ public static class PerformanceBenchmarks
             }
             while (run.Phase == RunPhase.Choosing) run.Choose(0);
             run.Step(new(Vector2.Zero));
+            scenario?.CompleteStep(run);
             samples[tick] = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
             maximumStars = Math.Max(maximumStars, run.Stars.Count);
             maximumGravityInteractions = Math.Max(maximumGravityInteractions, run.Marisa.GravityInteractions);

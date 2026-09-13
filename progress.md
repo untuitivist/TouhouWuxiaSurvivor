@@ -1,3 +1,11 @@
+## Short Runs / Distinct Boss Performances — 2026-09-14 (Asia/Shanghai)
+
+- COMPLETE implementation and local validation: core 74/74, localization 1128/1128, 18 unassisted standard wins in 255.7–323.6 seconds, native bilingual/touch/captures, full Web four-mode compatibility and 12 unchanged combat gates. Final native native-20260914-011245 and Web build 20260914-011337-572; source audit confirms 101 matching C# files.
+- Preserved initial compile/test/balance failures and failed Web candidate 20260914-005723-587. Web failure was a one-frame Choosing snapshot, not a FPS shortfall; diagnostic CompleteStep resolves choices at the end of a real simulation step. Ordinary gameplay still pauses, and benchmark seeds/populations/gates stay unchanged. Full rebuilt suite passes.
+- Reviewed original-texture ring/warning/active triple-beam screenshots, including touch English. Source/date/hash/limitations archived in docs/short_run_validation.md; prior EXE and released changelog sections remain byte-identical. This is ready for the required local daily commit, not a new release.
+
+- Recorded new short-run/visible-growth/dedicated-danmaku scope after inspecting clean source and original pacing. Published alpha-0.1.10 remains unchanged; no export or deployment requested this turn.
+
 ## Free Build Correction Release — 2026-09-13
 
 - COMPLETE: frozen b17b5c5 produces Windows 195,261,576-byte self-contained EXE (EAC4C154A759BFD8D88CC2253F22706A6176CF43431789AD587F61917DF4D958) and Web build 20260913-171454-752 with 99 byte-identical C# files. Full Web final-web-20260913-171553 and Windows 36 standalone checks pass.

@@ -81,6 +81,7 @@ public partial class GameRoot : Node
             var started = webChecks ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             run.Step(new(new NumericsVector(horizontal, vertical), canvas.Focused, dashRequested));
             if (webChecks) simulationMilliseconds = System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;
+            webCombatStress?.CompleteStep(run);
             started = webChecks ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             canvas.ReceiveEvents();
             audio.PlayEvents(run.Events);

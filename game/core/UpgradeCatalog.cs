@@ -44,7 +44,7 @@ public static class UpgradeCatalog
         yield return new(MainlineGrowth.SparkPower, ArtKind.MasterSpark, UpgradeKind.Training, "炮 · 养威",
             "反复强化普通与满蓄势魔炮伤害，可与追敌、广域、共鸣和消弹共同生效。", HeroKind.Marisa, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
         yield return new(MainlineGrowth.HerbPotency, ArtKind.Herbs, UpgradeKind.Training, "药 · 药量精进",
-            "每次修习使每份新药多恢复 1 点生命；保留缓释与留药，不加快生成或增加存放上限。", HeroKind.Marisa, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
+            "每次修习使每份新药多恢复 4 点生命；保留缓释与留药，不加快生成或增加存放上限。", HeroKind.Marisa, int.MaxValue, RequiredRank: 1, MinimumLevel: 3);
         foreach (var art in ArtCatalog.All)
         {
             if (art.Owner is { } owner)
@@ -69,7 +69,7 @@ public static class UpgradeCatalog
             "解锁满蓄势自动发动的梦想封印。此前蓄势可以积累，但不会自动清弹或攻击。", HeroKind.Reimu, 1, AbilityTraits.DreamSeal, 1, 5);
         yield return Training(StarMass, "星 · 增质", "提高新星质量分布中位数，前六重较快，之后相对收益渐缓；每颗独立抽样，无保底重星。", AbilityTraits.StarMass);
         yield return Training(StarSpread, "星 · 变谱", "扩大质量分布的离散程度，让轻星与稀有重星都更有机会出现；可反复修习，不指定行星名额。", AbilityTraits.StarSpread);
-        yield return Training(StarLifetime, "星 · 长明", "新生星体存活时间增加 0.6 秒；可反复修习，不刷新已有星体寿命。", AbilityTraits.StarLifetime);
+        yield return Training(StarLifetime, "星 · 长明", "新生星体存活时间增加 2 秒；可反复修习，不刷新已有星体寿命。", AbilityTraits.StarLifetime);
         yield return Behavior(HerbBrew, ArtKind.Herbs, "药 · 缓释", "拾取药菇后额外缓慢恢复其一半药量，每秒最多 2 点，待恢复量最多 18；不靠伤害或击杀无限吸血。", AbilityTraits.HerbBrew);
         yield return Behavior(HerbReserve, ArtKind.Herbs, "药 · 留药", "药菇保存时间增加 16 秒，在场上限由三份变为五份；满血时不消耗药菇。", AbilityTraits.HerbReserve);
         yield return Behavior(SparkSteer, ArtKind.MasterSpark, "炮 · 追敌", "魔炮持续瞄准最近的存活敌人并平滑转向；停步也会追踪，无目标时保持方向。", AbilityTraits.SparkSteer);

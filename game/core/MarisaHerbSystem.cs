@@ -27,7 +27,7 @@ internal static class MarisaHerbSystem
         var heading = run.PlayerVelocity.LengthSquared() > 1 ? Geometry.Direction(run.PlayerVelocity) : run.Facing;
         var position = RunState.ClampToArena(run.PlayerPosition - heading * 42 + new Vector2(-heading.Y, heading.X) * 24);
         run.Pickups.Add(new() { Position = position, Healing = true, Herbal = true,
-            Value = (int)Math.Min(int.MaxValue, (long)AbilityTuning.Get(ArtKind.Herbs, rank).Damage + run.Build.TrainingRank(MainlineGrowth.HerbPotency)),
+            Value = (int)Math.Min(int.MaxValue, (long)AbilityTuning.Get(ArtKind.Herbs, rank).Damage + (long)run.Build.TrainingRank(MainlineGrowth.HerbPotency) * 4),
             Life = MarisaTuning.HerbLifetime + (reserve ? 16 : 0) });
     }
 

@@ -27,15 +27,15 @@ public partial class GameRoot
             PrepareFreeGrowthPreview(mode == "free-growth-reimu" ? HeroKind.Reimu : HeroKind.Marisa);
             return true;
         }
-        if (mode is not ("boss" or "boss-reimu" or "boss-marisa" or "challenge-result")) return false;
-        StartRun(mode == "boss-reimu" ? HeroKind.Marisa : HeroKind.Reimu, 42);
+        if (mode is not ("boss" or "boss-reimu" or "boss-reimu-warning" or "boss-marisa" or "boss-marisa-active" or "boss-marisa-ring" or "challenge-result")) return false;
+        StartRun(mode.StartsWith("boss-reimu", StringComparison.Ordinal) ? HeroKind.Marisa : HeroKind.Reimu, 42);
         var boss = run!.SpawnEnemy(EnemyKind.Boss, new(320, -30));
         boss.Health = boss.MaxHealth * 0.3f;
-        boss.Abilities!.FieldCooldown = 0;
+        boss.Abilities!.Phase = 2;
         boss.Abilities.ShotCooldown = 0;
-        boss.Abilities.SpecialCooldown = 0;
-        boss.Abilities.RecoveryCooldown = 1000;
-        for (var tick = 0; tick < 90; tick++) run.Step(new(new(0, 0.35f)));
+        boss.Abilities.SpecialCooldown = mode == "boss-marisa-ring" ? 1000 : 0;
+        var ticks = mode == "boss-reimu-warning" ? 30 : mode == "boss-marisa-active" ? 120 : 90;
+        for (var tick = 0; tick < ticks; tick++) run.Step(new(new(0, 0.35f)));
         if (mode == "challenge-result")
         {
             run.DamageEnemy(boss, boss.Health, System.Numerics.Vector2.Zero);

@@ -11,6 +11,8 @@ if (args.Contains("--marisa-balance")) return MarisaBalance.Run();
 
 var tests = new (string Name, Action Body)[]
 {
+    ("five-minute pacing restores early growth without route locks", ShortRunTests.Pacing),
+    ("base ranks and training deliver perceptible real gains", ShortRunTests.PerceptibleGrowth),
     ("canonical dual-role characters exclude the playable identity", LongRunTests.Identities),
     ("free choices keep all directions reachable and reject forged upgrades", LongRunTests.FreeChoices),
     ("independent growth combines without order dependence or star resampling", LongRunTests.CombinedGrowth),
@@ -18,8 +20,8 @@ var tests = new (string Name, Action Body)[]
     ("auxiliary training changes real fields, medicine and beams", LongRunTests.AuxiliaryTraining),
     ("mixed projectile and star clearing preserves budgets, factions and traversal safety", LongRunTests.MixedBulletClearing),
     ("diagnostic pilot avoids overlapping hostile star fields using input alone", LongRunTests.PilotStarAvoidance),
-    ("hostile stars respect factions, escape and independent capacity", LongRunTests.Factions),
-    ("character Boss attacks preserve telegraphs and finite defensive budgets", LongRunTests.BossTelegraphs),
+    ("synthetic hostile stars retain faction and traversal safety", LongRunTests.Factions),
+    ("Boss danmaku uses snapshot warnings, straight shots and verified corridors", LongRunTests.BossTelegraphs),
     ("optional continuation preserves victory and prevents duplicate transitions", LongRunTests.Continuation),
     ("sixty-minute assisted soak retains growth and bounded storage", LongRunTests.LongSoak),
     ("recovery windows provide finite collectible resources", LongRunTests.RecoveryWindows),
